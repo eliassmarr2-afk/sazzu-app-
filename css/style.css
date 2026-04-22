@@ -1,0 +1,15 @@
+/* Overrides seguros (sin romper layout base) */
+
+/* Si querés que los títulos principales sean azules en Home */
+.pageTitle h1{
+  color: var(--blue);
+}
+
+/* Si querés ajustar un poquito el espaciado general */
+.main{
+  /* opcional: nada por defecto */
+}
+/* TIPOGRAFÍA GLOBAL */
+body {
+  font-family: 'Montserrat', sans-serif;
+}

@@ -1,0 +1,559 @@
+<section class="finStockSlide" aria-label="Slide de costos de stock">
+  <header class="finStockSlideHead">
+    <div class="finStockSlideHead__main">
+      <div class="finStockSlideHead__left">
+        <button
+          type="button"
+          class="finStockSlideHead__back"
+          id="finStockClose"
+          aria-label="Regresar"
+          title="Regresar"
+        >
+          <svg viewBox="0 0 24 24" class="finStockSlideHead__backSvg" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6"></path>
+          </svg>
+        </button>
+  
+        <div class="finStockSlideHead__title">Costos de stock</div>
+      </div>
+  
+      <div class="finStockSlideHead__right">
+        <div class="finStockDateGroup">
+          <div
+            class="finStockDateTabs"
+            data-fin-stock-date-tabs
+            role="tablist"
+            aria-label="Rango temporal del slide"
+          >
+            <button
+              type="button"
+              class="finStockDateTab"
+              data-fin-stock-range="today"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Hoy
+            </button>
+      
+            <button
+              type="button"
+              class="finStockDateTab"
+              data-fin-stock-range="week"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Esta semana
+            </button>
+      
+            <button
+              type="button"
+              class="finStockDateTab"
+              data-fin-stock-range="month"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Este mes
+            </button>
+      
+            <button
+              type="button"
+              class="finStockDateTab"
+              data-fin-stock-range="custom"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Fecha
+            </button>
+          </div>
+      
+          <section class="finStockDateBar" id="finStockDateBar" hidden aria-label="Rango personalizado del slide">
+            <div class="finStockDateBar__fields">
+              <label class="finStockDateBar__field">
+                <span class="finStockDateBar__label">Desde</span>
+                <input type="date" id="finStockDateFrom" class="finStockDateBar__input">
+              </label>
+      
+              <label class="finStockDateBar__field">
+                <span class="finStockDateBar__label">Hasta</span>
+                <input type="date" id="finStockDateTo" class="finStockDateBar__input">
+              </label>
+            </div>
+      
+            <div class="finStockDateBar__actions">
+              <button type="button" class="finStockDateBar__btn finStockDateBar__btn--secondary" id="finStockDateCancel">
+                Cancelar
+              </button>
+              <button type="button" class="finStockDateBar__btn finStockDateBar__btn--primary" id="finStockDateApply">
+                Aplicar
+              </button>
+            </div>
+          </section>
+        </div>
+      
+        <div
+          class="finStockTabs"
+          data-fin-stock-tabs
+          role="tablist"
+          aria-label="Tabs del slide de costos de stock"
+        >
+          <button
+            type="button"
+            class="finStockTab is-active"
+            data-fin-stock-tab="stock"
+            role="tab"
+            aria-selected="true"
+            tabindex="0"
+          >
+            Costos de stock
+          </button>
+      
+          <button
+            type="button"
+            class="finStockTab"
+            data-fin-stock-tab="operativo"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+          >
+            Costo operativo
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  
+  </header>
+  
+    <div class="finStockSlideDivider"></div>
+
+    
+  
+    <div class="finStockSlideBody">
+      <section
+        class="finStockTabPanel is-active"
+        data-fin-stock-panel="stock"
+        role="tabpanel"
+        aria-hidden="false"
+      >
+        <!-- HERO -->
+        <section class="finStockHeroGrid">
+          <article class="finStockInfoCard finStockInfoCard--hero">
+            <div class="finStockInfoCard__label">Costo consumido prorrateado</div>
+            <div class="finStockInfoCard__value" id="finSlideHeroCosto">$ 0</div>
+            <div class="finStockInfoCard__meta" id="finSlideHeroCostoMeta">
+              Variación contra período anterior
+            </div>
+          </article>
+    
+          <article class="finStockInfoCard finStockInfoCard--hero finStockHeroPct21" id="finStockHeroPctCard">
+            <div class="finStockHeroPct21__rowTop">
+              <div class="finStockHeroPct21__period" id="finSlideHeroPctPeriod">% DEL BRUTO ABSORBIDO</div>
+    
+              <div
+                class="finStockHeroPct21__delta is-neutral"
+                id="finSlideHeroPctDeltaWrap"
+                aria-label="Variación contra período anterior equivalente"
+              >
+                <span id="finSlideHeroPctDeltaValue">0%</span>
+                <span class="finStockHeroPct21__deltaArrow" id="finSlideHeroPctDeltaArrow">→</span>
+              </div>
+            </div>
+    
+            <div class="finStockHeroPct21__rowBody">
+              <div class="finStockHeroPct21__left">
+                <div class="finStockHeroPct21__value" id="finSlideHeroPctBruto">0%</div>
+    
+                <div class="finStockHeroPct21__meta" id="finSlideHeroPctMeta">
+                  Participación del costo sobre la facturación analítica
+                </div>
+              </div>
+    
+              <div class="finStockHeroPct21__right">
+                <div
+                  class="finStockHeroPct21__chart"
+                  id="finSlideHeroPctChart"
+                  aria-label="Evolución del porcentaje del bruto absorbido"
+                >
+                  <div class="finStockHeroPct21__chartEmpty"></div>
+                </div>
+              </div>
+            </div>
+          </article>
+    
+          <article class="finStockInfoCard finStockInfoCard--hero finStockHeroRatio21" id="finStockHeroRatioCard">
+            <div class="finStockHeroRatio21__rowTop">
+              <div class="finStockHeroRatio21__period" id="finSlideHeroRatioPeriod">Este período</div>
+    
+              <div
+                class="finStockHeroRatio21__delta is-neutral"
+                id="finSlideHeroRatioDeltaWrap"
+                aria-label="Variación contra período anterior equivalente"
+              >
+                <span id="finSlideHeroRatioDeltaValue">0%</span>
+                <span class="finStockHeroRatio21__deltaArrow" id="finSlideHeroRatioDeltaArrow">→</span>
+              </div>
+            </div>
+    
+            <div class="finStockHeroRatio21__rowBody">
+              <div class="finStockHeroRatio21__left">
+                <div class="finStockHeroRatio21__value" id="finSlideHeroRatio">0.00x</div>
+    
+                <div class="finStockHeroRatio21__meta" id="finSlideHeroHealth">
+                  Relación sana
+                </div>
+              </div>
+    
+              <div class="finStockHeroRatio21__right">
+                <div
+                  class="finStockHeroRatio21__chart"
+                  id="finSlideHeroRatioChart"
+                  aria-label="Evolución de la relación bruto vs costo"
+                >
+                  <div class="finStockHeroRatio21__chartEmpty"></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+    
+        <section class="finStockTrendCard" aria-label="Evolución del costo consumido">
+          <div class="finStockTrendCard__head">
+            <div>
+              <div class="finStockPanelCard__eyebrow">Evolución</div>
+              <div class="finStockPanelCard__title">Costo consumido con vs sin prorrateo</div>
+            </div>
+    
+            <div class="finStockTrendCard__legend" aria-label="Leyenda del gráfico">
+              <div class="finStockTrendLegendItem">
+                <span class="finStockTrendLegendItem__dot finStockTrendLegendItem__dot--primary"></span>
+                <span class="finStockTrendLegendItem__txt">Con prorrateo</span>
+              </div>
+    
+              <div class="finStockTrendLegendItem">
+                <span class="finStockTrendLegendItem__dot finStockTrendLegendItem__dot--secondary"></span>
+                <span class="finStockTrendLegendItem__txt">Sin prorrateo</span>
+              </div>
+            </div>
+          </div>
+    
+          <div class="finStockTrendCard__body">
+            <div
+              class="finStockTrendChart"
+              id="finStockTrendChart"
+              aria-label="Gráfico evolutivo de costo consumido con y sin prorrateo"
+            >
+              <div class="finStockTrendChart__empty">
+                Cargando evolución del costo consumido...
+              </div>
+            </div>
+          </div>
+        </section>
+    
+        <!-- ANALÍTICA -->
+        <section class="finStockBodyGrid">
+          <article class="finStockPanelCard">
+            <div class="finStockPanelCard__head">
+              <div>
+                <div class="finStockPanelCard__eyebrow">Composición</div>
+                <div class="finStockPanelCard__title">Participación por estructura comercial</div>
+              </div>
+            </div>
+    
+            <div class="finStructList">
+              <div class="finStructItem finStructItem--unidad" id="finStructUnidad">
+                <div class="finStructItem__top">
+                  <div class="finStructItem__name">Unidad</div>
+                  <div class="finStructItem__share" id="finStructUnidadShare">0%</div>
+                </div>
+                <div class="finStructItem__bar">
+                  <span class="finStructItem__fill" id="finStructUnidadFill"></span>
+                </div>
+                <div class="finStructItem__meta" id="finStructUnidadMeta">Sin actividad</div>
+              </div>
+    
+              <div class="finStructItem finStructItem--equivalencia" id="finStructEquivalencia">
+                <div class="finStructItem__top">
+                  <div class="finStructItem__name">Equivalencia</div>
+                  <div class="finStructItem__share" id="finStructEquivalenciaShare">0%</div>
+                </div>
+                <div class="finStructItem__bar">
+                  <span class="finStructItem__fill" id="finStructEquivalenciaFill"></span>
+                </div>
+                <div class="finStructItem__meta" id="finStructEquivalenciaMeta">Sin actividad</div>
+              </div>
+    
+              <div class="finStructItem finStructItem--bundle" id="finStructBundle">
+                <div class="finStructItem__top">
+                  <div class="finStructItem__name">Bundle</div>
+                  <div class="finStructItem__share" id="finStructBundleShare">0%</div>
+                </div>
+                <div class="finStructItem__bar">
+                  <span class="finStructItem__fill" id="finStructBundleFill"></span>
+                </div>
+                <div class="finStructItem__meta" id="finStructBundleMeta">Sin actividad</div>
+              </div>
+            </div>
+          </article>
+    
+          <article class="finStockPanelCard">
+            <div class="finStockPanelCard__head">
+              <div>
+                <div class="finStockPanelCard__eyebrow">Riesgo</div>
+                <div class="finStockPanelCard__title">Lectura operativa del rango</div>
+              </div>
+            </div>
+    
+            <div class="finRiskGrid">
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">SKU con movimiento</div>
+                <div class="finRiskMini__value" id="finRiskSkuMov">0</div>
+              </div>
+    
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">SKU sin costo</div>
+                <div class="finRiskMini__value" id="finRiskSkuSinCosto">0</div>
+              </div>
+    
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">Top SKU por costo</div>
+                <div class="finRiskMini__value finRiskMini__value--sku" id="finRiskTopSku">—</div>
+              </div>
+    
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">Costo top SKU</div>
+                <div class="finRiskMini__value" id="finRiskTopSkuCosto">$ 0</div>
+              </div>
+    
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">Top 3 del costo</div>
+                <div class="finRiskMini__value" id="finRiskTop3">0%</div>
+              </div>
+    
+              <div class="finRiskMini">
+                <div class="finRiskMini__label">Top 5 del costo</div>
+                <div class="finRiskMini__value" id="finRiskTop5">0%</div>
+              </div>
+            </div>
+    
+            <div class="finRiskNote" id="finRiskNote">
+              La concentración del costo ayuda a detectar dependencia de pocos SKU o huecos de costo consolidado.
+            </div>
+          </article>
+        </section>
+      </section>
+    
+      <section
+      class="finStockTabPanel"
+      data-fin-stock-panel="operativo"
+      role="tabpanel"
+      aria-hidden="true"
+      hidden
+    >
+      <!-- HERO · COSTO OPERATIVO -->
+      <section class="finStockHeroGrid finOperHeroGrid">
+        <article class="finStockInfoCard finStockInfoCard--hero" aria-label="Costo operativo total de ingreso">
+          <div class="finStockInfoCard__label">Costo operativo de ingreso</div>
+          <div class="finStockInfoCard__value" id="finOperHeroIngreso">$ 0</div>
+          <div class="finStockInfoCard__meta" id="finOperHeroIngresoMeta">
+            Suma de envío prorrateado y otros costos operativos del lote
+          </div>
+        </article>
+
+        <article class="finStockInfoCard finStockInfoCard--hero" aria-label="Costo operativo de envío de ingreso">
+          <div class="finStockInfoCard__label">Envío operativo de ingreso</div>
+          <div class="finStockInfoCard__value" id="finOperHeroEnvio">$ 0</div>
+          <div class="finStockInfoCard__meta" id="finOperHeroEnvioMeta">
+            Costo prorrateado de envío absorbido por los lotes del rango
+          </div>
+        </article>
+
+        <article class="finStockInfoCard finStockInfoCard--hero" aria-label="Otros costos operativos de ingreso">
+          <div class="finStockInfoCard__label">Otros costos operativos</div>
+          <div class="finStockInfoCard__value" id="finOperHeroOtros">$ 0</div>
+          <div class="finStockInfoCard__meta" id="finOperHeroOtrosMeta">
+            Costos adicionales de recepción, manipulación u operación prorrateados al lote
+          </div>
+        </article>
+      </section>
+
+      <!-- EVOLUCIÓN + COMPOSICIÓN -->
+      <section class="finStockBodyGrid finOperBodyGrid">
+        <article class="finStockTrendCard" aria-label="Evolución del costo operativo de ingreso">
+          <div class="finStockTrendCard__head">
+            <div>
+              <div class="finStockPanelCard__eyebrow">Evolución</div>
+              <div class="finStockPanelCard__title">Costo operativo de ingreso por lote</div>
+            </div>
+
+            <div class="finStockTrendCard__legend" aria-label="Leyenda del gráfico operativo">
+              <div class="finStockTrendLegendItem">
+                <span class="finStockTrendLegendItem__dot finStockTrendLegendItem__dot--primary"></span>
+                <span class="finStockTrendLegendItem__txt">Envío prorrateado</span>
+              </div>
+
+              <div class="finStockTrendLegendItem">
+                <span class="finStockTrendLegendItem__dot finStockTrendLegendItem__dot--secondary"></span>
+                <span class="finStockTrendLegendItem__txt">Otros costos</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="finStockTrendCard__body">
+            <div
+              class="finStockTrendChart"
+              id="finOperTrendChart"
+              aria-label="Gráfico evolutivo de costo operativo de ingreso"
+            >
+              <div class="finStockTrendChart__empty">
+                Cargando evolución del costo operativo...
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="finStockPanelCard" aria-label="Composición del costo operativo de ingreso">
+          <div class="finStockPanelCard__head">
+            <div>
+              <div class="finStockPanelCard__eyebrow">Composición</div>
+              <div class="finStockPanelCard__title">Participación del costo operativo de ingreso</div>
+            </div>
+          </div>
+
+          <div class="finStructList finOperStructList">
+            <div class="finStructItem finStructItem--unidad" id="finOperStructEnvio">
+              <div class="finStructItem__top">
+                <div class="finStructItem__name">Envío prorrateado</div>
+                <div class="finStructItem__share" id="finOperStructEnvioShare">0%</div>
+              </div>
+              <div class="finStructItem__bar">
+                <span class="finStructItem__fill" id="finOperStructEnvioFill"></span>
+              </div>
+              <div class="finStructItem__meta" id="finOperStructEnvioMeta">Sin actividad</div>
+            </div>
+
+            <div class="finStructItem finStructItem--equivalencia" id="finOperStructOtros">
+              <div class="finStructItem__top">
+                <div class="finStructItem__name">Otros costos operativos</div>
+                <div class="finStructItem__share" id="finOperStructOtrosShare">0%</div>
+              </div>
+              <div class="finStructItem__bar">
+                <span class="finStructItem__fill" id="finOperStructOtrosFill"></span>
+              </div>
+              <div class="finStructItem__meta" id="finOperStructOtrosMeta">Sin actividad</div>
+            </div>
+
+            <div class="finStructItem finStructItem--bundle" id="finOperStructTotal">
+              <div class="finStructItem__top">
+                <div class="finStructItem__name">Peso operativo total</div>
+                <div class="finStructItem__share" id="finOperStructTotalShare">0%</div>
+              </div>
+              <div class="finStructItem__bar">
+                <span class="finStructItem__fill" id="finOperStructTotalFill"></span>
+              </div>
+              <div class="finStructItem__meta" id="finOperStructTotalMeta">Sin actividad</div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- MÉTRICAS + RANKING -->
+      <section class="finStockBodyGrid finOperBodyGrid">
+        <article class="finStockPanelCard" aria-label="Lectura ejecutiva del costo operativo de ingreso">
+          <div class="finStockPanelCard__head">
+            <div>
+              <div class="finStockPanelCard__eyebrow">Lectura ejecutiva</div>
+              <div class="finStockPanelCard__title">Métricas operativas del rango</div>
+            </div>
+          </div>
+
+          <div class="finRiskGrid finOperRiskGrid">
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Lotes con ingreso</div>
+              <div class="finRiskMini__value" id="finOperRiskLotes">0</div>
+            </div>
+
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Unidades ingresadas</div>
+              <div class="finRiskMini__value" id="finOperRiskUnidades">0</div>
+            </div>
+
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Operativo por lote</div>
+              <div class="finRiskMini__value" id="finOperRiskOperativoLote">$ 0</div>
+            </div>
+
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Operativo por unidad</div>
+              <div class="finRiskMini__value" id="finOperRiskOperativoUnidad">$ 0</div>
+            </div>
+
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Absorción s/ compra</div>
+              <div class="finRiskMini__value" id="finOperRiskAbsCompra">0%</div>
+            </div>
+
+            <div class="finRiskMini">
+              <div class="finRiskMini__label">Absorción s/ costo final</div>
+              <div class="finRiskMini__value" id="finOperRiskAbsFinal">0%</div>
+            </div>
+          </div>
+
+          <div class="finRiskNote" id="finOperRiskNote">
+            Este bloque mide el costo operativo de ingreso absorbido por los lotes del rango, sin mezclar todavía costos de egreso por venta.
+          </div>
+        </article>
+
+        <article class="finStockPanelCard" aria-label="Ranking de lotes por costo operativo">
+          <div class="finStockPanelCard__head">
+            <div>
+              <div class="finStockPanelCard__eyebrow">Ranking</div>
+              <div class="finStockPanelCard__title">Lotes con mayor costo operativo absorbido</div>
+            </div>
+          </div>
+
+          <div class="finOperTableWrap">
+            <div class="finOperTable" role="table" aria-label="Tabla de lotes por costo operativo">
+              <div class="finOperTable__head" role="rowgroup">
+                <div class="finOperTable__row finOperTable__row--head" role="row">
+                  <div class="finOperTable__cell" role="columnheader">Lote</div>
+                  <div class="finOperTable__cell" role="columnheader">Unidades</div>
+                  <div class="finOperTable__cell" role="columnheader">Envío</div>
+                  <div class="finOperTable__cell" role="columnheader">Otros</div>
+                  <div class="finOperTable__cell" role="columnheader">Operativo total</div>
+                  <div class="finOperTable__cell" role="columnheader">Absorción</div>
+                </div>
+              </div>
+
+              <div class="finOperTable__body" id="finOperTableBody" role="rowgroup">
+                <div class="finOperTable__empty">
+                  Todavía no hay datos cargados para el ranking operativo.
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- EGRESO · PREPARADO PARA SIGUIENTE ETAPA -->
+      <section class="finStockPanelCard" aria-label="Bloque preparado para costo operativo de egreso">
+        <div class="finStockPanelCard__head">
+          <div>
+            <div class="finStockPanelCard__eyebrow">Próxima capa</div>
+            <div class="finStockPanelCard__title">Costo operativo de egreso</div>
+          </div>
+        </div>
+
+        <div class="finStockPanelPlaceholder">
+          <div class="finStockPanelPlaceholder__title">Bloque preparado para la siguiente etapa</div>
+          <div class="finStockPanelPlaceholder__text">
+            Acá va a entrar la medición de costos operativos de salida: despacho, packaging, preparación y otros costos asociados al egreso por venta.
+          </div>
+        </div>
+      </section>
+    </section>
+    </div>
+  </section> 

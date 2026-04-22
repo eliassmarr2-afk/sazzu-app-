@@ -1,0 +1,341 @@
+<!-- ======= INICIO · PARTIAL SUB-SLIDE CARGA LOTE ======= -->
+<div class="prodLoteEntry">
+
+    <!-- INTRO -->
+    <section class="prodLoteCard prodLoteCard--intro">
+      <div class="prodLoteCard__header">
+        <div class="prodLoteCard__iconWrap">
+          <div class="prodLoteCard__icon" aria-hidden="true">i</div>
+        </div>
+  
+        <div class="prodLoteCard__heading">
+          <div class="prodLoteCard__eyebrow">Ingreso operativo</div>
+          <h2 class="prodLoteCard__title">Carga de compras por lote</h2>
+          <p class="prodLoteCard__desc">
+            Registra la identidad general del lote y las líneas SKU que luego impactarán en IngresoLoteTest, LotesCompra y LotesCompraDetalle.
+          </p>
+        </div>
+      </div>
+    </section>
+  
+    <!-- TARJETA 1 · IDENTIDAD DEL LOTE -->
+    <section class="prodLoteCard">
+      <div class="prodLoteCard__header">
+        <div class="prodLoteCard__iconWrap">
+          <div class="prodLoteCard__icon" aria-hidden="true">1</div>
+        </div>
+  
+        <div class="prodLoteCard__heading">
+          <div class="prodLoteCard__eyebrow">Tarjeta 1</div>
+          <h3 class="prodLoteCard__title">Identidad del lote</h3>
+          <p class="prodLoteCard__desc">
+            Define los datos generales que identifican la compra y su recepción.
+          </p>
+        </div>
+      </div>
+  
+      <div class="prodLoteFields prodLoteFields--two">
+        <div class="prodLoteField">
+          <label for="prodLoteId" class="prodLoteField__label">Lote ID</label>
+          <input type="text" id="prodLoteId" class="prodLoteField__input" placeholder="Ej: COSM-LOT-001" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteProveedor" class="prodLoteField__label">Proveedor</label>
+          <input type="text" id="prodLoteProveedor" class="prodLoteField__input" placeholder="Ej: Proveedor mayorista central" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteFechaCompra" class="prodLoteField__label">Fecha de compra</label>
+          <input type="date" id="prodLoteFechaCompra" class="prodLoteField__input" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteFechaRecepcion" class="prodLoteField__label">Fecha de recepción</label>
+          <input type="date" id="prodLoteFechaRecepcion" class="prodLoteField__input" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteTipoCompra" class="prodLoteField__label">Tipo de compra</label>
+          <select id="prodLoteTipoCompra" class="prodLoteField__select">
+            <option value="">Seleccionar tipo</option>
+            <option value="unitario">Unitario</option>
+            <option value="surtido">Surtido</option>
+            <option value="reposicion">Reposición</option>
+            <option value="prueba">Prueba</option>
+            <option value="importacion">Importación</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteUsuarioCarga" class="prodLoteField__label">Usuario de carga</label>
+          <input type="text" id="prodLoteUsuarioCarga" class="prodLoteField__input" placeholder="Ej: Operador interno" />
+        </div>
+      </div>
+    </section>
+  
+    <!-- TARJETA 2 · CONTEXTO ECONÓMICO Y DOCUMENTAL -->
+    <section class="prodLoteCard">
+      <div class="prodLoteCard__header">
+        <div class="prodLoteCard__iconWrap">
+          <div class="prodLoteCard__icon" aria-hidden="true">2</div>
+        </div>
+  
+        <div class="prodLoteCard__heading">
+          <div class="prodLoteCard__eyebrow">Tarjeta 2</div>
+          <h3 class="prodLoteCard__title">Contexto económico y documental</h3>
+          <p class="prodLoteCard__desc">
+            Captura moneda, costos globales del lote y los comprobantes asociados a la operación.
+          </p>
+        </div>
+      </div>
+  
+      <div class="prodLoteFields prodLoteFields--two">
+        <div class="prodLoteField">
+          <label for="prodLoteMoneda" class="prodLoteField__label">Moneda</label>
+          <select id="prodLoteMoneda" class="prodLoteField__select">
+            <option value="">Seleccionar moneda</option>
+            <option value="ARS">ARS</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteTipoCambio" class="prodLoteField__label">Tipo de cambio</label>
+          <input type="number" id="prodLoteTipoCambio" class="prodLoteField__input" placeholder="Ej: 1" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteCostoEnvio" class="prodLoteField__label">Costo envío lote</label>
+          <input type="number" id="prodLoteCostoEnvio" class="prodLoteField__input" placeholder="Ej: 25000" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteOtrosCostos" class="prodLoteField__label">Otros costos lote</label>
+          <input type="number" id="prodLoteOtrosCostos" class="prodLoteField__input" placeholder="Ej: 8000" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteCompTipo" class="prodLoteField__label">Comprobante principal tipo</label>
+          <select id="prodLoteCompTipo" class="prodLoteField__select">
+            <option value="">Seleccionar tipo</option>
+            <option value="factura_a">Factura A</option>
+            <option value="factura_b">Factura B</option>
+            <option value="factura_c">Factura C</option>
+            <option value="ticket">Ticket</option>
+            <option value="recibo">Recibo</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteCompNumero" class="prodLoteField__label">Comprobante principal número</label>
+          <input type="text" id="prodLoteCompNumero" class="prodLoteField__input" placeholder="Ej: 0001-00001234" />
+        </div>
+  
+        <div class="prodLoteField prodLoteField--wide">
+          <label for="prodLoteCompUrl" class="prodLoteField__label">Comprobante principal URL</label>
+          <input type="text" id="prodLoteCompUrl" class="prodLoteField__input" placeholder="Pega aquí la URL del comprobante" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteDoc1Tipo" class="prodLoteField__label">Doc secundario 1 tipo</label>
+          <select id="prodLoteDoc1Tipo" class="prodLoteField__select">
+            <option value="">Seleccionar tipo</option>
+            <option value="remito">Remito</option>
+            <option value="orden_compra">Orden de compra</option>
+            <option value="nota_credito">Nota de crédito</option>
+            <option value="nota_debito">Nota de débito</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteDoc1Numero" class="prodLoteField__label">Doc secundario 1 número</label>
+          <input type="text" id="prodLoteDoc1Numero" class="prodLoteField__input" placeholder="Ej: DOC-001" />
+        </div>
+  
+        <div class="prodLoteField prodLoteField--wide">
+          <label for="prodLoteDoc1Url" class="prodLoteField__label">Doc secundario 1 URL</label>
+          <input type="text" id="prodLoteDoc1Url" class="prodLoteField__input" placeholder="Pega aquí la URL del documento" />
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteDoc2Tipo" class="prodLoteField__label">Doc secundario 2 tipo</label>
+          <select id="prodLoteDoc2Tipo" class="prodLoteField__select">
+            <option value="">Seleccionar tipo</option>
+            <option value="remito">Remito</option>
+            <option value="orden_compra">Orden de compra</option>
+            <option value="nota_credito">Nota de crédito</option>
+            <option value="nota_debito">Nota de débito</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField">
+          <label for="prodLoteDoc2Numero" class="prodLoteField__label">Doc secundario 2 número</label>
+          <input type="text" id="prodLoteDoc2Numero" class="prodLoteField__input" placeholder="Ej: DOC-002" />
+        </div>
+  
+        <div class="prodLoteField prodLoteField--wide">
+          <label for="prodLoteDoc2Url" class="prodLoteField__label">Doc secundario 2 URL</label>
+          <input type="text" id="prodLoteDoc2Url" class="prodLoteField__input" placeholder="Pega aquí la URL del documento" />
+        </div>
+      </div>
+    </section>
+  
+    <!-- TARJETA 3 · SKUS ENTRANTES -->
+    <section class="prodLoteCard">
+      <div class="prodLoteCard__header prodLoteCard__header--between">
+        <div class="prodLoteCard__headerMain">
+          <div class="prodLoteCard__iconWrap">
+            <div class="prodLoteCard__icon" aria-hidden="true">3</div>
+          </div>
+  
+          <div class="prodLoteCard__heading">
+            <div class="prodLoteCard__eyebrow">Tarjeta 3</div>
+            <h3 class="prodLoteCard__title">SKUs entrantes</h3>
+            <p class="prodLoteCard__desc">
+              Registra los productos que ingresan dentro del lote. Por ahora se muestra un SKU inicial y luego podremos sumar más líneas.
+            </p>
+          </div>
+        </div>
+  
+        <button type="button" class="prodLoteCard__addBtn" id="prodLoteAddSkuBtn">
+          + Agregar SKU
+        </button>
+      </div>
+  
+      <div class="prodLoteSkuList" id="prodLoteSkuList">
+  
+        <!-- SKU 1 -->
+        <div class="prodLoteSkuItem" data-sku-line="1">
+          <div class="prodLoteSkuItem__top">
+            <div class="prodLoteSkuItem__title">SKU entrante 1</div>
+          </div>
+  
+          <div class="prodLoteFields prodLoteFields--two">
+            <div class="prodLoteField">
+              <label for="prodLoteSku_1" class="prodLoteField__label">SKU</label>
+            
+              <div class="pdDropdown" id="prodLoteSkuWrap_1">
+                <select id="prodLoteSku_1" class="prodLoteField__select pdDropdown__native">
+                  <option value="">Seleccionar SKU</option>
+                </select>
+            
+                <button
+                  type="button"
+                  class="pdDropdown__trigger"
+                  id="prodLoteSkuTrigger_1"
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                ></button>
+            
+                <div
+                  class="pdDropdown__dropdown"
+                  id="prodLoteSkuDropdown_1"
+                  role="listbox"
+                ></div>
+              </div>
+            </div>
+  
+            <div class="prodLoteField">
+              <label for="prodLoteNombreRaw_1" class="prodLoteField__label">Nombre producto</label>
+              <input type="text" id="prodLoteNombreRaw_1" class="prodLoteField__input" placeholder="Se completará según SKU" />
+            </div>
+  
+            <div class="prodLoteField">
+              <label for="prodLoteCantidad_1" class="prodLoteField__label">Cantidad</label>
+              <input type="number" id="prodLoteCantidad_1" class="prodLoteField__input" placeholder="Ej: 50" />
+            </div>
+  
+            <div class="prodLoteField">
+              <label for="prodLoteCostoUnitario_1" class="prodLoteField__label">Costo unitario compra</label>
+              <input type="number" id="prodLoteCostoUnitario_1" class="prodLoteField__input" placeholder="Ej: 1250" />
+            </div>
+  
+            <div class="prodLoteField prodLoteField--wide">
+              <label for="prodLoteObsLinea_1" class="prodLoteField__label">Observaciones línea</label>
+              <input type="text" id="prodLoteObsLinea_1" class="prodLoteField__input" placeholder="Ej: llegó incompleto / variante especial / observación interna" />
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </section>
+  
+    <!-- TARJETA 4 · CONTROL DEL INGRESO -->
+    <section class="prodLoteCard">
+      <div class="prodLoteCard__header">
+        <div class="prodLoteCard__iconWrap">
+          <div class="prodLoteCard__icon" aria-hidden="true">4</div>
+        </div>
+  
+        <div class="prodLoteCard__heading">
+          <div class="prodLoteCard__eyebrow">Tarjeta 4</div>
+          <h3 class="prodLoteCard__title">Control del ingreso</h3>
+          <p class="prodLoteCard__desc">
+            Define el estado inicial del ingreso y deja observaciones generales para la operación.
+          </p>
+        </div>
+      </div>
+  
+      <div class="prodLoteFields prodLoteFields--two">
+        <div class="prodLoteField">
+          <label for="prodLoteEstadoIngreso" class="prodLoteField__label">Estado del ingreso</label>
+          <select id="prodLoteEstadoIngreso" class="prodLoteField__select">
+            <option value="pendiente" selected>Pendiente</option>
+            <option value="procesado">Procesado</option>
+            <option value="error">Error</option>
+          </select>
+        </div>
+  
+        <div class="prodLoteField prodLoteField--wide">
+          <label for="prodLoteObservacionesGenerales" class="prodLoteField__label">Observaciones generales</label>
+          <input type="text" id="prodLoteObservacionesGenerales" class="prodLoteField__input" placeholder="Ej: compra urgente / lote de prueba / revisión interna" />
+        </div>
+      </div>
+    </section>
+  
+    <!-- FOOTER -->
+    <div class="prodLoteFooter">
+      <div class="prodLoteFooter__actions">
+        <button type="button" class="prodLoteFooter__secondaryBtn" id="prodLoteClearBtn">
+          Limpiar ingreso
+        </button>
+  
+        <button type="button" class="prodLoteFooter__primaryBtn" id="prodLoteSaveBtn">
+          Guardar lote
+        </button>
+      </div>
+    </div>
+  
+  </div>
+  
+  <!-- MODAL CONFIRMACIÓN -->
+  <div class="prodLoteConfirmOverlay" id="prodLoteConfirmOverlay"></div>
+  
+  <div class="prodLoteConfirmModal" id="prodLoteConfirmModal" aria-hidden="true">
+    <div class="prodLoteConfirmModal__dialog">
+      <div class="prodLoteConfirmModal__header">
+        <div class="prodLoteConfirmModal__icon" aria-hidden="true">i</div>
+  
+        <div class="prodLoteConfirmModal__heading">
+          <div class="prodLoteConfirmModal__title">Confirma el ingreso del lote</div>
+          <div class="prodLoteConfirmModal__desc">
+            Confirmas la carga de un nuevo lote de compra. Esta acción registrará la operación y luego impactará en las hojas correspondientes del sistema.
+          </div>
+        </div>
+      </div>
+  
+      <div class="prodLoteConfirmModal__actions">
+        <button type="button" class="prodLoteConfirmModal__cancel" id="prodLoteConfirmCancelBtn">
+          Cancelar
+        </button>
+  
+        <button type="button" class="prodLoteConfirmModal__confirm" id="prodLoteConfirmSubmitBtn">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ======= FIN · PARTIAL SUB-SLIDE CARGA LOTE ======= -->

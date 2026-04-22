@@ -1,0 +1,126 @@
+:root{
+  --blue:#2479FF;
+  --bg:#EDEDED;
+  --card:#ffffff;
+  --text:#222222;
+  --muted:#6b7280;
+
+  /* Bordes fuera: usamos sombras para “separar” */
+  --border: transparent;
+
+  /* Sombra más “Shopify/ML”: firme pero discreta */
+  --shadow: 0 10px 26px rgba(0,0,0,.10);
+  --shadowSoft: 0 6px 16px rgba(0,0,0,.08);
+
+  /* Nuevo estándar */
+  --radius:5px;
+  --radiusSm:5px;
+
+  --gap:16px;
+  --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--text);
+    background:var(--bg);
+  }
+  
+  /* Tipografía */
+  h1,h2,h3{ margin:0; line-height:1.15; }
+  p{ margin:0; line-height:1.5; }
+  a{ color:inherit; text-decoration:none; }
+  small{ color:var(--muted); }
+  
+  /* Utilidades */
+  .u-muted{ color:var(--muted); }
+  .u-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px;
+    background:rgba(36,121,255,.10);
+    color:var(--blue);
+    font-weight:600; font-size:12px;
+  }
+  .u-sectionLabel{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#9ca3af;
+  }
+  .u-card{
+    background:#FFFFFF;
+    border:0;
+    border-radius:var(--radius);
+    box-shadow:var(--shadowSoft);
+  }
+  
+  .u-cardInner{ padding:18px; }
+  html{ font-size:16px; }
+body{
+  font-size:14px;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+/* =========================
+   FIX: evitar “layout shift” al cambiar de panel
+   (scrollbar estable en todas las páginas)
+   ========================= */
+html{
+  overflow-y: scroll;              /* siempre reserva espacio para scrollbar */
+  scrollbar-gutter: stable;        /* moderno: estabiliza el gutter cuando aplica */
+}
+/* FIX defensivo: base tipográfica consistente */
+body{
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+/* =========================
+   FIX: Evitar “salto” por scrollbar entre páginas
+   ========================= */
+   html{
+    scrollbar-gutter: stable; /* Chrome/Edge modernos */
+  }
+  
+  body{
+    overflow-y: scroll; /* fallback: siempre reserva scrollbar */
+  }
+  
+  /* =========================
+     FIX: Sidebar con tipografías ancladas (evita variaciones por página)
+     ========================= */
+  .sidebar{
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  
+  .navHero__txt{ font-size: 13px; }
+  .navGroup__kicker{ font-size: 11px; }
+  .navGroup__name{ font-size: 13px; }
+  .navSubItem{ font-size: 13px; }
+  /* =========================
+   Transición entre páginas (View Transitions)
+   ========================= */
+::view-transition-old(root){
+  animation: vtFadeOut .18s ease both;
+}
+
+::view-transition-new(root){
+  animation: vtFadeIn .22s ease both;
+}
+
+@keyframes vtFadeOut{
+  from{ opacity: 1; transform: translateY(0px); }
+  to{ opacity: 0; transform: translateY(6px); }
+}
+
+@keyframes vtFadeIn{
+  from{ opacity: 0; transform: translateY(-6px); }
+  to{ opacity: 1; transform: translateY(0px); }
+}
+/* TIPOGRAFÍA GLOBAL */
+body {
+  font-family: 'Montserrat', sans-serif;
+}

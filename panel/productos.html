@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="view-transition" content="same-origin">
+  <title>Sazzú Control Tower - Productos</title>
+
+  <!-- CSS base del sistema -->
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
+
+  <!-- CSS propio del módulo -->
+  <link rel="stylesheet" href="../css/productos.css">
+  <link rel="stylesheet" href="../css/components/dropdowns.css">
+</head>
+
+<body data-page="productos">
+  <div class="appShell">
+    <div class="bodyGrid">
+
+      <!-- Sidebar persistente por partial -->
+      <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
+
+      <main class="main" aria-label="Contenido principal">
+        <section class="prodShell">
+      
+          <!-- HERO / HEADER -->
+          <header class="prodHero" aria-label="Encabezado general del módulo Productos">
+            <div class="prodHero__left">
+              <div class="prodHero__eyebrow">Protocol Data · Módulo operativo</div>
+              <h1 class="prodHero__title">Productos</h1>
+              <p class="prodHero__sub">Centro de control de SKUs, costos, equivalencias y ofertas del sistema.</p>
+            </div>
+      
+            <div class="prodHero__right">
+              <div class="prodTopbarActions">
+                <div class="prodSearchWrap">
+                  <input
+                    id="prodSearchInput"
+                    type="text"
+                    class="u-input prodSearchInput"
+                    placeholder="Buscar SKU, oferta o variante..."
+                    aria-label="Buscar SKU, oferta o variante"
+                  />
+                </div>
+      
+                <div class="prodFilterWrap">
+                  <select id="prodTypeFilter" class="u-input prodTypeFilter" aria-label="Filtrar por tipo">
+                    <option value="todos">Todos los tipos</option>
+                    <option value="sku">SKUs</option>
+                    <option value="pack">Packs</option>
+                    <option value="bundle">Bundles</option>
+                    <option value="equivalencia">Equivalencias</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </header>
+      
+          <!-- TABS -->
+          <!-- TABS -->
+<section class="prodTabsSection">
+
+  <div class="prodTabsBar">
+    <button
+      type="button"
+      class="prodPrimaryAction prodPrimaryAction--tabsCta"
+      id="prodNewOfferBtn"
+    >
+      + Nueva oferta
+    </button>
+  
+    <button
+      type="button"
+      class="prodPrimaryAction prodPrimaryAction--tabsCta prodPrimaryAction--newProduct"
+      id="prodNewProductBtn"
+      aria-label="Crear nuevo producto"
+    >
+      + Nuevo producto
+    </button>
+  
+    <div class="prodTabs" role="tablist" aria-label="Secciones del módulo Productos">
+      <button
+        type="button"
+        class="prodTab is-active"
+        id="prodTabResumen"
+        data-tab="resumen"
+        role="tab"
+        aria-selected="true"
+      >
+        <span class="prodTab__icon" aria-hidden="true"></span>
+        <span class="prodTab__label">Resumen</span>
+      </button>
+
+      <button
+        type="button"
+        class="prodTab"
+        id="prodTabSkus"
+        data-tab="skus"
+        role="tab"
+        aria-selected="false"
+      >
+        <span class="prodTab__icon" aria-hidden="true"></span>
+        <span class="prodTab__label">SKUs</span>
+      </button>
+
+      <button
+        type="button"
+        class="prodTab"
+        id="prodTabOfertas"
+        data-tab="ofertas"
+        role="tab"
+        aria-selected="false"
+      >
+        <span class="prodTab__icon" aria-hidden="true"></span>
+        <span class="prodTab__label">Ofertas</span>
+      </button>
+
+      <button
+        type="button"
+        class="prodTab"
+        id="prodTabRentabilidad"
+        data-tab="rentabilidad"
+        role="tab"
+        aria-selected="false"
+      >
+        <span class="prodTab__icon" aria-hidden="true"></span>
+        <span class="prodTab__label">Rentabilidad</span>
+      </button>
+
+      <button
+        type="button"
+        class="prodTab"
+        id="prodTabConjuntos"
+        data-tab="conjuntos"
+        role="tab"
+        aria-selected="false"
+      >
+        <span class="prodTab__icon" aria-hidden="true"></span>
+        <span class="prodTab__label">Conjuntos de productos</span>
+      </button>
+    </div>
+  </div>
+
+</section>
+      
+          <!-- PANEL: RESUMEN -->
+          <section
+            id="prodPanelResumen"
+            class="prodPanelTab"
+            role="tabpanel"
+            aria-labelledby="prodTabResumen"
+          >
+            <!-- KPIs -->
+            <section class="prodKpiGrid" aria-label="Resumen principal del sistema de productos">
+              <article class="prodKpiCard prodKpiCard--blue">
+                <div class="prodKpiCard__head21">
+                  <div class="prodKpiCard__title21">
+                    <span class="prodKpiCard__label">SKUs activos</span>
+                    <span class="prodKpiCard__ticker21">(SKU)</span>
+                  </div>
+              
+                  <div class="prodKpiCard__delta21">
+                    <span class="prodKpiCard__deltaValue21">+4</span>
+                    <span class="prodKpiCard__deltaPct21">(+15.3%)</span>
+                  </div>
+                </div>
+              
+                <div class="prodKpiCard__hint21">Base activa con estructura económica</div>
+              
+                <div class="prodKpiCard__value21Wrap">
+                  <div class="prodKpiCard__value" id="prodKpiSkus">0</div>
+                </div>
+              
+                <div class="prodKpiCard__sparkline21" aria-hidden="true"></div>
+              </article>
+              
+              <article class="prodKpiCard prodKpiCard--green">
+                <div class="prodKpiCard__head21">
+                  <div class="prodKpiCard__title21">
+                    <span class="prodKpiCard__label">Ofertas activas</span>
+                    <span class="prodKpiCard__ticker21">(OFR)</span>
+                  </div>
+              
+                  <div class="prodKpiCard__delta21">
+                    <span class="prodKpiCard__deltaValue21">+3</span>
+                    <span class="prodKpiCard__deltaPct21">(+9.8%)</span>
+                  </div>
+                </div>
+              
+                <div class="prodKpiCard__hint21">Conectadas a variantes Shopify</div>
+              
+                <div class="prodKpiCard__value21Wrap">
+                  <div class="prodKpiCard__value" id="prodKpiOfertas">0</div>
+                </div>
+              
+                <div class="prodKpiCard__sparkline21" aria-hidden="true"></div>
+              </article>
+              
+              <article class="prodKpiCard prodKpiCard--orange">
+                <div class="prodKpiCard__head21">
+                  <div class="prodKpiCard__title21">
+                    <span class="prodKpiCard__label">Ofertas en cantidad</span>
+                    <span class="prodKpiCard__ticker21">(EQV)</span>
+                  </div>
+              
+                  <div class="prodKpiCard__delta21">
+                    <span class="prodKpiCard__deltaValue21">+2</span>
+                    <span class="prodKpiCard__deltaPct21">(+6.1%)</span>
+                  </div>
+                </div>
+              
+                <div class="prodKpiCard__hint21">Equivalencias del mismo SKU</div>
+              
+                <div class="prodKpiCard__value21Wrap">
+                  <div class="prodKpiCard__value" id="prodKpiPacks">0</div>
+                </div>
+              
+                <div class="prodKpiCard__sparkline21" aria-hidden="true"></div>
+              </article>
+              
+              <article class="prodKpiCard prodKpiCard--purple">
+                <div class="prodKpiCard__head21">
+                  <div class="prodKpiCard__title21">
+                    <span class="prodKpiCard__label">Productos combinados</span>
+                    <span class="prodKpiCard__ticker21">(BND)</span>
+                  </div>
+              
+                  <div class="prodKpiCard__delta21">
+                    <span class="prodKpiCard__deltaValue21">+5</span>
+                    <span class="prodKpiCard__deltaPct21">(+12.7%)</span>
+                  </div>
+                </div>
+              
+                <div class="prodKpiCard__hint21">Bundles y estructuras múltiples</div>
+              
+                <div class="prodKpiCard__value21Wrap">
+                  <div class="prodKpiCard__value" id="prodKpiBundles">0</div>
+                </div>
+              
+                <div class="prodKpiCard__sparkline21" aria-hidden="true"></div>
+              </article>
+            </section>
+      
+            <!-- LAYOUT PRINCIPAL -->
+            <section class="prodMainBoard">
+              <div class="prodMainBoard__stack">      
+              <!-- IZQUIERDA -->
+              <article class="prodBoardCard prodBoardCard--table">
+                <div class="prodBoardCard__inner">
+      
+                  <div class="prodSectionHead">
+                    <div class="prodSectionHead__left">
+                      <div class="prodSectionHead__eyebrow">Base operativa</div>
+                      <h3 class="prodSectionHead__title">Productos activos del sistema</h3>
+                      <p class="prodSectionHead__sub">Lectura viva tomada desde CalculosCostosSku y preparada para escalar a más vistas operativas.</p>
+                    </div>
+      
+                    <div class="prodSectionHead__right">
+                      <div class="prodMiniPills">
+                        <span class="prodMiniPill">Vista resumen</span>
+                        <span class="prodMiniPill prodMiniPill--soft">Acceso a detalle</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="prodTableShell">
+                    <div class="prodTableTopbar">
+                      <div class="prodTableTopbar__left">                    
+                        <div class="prodTableSearchWrap">
+                          <input
+                            id="prodTableSearchInput"
+                            type="text"
+                            class="u-input prodTableSearchInput"
+                            placeholder="Buscar SKU o nombre comercial..."
+                            aria-label="Buscar dentro de la tabla de SKUs"
+                          />
+                        </div>
+                      </div>
+                    
+                      <div class="prodTableTopbar__note">Cada fila podrá escalar luego a análisis, edición o acciones internas.</div>
+                    </div>
+      
+                    <div class="prodTableWrap">
+                      <table class="prodTable">
+                        <thead>
+                          <tr>
+                            <th>Relación de venta</th>
+                            <th>SKU</th>
+                            <th>Nombre comercial</th>
+                            <th>Neto pretendido</th>
+                            <th>Precio de venta (financ)</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody id="prodResumenTableBody">
+                          <tr>
+                            <td colspan="6" class="prodTableEmpty">Cargando productos...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+      
+                </div>
+              </article>
+      
+              <!-- DERECHA -->
+              <aside class="prodSideColumn">
+                <article class="prodBoardCard prodBoardCard--side prodSkuDonutCard">
+                  <div class="prodBoardCard__inner">
+                    
+                    <div class="prodDecisionHeader" style="border:none; margin-bottom: 0; padding-bottom: 5px; justify-content: flex-end;">
+                      <div class="prodSkuDonutCard__toggles" role="tablist">
+                        <button type="button" class="prodMetricToggle is-active" id="prodMetricFacturacion" data-metric="facturacion">Facturación</button>
+                        <button type="button" class="prodMetricToggle" id="prodMetricVolumen" data-metric="volumen">Volumen</button>
+                      </div>
+                    </div>
+                
+                    <div class="prodSkuDonutCard__summary" style="grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px;">
+                      <div class="prodSkuSummaryMini prodSkuSummaryMini--blue" style="padding: 10px; text-align: center;">
+                        <div class="prodSkuSummaryMini__label" style="font-size: 10px;">Facturación</div>
+                        <div class="prodSkuSummaryMini__value" id="prodSkuFacturacionTotal" style="font-size: 16px;">$0</div>
+                      </div>
+                      <div class="prodSkuSummaryMini prodSkuSummaryMini--green" style="padding: 10px; text-align: center;">
+                        <div class="prodSkuSummaryMini__label" style="font-size: 10px;">Ventas</div>
+                        <div class="prodSkuSummaryMini__value" id="prodSkuVentasTotal" style="font-size: 16px;">0</div>
+                      </div>
+                      <div class="prodSkuSummaryMini prodSkuSummaryMini--orange" style="padding: 10px; text-align: center;">
+                        <div class="prodSkuSummaryMini__label" style="font-size: 10px;">Volumen</div>
+                        <div class="prodSkuSummaryMini__value" id="prodSkuVolumenTotal" style="font-size: 16px;">0</div>
+                      </div>
+                    </div>
+                
+                    <div class="prodSkuDonutCard__chartWrap" style="border:none; margin-top: 20px;">
+                      <div class="prodSkuDonutLayout" style="display: flex; align-items: center; gap: 15px; justify-content: space-between; width: 100%;">
+  
+                        <div class="prodSkuDonutLayout__left" style="flex: 0 0 160px; position: relative;">
+                          <div class="prodSkuDonutChart" id="prodSkuDonutChart" style="width: 160px; height: 160px; position: relative;">
+                            <div class="prodSkuTooltip" id="prodSkuTooltip"></div>
+                            <svg viewBox="0 0 220 220" class="prodSkuDonutSvg" style="overflow: visible; display: block;">
+                              <g id="prodSkuDonutSlices"></g>
+                            </svg>
+                          </div>
+                        </div>
+                      
+                        <div class="prodSkuDonutLayout__right" style="flex: 1; min-width: 0; padding-right: 2px;">
+                          <div class="prodSkuLegendList" id="prodSkuLegendList" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-height: 180px; overflow-y: auto;">
+                            
+                            <div class="prodSkuLegendItem" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box;">
+                              <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #3483fa;"></span>
+                                <span style="font-size: 11px; font-weight: 600; color: #4b5563;">Cargando SKU...</span>
+                              </div>
+                              <span style="font-size: 11px; font-weight: 700; color: #111827;">0%</span>
+                            </div>
+                      
+                          </div>
+                        </div>
+                      
+                      </div>
+                    </div>
+                
+                  </div>
+                </article>
+              </aside>
+            </div>
+            </section>
+          </section>
+      
+          <!-- PANEL: SKUS -->
+          <section
+            id="prodPanelSkus"
+            class="prodPanelTab"
+            role="tabpanel"
+            aria-labelledby="prodTabSkus"
+            style="display:none;"
+          >
+            <div class="prodPlaceholderCard">
+              <div class="prodPlaceholderCard__eyebrow">Próxima capa operativa</div>
+              <h3 class="prodPlaceholderCard__title">SKUs</h3>
+              <p class="prodPlaceholderCard__text">
+                Aquí va a vivir la estructura de costos, lectura individual, detalle por SKU y futuras acciones de análisis profundo.
+              </p>
+            </div>
+          </section>
+      
+         <!-- PANEL: OFERTAS -->
+<section
+id="prodPanelOfertas"
+class="prodPanelTab"
+role="tabpanel"
+aria-labelledby="prodTabOfertas"
+style="display:none;"
+>
+<div class="prodOffersShell">
+
+  <div class="prodOffersTableCard">
+    <div class="prodOffersTableCard__topbar">
+      <div class="prodOffersTableCard__title">Tabla de ofertas</div>
+      <div class="prodOffersTableCard__note" id="prodOffersTableNote">Cargando ofertas...</div>
+    </div>
+
+    <div class="prodOffersFiltersWrap">
+      <div class="prodOffersFilters">
+        <div class="prodOffersFilters__item prodOffersFilters__item--search">
+          <label for="prodOffersSearchInput" class="prodOffersFilters__label">Buscador</label>
+          <input
+            type="text"
+            id="prodOffersSearchInput"
+            class="u-input prodOffersSearchInput"
+            placeholder="Buscar por oferta, ID, variante o nombre comercial..."
+            aria-label="Buscar ofertas"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersDateFrom" class="prodOffersFilters__label">Desde</label>
+          <input
+            type="date"
+            id="prodOffersDateFrom"
+            class="u-input prodOffersDateInput"
+            aria-label="Filtrar ofertas desde fecha"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersDateTo" class="prodOffersFilters__label">Hasta</label>
+          <input
+            type="date"
+            id="prodOffersDateTo"
+            class="u-input prodOffersDateInput"
+            aria-label="Filtrar ofertas hasta fecha"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersSort" class="prodOffersFilters__label">Orden</label>
+          <select
+            id="prodOffersSort"
+            class="u-input prodOffersSort"
+            aria-label="Ordenar ofertas"
+          >
+            <option value="fecha_desc">Más recientes primero</option>
+            <option value="fecha_asc">Más antiguas primero</option>
+            <option value="nombre_asc">Nombre comercial A-Z</option>
+            <option value="tipo_asc">Tipo de oferta</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="prodOffersTableWrap">
+      <table class="prodOffersTable">
+        <thead>
+          <tr>
+            <th style="width: 52px;"></th>
+            <th>Oferta ID</th>
+            <th>Oferta</th>
+            <th>Tipo</th>
+            <th>ID Variante</th>
+            <th>Vigencia</th>
+            <th>Fecha creación</th>
+          </tr>
+        </thead>
+        <tbody id="prodOffersTableBody">
+          <tr>
+            <td colspan="7" class="prodOffersTable__empty">Cargando ofertas...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</section>
+      
+
+<!-- ========================================================= -->
+<!-- INICIO · PANEL CONJUNTOS DE PRODUCTOS -->
+<!-- ========================================================= -->
+<section
+  id="prodPanelConjuntos"
+  class="prodPanelTab"
+  role="tabpanel"
+  aria-labelledby="prodTabConjuntos"
+  style="display:none;"
+>
+
+  <!-- ======= INICIO · SHELL PANEL CONJUNTOS ======= -->
+  <div class="prodSetsShell">
+
+   
+
+    <!-- ======= INICIO · TABLA PANEL CONJUNTOS ======= -->
+    <div class="prodSetsTableCard">
+      <div class="prodSetsTableCard__topbar">
+        <div class="prodSetsTableCard__title">Tabla de conjuntos</div>
+        <div class="prodSetsTableCard__note" id="prodSetsTableNote">Cargando conjuntos...</div>
+      </div>
+
+      <div class="prodSetsTableWrap">
+        <table class="prodSetsTable">
+          <thead>
+            <tr>
+              <th>ID variante</th>
+              <th>Tipo</th>
+              <th>Composición</th>
+              <th>Costo productos</th>
+              <th>Base operativa</th>
+              <th>Precio final pack</th>
+              <th>Escenario</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="prodSetsTableBody">
+            <tr>
+              <td colspan="9" class="prodSetsTable__empty">Cargando conjuntos...</td>
+            </tr>
+          </tbody>
+          <tbody id="prodSetsTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ======= FIN · TABLA PANEL CONJUNTOS ======= -->
+
+  </div>
+  <!-- ======= FIN · SHELL PANEL CONJUNTOS ======= -->
+
+</section>
+<!-- ========================================================= -->
+<!-- FIN · PANEL CONJUNTOS DE PRODUCTOS -->
+<!-- ========================================================= -->
+          
+          <!-- PANEL: RENTABILIDAD -->
+          <section
+            id="prodPanelRentabilidad"
+            class="prodPanelTab"
+            role="tabpanel"
+            aria-labelledby="prodTabRentabilidad"
+            style="display:none;"
+          >
+            <div class="prodPlaceholderCard">
+              <div class="prodPlaceholderCard__eyebrow">Próxima capa operativa</div>
+              <h3 class="prodPlaceholderCard__title">Rentabilidad</h3>
+              <p class="prodPlaceholderCard__text">
+                Aquí vamos a cruzar estructura de costos, márgenes, ofertas y escenarios reales por tipo de venta.
+              </p>
+            </div>
+          </section>
+      
+
+          
+        </section>
+        <!-- ======= INICIO · MODAL NUEVA OFERTA ======= -->
+<div class="prodOfferModalOverlay" id="prodOfferModalOverlay"></div>
+
+<div class="prodOfferModal" id="prodOfferModal" aria-hidden="true">
+  <div class="prodOfferModal__dialog">
+    <button
+      type="button"
+      class="prodOfferModal__close"
+      id="prodOfferModalCloseBtn"
+      aria-label="Cerrar nueva oferta"
+    >
+      ✕
+    </button>
+
+    <div class="prodOfferModal__content" id="prodOfferModalContent">
+      <!-- Acá se inyecta conj-productos-popup-nuevaoferta.html -->
+    </div>
+  </div>
+</div>
+<!-- ======= FIN · MODAL NUEVA OFERTA ======= -->
+        <!-- ======= INICIO · SLIDE LATERAL PRODUCTOS ======= -->
+        <div class="prodSlideOverlay" id="prodSlideOverlay"></div>
+
+        <div class="prodSlidePanel" id="prodSlidePanel" aria-hidden="true">
+        
+          <div class="prodSlidePanel__main" id="prodSlideMain">
+            <div class="prodSlidePanel__header">
+              <div class="prodSlidePanel__title" id="prodSlideTitle">Detalle</div>
+        
+              <div class="prodSlidePanel__actions">
+                <button
+                  type="button"
+                  class="prodSlidePanel__createBtn"
+                  id="prodSlideCreateSetBtn"
+                  aria-label="Crear conjunto de productos"
+                >
+                  Crear conjunto de productos
+                </button>
+        
+                <button class="prodSlidePanel__close" id="prodSlideCloseBtn" aria-label="Cerrar">✕</button>
+              </div>
+            </div>
+        
+            <div class="prodSlidePanel__body" id="prodSlideContent">
+              <!-- Acá se inyectan los partials del slide principal -->
+            </div>
+          </div>
+        
+          <div class="prodSubSlide" id="prodSubSlide" aria-hidden="true">
+            <div class="prodSubSlide__header">
+              <button
+                type="button"
+                class="prodSubSlide__back"
+                id="prodSubSlideBackBtn"
+                aria-label="Volver al slide anterior"
+              >
+                ←
+              </button>
+        
+              <div class="prodSubSlide__title" id="prodSubSlideTitle">Detalle</div>
+        
+              <button
+                type="button"
+                class="prodSubSlide__close"
+                id="prodSubSlideCloseBtn"
+                aria-label="Cerrar sub-slide"
+              >
+                ✕
+              </button>
+            </div>
+        
+            <div class="prodSubSlide__body" id="prodSubSlideContent">
+              <!-- Acá se inyecta el partial del sub-slide -->
+            </div>
+          </div>
+        
+        </div>
+<!-- ======= FIN · SLIDE LATERAL PRODUCTOS ======= -->
+<!-- ======= INICIO · SLIDE NUEVO PRODUCTO ======= -->
+<div class="prodCreateProductOverlay" id="prodCreateProductOverlay"></div>
+
+<div class="prodCreateProductPanel" id="prodCreateProductPanel" aria-hidden="true">
+  <div class="prodCreateProductPanel__dialog">
+ 
+    <div class="prodCreateProductPanel__mainShell">
+      <div class="prodCreateProductPanel__header">
+        <div class="prodCreateProductPanel__titleWrap">
+          <div class="prodCreateProductPanel__eyebrow">Alta operativa</div>
+          <div class="prodCreateProductPanel__title">Nuevo producto</div>
+        </div>
+ 
+        <div class="prodCreateProductPanel__actions">
+          <button
+            type="button"
+            class="prodCreateProductPanel__volumeBtn"
+            id="prodCreateProductVolumeBtn"
+            aria-label="Cargar en volumen por lote"
+          >
+            Cargar en volumen por lote
+          </button>
+ 
+          <button
+            type="button"
+            class="prodCreateProductPanel__close"
+            id="prodCreateProductCloseBtn"
+            aria-label="Cerrar creación de producto"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+ 
+      <div class="prodCreateProductPanel__body" id="prodCreateProductContent">
+        <!-- Acá se inyecta /partials/prod-slide-crear-producto.html -->
+      </div>
+    </div>
+ 
+    <!-- ======= INICIO · SUB-SLIDE CARGA LOTE ======= -->
+    <div
+      class="prodCreateProductSubSlide"
+      id="prodCreateProductSubSlide"
+      aria-hidden="true"
+    >
+      <div class="prodCreateProductSubSlide__header">
+        <button
+          type="button"
+          class="prodCreateProductSubSlide__back"
+          id="prodCreateProductSubSlideBackBtn"
+          aria-label="Volver al slide de producto"
+        >
+          ←
+        </button>
+ 
+        <div
+          class="prodCreateProductSubSlide__title"
+          id="prodCreateProductSubSlideTitle"
+        >
+          Carga de lote
+        </div>
+ 
+        <button
+          type="button"
+          class="prodCreateProductSubSlide__close"
+          id="prodCreateProductSubSlideCloseBtn"
+          aria-label="Cerrar carga por lote"
+        >
+          ✕
+        </button>
+      </div>
+ 
+      <div
+        class="prodCreateProductSubSlide__body"
+        id="prodCreateProductSubSlideContent"
+      >
+        <!-- Acá se inyecta /partials/prod-subslide-cargar-lote.html -->
+      </div>
+    </div>
+    <!-- ======= FIN · SUB-SLIDE CARGA LOTE ======= -->
+ 
+  </div>
+ </div>
+ 
+  </div>
+ </div>
+<!-- ======= FIN · SLIDE NUEVO PRODUCTO ======= -->
+
+<!-- ======= INICIO · MODAL CONFIRMACIÓN SKU ======= -->
+<div class="prodSkuConfirmOverlay" id="prodSkuConfirmOverlay"></div>
+
+<div class="prodSkuConfirmModal" id="prodSkuConfirmModal" aria-hidden="true">
+  <div class="prodSkuConfirmModal__dialog">
+    <div class="prodSkuConfirmModal__header">
+      <div class="prodSkuConfirmModal__icon" aria-hidden="true">i</div>
+
+      <div class="prodSkuConfirmModal__heading">
+        <div class="prodSkuConfirmModal__title">Confirma el alta del SKU</div>
+        <div class="prodSkuConfirmModal__desc">
+          Confirmas la generación de un nuevo SKU en el sistema. Este ID se dará de alta para distintas operaciones dentro del sistema de Protocol Data.
+        </div>
+      </div>
+    </div>
+
+    <div class="prodSkuConfirmModal__actions">
+      <button
+        type="button"
+        class="prodSkuConfirmModal__cancel"
+        id="prodSkuConfirmCancelBtn"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="prodSkuConfirmModal__confirm"
+        id="prodSkuConfirmSubmitBtn"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ======= FIN · MODAL CONFIRMACIÓN SKU ======= -->
+      </main>
+    </div>
+  </div>
+
+   <!-- JS base -->
+<script src="../js/app.js"></script>
+
+<!-- JS componentes -->
+<script src="../js/components/dropdowns.js"></script>
+
+<!-- JS propio del módulo -->
+<script src="../js/productos.js"></script>
+  </body>
+  </html>

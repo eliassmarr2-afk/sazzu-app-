@@ -1,0 +1,81 @@
+<div class="offerWizard">
+    <div class="offerWizard__hero">
+      <h2 class="offerWizard__heroTitle">Nueva oferta</h2> 
+    </div>
+  
+    <div class="offerWizard__timeline">
+      <div class="offerWizard__step offerWizard__step--active">
+        <div class="offerWizard__stepDot">1</div>
+        <div class="offerWizard__stepText">Componente de la oferta</div>
+      </div>
+  
+      <div class="offerWizard__line"></div>
+  
+      <div class="offerWizard__step">
+        <div class="offerWizard__stepDot">2</div>
+        <div class="offerWizard__stepText">Identidad comercial</div>
+      </div>
+  
+      <div class="offerWizard__line"></div>
+  
+      <div class="offerWizard__step">
+        <div class="offerWizard__stepDot">3</div>
+        <div class="offerWizard__stepText">Condiciones y publicación</div>
+      </div>
+    </div>
+  
+    <div class="offerWizard__section">
+      <div class="offerWizard__sectionHead">
+        <div>
+          <div class="offerWizard__eyebrow">Paso 1</div>
+          <h3 class="offerWizard__title">Componente de la oferta</h3>
+        </div>
+      </div>
+  
+      <div class="offerWizard__field">
+        <label for="offerSetSelect" class="offerWizard__label">Conjunto disponible</label>
+      
+        <div class="offerWizardSelect" id="offerSetSelectUi">
+          <select id="offerSetSelect" class="offerWizard__selectNative">
+            <option value="">Cargando conjuntos disponibles...</option>
+          </select>
+      
+          <button
+            type="button"
+            class="offerWizardSelect__trigger"
+            id="offerSetSelectTrigger"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="offerWizardSelect__value" id="offerSetSelectValue">
+              Cargando conjuntos disponibles...
+            </span>
+      
+            <span class="offerWizardSelect__chevron" aria-hidden="true"></span>
+          </button>
+      
+          <div class="offerWizardSelect__dropdown" id="offerSetSelectDropdown" role="listbox"></div>
+        </div>
+      
+        <div class="offerWizard__hint">
+          Selecciona un id_variante ya creado en Conjuntos de productos.
+        </div>
+      </div>
+  
+      <div id="offerSetPreview" class="offerWizardPreview">
+        <div class="offerWizardPreview__empty">
+          Selecciona un conjunto para visualizar todos sus componentes y parámetros operativos.
+        </div>
+      </div>
+  
+      <div id="offerWizardStatus" class="offerWizard__status">
+        Cargando conjuntos disponibles...
+      </div>
+  
+      <div class="offerWizard__footer">
+        <button type="button" class="offerWizard__nextBtn" id="offerSetNextBtn" disabled>
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>

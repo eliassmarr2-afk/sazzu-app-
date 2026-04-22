@@ -1,0 +1,225 @@
+<!-- ======= INICIO · PARTIAL TEST ROBUSTO · CREAR PRODUCTO ======= -->
+<div class="prodSkuBuilder">
+    <section class="prodSkuBuilder__infoCard">
+        <div class="prodSkuBuilder__infoAccent"></div>
+      
+        <div class="prodSkuBuilder__infoIcon" aria-hidden="true">
+          i
+        </div>
+      
+        <div class="prodSkuBuilder__infoText">
+          <h2 class="prodSkuBuilder__infoTitle">Crea un producto y sus bases económicas</h2>
+          <p class="prodSkuBuilder__infoDesc">
+            Completá los datos manuales para crear un SKU listo para operar dentro del sistema.
+          </p>
+        </div>
+      </section>
+  
+    <section class="prodSkuCard">
+      <div class="prodSkuCard__header">
+        <div class="prodSkuCard__icon">1</div>
+        <div class="prodSkuCard__heading">
+          <div class="prodSkuCard__eyebrow">Tarjeta 1</div>
+          <h3 class="prodSkuCard__title">Identidad del producto</h3>
+          <p class="prodSkuCard__desc">Define la entidad operativa del SKU dentro del sistema.</p>
+        </div>
+      </div>
+  
+      <div class="prodSkuFields prodSkuFields--one">
+        <div class="prodSkuField">
+          <label for="prodSkuCreateSku" class="prodSkuField__label">SKU</label>
+          <input type="text" id="prodSkuCreateSku" class="prodSkuField__input" placeholder="Ej: CEP-3IN1-001" />
+          <div class="prodSkuField__hint">Columna A · Identificador operativo único del producto.</div>
+        </div>
+  
+        <div class="prodSkuField">
+          <label for="prodSkuCreateNombre" class="prodSkuField__label">Nombre del producto</label>
+          <input type="text" id="prodSkuCreateNombre" class="prodSkuField__input" placeholder="Ej: Cepillo 3 en 1" />
+          <div class="prodSkuField__hint">Columna B · Nombre interno/base del producto.</div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="prodSkuCard">
+      <div class="prodSkuCard__header">
+        <div class="prodSkuCard__icon">2</div>
+        <div class="prodSkuCard__heading">
+          <div class="prodSkuCard__eyebrow">Tarjeta 2</div>
+          <h3 class="prodSkuCard__title">Costo base del SKU</h3>
+          <p class="prodSkuCard__desc">Acá nace el costo físico y operativo directo del producto.</p>
+        </div>
+      </div>
+  
+      <div class="prodSkuFields prodSkuFields--two">
+        <div class="prodSkuField">
+          <label for="prodSkuCreateCostoProveedor" class="prodSkuField__label">Costo proveedor</label>
+          <input type="number" id="prodSkuCreateCostoProveedor" class="prodSkuField__input" placeholder="Ej: 4250" />
+          <div class="prodSkuField__hint">Columna C · Costo unitario directo de compra.</div>
+        </div>
+  
+        <div class="prodSkuField">
+          <label for="prodSkuCreateCostoHandling" class="prodSkuField__label">Costo handling</label>
+          <input type="number" id="prodSkuCreateCostoHandling" class="prodSkuField__input" placeholder="Ej: 100" />
+          <div class="prodSkuField__hint">Columna D · Packaging, embolsado, manipulación y preparación.</div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="prodSkuCard">
+      <div class="prodSkuCard__header">
+        <div class="prodSkuCard__icon">3</div>
+        <div class="prodSkuCard__heading">
+          <div class="prodSkuCard__eyebrow">Tarjeta 3</div>
+          <h3 class="prodSkuCard__title">Costos de comercialización</h3>
+          <p class="prodSkuCard__desc">Estos costos completan lo necesario para que el producto quede listo para vender.</p>
+        </div>
+      </div>
+  
+      <div class="prodSkuFields prodSkuFields--two">
+        <div class="prodSkuField">
+          <label for="prodSkuCreateCpa" class="prodSkuField__label">CPA costo</label>
+          <input type="number" id="prodSkuCreateCpa" class="prodSkuField__input" placeholder="Ej: 8500" />
+          <div class="prodSkuField__hint">Columna E · Costo de adquisición por unidad vendida.</div>
+        </div>
+  
+        <div class="prodSkuField">
+          <label for="prodSkuCreateEnvio" class="prodSkuField__label">Costo envío promedio</label>
+          <input type="number" id="prodSkuCreateEnvio" class="prodSkuField__input" placeholder="Ej: 3500" />
+          <div class="prodSkuField__hint">Columna F · Promedio logístico absorbido por unidad.</div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="prodSkuCard">
+      <div class="prodSkuCard__header">
+        <div class="prodSkuCard__icon">4</div>
+        <div class="prodSkuCard__heading">
+          <div class="prodSkuCard__eyebrow">Tarjeta 4</div>
+          <h3 class="prodSkuCard__title">Objetivo económico</h3>
+          <p class="prodSkuCard__desc">Definí el margen pretendido y el escenario financiero que condiciona el precio final.</p>
+        </div>
+      </div>
+  
+      <div class="prodSkuFields prodSkuFields--two">
+        <div class="prodSkuField">
+          <label for="prodSkuCreateMargen" class="prodSkuField__label">Margen pretendido %</label>
+          <input type="number" id="prodSkuCreateMargen" class="prodSkuField__input" placeholder="Ej: 30" />
+          <div class="prodSkuField__hint">Columna H · Porcentaje objetivo deseado sobre la operación.</div>
+        </div>
+  
+        <div class="prodSkuField">
+          <label for="prodSkuCreateEscenario" class="prodSkuField__label">Escenario financiero</label>
+          <select id="prodSkuCreateEscenario" class="prodSkuField__select">
+            <option value="">Seleccionar escenario</option>
+            <option value="esc_1">MP 10 días · 1 cuota</option>
+            <option value="esc_2">MP 10 días · 3 cuotas</option>
+            <option value="esc_3">MP 10 días · 6 cuotas</option>
+          </select>
+          <div class="prodSkuField__hint">Columna L · Luego esto debe venir desde la hoja financiera real.</div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="prodSkuCard prodSkuCard--results">
+      <div class="prodSkuCard__header">
+        <div class="prodSkuCard__icon">5</div>
+        <div class="prodSkuCard__heading">
+          <div class="prodSkuCard__eyebrow">Tarjeta 5</div>
+          <h3 class="prodSkuCard__title">Resultados automáticos</h3>
+          <p class="prodSkuCard__desc">Estas columnas no se cargan manualmente. Se resuelven automáticamente a partir de los datos anteriores.</p>
+        </div>
+      </div>
+  
+      <div class="prodSkuResults">
+        <div class="prodSkuResult">
+          <div class="prodSkuResult__label">CPA break even</div>
+          <div class="prodSkuResult__value">—</div>
+          <div class="prodSkuResult__hint">Columna G</div>
+        </div>
+  
+        <div class="prodSkuResult">
+          <div class="prodSkuResult__label">Neto pretendido</div>
+          <div class="prodSkuResult__value">—</div>
+          <div class="prodSkuResult__hint">Columna I</div>
+        </div>
+  
+        <div class="prodSkuResult">
+          <div class="prodSkuResult__label">Precio venta</div>
+          <div class="prodSkuResult__value">—</div>
+          <div class="prodSkuResult__hint">Columna J</div>
+        </div>
+  
+        <div class="prodSkuResult">
+          <div class="prodSkuResult__label">Precio blindado</div>
+          <div class="prodSkuResult__value">—</div>
+          <div class="prodSkuResult__hint">Columna K</div>
+        </div>
+  
+        <div class="prodSkuResult prodSkuResult--wide">
+          <div class="prodSkuResult__label">Resumen escenario financiero</div>
+          <div class="prodSkuResult__value prodSkuResult__value--text">
+            Se completará automáticamente al seleccionar el escenario financiero.
+          </div>
+          <div class="prodSkuResult__hint">Columna M</div>
+        </div>
+      </div>
+    </section>
+  
+    <div class="prodSkuFooter">
+        <div class="prodSkuFooter__actions">
+            <button
+              type="button"
+              class="prodSkuFooter__secondaryBtn"
+              id="prodSkuFooterClearBtn"
+            >
+              Limpiar formulario
+            </button>
+          
+            <button
+              type="button"
+              class="prodSkuFooter__primaryBtn"
+              id="prodSkuFooterSaveBtn"
+            >
+              Guardar SKU
+            </button>
+          </div>
+      </div>
+  
+  </div>
+  <!-- ======= FIN · PARTIAL TEST ROBUSTO · CREAR PRODUCTO ======= -->
+  <!-- ======= INICIO · MODAL CONFIRMACIÓN SKU ======= -->
+<div class="prodSkuConfirmOverlay" id="prodSkuConfirmOverlay"></div>
+
+<div class="prodSkuConfirmModal" id="prodSkuConfirmModal" aria-hidden="true">
+  <div class="prodSkuConfirmModal__dialog">
+    <div class="prodSkuConfirmModal__header">
+      <div class="prodSkuConfirmModal__icon" aria-hidden="true">i</div>
+
+      <div class="prodSkuConfirmModal__heading">
+        <div class="prodSkuConfirmModal__title">Confirma el alta del SKU</div>
+        <div class="prodSkuConfirmModal__desc">
+          Confirmas la generación de un nuevo SKU en el sistema. Este ID se dará de alta para distintas operaciones dentro del sistema de Protocol Data.
+        </div>
+      </div>
+    </div>
+
+    <div class="prodSkuConfirmModal__actions">
+      <button
+        type="button"
+        class="prodSkuConfirmModal__cancel"
+        id="prodSkuConfirmCancelBtn"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="prodSkuConfirmModal__confirm"
+        id="prodSkuConfirmSubmitBtn"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ======= FIN · MODAL CONFIRMACIÓN SKU ======= -->

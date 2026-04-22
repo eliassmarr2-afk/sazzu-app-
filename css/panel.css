@@ -1,0 +1,5537 @@
+/* Cards y módulos */
+.grid{
+    display:grid;
+    gap:16px;
+  }
+  .grid--2{
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  .grid--3{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+
+  .grid--3{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items:stretch;
+  }
+  @media (max-width: 1100px){
+    .grid--3{ grid-template-columns: 1fr; }
+  }
+    
+  @media (max-width: 980px){
+    .grid--2,.grid--3{ grid-template-columns: 1fr; }
+  }
+  /* =========================
+   Home row: Demanda (60%) + Motor interno (40%)
+   ========================= */
+.homeDemandRow{
+  display: grid;
+  grid-template-columns: 3fr 2fr; /* Demanda 50% más ancha que Motor */
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1100px){
+  .homeDemandRow{
+    grid-template-columns: 1fr;
+  }
+}
+
+  .kpi{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .kpi__row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .kpi__value{
+    font-size:22px;
+    font-weight:850;
+    color:#111827;
+  }
+  .kpi__hint{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .kpi__trend{
+    font-size:12px;
+    font-weight:750;
+    color:var(--blue);
+    background:rgba(36,121,255,.10);
+    border:1px solid rgba(36,121,255,.20);
+    padding:6px 10px;
+    border-radius:999px;
+  }
+  
+  .blockTitle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .blockTitle h3{
+    font-size:15px;
+    font-weight:800;
+    color:#111827;
+  }
+  
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .listItem{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px;
+  
+    background:#FFFFFF;
+    border:0;
+    border-radius:5px;
+    box-shadow: var(--shadowSoft);
+  }
+  
+  .badge{
+    display:inline-flex; align-items:center;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:750;
+    border:1px solid var(--border);
+    color:#111827;
+    background:#f9fafb;
+  }
+  .badge--blue{
+    background:rgba(36,121,255,.10);
+    border-color:rgba(36,121,255,.20);
+    color:var(--blue);
+  }
+  /* Header interno del contenido (no toca sidebar) */
+.contentTopbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadowSoft);
+  padding: 12px 14px;
+}
+
+.contentTopbar__left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.contentTopbar__title{
+  font-weight:850;
+  color:#111827;
+  font-size:14px;
+}
+
+.contentTopbar__right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.iconBtn{
+  width:38px;
+  height:38px;
+  border-radius: 12px;
+  border:1px solid var(--border);
+  background:#fff;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  font-weight:800;
+  color:#111827;
+}
+
+.iconBtn:active{ transform: translateY(1px); }
+/* Panel.css NO define layout del header.
+   Solo tipografías internas del header (si aplica). */
+   .appHeader__left{ display:flex; flex-direction:column; gap:2px; }
+   .appHeader__title{ font-weight:900; color:#111827; font-size:16px; }
+   .appHeader__sub{ font-size:13px; color:var(--muted); }
+   .appHeader__right{ display:flex; align-items:center; gap:10px; }
+   
+
+
+
+
+
+
+.appHeader__left{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+
+/* Home filters */
+.homeFilters{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:10px 0;
+}
+
+/* Variante: filtros dentro del header */
+.homeFilters--inHeader{
+  padding:0;
+  margin:0;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.homeFilters--inHeader .homeFilters__left,
+.homeFilters--inHeader .homeFilters__right{
+  gap:8px;
+}
+
+.homeFilters--inHeader .filterPill{
+  padding:7px 10px;
+  font-size:12px;
+}
+
+.homeFilters--inHeader .filterField input{
+  height:36px;
+}
+
+.homeFilters--inHeader .filterApply{
+  height:36px;
+}
+
+
+.homeFilters__left{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.filterPill{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:750;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.filterPill.is-active{
+  border-color: rgba(36,121,255,.35);
+  background: rgba(36,121,255,.10);
+  color: var(--blue);
+}
+
+.homeFilters__right{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.filterField{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.filterField input{
+  height:38px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:0 10px;
+  font-size:13px;
+  background:#fff;
+  color:#111827;
+}
+
+.filterApply{
+  height:38px;
+  border-radius:12px;
+  border:1px solid rgba(36,121,255,.25);
+  background: rgba(36,121,255,.12);
+  color: var(--blue);
+  font-weight:850;
+  padding:0 14px;
+  cursor:pointer;
+}
+
+/* Badges de estado */
+.stateBadge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:850;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  white-space:nowrap;
+}
+
+.state--sky{
+  background: rgba(103,162,255,.18);
+  border-color: rgba(103,162,255,.30);
+  color: #2563eb;
+}
+
+.state--green{
+  background: rgba(34,197,94,.14);
+  border-color: rgba(34,197,94,.26);
+  color: #16a34a;
+}
+
+.state--navy{
+  background: rgba(37,99,235,.14);
+  border-color: rgba(37,99,235,.26);
+  color: #1d4ed8;
+}
+
+.state--red{
+  background: rgba(239,68,68,.14);
+  border-color: rgba(239,68,68,.26);
+  color: #dc2626;
+}
+/* ===== DateFilter (dropdown en header) ===== */
+.dateFilter{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dateFilter__btn{
+  height:38px;
+  padding:0 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background:#fff;
+  font-weight: 850;
+  font-size: 13px;
+  color:#111827;
+  cursor:pointer;
+  box-shadow: var(--shadowSoft);
+}
+
+.dateFilter__btn:hover{
+  transform: translateY(-1px);
+}
+
+.dateFilter__btn:active{
+  transform: translateY(0px);
+}
+
+.dateFilter__panel{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 360px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+  z-index: 60;
+}
+
+.dateFilter__presets{
+  display:flex;
+  flex-wrap: wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.dateFilter__range{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+  align-items:end;
+}
+
+.dateFilter__range .filterApply{
+  grid-column: 1 / -1;
+}
+/* =========================
+   KPI cards: icon + hover
+   ========================= */
+
+/* Fondo celeste suave (reposo) y hover */
+.kpiCard{
+  transition: background-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.kpiCard:hover{
+  background: rgba(36,121,255,.08); /* celeste suave */
+  transform: translateY(-1px);
+  box-shadow: var(--shadowSoft);
+}
+
+/* layout top: icon + label a la izquierda, trend a la derecha */
+.kpi__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.kpi__left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+/* Squircle (pancita) */
+.kpiIconWrap{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+
+  /* forma squircle con "pancita" */
+  border-radius: 14px;
+  background: rgba(36,121,255,.08); /* mismo celeste suave */
+  transition: background-color .18s ease, filter .18s ease;
+}
+
+/* ícono como imagen */
+.kpiIcon{
+  width:18px;
+  height:18px;
+  display:block;
+
+  /* negro mate en reposo */
+  filter: brightness(0) saturate(100%);
+  opacity:.82;
+  transition: filter .18s ease, opacity .18s ease;
+}
+
+/* Hover: contenedor azul más firme + icono blanco */
+.kpiCard:hover .kpiIconWrap{
+  background: rgba(36,121,255,.92);
+}
+
+.kpiCard:hover .kpiIcon{
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+/* Cursor "manito" en tarjetas KPI */
+.kpiCard{
+  cursor: pointer;
+}
+
+/* SVG: que tome color por CSS (en lugar de fill fijo) */
+.kpiIcon{
+  width:18px;
+  height:18px;
+  display:block;
+  fill: #111827;           /* negro mate */
+  opacity:.82;
+  transition: fill .18s ease, opacity .18s ease;
+}
+
+/* Hover: ícono blanco */
+.kpiCard:hover .kpiIcon{
+  fill: #ffffff;
+  opacity: 1;
+}
+/* =========================
+   Pedidos: scroll interno + hover + icono
+   ========================= */
+
+   .ordersList{
+    max-height: 540px;     /* aprox 10 items visibles; ajustamos si querés */
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+  
+  /* Scrollbar prolijo */
+  .ordersList::-webkit-scrollbar{ width: 10px; }
+  .ordersList::-webkit-scrollbar-track{ background: transparent; }
+  .ordersList::-webkit-scrollbar-thumb{
+    background: rgba(17,24,39,.12);
+    border-radius: 999px;
+  }
+  .ordersList::-webkit-scrollbar-thumb:hover{
+    background: rgba(17,24,39,.18);
+  }
+  
+  /* Tarjeta interna con cursor manito + hover */
+  .orderItem{
+    cursor: pointer;
+    transition: background .16s ease, transform .12s ease;
+  }
+  
+  .orderItem:hover{
+    background: rgba(36,121,255,.08); /* celeste claro */
+  }
+  
+  /* Contenedor “pancita/squircle” */
+  .orderIconWrap{
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: rgba(36,121,255,.08);
+    border-radius: 14px; /* squircle */
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    transition: background .16s ease, transform .12s ease;
+  }
+  
+  /* SVG controlado por CSS */
+  .orderIcon{
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: #111827;     /* negro mate */
+    opacity: .82;
+    transition: fill .16s ease, opacity .16s ease;
+  }
+  
+  /* Hover: contenedor azul + icono blanco */
+  .orderItem:hover .orderIconWrap{
+    background: rgba(36,121,255,.92);
+  }
+  
+  .orderItem:hover .orderIcon{
+    fill: #ffffff;
+    opacity: 1;
+  }
+  /* ===== Header: orientación + shortcuts ===== */
+
+.headerContext{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-right:24px;
+}
+
+.hcTitle{
+  font-weight:900;
+  font-size:16px;
+  color:#111827;
+}
+
+.hcSub{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.headerShortcuts{
+  display:flex;
+  align-items:center;
+  gap:22px;
+}
+
+.hsItem{
+  font-size:13px;
+  font-weight:500;
+  color:#1D2A44; /* azul oscuro */
+  cursor:pointer;
+  padding-bottom:4px;
+  border-bottom:2px solid transparent;
+  transition: color .18s ease, border-color .18s ease;
+}
+
+.hsItem:hover{
+  color:#2479FF;
+  border-color:#2479FF;
+}
+/* =========================
+   Pedidos recientes: tamaño = 2 KPIs + altura = 3 ítems visibles
+   ========================= */
+
+/* Card contenedora: mismo ancho que 2 tarjetas del grid--3 superior
+   Fórmula:
+   - Grid KPI: 3 columnas, gap = 16px (2 gaps totales = 32px)
+   - 2 columnas equivalen a: ((100% - 32px) * 2/3) + 16px
+     (sumamos 1 gap interno porque entre 2 columnas hay 1 gap)
+*/
+.u-card--ordersCompact{
+  width: calc(((100% - 32px) * 2 / 3) + 16px);
+  max-width: calc(((100% - 32px) * 2 / 3) + 16px);
+  align-self: flex-start; /* se pega a la izquierda, no se centra */
+}
+
+/* En pantallas chicas: vuelve a 100% (como tus KPIs cuando colapsan) */
+@media (max-width: 1100px){
+  .u-card--ordersCompact{
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Ajuste de padding interno para que se vea “denso” */
+.u-cardInner--tight{
+  padding: 12px 12px;
+}
+
+/* header del bloque */
+.blockTitle--orders{
+  margin-bottom: 10px;
+}
+
+.blockTitle--orders h3{
+  font-size: 14px;
+  font-weight: 850;
+}
+
+/* pager: control prolijo */
+.ordersPager{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.pagerMeta{
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 92px;
+  text-align:center;
+}
+
+/* botones flecha */
+.pagerBtn{
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  height: 34px;
+  padding: 0 10px;
+  font-weight: 800;
+  font-size: 12px;
+  color:#111827;
+  cursor:pointer;
+  box-shadow: var(--shadowSoft);
+  transition: transform .12s ease, background .16s ease, border-color .16s ease;
+}
+
+.pagerBtn:hover{
+  transform: translateY(-1px);
+  background: rgba(17,24,39,.02);
+}
+
+.pagerBtn:active{
+  transform: translateY(0px);
+}
+
+.pagerBtn:disabled{
+  opacity: .45;
+  cursor: default;
+  transform: none;
+}
+
+.pagerBtn--icon{
+  width: 34px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  display:grid;
+  place-items:center;
+}
+
+.pagerBtn--primary{
+  border-color: rgba(36,121,255,.25);
+  background: rgba(36,121,255,.10);
+  color: #1d4ed8;
+}
+
+/* ===== Altura: se ven SOLO 3 pedidos antes de scrollear =====
+   Aproximación robusta (sin depender de contenido variable):
+   - 3 items compactos + gaps
+   Si tus items se vuelven un poco más altos por textos largos,
+   igual mantiene “3ish” y el resto queda scroll.
+*/
+.ordersList--compact{
+  max-height: 248px;     /* objetivo: ~3 items visibles */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Scrollbar prolijo */
+.ordersList--compact::-webkit-scrollbar{ width: 10px; }
+.ordersList--compact::-webkit-scrollbar-track{ background: transparent; }
+.ordersList--compact::-webkit-scrollbar-thumb{
+  background: rgba(17,24,39,.12);
+  border-radius: 999px;
+}
+.ordersList--compact::-webkit-scrollbar-thumb:hover{
+  background: rgba(17,24,39,.18);
+}
+
+/* ítem de pedido: más compacto */
+.orderItem{
+  padding: 10px;
+  gap: 12px;
+  cursor: pointer;
+  transition: background .16s ease, transform .12s ease;
+}
+
+.orderItem:hover{
+  background: rgba(36,121,255,.08);
+}
+
+/* Fuerza layout: icono a la izquierda del texto (no arriba) */
+.orderItem__left{
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+  min-width:0;
+}
+
+/* icono un poco más chico */
+.orderIconWrap{
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+}
+
+/* tipografías internas más densas */
+.orderItem .u-muted{
+  font-size: 12px !important;
+  line-height: 1.25;
+}
+
+/* badges compactos */
+.stateBadge{
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 850;
+}
+/* =========================
+   Pedidos recientes: lista unificada (sin tarjetas)
+   - sin gap
+   - sin bordes/radius/sombra
+   - separador fino entre ítems
+   - mantiene hover/cursor/iconos
+   ========================= */
+
+   .ordersList--compact{
+    gap: 0;                 /* sin espacio entre "items" */
+    padding-right: 6px;     /* mantenemos tu padding para el scrollbar */
+  }
+  
+  /* Los items dejan de ser tarjeta */
+  .ordersList--compact .listItem.orderItem{
+    background: transparent;      /* ya no es tarjeta */
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+  
+    /* Separador fino */
+    border-bottom: 1px solid rgba(17,24,39,.10);
+  
+    /* Ajuste de aire (podés bajar/subir 1-2px si querés) */
+    padding: 10px 12px;
+  }
+  
+  /* Que el último no tenga línea abajo */
+  .ordersList--compact .listItem.orderItem:last-child{
+    border-bottom: 0;
+  }
+  
+  /* Hover se mantiene (pero ahora sobre fondo transparente) */
+  .ordersList--compact .orderItem:hover{
+    background: rgba(36,121,255,.08);
+  }
+  
+/* =========================
+   HomeRow: Pedidos (2 cols) + Logística (1 col)
+   ========================= */
+
+   .homeRow{
+    align-items: stretch;
+  }
+  
+  /* Pedidos ocupa 2 columnas dentro de la grilla de 3 */
+  .homeSpan2{
+    grid-column: 1 / span 2;
+    width: auto !important;
+    max-width: none !important;
+  }
+  
+  /* En responsive (cuando grid--3 colapsa) vuelve a 1 columna */
+  @media (max-width: 1100px){
+    .homeSpan2{
+      grid-column: auto;
+    }
+  }
+  
+  /* =========================
+     Logística card (verde estable)
+     - mismo radius 5px
+     - misma sombra
+     - mismo hover/cursor
+     - icono con hover igual (manito también)
+     ========================= */
+  
+  .logiCard{
+    background: #35A56F;
+    border-radius: 5px;
+    box-shadow: var(--shadowSoft);
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    border: 0;
+    overflow: hidden;
+  }
+  
+  .logiCard:hover{
+    transform: translateY(-1px);
+    box-shadow: var(--shadowSoft);
+    filter: brightness(0.98);
+  }
+  
+  .logiCard__inner{
+    padding: 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    min-height: 180px; /* para que se vea "cuadrada" y con presencia */
+  }
+  
+  .logiCard__top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  
+  /* Pancita / squircle para el icono */
+  .logiIconWrap{
+    width:40px;
+    height:40px;
+    display:grid;
+    place-items:center;
+    border-radius: 14px;
+    background: rgba(255,255,255,.16);
+    box-shadow: 0 2px 10px rgba(0,0,0,.10);
+    cursor: pointer; /* mismo hover-cursor en el icono */
+    transition: background .18s ease, transform .18s ease;
+  }
+  
+  .logiIcon{
+    width:18px;
+    height:18px;
+    display:block;
+    fill: rgba(255,255,255,.88);
+    opacity: 1;
+    transition: fill .18s ease, opacity .18s ease;
+  }
+  
+  /* Hover: icon wrap un poco más firme + icono más blanco */
+  .logiCard:hover .logiIconWrap{
+    background: rgba(255,255,255,.24);
+  }
+  
+  .logiCard:hover .logiIcon{
+    fill: #ffffff;
+  }
+  
+  /* Textos */
+  .logiCard__txt{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:0;
+  }
+  
+  .logiCard__title{
+    font-weight: 900;
+    font-size: 15px;
+    color: #ffffff;
+    letter-spacing: .01em;
+  }
+  
+  .logiCard__sub{
+    font-weight: 800;
+    font-size: 11px;
+    color: rgba(255,255,255,.88);
+    letter-spacing: .16em;
+  }
+  
+  /* Placeholder inferior (mañana se reemplaza por datos reales) */
+  .logiCard__placeholder{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  
+  .logiPill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 10px;
+    border-radius:999px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.22);
+    color:#ffffff;
+    font-weight: 850;
+    font-size: 12px;
+    width: fit-content;
+  }
+  
+  .logiMini{
+    font-size: 12px;
+    color: rgba(255,255,255,.86);
+  }
+  /* =========================
+   Logística (Home card) - Donut + métricas
+   ========================= */
+
+.logiCard__metaLine{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.logiRange{
+  font-size: 12px;
+  color: rgba(255,255,255,.88);
+}
+
+.logiTotal{
+  font-size:12px;
+  font-weight:850;
+  color:#ffffff;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.logiViz{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logiDonut{
+  width: 88px;
+  height: 88px;
+  flex:0 0 88px;
+}
+
+.logiDonut svg{ display:block; width:100%; height:100%; }
+
+.logiDonutCenter{
+  font-weight: 950;
+  font-size: 16px;
+  fill: #ffffff;
+}
+
+.logiDonutSub{
+  font-weight: 800;
+  font-size: 9px;
+  fill: rgba(255,255,255,.86);
+  letter-spacing: .10em;
+}
+
+.logiStats{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:8px;
+  width:100%;
+}
+
+.logiStat{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  color:#ffffff;
+  font-size:12px;
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.logiDot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  display:inline-block;
+  box-shadow: 0 0 0 4px rgba(255,255,255,.10);
+}
+
+.logiDot--green{ background: #22c55e; }
+.logiDot--navy{ background: #1d4ed8; }
+.logiDot--sky{ background: #67a2ff; }
+.logiDot--red{ background: #ef4444; }
+/* ===========================
+   Home: tarjeta full-width debajo de "Pedidos recientes"
+   =========================== */
+   .homeWideCard{
+    width: 100%;
+    display: block;
+    margin-top: 16px; /* mismo ritmo visual que el gap de las secciones */
+  }
+  
+  .homeWideCard .blockTitle{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  
+  .homeWideCard__body{
+    margin-top: 10px;
+  }
+  /* ===========================
+   Home: tarjeta nueva (conteos AG)
+   =========================== */
+.homeStateGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.homeStateItem{
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.homeStateValue{
+  font-size: 22px;
+  font-weight: 900;
+  color: #111;
+  line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 980px){
+  .homeStateGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px){
+  .homeStateGrid{ grid-template-columns: 1fr; }
+}
+/* =========================
+   SIDEBAR A (estructura por módulos)
+   Ajustes: cards blancas, radius 5px,
+   hover sin bordes de color, íconos sin contenedor,
+   ícono azul en hover.
+   ========================= */
+
+   .sidebarGroups{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding: 6px;
+  }
+  
+  /* INICIO destacado (hero) */
+  .navHero{
+    margin: 6px 6px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding: 12px 12px;
+    border-radius: 5px;
+    border: 0;
+    background: rgba(36,121,255,.10);
+    color: rgba(17,24,39,.92);
+    box-shadow: var(--shadowSoft);
+  }
+  
+  .navHero__left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  
+  .navHero__ico{
+    /* si querés también eliminar este contenedor, decímelo y lo dejamos “icono suelto” */
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    display:grid;
+    place-items:center;
+    background: rgba(36,121,255,.14);
+    border: 0;
+    font-weight:900;
+    color:#2479FF;
+    flex: 0 0 28px;
+  }
+  
+  .navHero__txt{
+    font-weight: 950;
+    letter-spacing: .08em;
+    font-size: 13px;
+    white-space:nowrap;
+  }
+  
+  .navHero__chev{
+    font-size: 22px;
+    color: rgba(36,121,255,.85);
+  }
+  
+  /* Cards contenedoras (BLANCAS + radius 5px) */
+  .navGroup{
+    background: #ffffff;           /* <- blanco sólido */
+    border: 0;                     /* <- sin borde visible */
+    border-radius: 5px;            /* <- radius 5px */
+    box-shadow: var(--shadowSoft); /* <- sombra suave */
+    overflow:hidden;
+  }
+  
+  .navGroup__head{
+    list-style:none;
+    cursor:pointer;
+    padding: 12px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  
+  .navGroup__head::-webkit-details-marker{ display:none; }
+  
+  .navGroup__title{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+  }
+  
+  .navGroup__caret{
+    width: 18px;
+    display:inline-block;
+    color: rgba(17,24,39,.55);
+    font-size: 12px;
+    transform: translateY(2px);
+  }
+  
+  .navGroup__kicker{
+    font-size: 11px;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+    color: rgba(17,24,39,.50);
+    font-weight: 800;
+  }
+  
+  .navGroup__name{
+    font-size: 13px;
+    color:#111827;
+    font-weight: 850;
+    margin-top: 2px;
+  }
+  
+  /* body del grupo */
+  .navGroup__body{
+    padding: 0 10px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  
+  /* Subitems: SIN bordes de color al hover + radius 5px */
+  .navSubItem{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 10px 10px;
+    border-radius: 5px;
+    border: 0;                          /* <- sin bordes */
+    background: transparent;            /* <- base limpia */
+    color: rgba(17,24,39,.78);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .16s ease, transform .12s ease, color .16s ease;
+  }
+  
+  .navSubItem:hover{
+    background: rgba(36,121,255,.08);   /* <- solo fondo */
+    transform: translateY(-1px);
+    color: rgba(17,24,39,.92);
+  }
+  
+  /* ÍCONO SIN CONTENEDOR (nuevo) */
+  .navIconPlain{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 18px;        /* ancho fijo para alinear columnas */
+    flex: 0 0 18px;
+    font-size: 15px;
+    font-weight: 900;
+    color: rgba(17,24,39,.55);  /* gris en reposo */
+    transition: color .16s ease, filter .16s ease;
+  }
+  
+  /* Hover: icono azul “relleno” (interpretación visual en ícono tipográfico) */
+  .navSubItem:hover .navIconPlain{
+    color: var(--blue);
+    filter: saturate(140%);
+  }
+  
+  /* texto del subitem */
+  .navSubItem__txt{
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  
+  /* Espaciado fino arriba */
+  .sidebar__account + .navHero{
+    margin-top: 6px;
+  }
+  /* =========================
+   Top productos (Home card)
+   Reemplaza la tarjeta verde Logística
+   - sin dark mode
+   - hover: solo fondo (sin borde de color)
+   ========================= */
+
+.topProdCard{
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: var(--shadowSoft);
+  cursor: pointer;
+  transition: background .16s ease, transform .18s ease, box-shadow .18s ease;
+  border: 0;
+  overflow: hidden;
+}
+
+.topProdCard:hover{
+  background: rgba(36,121,255,.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadowSoft);
+}
+
+.topProdCard__inner{
+  padding: 14px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-height: 180px;
+}
+
+.topProdCard__top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.topProdIconWrap{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius: 14px;
+  background: rgba(36,121,255,.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  transition: background .16s ease;
+}
+
+.topProdIcon{
+  width:18px;
+  height:18px;
+  display:block;
+  fill: #111827;
+  opacity:.82;
+  transition: fill .16s ease, opacity .16s ease;
+}
+
+.topProdCard:hover .topProdIconWrap{
+  background: rgba(36,121,255,.92);
+}
+
+.topProdCard:hover .topProdIcon{
+  fill: #ffffff;
+  opacity: 1;
+}
+
+.topProdCard__txt{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+
+.topProdCard__title{
+  font-weight: 900;
+  font-size: 15px;
+  color: #111827;
+  letter-spacing: .01em;
+}
+
+.topProdCard__sub{
+  font-weight: 800;
+  font-size: 11px;
+  color: rgba(17,24,39,.60);
+  letter-spacing: .16em;
+}
+
+.topProdCard__metaLine{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.topProdRange{
+  font-size: 12px;
+  color: rgba(17,24,39,.70);
+}
+
+.topProdTotal{
+  font-size:12px;
+  font-weight:850;
+  color:#111827;
+  background: rgba(17,24,39,.04);
+  border: 1px solid rgba(17,24,39,.08);
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.topProdList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.topProdItem{
+  padding:10px 10px;
+  border-radius: 12px;
+  background: rgba(17,24,39,.03);
+  transition: background .16s ease;
+}
+
+.topProdCard:hover .topProdItem{
+  background: rgba(17,24,39,.03); /* estable, no se vuelve loco */
+}
+
+.topProdItem__head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.topProdSku{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.topProdRank{
+  width:22px;
+  height:22px;
+  border-radius: 999px;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  font-weight:900;
+  color: var(--blue);
+  background: rgba(36,121,255,.12);
+  border: 1px solid rgba(36,121,255,.20);
+  flex: 0 0 22px;
+}
+
+.topProdSkuTxt{
+  font-weight: 850;
+  font-size: 13px;
+  color:#111827;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 180px;
+}
+
+.topProdMeta{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  white-space:nowrap;
+}
+
+.topProdMoney{
+  font-weight: 900;
+  font-size: 13px;
+  color:#111827;
+}
+
+.topProdOrders{
+  font-size: 12px;
+  color: rgba(17,24,39,.65);
+  font-weight: 650;
+}
+
+.topProdBar{
+  margin-top:8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(17,24,39,.08);
+  overflow:hidden;
+}
+
+.topProdBar__fill{
+  height:100%;
+  border-radius: 999px;
+  background: rgba(36,121,255,.92);
+}
+/* =========================
+   HOME: Picos de demanda (horario)
+   Estilo v2 (scoped a #demandCard)
+   ========================= */
+
+   #demandCard .blockTitle{
+    margin-bottom: 12px;
+  }
+  
+  #demandCard .blockTitle h3{
+    font-size: 15px;
+    font-weight: 900;
+    color:#111827;
+  }
+  
+  /* Tabs */
+  #demandCard .demandTabs{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  
+  #demandCard .demandTab{
+    height:30px;
+    min-width:32px;
+    padding:0 10px;
+    border-radius:999px;
+    border:1px solid rgba(17,24,39,.10);
+    background:#fff;
+    font-weight:900;
+    font-size:12px;
+    color: rgba(17,24,39,.78);
+    cursor:pointer;
+    box-shadow: var(--shadowSoft);
+    transition: transform .12s ease, background .16s ease, border-color .16s ease, color .16s ease;
+  }
+  
+  #demandCard .demandTab:hover{
+    transform: translateY(-1px);
+    background: rgba(36,121,255,.08);
+    border-color: rgba(36,121,255,.22);
+    color:#111827;
+  }
+  
+  #demandCard .demandTab.is-active{
+    background: rgba(36,121,255,.12);
+    border-color: rgba(36,121,255,.35);
+    color: var(--blue);
+  }
+  
+  /* Meta: rango + KPIs */
+  #demandCard .demandMeta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin: 2px 0 12px;
+    flex-wrap:wrap;
+  }
+  
+  #demandCard .demandRange{
+    font-size:12px;
+    font-weight:700;
+    color: rgba(17,24,39,.60);
+  }
+  
+  #demandCard .demandKpis{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  
+  #demandCard .demandPill{
+    display:inline-flex;
+    align-items:center;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:900;
+    border:1px solid rgba(17,24,39,.10);
+    background: rgba(17,24,39,.04);
+    color:#111827;
+    white-space:nowrap;
+  }
+  
+  #demandCard .demandPill--soft{
+    border-color: rgba(36,121,255,.20);
+    background: rgba(36,121,255,.08);
+    color: #1d4ed8;
+  }
+  
+  /* Chart */
+  #demandCard .demandChartWrap{
+    border-radius: 5px;
+    background: rgba(17,24,39,.03);
+    border: 1px solid rgba(17,24,39,.06);
+    padding: 12px 12px 10px;
+  }
+  
+  #demandCard .demandSpark{
+    width:100%;
+    height:78px;
+    display:block;
+    color: var(--blue);
+  }
+  
+  #demandCard #demandSparkLine{
+    opacity: .95;
+  }
+  
+  #demandCard .demandHours{
+    margin-top:8px;
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    font-weight:800;
+    color: rgba(17,24,39,.55);
+  }
+  
+  /* Responsive micro-ajuste */
+  @media (max-width: 520px){
+    #demandCard .demandTab{ height:28px; padding:0 9px; }
+    #demandCard .demandSpark{ height:72px; }
+  }
+  /* =========================
+   DEMANDA HORARIA — mejoras
+   - curva, tooltip, eje con más ticks
+   - ancho 50% extra (vía layout de fila)
+   ========================= */
+
+
+
+.demandChartWrap--wide{
+  padding: 12px 14px;
+}
+
+.demandChartStage{
+  position: relative;
+}
+
+.demandSpark--wide{
+  height: 92px;
+  color: var(--blue);
+}
+
+/* Tooltip */
+.demandTip{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(17,24,39,.10);
+  border-radius: 12px;
+  box-shadow: var(--shadowSoft);
+  padding: 8px 10px;
+  min-width: 140px;
+  pointer-events: none;
+  transform: translate3d(0,0,0);
+}
+
+.demandTip__t{
+  font-size: 12px;
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.demandTip__v{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(17,24,39,.70);
+}
+
+.demandHours--wide{
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(17,24,39,.55);
+}
+
+/* más ticks: que “respiren” y no queden pegados */
+.demandHours--wide span{
+  display:inline-block;
+  min-width: 16px;
+  text-align:center;
+}
+/* =========================
+   FIX VISUAL: Demanda por hora (SVG + tooltip)
+   ========================= */
+
+/* El wrapper debe poder darle altura al stage */
+.demandChartWrap,
+.demandChartWrap--wide{
+  width: 100%;
+}
+
+/* Stage: altura real para que el SVG no colapse */
+.demandChartStage{
+  position: relative;
+  width: 100%;
+  height: 110px; /* suficiente para viewBox 90 + tooltip */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* El SVG debe tener altura (si no, queda invisible) */
+.demandSpark,
+.demandSpark--wide{
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #2479FF; /* currentColor => azul marca */
+}
+
+/* Tooltip posicionable */
+.demandTip{
+  position: absolute;
+  min-width: 150px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(17,24,39,.10);
+  box-shadow: 0 10px 25px rgba(0,0,0,.10);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.demandTip__t{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(17,24,39,.85);
+  margin-bottom: 2px;
+}
+
+.demandTip__v{
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+}
+
+/* Eje X más legible y repartido */
+.demandHours,
+.demandHours--wide{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0;
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(17,24,39,.55);
+}
+.demandHours span{
+  text-align: center;
+}
+/* =========================
+   FIX: Alineación + espaciado uniforme en Home
+   - elimina doble espaciado (gap + margin)
+   - elimina “aire” por márgenes default en h3
+   ========================= */
+
+/* 1) Los títulos NO deben aportar márgenes default */
+.blockTitle h3{
+  margin: 0;
+}
+
+/* 2) Las cards dentro del layout por grilla NO deben tener margin-top
+      (si no, suman gap + margin y quedan desniveladas) */
+.homeWideCard{
+  margin-top: 0 !important;
+}
+
+/* 3) Extra defensivo: si alguna sección trae margen externo, lo anulamos
+      (evita micro-desniveles entre filas) */
+.main > section{
+  margin: 0;
+}
+
+  /* =========================
+   FIX: Igualar altura en la fila HomeRow (sin tocar scroll)
+   ========================= */
+
+/* Solo en la fila donde conviven Pedidos + Top 5 */
+.homeRow .u-card--ordersCompact{
+  align-self: stretch !important; /* anula tu flex-start */
+  height: 100%;
+}
+/* Sidebar - estado activo subitem */
+.navSubItem.is-active-sub {
+  background: #2479FF;
+  color: #fff;
+  border-radius: 18px;
+}
+
+.navSubItem.is-active-sub .navSubItem__ico,
+.navSubItem.is-active-sub .navSubItem__txt {
+  color: #fff;
+}
+/* =========================================================
+   PUBLICIDAD INTERNA · Layout + branding
+   ========================================================= */
+
+/* Card de topbar de filtros */
+.pageTop{
+  margin-top: 16px;
+}
+
+/* Layout de la página: columna izquierda (segmentos) + derecha (rankings) */
+.piGrid{
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+  gap: 16px;
+}
+
+.piColLeft,
+.piColRight{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+@media (max-width: 1024px){
+  .piGrid{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+/* Todas las cards internas de Publicidad interna */
+.piCard{
+  background:#ffffff;
+  border-radius:5px;
+  border:1px solid var(--border);
+  box-shadow: var(--shadowSoft);
+  padding:14px 14px;
+}
+
+/* Head de card coherente con las demás */
+.piCard .card__head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.piCard .card__title{
+  font-size:15px;
+  font-weight:850;
+  color:#111827;
+}
+
+.piCard .card__sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Controles de fecha dentro de la contentTopbar */
+.piControls{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.piControls__field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.piControls__lbl{
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.piControls__input{
+  height:36px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:0 10px;
+  font-size:13px;
+  background:#fff;
+  color:#111827;
+}
+
+.piControls__input:focus{
+  outline:none;
+  border-color: rgba(36,121,255,.45);
+  box-shadow: 0 0 0 1px rgba(36,121,255,.16);
+}
+
+/* Botón azul con radius 5px (override suave) */
+.piBtnPrimary{
+  border-radius:5px;
+}
+
+/* =========================
+   MIX DE SEGMENTOS
+   ========================= */
+
+.piMix{
+  margin-top:8px;
+  padding:10px 10px;
+  border-radius:5px;
+  background:rgba(17,24,39,.02);
+  border:1px solid rgba(17,24,39,.06);
+}
+
+.piMix__row{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr)) auto;
+  gap:10px;
+  align-items:flex-end;
+}
+
+@media (max-width: 900px){
+  .piMix__row{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+.piSelect{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.piSelect__lbl{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+}
+
+.piSelect__sel{
+  height:36px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:0 30px 0 10px;
+  font-size:13px;
+  background:#fff;
+  color:#111827;
+  appearance:none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #9ba4b8 50%),
+    linear-gradient(135deg, #9ba4b8 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 50%,
+    calc(100% - 10px) 50%;
+  background-size:6px 6px;
+  background-repeat:no-repeat;
+  cursor:pointer;
+}
+
+.piSelect__sel:focus{
+  outline:none;
+  border-color: rgba(36,121,255,.45);
+  box-shadow: 0 0 0 1px rgba(36,121,255,.16);
+}
+
+.piMix__hint{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* =========================
+   MAPA DE COHORTES
+   ========================= */
+
+.piVisual{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: minmax(0,1.4fr) minmax(260px,1fr);
+  gap:14px;
+}
+
+@media (max-width: 900px){
+  .piVisual{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+/* Fondo tipo “Picos de demanda” */
+.piVisual__canvas{
+  position:relative;
+  min-height:190px;
+  border-radius:5px;
+  background:rgba(17,24,39,.03);
+  border:1px solid rgba(17,24,39,.06);
+  overflow:hidden;
+}
+
+/* Burbujas */
+.piBubble{
+  position:absolute;
+  border-radius:999px;
+  background:rgba(36,121,255,.18);
+}
+
+.piBubble.b1{ width:110px; height:110px; left:8%;  top:20%; }
+.piBubble.b2{ width:80px;  height:80px;  left:45%; top:34%; }
+.piBubble.b3{ width:70px;  height:70px;  left:22%; bottom:14%; }
+.piBubble.b4{ width:100px; height:100px; right:10%; top:16%; }
+.piBubble.b5{ width:60px;  height:60px; right:18%; bottom:18%; }
+
+.piBubble::after{
+  content:"";
+  position:absolute;
+  inset:18%;
+  border-radius:inherit;
+  background:#fff;
+  opacity:.25;
+}
+
+/* Leyenda a la derecha: filas clicables tipo “Top productos” */
+.piLegend{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.piLegend__title{
+  font-size:13px;
+  font-weight:800;
+  color:#111827;
+}
+
+.piLegend__item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(17,24,39,.03);
+  cursor:pointer;
+  transition:background .16s ease, transform .12s ease, box-shadow .16s ease;
+}
+
+.piLegend__item:hover{
+  background:rgba(36,121,255,.08);
+  transform:translateY(-1px);
+  box-shadow:var(--shadowSoft);
+}
+
+.piLegend__txt{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.piLegend__name{
+  font-size:13px;
+  font-weight:600;
+  color:#111827;
+}
+
+.piLegend__meta{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.piDot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  flex-shrink:0;
+}
+
+.piDot.d1{ background:#2479FF; }
+.piDot.d2{ background:#10b981; }
+.piDot.d3{ background:#f97316; }
+
+/* =========================
+   TOP SEGMENTOS
+   ========================= */
+
+.piTopList{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.piTopItem{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(17,24,39,.03);
+  cursor:pointer;
+  transition:background .16s ease, transform .12s ease;
+}
+
+.piTopItem:hover{
+  background:rgba(36,121,255,.08);
+  transform:translateY(-1px);
+}
+
+.piTopItem__txt{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.piTopItem__name{
+  font-size:13px;
+  font-weight:600;
+  color:#111827;
+}
+
+.piTopItem__meta{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.piTopItem__val{
+  font-size:13px;
+  font-weight:850;
+  color:#111827;
+}
+
+/* =========================
+   TOP CLICKS INTERNOS
+   ========================= */
+
+.piClicks{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.piClicks__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:rgba(17,24,39,.03);
+  font-size:13px;
+  cursor:pointer;
+  transition:background .16s ease, transform .12s ease;
+}
+
+.piClicks__row:hover{
+  background:rgba(36,121,255,.08);
+  transform:translateY(-1px);
+}
+
+.piClicks__name{
+  color:#111827;
+}
+
+.piClicks__val{
+  color:rgba(17,24,39,.70);
+  font-variant-numeric:tabular-nums;
+}
+
+/* =========================
+   TABLA COINCIDENCIAS
+   ========================= */
+
+.piTableWrap{
+  margin-top:10px;
+  border-radius:5px;
+  border:1px solid rgba(17,24,39,.08);
+  overflow:hidden;
+}
+
+.piTable{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.piTable thead{
+  background:rgba(17,24,39,.03);
+}
+
+.piTable th,
+.piTable td{
+  padding:8px 10px;
+  text-align:left;
+}
+
+.piTable th{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+}
+
+.piTable tbody tr:nth-child(even){
+  background:rgba(17,24,39,.02);
+}
+
+.piTable tbody tr:hover{
+  background:rgba(36,121,255,.06);
+}
+
+/* Badges de estado */
+.piStatus{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.piStatus.is-ok{
+  background:rgba(34,197,94,.14);
+  border:1px solid rgba(34,197,94,.26);
+  color:#16a34a;
+}
+
+.piStatus.is-warn{
+  background:rgba(250,204,21,.16);
+  border:1px solid rgba(250,204,21,.28);
+  color:#92400e;
+}
+
+.piStatus.is-bad{
+  background:rgba(239,68,68,.16);
+  border:1px solid rgba(239,68,68,.28);
+  color:#dc2626;
+}
+
+/* =========================
+   GESTIÓN DE PÚBLICOS
+   ========================= */
+
+.piPublicosGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: minmax(0,1.5fr) minmax(260px,1fr);
+  gap:16px;
+}
+
+@media (max-width: 900px){
+  .piPublicosGrid{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+.piForm{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.piForm__row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.piInput{
+  flex:1;
+  min-width:200px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.piInput__lbl{
+  font-size:12px;
+  color:#4b5563;
+}
+
+.piInput__ctrl{
+  height:36px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:0 10px;
+  font-size:13px;
+  background:#fff;
+  color:#111827;
+}
+
+.piInput__ctrl:focus{
+  outline:none;
+  border-color: rgba(36,121,255,.45);
+  box-shadow: 0 0 0 1px rgba(36,121,255,.16);
+}
+
+.piForm__hint{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.piPublicosActions{
+  display:flex;
+  gap:8px;
+}
+
+/* Caja audiencia */
+.piAudienceBox{
+  border-radius:5px;
+  border:1px solid rgba(17,24,39,.08);
+  background:#f9fafb;
+  padding:10px 10px;
+}
+
+.piAudienceBox__title{
+  font-size:13px;
+  font-weight:800;
+  color:#111827;
+}
+
+.piAudienceBox__meta{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.piAudienceList{
+  margin-top:10px;
+  max-height:220px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.piAudienceRow{
+  display:grid;
+  grid-template-columns: minmax(0,1.2fr) minmax(0,1.4fr) auto;
+  align-items:center;
+  gap:8px;
+  padding:6px 8px;
+  border-radius:999px;
+  background:#fff;
+  font-size:12px;
+  cursor:pointer;
+  transition:background .16s ease, transform .12s ease;
+}
+
+.piAudienceRow:hover{
+  background:rgba(36,121,255,.08);
+  transform:translateY(-1px);
+}
+
+.piAudienceRow__name{
+  font-weight:600;
+  color:#111827;
+}
+
+.piAudienceRow__mail{
+  color:rgba(17,24,39,.78);
+  font-variant-numeric:tabular-nums;
+}
+
+.piAudienceRow__tag{
+  padding:3px 8px;
+  border-radius:999px;
+  background:rgba(36,121,255,.10);
+  border:1px solid rgba(36,121,255,.20);
+  font-size:11px;
+  font-weight:750;
+  color:var(--blue);
+}
+
+@media (max-width: 600px){
+  .piAudienceRow{
+    grid-template-columns:minmax(0,1fr);
+    align-items:flex-start;
+  }
+}
+/* ============================
+   Barra de carga panel Inicio
+   ============================ */
+
+   .appLoadingBar {
+    position: relative;
+    width: 100%;
+    height: 3px;
+    overflow: hidden;
+    margin: 6px 0 16px 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: transparent;
+  }
+  
+  .appLoadingBar__inner {
+    width: 30%;
+    height: 100%;
+    border-radius: 999px;
+    background: #2479FF;
+    transform: translateX(-100%);
+    animation: sazzuLoadingSweep 1s ease-in-out infinite;
+  }
+  
+  /* Solo cuando Inicio está en modo carga mostramos la barra */
+  .main[data-home-loading="1"] .appLoadingBar {
+    opacity: 1;
+  }
+  
+  /* Animación tipo “sweep” de izquierda a derecha */
+  @keyframes sazzuLoadingSweep {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(50%); }
+    100% { transform: translateX(200%); }
+  }
+  /* ============================
+   Skeleton listado de pedidos
+   ============================ */
+
+.ordersListSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ordersListSkeleton__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.ordersListSkeleton__icon {
+  flex: 0 0 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+  background-size: 200% 100%;
+  animation: sazzuSkeletonPulse 1.2s ease-in-out infinite;
+}
+
+.ordersListSkeleton__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ordersListSkeleton__line {
+  height: 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+  background-size: 200% 100%;
+  animation: sazzuSkeletonPulse 1.2s ease-in-out infinite;
+}
+
+.ordersListSkeleton__line--strong {
+  width: 55%;
+}
+
+.ordersListSkeleton__line:not(.ordersListSkeleton__line--strong) {
+  width: 80%;
+}
+
+.ordersListSkeleton__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ordersListSkeleton__pill {
+  display: inline-block;
+  height: 18px;
+  min-width: 70px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+  background-size: 200% 100%;
+  animation: sazzuSkeletonPulse 1.2s ease-in-out infinite;
+}
+
+/* Reutilizamos la misma animación de shimmer para todos los bloques skeleton */
+@keyframes sazzuSkeletonPulse {
+  0%   { background-position: 200% 0; opacity: 0.7; }
+  50%  { background-position: 100% 0; opacity: 1; }
+  100% { background-position: 0 0;   opacity: 0.7; }
+}
+/* =========================
+   Utilidades layout (Finanzas)
+   ========================= */
+   .u-row{
+    display:flex;
+  }
+  .u-row--center{
+    align-items:center;
+  }
+  .u-row--between{
+    justify-content:space-between;
+  }
+  
+  /* 4 columnas para KPIs */
+  .grid--4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  @media (max-width: 980px){
+    .grid--4{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px){
+    .grid--4{ grid-template-columns: 1fr; }
+  }
+  
+  /* Inputs */
+  .u-input{
+    height:36px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:0 10px;
+    background:#fff;
+    font:inherit;
+  }
+  
+  /* KPI cards */
+  .u-miniStat{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+  }
+  .u-bigNum{
+    font-size:22px;
+    font-weight:700;
+    margin-top:6px;
+    color:#111;
+  }
+  
+  /* Botón primario simple (si tu sistema no lo tiene) */
+  .btn{
+    height:36px;
+    padding:0 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#fff;
+    cursor:pointer;
+    font:inherit;
+  }
+  .btn--primary{
+    background: var(--brand, #2479FF);
+    border-color: var(--brand, #2479FF);
+    color:#fff;
+  }
+  
+  /* Chart box */
+  .u-chartBox{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px;
+    background:#fff;
+    overflow:hidden;
+    min-height: 280px;
+  }
+  
+  /* Chart SVG styles */
+  .finGrid{ stroke: rgba(0,0,0,0.06); stroke-width:1; }
+  .finAxis{ stroke: rgba(0,0,0,0.18); stroke-width:1; }
+  .finAxisTxt{ fill: rgba(0,0,0,0.55); font-size:11px; }
+  
+  .finLine{ stroke-width:2.2; }
+  .finLine--proc{ stroke: #2479FF; }
+  .finLine--ma{ stroke: rgba(36,121,255,0.45); stroke-dasharray:6 4; }
+  .finLine--pend{ stroke: rgba(0,160,80,0.85); }
+  .finLine--int{ stroke: rgba(230,60,60,0.85); }
+  
+  .u-legend{
+    font-size:13px;
+    color: rgba(0,0,0,0.65);
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .u-dot{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .u-dot--proc{ background:#2479FF; }
+  .u-dot--ma{ background:rgba(36,121,255,0.45); }
+  .u-dot--pend{ background:rgba(0,160,80,0.85); }
+  .u-dot--int{ background:rgba(230,60,60,0.85); }
+
+/* === FINANZAS: límites visuales de la tarjeta de cashflow === */
+
+/* Card: alto acotado, sin scroll, pero suficiente para gráfico + leyenda + nota */
+[data-page="finanzas"] #finCashflowCard {
+  max-height: 430px;
+  overflow: hidden;
+}
+
+/* Gráfico: un poco más bajo para que todo el contenido quepa dentro del límite */
+[data-page="finanzas"] #finCashflowChart {
+  position: relative;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+/* === Tooltip del gráfico de cashflow === */
+
+.finTip{
+  position:absolute;
+  z-index:5;
+  pointer-events:none;
+  background:#ffffff;
+  border-radius:8px;
+  padding:8px 10px;
+  border:1px solid rgba(15,23,42,.08);
+  box-shadow:0 12px 30px rgba(15,23,42,.18);
+  font-size:11px;
+  color:rgba(15,23,42,.9);
+  max-width:220px;
+}
+
+.finTip__date{
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.finTip__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin:2px 0;
+}
+
+.finTip__label{
+  flex:1;
+  opacity:.8;
+}
+
+.finTip__value{
+  margin-left:8px;
+  font-variant-numeric:tabular-nums;
+}
+
+.finTip__dot{
+  width:8px;
+  height:8px;
+  border-radius:3px;
+  margin-right:4px;
+  display:inline-block;
+}
+
+.finTip__dot--proc{ background:#2479FF; }
+.finTip__dot--ma{ background:rgba(36,121,255,0.6); }
+.finTip__dot--pend{ background:rgba(0,160,80,0.85); }
+.finTip__dot--int{ background:rgba(230,60,60,0.85); }
+
+.finTip__total{
+  margin-top:4px;
+  padding-top:4px;
+  border-top:1px dashed rgba(15,23,42,.1);
+  font-size:11px;
+  font-weight:600;
+}
+/* Pega este bloque al final de tu CSS de paneles (no afecta nada existente) */
+
+.finAlertsPill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:2px;
+  border-radius:999px; /* pill general */
+  background:rgba(36,121,255,0.16); /* azul translúcido estilo Meta */
+}
+
+.finAlertsBtn{
+  border:none;
+  background:rgba(36,121,255,0.08);
+  border-radius:6px;
+  padding:4px 8px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+}
+
+.finAlertsBtn:hover{
+  background:rgba(36,121,255,0.16);
+}
+
+.finAlertsBell{
+  font-size:16px;
+  line-height:1;
+}
+
+/* badge numérico pequeño */
+.finAlertsBadge{
+  min-width:16px;
+  height:16px;
+  border-radius:999px;
+  background:#2479FF;
+  color:#ffffff;
+  font-size:11px;
+  font-weight:700;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.finAlertsBadge.is-visible{
+  display:inline-flex;
+}
+/* Overlay del slide de Finanzas */
+/* ===========================
+   Slide Finanzas – Overlay + Panel
+   =========================== */
+   .finAlertsOverlay{
+    position:fixed;
+    inset:0;
+    z-index:70;
+    display:flex;
+    justify-content:flex-end;
+    align-items:stretch;
+    /* estado base oculto */
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:
+      opacity 0.18s ease-out,
+      visibility 0.18s ease-out;
+  }
+  
+  .finAlertsOverlay.is-open{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  
+  /* Backdrop clicable */
+  .finAlertsBackdrop{
+    flex:1;
+    background:rgba(15,23,42,.28);
+  }
+  
+  /* Panel lateral derecho (un poco más ancho) */
+  .finAlertsPanel{
+    width:min(480px, 100%);
+    max-width:100%;
+    height:100%;
+    background:#ffffff;
+    box-shadow:0 20px 40px rgba(15,23,42,.25);
+    border-left:1px solid rgba(148,163,184,.35);
+    display:flex;
+    flex-direction:column;
+  
+    /* animación slide-in */
+    transform:translateX(16px);
+    opacity:0;
+    transition:
+      transform 0.22s ease-out,
+      opacity 0.22s ease-out;
+  }
+  
+  .finAlertsOverlay.is-open .finAlertsPanel{
+    transform:translateX(0);
+    opacity:1;
+  }
+  
+  /* Header del panel */
+  .finAlertsPanel__head{
+    padding:14px 18px 12px;
+    border-bottom:1px solid rgba(148,163,184,.35);
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+  }
+  
+  .finAlertsClose{
+    border:none;
+    background:transparent;
+    font-size:20px;
+    line-height:1;
+    cursor:pointer;
+    color:rgba(15,23,42,.7);
+  }
+  
+  /* ===========================
+     Tabs encabezado (Confirmaciones / Historial)
+     =========================== */
+  .finAlertsTabs{
+    display:flex;
+    border-bottom:1px solid rgba(148,163,184,.4);
+  }
+  
+  .finAlertsTab{
+    flex:1;
+    padding:10px 12px;
+    font-size:13px;
+    font-weight:500;
+    text-align:center;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid transparent;
+    cursor:pointer;
+    color:rgba(15,23,42,.75);
+  }
+  
+  .finAlertsTab.is-active{
+    color:#0f172a;
+    font-weight:600;
+    border-bottom-color:#2479FF; /* línea azul bajo la pestaña activa */
+  }
+  
+  /* Cuerpo scrollable del slide */
+  .finAlertsBody{
+    padding:12px 18px 16px;
+    overflow:auto;
+    flex:1;
+  }
+  
+  /* Listas internas */
+  .finAlertsList,
+  .finAlertsHistoryList{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:10px;
+  }
+  
+  /* Cabecera de la campanita en la card */
+  .finAlertsHead{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  
+  /* Botón campanita: contenedor azul translúcido, bordes 6px */
+  .finAlertsBtn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 8px;
+    border-radius:6px;
+    border:1px solid rgba(36,121,255,.32);
+    background:rgba(36,121,255,.06);
+    cursor:pointer;
+  }
+  
+  .finAlertsBtn:hover{
+    background:rgba(36,121,255,.12);
+  }
+  
+  .finAlertsIcon svg{
+    display:block;
+    fill:#2479FF;
+  }
+  
+  /* Badge numérico sobre la campanita */
+  .finAlertsBadge{
+    min-width:16px;
+    height:16px;
+    border-radius:999px;
+    background:#ef4444;
+    color:#ffffff;
+    font-size:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px;
+  }
+  /* ================================
+   FINANZAS – NOTIFICACIONES (slide)
+   ================================ */
+
+/* Contenedor de tarjetas de confirmaciones */
+.finAlertsList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:8px;
+}
+
+/* Tarjeta base */
+.finAlertCard{
+  position:relative;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid #e5e7eb;
+  background:#ffffff;
+  cursor:pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* Separación visual extra entre tarjetas (por si no hay gap en el DOM) */
+.finAlertCard + .finAlertCard{
+  margin-top:4px;
+}
+
+/* Hover genérico (lectura fácil) */
+.finAlertCard:hover{
+  background:#f9fbff;
+  border-color:#cbd5f5;
+  box-shadow:0 4px 14px rgba(15,23,42,0.08);
+  transform:translateY(-1px);
+}
+
+/* Accesibilidad: foco por teclado */
+.finAlertCard:focus-visible{
+  outline:2px solid #2479FF;
+  outline-offset:2px;
+}
+
+/* Variantes por estado (borde lateral + fondo suave) */
+.finAlertCard--pendiente{
+  border-left:3px solid #2479FF;
+}
+
+.finAlertCard--hoy{
+  border-left:3px solid #1D4ED8;
+  background:#f5f7ff;
+}
+
+.finAlertCard--vencido{
+  border-left:3px solid #F97316;
+  background:#fff7ed;
+}
+
+/* Cabezal de la tarjeta: título + chip de estado */
+.finAlertCard__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:4px;
+}
+
+.finAlertCard__title{
+  font-size:14px;
+  font-weight:600;
+  color:#111827;
+  line-height:1.3;
+}
+
+/* Chip de estado (base) */
+.finAlertCard__status{
+  font-size:11px;
+  font-weight:500;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+
+/* Chip – tonalidades por estado */
+.finAlertCard__status--pendiente{
+  background:rgba(36,121,255,0.08);
+  color:#1D4ED8;
+  border-color:rgba(36,121,255,0.20);
+}
+
+.finAlertCard__status--hoy{
+  background:rgba(37,99,235,0.12);
+  color:#1D4ED8;
+  border-color:rgba(37,99,235,0.28);
+}
+
+.finAlertCard__status--vencido{
+  background:rgba(248,113,113,0.12);
+  color:#B91C1C;
+  border-color:rgba(248,113,113,0.32);
+}
+
+/* Cuerpo: filas de info (cliente, monto, fecha, etc.) */
+.finAlertCard__body{
+  font-size:12px;
+  color:#4B5563;
+  display:grid;
+  gap:2px;
+  margin-top:2px;
+}
+
+/* Cada línea de detalle (opcional si el JS las genera) */
+.finAlertCard__row{
+  display:flex;
+  justify-content:space-between;
+  gap:6px;
+}
+
+.finAlertCard__label{
+  color:#6B7280;
+}
+
+.finAlertCard__value{
+  font-weight:500;
+  color:#111827;
+}
+
+/* Meta inferior: “vence hoy”, “creado hace X días”, etc. */
+.finAlertCard__meta{
+  margin-top:6px;
+  padding-top:6px;
+  border-top:1px dashed #E5E7EB;
+  font-size:11px;
+  color:#6B7280;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:4px;
+}
+
+/* Pequeños pills de meta (opcional) */
+.finAlertMetaPill{
+  padding:2px 6px;
+  border-radius:999px;
+  background:#F3F4F6;
+  font-size:11px;
+  color:#4B5563;
+}
+/* ================================
+   FINANZAS – MODAL DE CONFIRMACIÓN
+   ================================ */
+
+   .finConfirmModal{
+    position:fixed;
+    inset:0;
+    z-index:80; /* por encima del slide (70) */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:
+      opacity 0.18s ease-out,
+      visibility 0.18s ease-out;
+  }
+  
+  .finConfirmModal.is-open{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  
+  .finConfirmModal__backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(15,23,42,0.35);
+  }
+  
+  .finConfirmModal__dialog{
+    position:relative;
+    z-index:1;
+    max-width:420px;
+    width:calc(100% - 32px);
+    background:#ffffff;
+    border-radius:8px;
+    box-shadow:0 22px 45px rgba(15,23,42,0.25);
+    border:1px solid rgba(148,163,184,0.4);
+    padding:18px 20px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  
+  .finConfirmModal__title{
+    font-size:16px;
+    font-weight:600;
+    color:#111827;
+    margin:0 0 4px;
+  }
+  
+  .finConfirmModal__text{
+    font-size:14px;
+    color:#374151;
+    margin:0 0 4px;
+  }
+  
+  .finConfirmModal__note{
+    font-size:12px;
+    color:#6B7280;
+    margin:0;
+  }
+  
+  .finConfirmModal__pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:2px 8px;
+    border-radius:999px;
+    background:#EFF6FF;
+    color:#1D4ED8;
+    font-size:12px;
+    font-weight:500;
+  }
+  
+  .finConfirmModal__actions{
+    margin-top:10px;
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  
+  .finConfirmBtn{
+    min-width:96px;
+    height:34px;
+    border-radius:5px;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 12px;
+    border:1px solid transparent;
+    background:#ffffff;
+    color:#111827;
+  }
+  
+  /* Botón "Volver": solo borde */
+  .finConfirmBtn--ghost{
+    border-color:#D1D5DB;
+    background:#ffffff;
+    color:#374151;
+  }
+  
+  .finConfirmBtn--ghost:hover{
+    background:#F9FAFB;
+  }
+  
+  /* Botón "Confirmar": azul sólido */
+  .finConfirmBtn--primary{
+    background:#2479FF;
+    border-color:#2479FF;
+    color:#ffffff;
+  }
+  
+  .finConfirmBtn--primary:hover{
+    filter:brightness(0.97);
+  }
+  
+  .finConfirmBtn:disabled{
+    opacity:0.7;
+    cursor:default;
+  }
+
+  /* Estado de carga en botón "Confirmar" – barra interna 0 → 75% en 1.5s */
+  .finConfirmBtn--primary.is-loading{
+    position:relative;
+    color:transparent; /* el texto sigue en el DOM pero no se ve */
+    overflow:hidden;
+  }
+
+  .finConfirmBtn--primary.is-loading::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    width:0%;
+    border-radius:inherit;
+    background:rgba(255,255,255,0.28); /* overlay claro sobre el azul */
+    animation: finConfirmProgress 1.5s ease-out forwards;
+  }
+
+  @keyframes finConfirmProgress{
+    0%{
+      width:0%;
+    }
+    100%{
+      width:75%;
+    }
+  }
+/* =========================================================
+   FINANZAS – HISTORIAL (versión tarjetas alineadas)
+   ========================================================= */
+
+/* Contenedor de la pestaña Historial */
+#finPanelHistorial #finAlertsHistoryList {
+  max-height: none;
+  overflow: visible;
+  padding: 0 4px;
+}
+
+/* Neutralizamos el wrapper inline generado por JS */
+#finPanelHistorial #finAlertsHistoryList > div {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Tabla → convertida visualmente a lista de tarjetas */
+#finPanelHistorial .finHistTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+#finPanelHistorial .finHistTable thead {
+  display: none;
+}
+
+#finPanelHistorial .finHistTable tbody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Tarjeta base: fondo gris suave (como el fondo general de Finanzas) */
+#finPanelHistorial .finHistTable tbody tr {
+  display: block;
+  background: #EDEDED; /* gris igual al background de la app */
+  border-radius: 10px;
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 12px 14px 10px;
+  box-shadow: 0 2px 5px rgba(15,23,42,0.04);
+}
+
+/* Hover suave */
+#finPanelHistorial .finHistTable tbody tr:hover {
+  box-shadow: 0 4px 10px rgba(15,23,42,0.08);
+}
+
+/* ------------------------------------------
+   Orden visual dentro de la tarjeta
+   ------------------------------------------ */
+
+/* 1) Fecha pequeña arriba */
+#finPanelHistorial .finHistTable tbody td:nth-child(1) {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+/* 2) ID del pedido — estilo título */
+#finPanelHistorial .finHistTable tbody td:nth-child(2) {
+  display: inline-block;
+  font-weight: 600;
+  color: #111827;
+  margin-right: 12px;
+  margin-bottom: 6px;
+}
+
+#finPanelHistorial .finHistTable tbody td:nth-child(2)::before {
+  content: "Pedido ";
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* 3) Estado nuevo → CHIP CON COLOR SEGÚN ESTADO */
+#finPanelHistorial .finHistTable tbody td:nth-child(4) {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 6px;
+  color: #111827;
+  background: rgba(0,0,0,0.05); /* default fallback */
+}
+
+/* Procesado → verde */
+#finPanelHistorial .finHistTable tbody tr td:nth-child(4):contains("Procesado") {
+  background: rgba(34,197,94,0.18);
+  color: #0f5132;
+}
+
+/* Pendiente → azul transparente */
+#finPanelHistorial .finHistTable tbody tr td:nth-child(4):contains("Pendiente") {
+  background: rgba(36,121,255,0.12);
+  color: #1d4ed8;
+}
+
+/* Intervenido → rojo */
+#finPanelHistorial .finHistTable tbody tr td:nth-child(4):contains("Intervenido") {
+  background: rgba(239,68,68,0.18);
+  color: #b91c1c;
+}
+
+/* 4) Bloque inferior de info (Estado anterior, Actor, Origen) */
+#finPanelHistorial .finHistTable tbody td:nth-child(3),
+#finPanelHistorial .finHistTable tbody td:nth-child(5),
+#finPanelHistorial .finHistTable tbody td:nth-child(6) {
+  display: block;
+  font-size: 12px;
+  margin-top: 3px;
+  color: #374151;
+}
+
+#finPanelHistorial .finHistTable tbody td:nth-child(3)::before {
+  content: "Estado anterior: ";
+  font-weight: 600;
+  color: #374151;
+}
+
+#finPanelHistorial .finHistTable tbody td:nth-child(5)::before {
+  content: "Actor: ";
+  font-weight: 600;
+  color: #374151;
+}
+
+#finPanelHistorial .finHistTable tbody td:nth-child(6)::before {
+  content: "Origen: ";
+  font-weight: 600;
+  color: #374151;
+}
+/* =========================
+   FINANZAS – GRID DE COSTOS
+   ========================= */
+
+/* Grid de 4 columnas (como KPIs de Inicio) */
+.grid--4{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap:16px;
+}
+
+/* Ajustes responsive para grids de 4 columnas */
+@media (max-width: 1200px){
+  .grid--4{
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 780px){
+  .grid--4{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Contenedor específico de las cards de costos */
+.finCostsGrid{
+  margin-top:8px;
+}
+
+/* Card base de costo (icono arriba a la izquierda, hover azul).
+   Referencia: cards de Inicio (KPI) */
+.finCostCard{
+  position: relative;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+
+  padding:12px 14px;
+  border-radius:5px;
+  border:1px solid var(--border);
+  background:#ffffff;
+  box-shadow: var(--shadowSoft);
+
+  cursor:pointer;
+  transition:
+    background-color .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .12s ease;
+}
+
+/* Hover “se hace azul” como en Inicio */
+.finCostCard:hover{
+  background: rgba(36,121,255,.08);
+  border-color: rgba(36,121,255,.30);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+/* Icono squircle arriba a la izquierda */
+.finCostCard__icon{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+
+  border-radius:12px;                  /* squircle */
+  background: rgba(36,121,255,.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+
+  font-size:16px;
+  font-weight:800;
+  color:#1D2A44;
+
+  transition:
+    background-color .16s ease,
+    color .16s ease,
+    transform .12s ease;
+}
+
+/* Hover del icono: fondo azul sólido e icono blanco */
+.finCostCard:hover .finCostCard__icon{
+  background: rgba(36,121,255,.96);
+  color:#ffffff;
+  transform: translateY(-1px);
+}
+
+/* Texto interno */
+.finCostCard__meta{
+  margin-top:8px;
+}
+
+.finCostCard__label{
+  font-size:13px;
+  font-weight:750;
+  color:#111827;
+  margin-bottom:2px;
+}
+
+.finCostCard__value{
+  font-size:18px;
+  font-weight:850;
+  color:#111827;
+}
+
+/* Cards de la segunda fila: ocupan 2 columnas en desktop */
+.finCostCard--span2{
+  grid-column: span 2;
+}
+
+/* En mobile, que vuelvan a ocupar sólo 1 columna */
+@media (max-width: 780px){
+  .grid--4 .finCostCard--span2{
+    grid-column: auto;
+  }
+}
+/* TIPOGRAFÍA GLOBAL */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+/* =========================================================
+   FINANZAS · SLIDE COSTOS DE STOCK
+   Primera etapa: apertura del slide + hero card
+   ========================================================= */
+
+   .finStockOverlay{
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+  }
+  
+  .finStockOverlay.is-open{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .finStockBackdrop{
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, .18);
+    backdrop-filter: blur(1.5px);
+  }
+  
+  .finStockPanel{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 75vw;
+    max-width: 75vw;
+    height: 100%;
+    background: #EDEDED;
+    box-shadow: -14px 0 34px rgba(15, 23, 42, .12);
+    border-left: 1px solid rgba(17, 24, 39, .08);
+    transform: translateX(28px);
+    transition: transform .22s ease;
+    overflow: hidden;
+  }
+  
+  .finStockOverlay.is-open .finStockPanel{
+    transform: translateX(0);
+  }
+  
+  .finStockPanelMount{
+    height: 100%;
+  }
+  
+  .finStockPanel__loading{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+  
+  .finStockSlide{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .finStockPanel__head{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 26px 28px 20px;
+    border-bottom: 1px solid rgba(17, 24, 39, .08);
+    background: #EDEDED;
+  }
+  
+  .finStockPanel__headTxt{
+    min-width: 0;
+  }
+  
+  .finStockPanel__title{
+    margin: 6px 0 0;
+    font-size: 28px;
+    line-height: 1.05;
+    font-weight: 900;
+    color: #111827;
+  }
+  
+  .finStockPanel__sub{
+    margin: 10px 0 0;
+    max-width: 760px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: rgba(17, 24, 39, .68);
+  }
+  
+  .finStockPanel__close{
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(17, 24, 39, .10);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: var(--shadowSoft);
+    transition: transform .14s ease, background-color .16s ease, border-color .16s ease;
+  }
+  
+  .finStockPanel__close:hover{
+    transform: translateY(-1px);
+    background: rgba(36,121,255,.08);
+    border-color: rgba(36,121,255,.24);
+  }
+  
+  .finStockPanel__scroll{
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+  }
+  
+  .finStockPanel__scroll::-webkit-scrollbar{
+    width: 10px;
+  }
+  
+  .finStockPanel__scroll::-webkit-scrollbar-thumb{
+    background: rgba(17,24,39,.12);
+    border-radius: 999px;
+  }
+  
+  .finStockHeroCard{
+    display: grid;
+    grid-template-columns: minmax(280px, 1.1fr) minmax(280px, .9fr);
+    align-items: center;
+    gap: 18px;
+    padding: 28px 26px;
+    border-radius: 28px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .07);
+    border: 1px solid rgba(17,24,39,.05);
+  }
+  
+  .finStockHeroCard__meta{
+    min-width: 0;
+  }
+  
+  .finStockHeroCard__eyebrowWrap{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .finStockHeroCard__eyebrow{
+    font-size: 15px;
+    font-weight: 700;
+    color: #64748b;
+  }
+  
+  .finStockHeroCard__trend{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid rgba(17,24,39,.08);
+    background: #f8fafc;
+    color: #111827;
+  }
+  
+  .finStockHeroCard__trend.is-neutral{
+    color: #475569;
+    background: #f8fafc;
+    border-color: rgba(17,24,39,.08);
+  }
+
+  .finStockHeroCard__trend.is-up{
+    color: #15803d;
+    background: rgba(34,197,94,.10);
+    border-color: rgba(34,197,94,.22);
+  }
+  
+  .finStockHeroCard__trend.is-down{
+    color: #dc2626;
+    background: rgba(239,68,68,.10);
+    border-color: rgba(239,68,68,.22);
+  }
+  
+  .finStockSparkline{
+    display: block;
+    width: 100%;
+    height: 110px;
+  }
+  
+  .finStockHeroCard__value{
+    margin-top: 10px;
+    font-size: 54px;
+    line-height: .98;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    color: #020617;
+  }
+  
+  .finStockHeroCard__range{
+    margin-top: 12px;
+    font-size: 13px;
+    color: rgba(17, 24, 39, .60);
+  }
+  
+  .finStockHeroCard__chartWrap{
+    min-width: 0;
+  }
+  
+  .finStockHeroCard__chart{
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0 0;
+  }
+  .finStockHeroCard__empty{
+    width: 100%;
+    min-height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-radius: 5px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: center;
+    background:
+      linear-gradient(180deg, rgba(36,121,255,.08) 0%, rgba(36,121,255,0) 100%),
+      #f8fafc;
+    border: 1px dashed rgba(36,121,255,.18);
+  }
+  
+  .finStockPanel__blocks{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+  }
+  
+  .finStockMiniCard{
+    padding: 18px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid rgba(17,24,39,.05);
+    box-shadow: var(--shadowSoft);
+  }
+  
+  .finStockMiniCard--wide{
+    grid-column: span 1;
+  }
+  
+  .finStockMiniCard__label{
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(17, 24, 39, .48);
+  }
+  
+  .finStockMiniCard__value{
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1.05;
+    color: #111827;
+  }
+  
+  .finStockMiniCard__sub{
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(17, 24, 39, .68);
+  }
+  
+  @media (max-width: 1180px){
+    .finStockPanel{
+      width: 84vw;
+      max-width: 84vw;
+    }
+  
+    .finStockHeroCard{
+      grid-template-columns: 1fr;
+    }
+  
+    .finStockPanel__blocks{
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 860px){
+    .finStockPanel{
+      width: 100vw;
+      max-width: 100vw;
+    }
+  
+    .finStockPanel__head{
+      padding: 22px 18px 18px;
+    }
+  
+    .finStockPanel__scroll{
+      padding: 18px;
+    }
+  
+    .finStockPanel__title{
+      font-size: 24px;
+    }
+  
+    .finStockHeroCard__value{
+      font-size: 40px;
+    }
+  }
+  /* =========================================================
+   FINANZAS · TARJETA 21ST · COSTOS DE STOCK
+   ========================================================= */
+
+   .finCostStock21{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-height: 100%;
+  }
+
+  /* ======= INICIO · CARD COSTOS FINANCIEROS 21 ======= */
+
+.finCostCard--financial21 {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.finCostFinancial21 {
+  position: relative;
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.finCostFinancial21__headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.finCostFinancial21__kicker {
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #333333;
+}
+
+.finCostFinancial21__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.finCostFinancial21__trend.is-up {
+  color: #dc2626;
+}
+
+.finCostFinancial21__trend.is-down {
+  color: #16a34a;
+}
+
+.finCostFinancial21__trend.is-neutral {
+  color: #64748b;
+}
+
+.finCostFinancial21__trendArrow {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.finCostFinancial21__bodyRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.finCostFinancial21__left {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.finCostFinancial21__value {
+  font-size: 19px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111827;
+}
+
+.finCostFinancial21__sub {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #6b7280;
+  max-width: 210px;
+}
+
+.finCostFinancial21__right {
+  flex: 0 0 92px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.finCostFinancial21__chart {
+  width: 92px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finCostFinancial21__chartEmpty {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(36,121,255,.08) 0%, rgba(36,121,255,.02) 100%);
+}
+
+.finCostFinancial21__ctaArrow {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.finCostFinancial21__ctaArrowSvg {
+  width: 16px;
+  height: 16px;
+}
+
+.finCostFinancial21__ctaArrowSvg path {
+  fill: none;
+  stroke: #2479FF;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ======= FIN · CARD COSTOS FINANCIEROS 21 ======= */
+  
+  .finCostStock21__headerRow{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .finCostStock21__bodyRow{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(170px, .9fr);
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+  
+  .finCostStock21__left{
+    min-width: 0;
+    padding-right: 18px;
+  }
+  
+  .finCostStock21__kicker{
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  
+  .finCostStock21__trend{
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  
+  .finCostStock21__trend.is-neutral{
+    color: #64748b;
+  }
+  
+  .finCostStock21__trend.is-up{
+    color: #16a34a;
+  }
+  
+  .finCostStock21__trend.is-down{
+    color: #dc2626;
+  }
+  
+  .finCostStock21__trendArrow{
+    font-size: 16px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+  
+  .finCostStock21__value{
+    margin-top: 2px;
+    font-size: 24px;
+    line-height: 1.02;
+    font-weight: 900;
+    color: #020617;
+    letter-spacing: -.02em;
+  }
+  
+  .finCostStock21__ctaArrow{
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(-5px) translateY(2px);
+    transition:
+      opacity .24s ease,
+      transform .34s cubic-bezier(.22, 1, .36, 1);
+    pointer-events: none;
+  }
+  
+  .finCostStock21__ctaArrowSvg{
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  
+  .finCostStock21__ctaArrowSvg path{
+    fill: none;
+    stroke: #2479FF;
+    stroke-width: 1.65;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .finCostCard--stock21:hover .finCostStock21__ctaArrow,
+  .finCostCard--stock21:focus-visible .finCostStock21__ctaArrow{
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+  
+  .finCostStock21__sub{
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #94a3b8;
+  
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: calc(1.3em * 2);
+  }
+  
+  .finCostStock21__right{
+    min-width: 0;
+  }
+  
+  .finCostStock21__chart{
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .finCostStock21__chartEmpty{
+    width: 100%;
+    height: 54px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, rgba(36,121,255,.10) 0%, rgba(36,121,255,0) 100%);
+  }
+  
+  .finCostStockSparkline{
+    display: block;
+    width: 100%;
+    height: 72px;
+  }
+  
+  .finCostStockSparkline .finCostStockSparkline__line{
+    stroke: #2479FF;
+    stroke-width: 3.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  @media (max-width: 1180px){
+    .finCostStock21__bodyRow{
+      grid-template-columns: 1fr;
+    }
+  
+    .finCostStock21__left{
+      padding-right: 12px;
+    }
+  
+    .finCostStock21__chart{
+      height: 62px;
+    }
+  
+    .finCostStockSparkline{
+      height: 62px;
+    }
+  }
+  .finCostCard--stock21{
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    transition:
+      transform .16s ease,
+      box-shadow .18s ease,
+      background-color .18s ease;
+  }
+  
+  .finCostCard--stock21:hover,
+  .finCostCard--stock21:focus-visible{
+    transform: translateY(-1px);
+  }
+  /* =========================================================
+   FINANZAS · INTERIOR SLIDE COSTOS DE STOCK
+   ========================================================= */
+
+.finStockSlide{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.finStockSlideHead{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 14px;
+  background: #EDEDED;
+}
+
+.finStockSlideHead__back{
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(17,24,39,.08);
+  border-radius: 5px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.finStockSlideHead__back:hover,
+.finStockSlideHead__back:focus-visible{
+  background: rgba(36,121,255,.08);
+  border-color: rgba(36,121,255,.22);
+  transform: translateY(-1px);
+}
+
+.finStockSlideHead__backSvg{
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.finStockSlideHead__backSvg path{
+  fill: none;
+  stroke: #2479FF;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.finStockSlideHead__title{
+  font-size: 18px;
+  line-height: 1.1;
+  font-weight: 850;
+  color: #111827;
+}
+
+.finStockSlideDivider{
+  height: 1px;
+  background: rgba(17,24,39,.08);
+}
+
+.finStockSlideBody{
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.finStockSlideBody::-webkit-scrollbar{
+  width: 10px;
+}
+
+.finStockSlideBody::-webkit-scrollbar-thumb{
+  background: rgba(17,24,39,.12);
+  border-radius: 999px;
+}
+
+.finStockHeroGrid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+}
+
+.finStockInfoCard{
+  background: #ffffff;
+  border: 1px solid rgba(17,24,39,.05);
+  border-radius: 5px;
+  box-shadow: var(--shadowSoft);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 124px;
+}
+
+.finStockInfoCard--hero{
+  min-height: 118px;
+}
+
+.finStockInfoCard__label{
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(17,24,39,.50);
+}
+
+.finStockInfoCard__value{
+  margin-top: 10px;
+  font-size: 30px;
+  line-height: 1.02;
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: -.02em;
+}
+
+.finStockInfoCard__meta{
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.finStockInfoCard__meta.is-good{
+  color: #16a34a;
+}
+
+.finStockInfoCard__meta.is-warn{
+  color: #d97706;
+}
+
+.finStockInfoCard__meta.is-bad{
+  color: #dc2626;
+}
+
+.finStockBodyGrid{
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.finStockPanelCard{
+  background: #ffffff;
+  border: 1px solid rgba(17,24,39,.05);
+  border-radius: 5px;
+  box-shadow: var(--shadowSoft);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.finStockPanelCard__head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.finStockPanelCard__eyebrow{
+  font-size: 11px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(17,24,39,.48);
+}
+
+.finStockPanelCard__title{
+  margin-top: 4px;
+  font-size: 16px;
+  line-height: 1.15;
+  font-weight: 850;
+  color: #111827;
+}
+
+.finStructList{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.finStructItem{
+  border: 1px solid rgba(17,24,39,.06);
+  border-radius: 5px;
+  padding: 12px;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+  cursor: default;
+}
+
+.finStructItem:hover{
+  border-color: rgba(36,121,255,.18);
+  background: rgba(36,121,255,.03);
+}
+
+.finStructItem__top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.finStructItem__name{
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.finStructItem__share{
+  font-size: 13px;
+  font-weight: 850;
+  color: #2479FF;
+}
+
+.finStructItem__bar{
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.finStructItem__fill{
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(36,121,255,.92) 0%, rgba(36,121,255,.42) 100%);
+  transition: width .38s ease;
+}
+
+.finStructItem__meta{
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.finRiskGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+
+.finRiskMini{
+  border: 1px solid rgba(17,24,39,.06);
+  border-radius: 5px;
+  padding: 12px;
+  transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+
+.finRiskMini:hover{
+  border-color: rgba(36,121,255,.18);
+  background: rgba(36,121,255,.03);
+}
+
+.finRiskMini__label{
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(17,24,39,.48);
+}
+
+.finRiskMini__value{
+  margin-top: 7px;
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 900;
+  color: #111827;
+}
+
+.finRiskMini__value--sku{
+  font-size: 16px;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.finRiskNote{
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 5px;
+  background: rgba(36,121,255,.06);
+  border: 1px solid rgba(36,121,255,.14);
+  color: #48637f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1180px){
+  .finStockHeroGrid{
+    grid-template-columns: 1fr;
+  }
+
+  .finStockBodyGrid{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px){
+  .finRiskGrid{
+    grid-template-columns: 1fr;
+  }
+
+  .finStockInfoCard__value{
+    font-size: 26px;
+  }
+}
+/* =========================================================
+   FINANZAS · CHART EVOLUCIÓN COSTO STOCK · ESTILO 21ST
+   ========================================================= */
+
+   .finStockTrendCard{
+    margin-top: 0;
+    background: #ffffff;
+    border: 1px solid rgba(17,24,39,.05);
+    border-radius: 5px;
+    box-shadow: var(--shadowSoft);
+    padding: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 470px;
+  }
+  
+  .finStockTrendCard__head{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  
+  .finStockTrendCard__legend{
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  
+  .finStockTrendLegendItem{
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  
+  .finStockTrendLegendItem__dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex: 0 0 10px;
+  }
+  
+  .finStockTrendLegendItem__dot--primary{
+    background: #5ea2ff;
+  }
+  
+  .finStockTrendLegendItem__dot--secondary{
+    background: #b2b8c3;
+  }
+  
+  .finStockTrendLegendItem__txt{
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 700;
+    color: #64748b;
+  }
+  
+  .finStockTrendCard__body{
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockInfoCard {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperBodyGrid > .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperBodyGrid > .finStockPanelCard {
+  align-self: stretch;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperBodyGrid > .finStockPanelCard {
+  min-height: 470px;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperTableCardFull {
+  margin-top: 18px !important;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperTableWrap {
+  margin-top: 12px;
+}
+
+@media (max-width: 1180px){
+  .finOperHeroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finOperBodyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finStockTrendCard,
+  .finStockTabPanel[data-fin-stock-panel="operativo"] .finOperBodyGrid > .finStockPanelCard {
+    min-height: auto;
+  }
+}
+  
+  .finStockTrendChart{
+    position: relative;
+    width: 100%;
+    height: 360px;
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(248,250,252,.98) 0%, rgba(255,255,255,1) 100%);
+    overflow: hidden;
+  }
+  
+  .finStockTrendChart__empty{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #94a3b8;
+  }
+  
+  .finStockTrendSvg{
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .finStockTrendGrid line{
+    stroke: rgba(148,163,184,.36);
+    stroke-width: 1;
+    stroke-dasharray: 4 6;
+  }
+  
+  .finStockTrendAxisLabel{
+    fill: #8a94a6;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .finStockTrendAxisLabel--x{
+    font-size: 12px;
+  }
+  
+  .finStockTrendAxisLabel--y{
+    font-size: 11px;
+  }
+  
+  .finStockTrendArea--primary{
+    fill: url(#finStockTrendAreaPrimary);
+  }
+  
+  .finStockTrendArea--secondary{
+    fill: url(#finStockTrendAreaSecondary);
+  }
+  
+  .finStockTrendLine--primary{
+    fill: none;
+    stroke: #5ea2ff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .finStockTrendLine--secondary{
+    fill: none;
+    stroke: #b7bdc8;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .finStockTrendCrosshair{
+    stroke: #6d63ff;
+    stroke-width: 1.15;
+  }
+  
+  .finStockTrendDot{
+    stroke: #ffffff;
+    stroke-width: 2;
+  }
+  
+  .finStockTrendDot--primary{
+    fill: #2f87ff;
+  }
+  
+  .finStockTrendDot--secondary{
+    fill: #9ea6b2;
+  }
+  
+  .finStockTrendHit{
+    fill: transparent;
+    cursor: crosshair;
+  }
+  
+  .finStockTrendTooltip{
+    position: absolute;
+    min-width: 168px;
+    max-width: 220px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(17,24,39,.06);
+    box-shadow:
+      0 14px 40px rgba(15,23,42,.10),
+      0 2px 8px rgba(15,23,42,.05);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity .16s ease,
+      transform .16s ease;
+    z-index: 3;
+  }
+  
+  .finStockTrendTooltip.is-visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .finStockTrendTooltip__date{
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #9aa3af;
+    margin-bottom: 10px;
+  }
+  
+  .finStockTrendTooltip__rows{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .finStockTrendTooltip__row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  
+  .finStockTrendTooltip__left{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .finStockTrendTooltip__swatch{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex: 0 0 10px;
+  }
+  
+  .finStockTrendTooltip__swatch--primary{
+    background: #2f87ff;
+  }
+  
+  .finStockTrendTooltip__swatch--secondary{
+    background: #9ea6b2;
+  }
+  
+  .finStockTrendTooltip__label{
+    font-size: 13px;
+    line-height: 1.1;
+    color: #4b5563;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .finStockTrendTooltip__value{
+    font-size: 13px;
+    line-height: 1.1;
+    color: #111827;
+    font-weight: 800;
+    text-align: right;
+    white-space: nowrap;
+  }
+  
+  .finStockTrendDatePill{
+    position: absolute;
+    bottom: 14px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: #111318;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 800;
+    box-shadow: 0 10px 28px rgba(15,23,42,.18);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .16s ease;
+    z-index: 3;
+  }
+  
+  .finStockTrendDatePill.is-visible{
+    opacity: 1;
+  }
+  
+  .finStockTrendDatePill__txt{
+    white-space: nowrap;
+    letter-spacing: .01em;
+  }
+  
+  @media (max-width: 1180px){
+    .finStockTrendCard__head{
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .finStockTrendCard__legend{
+      justify-content: flex-start;
+    }
+  
+    .finStockTrendChart{
+      height: 330px;
+    }
+  }
+  
+  @media (max-width: 760px){
+    .finStockTrendChart{
+      height: 300px;
+    }
+  
+    .finStockTrendTooltip{
+      min-width: 156px;
+      padding: 11px 12px;
+    }
+  
+    .finStockTrendDatePill{
+      min-height: 30px;
+      padding: 0 14px;
+      font-size: 11px;
+    }
+  }
+  /* =========================================================
+   FINANZAS · HERO 21ST · % DEL BRUTO ABSORBIDO
+   ========================================================= */
+
+.finStockHeroPct21{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.finStockHeroPct21__rowTop{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.finStockHeroPct21__period{
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.finStockHeroPct21__delta{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.finStockHeroPct21__delta.is-neutral{
+  color: #64748b;
+}
+
+.finStockHeroPct21__delta.is-good{
+  color: #2479FF;
+}
+
+.finStockHeroPct21__delta.is-bad{
+  color: #dc2626;
+}
+
+.finStockHeroPct21__deltaArrow{
+  font-size: 15px;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.finStockHeroPct21__rowBody{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(138px, .92fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.finStockHeroPct21__left{
+  min-width: 0;
+  padding-right: 10px;
+}
+
+.finStockHeroPct21__value{
+  margin-top: 2px;
+  font-size: 32px;
+  line-height: 1.02;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -.02em;
+}
+
+.finStockHeroPct21__meta{
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #94a3b8;
+}
+
+.finStockHeroPct21__right{
+  min-width: 0;
+}
+
+.finStockHeroPct21__chart{
+  position: relative;
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finStockHeroPct21__chartEmpty{
+  width: 100%;
+  height: 58px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(36,121,255,.10) 0%, rgba(36,121,255,0) 100%);
+}
+
+.finStockHeroPct21__chartSvg{
+  display: block;
+  width: 100%;
+  height: 72px;
+}
+
+.finStockHeroPct21__chartArea--good{
+  fill: url(#finHeroPctAreaGood);
+}
+
+.finStockHeroPct21__chartArea--bad{
+  fill: url(#finHeroPctAreaBad);
+}
+
+.finStockHeroPct21__chartLine{
+  fill: none;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.finStockHeroPct21__chartLine--good{
+  stroke: #2479FF;
+}
+
+.finStockHeroPct21__chartLine--bad{
+  stroke: #dc2626;
+}
+
+@media (max-width: 1180px){
+  .finStockHeroPct21__rowBody{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .finStockHeroPct21__left{
+    padding-right: 0;
+  }
+
+  .finStockHeroPct21__chart{
+    height: 64px;
+  }
+
+  .finStockHeroPct21__chartSvg{
+    height: 64px;
+  }
+}
+/* =========================================================
+   FINANZAS · HERO 21ST · RELACIÓN BRUTO VS COSTO
+   ========================================================= */
+
+   .finStockHeroRatio21{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+  }
+  
+  .finStockHeroRatio21__rowTop{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  
+  .finStockHeroRatio21__period{
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+    color: #64748b;
+  }
+  
+  .finStockHeroRatio21__delta{
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  
+  .finStockHeroRatio21__delta.is-neutral{
+    color: #64748b;
+  }
+  
+  .finStockHeroRatio21__delta.is-good{
+    color: #2479FF;
+  }
+  
+  .finStockHeroRatio21__delta.is-bad{
+    color: #dc2626;
+  }
+  
+  .finStockHeroRatio21__deltaArrow{
+    font-size: 15px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+  
+  .finStockHeroRatio21__rowBody{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(138px, .92fr);
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+  
+  .finStockHeroRatio21__left{
+    min-width: 0;
+    padding-right: 10px;
+  }
+  
+  .finStockHeroRatio21__value{
+    margin-top: 2px;
+    font-size: 32px;
+    line-height: 1.02;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -.02em;
+  }
+  
+  .finStockHeroRatio21__meta{
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #94a3b8;
+  }
+  
+  .finStockHeroRatio21__right{
+    min-width: 0;
+  }
+  
+  .finStockHeroRatio21__chart{
+    position: relative;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .finStockHeroRatio21__chartEmpty{
+    width: 100%;
+    height: 58px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, rgba(36,121,255,.10) 0%, rgba(36,121,255,0) 100%);
+  }
+  
+  .finStockHeroRatio21__chartSvg{
+    display: block;
+    width: 100%;
+    height: 72px;
+  }
+  
+  .finStockHeroRatio21__chartArea--good{
+    fill: url(#finHeroRatioAreaGood);
+  }
+  
+  .finStockHeroRatio21__chartArea--bad{
+    fill: url(#finHeroRatioAreaBad);
+  }
+  
+  .finStockHeroRatio21__chartLine{
+    fill: none;
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .finStockHeroRatio21__chartLine--good{
+    stroke: #2479FF;
+  }
+  
+  .finStockHeroRatio21__chartLine--bad{
+    stroke: #dc2626;
+  }
+  
+  @media (max-width: 1180px){
+    .finStockHeroRatio21__rowBody{
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  
+    .finStockHeroRatio21__left{
+      padding-right: 0;
+    }
+  
+    .finStockHeroRatio21__chart{
+      height: 64px;
+    }
+  
+    .finStockHeroRatio21__chartSvg{
+      height: 64px;
+    }
+  }
+/* ======= INICIO · FINANZAS · TABS DEL SLIDE COSTOS DE STOCK ======= */
+
+.finStockSlideHead {
+  display: flex;
+  align-items: center;
+  padding-bottom: 12px;
+}
+
+.finStockSlideHead__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.finStockSlideHead__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.finStockSlideHead__right {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.finStockSlideHead__title {
+  margin: 0;
+  color: #101828;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.finStockTabs,
+.finStockDateTabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: #eef2f6;
+  border: 1px solid #dde3ea;
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.finStockTab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #667085;
+  min-height: 34px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.finStockTab:hover {
+  color: #344054;
+}
+
+.finStockTab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(36, 121, 255, 0.16);
+}
+
+.finStockTab.is-active {
+  background: #ffffff;
+  color: #101828;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.08),
+    0 2px 10px rgba(16, 24, 40, 0.08);
+}
+
+.finStockDateTab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #667085;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.finStockDateTab:hover {
+  color: #344054;
+}
+
+.finStockDateTab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(36, 121, 255, 0.16);
+}
+
+.finStockDateTab.is-active {
+  background: #ffffff;
+  color: #101828;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.08),
+    0 2px 10px rgba(16, 24, 40, 0.08);
+}
+
+.finStockDateGroup {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.finStockDateBar {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin: 0;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dde3ea;
+  box-shadow:
+    0 14px 30px rgba(16, 24, 40, 0.14),
+    0 2px 8px rgba(16, 24, 40, 0.08);
+}
+
+.finStockDateBar[hidden] {
+  display: none !important;
+}
+
+.finStockDateBar__fields {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.finStockDateBar__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.finStockDateBar__label {
+  display: none;
+}
+
+.finStockDateBar__input {
+  width: 140px;
+  min-width: 140px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #101828;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.finStockDateBar__input:focus {
+  outline: none;
+  border-color: #2479FF;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, 0.10);
+}
+
+.finStockDateBar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.finStockDateBar__btn {
+  appearance: none;
+  border: 0;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.finStockDateBar__btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.99);
+}
+
+.finStockDateBar__btn:active {
+  transform: translateY(0);
+}
+
+.finStockDateBar__btn--secondary {
+  background: #eef2f6;
+  color: #344054;
+  border: 1px solid #dde3ea;
+}
+
+.finStockDateBar__btn--primary {
+  background: #2479FF;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(36, 121, 255, 0.24);
+}
+
+.finStockDateBar__btn--primary:hover {
+  box-shadow: 0 10px 22px rgba(36, 121, 255, 0.30);
+  filter: brightness(1.02);
+}
+
+.finStockDateBar__btn.is-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.96;
+  padding-right: 34px;
+}
+
+.finStockDateBar__btn.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  animation: finStockBtnSpin 0.75s linear infinite;
+}
+
+@keyframes finStockBtnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.finStockTabPanel {
+  display: none;
+  width: 100%;
+}
+
+.finStockTabPanel.is-active {
+  display: block;
+}
+
+.finStockOperativoBlank {
+  width: 100%;
+  min-height: 320px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.finStockPanelCard--placeholder {
+  min-height: 220px;
+}
+
+.finStockPanelPlaceholder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 2px 2px;
+}
+
+.finStockPanelPlaceholder__title {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.finStockPanelPlaceholder__text {
+  max-width: 720px;
+  color: #667085;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+@media (max-width: 1280px) {
+  .finStockSlideHead {
+    align-items: flex-start;
+  }
+
+  .finStockSlideHead__main {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .finStockSlideHead__right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .finStockDateBar {
+    right: auto;
+    left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .finStockTabs,
+  .finStockDateTabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .finStockTabs::-webkit-scrollbar,
+  .finStockDateTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .finStockDateBar {
+    flex-wrap: wrap;
+    min-width: 280px;
+  }
+
+  .finStockDateBar__fields,
+  .finStockDateBar__actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* ======= FIN · FINANZAS · TABS DEL SLIDE COSTOS DE STOCK ======= */
+/* ======= INICIO · FINANZAS · TAB COSTO OPERATIVO ======= */
+
+.finOperHeroGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.finOperBodyGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.58fr) minmax(320px, 0.88fr);
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.finOperStructList {
+  gap: 14px;
+}
+
+.finOperRiskGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.finOperTableWrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-top: 10px;
+}
+
+.finOperTableCardFull {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 18px;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockInfoCard {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard {
+  min-height: 100%;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperTableCardFull {
+  align-self: stretch;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finOperTableCardFull .finOperTableWrap {
+  margin-top: 12px;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard > * + *,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard > * + * {
+  margin-top: 12px;
+}
+
+.finOperBodyGrid > .finStockTrendCard,
+.finOperBodyGrid > .finStockPanelCard {
+  min-width: 0;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockInfoCard {
+  box-sizing: border-box;
+}
+
+.finOperTable {
+  width: 100%;
+  min-width: 760px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.finOperTable__head {
+  background: #f8fafc;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.finOperTable__row {
+  display: grid;
+  grid-template-columns: 1.15fr 0.8fr 0.9fr 0.9fr 1fr 0.8fr;
+  align-items: center;
+}
+
+.finOperTable__row--head .finOperTable__cell {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 14px 16px;
+}
+
+.finOperTable__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.finOperTable__body .finOperTable__row {
+  min-height: 56px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  background: #ffffff;
+}
+
+.finOperTable__body .finOperTable__row:last-child {
+  border-bottom: 0;
+}
+
+.finOperTable__cell {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.finOperTable__body .finOperTable__cell:first-child {
+  font-weight: 700;
+}
+
+.finOperTable__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockTrendCard,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockInfoCard {
+  min-height: 100%;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockPanelCard__title,
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finStockInfoCard__label {
+  word-break: break-word;
+}
+
+.finStockTabPanel[data-fin-stock-panel="operativo"] .finRiskNote {
+  margin-top: 16px;
+}
+
+@media (max-width: 1180px) {
+  .finOperRiskGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .finOperRiskGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finOperTable {
+    min-width: 680px;
+  }
+}
+
+/* ======= FIN · FINANZAS · TAB COSTO OPERATIVO ======= */
+/* ======= INICIO · TOOLTIP EXPLICATIVO · FINANZAS STOCK/OPERATIVO ======= */
+
+.finInfoTip {
+  position: fixed;
+  z-index: 9999;
+  max-width: 290px;
+  background: #2479FF;
+  color: #FFFFFF;
+  border-radius: 15px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.24);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.finInfoTip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.finInfoTip__title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 7px;
+  color: #FFFFFF;
+}
+
+.finInfoTip__text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.96);
+}
+
+.finInfoTipTarget {
+  cursor: help;
+}
+
+/* ======= FIN · TOOLTIP EXPLICATIVO · FINANZAS STOCK/OPERATIVO ======= */
+.finStockTabPanel[data-fin-stock-panel="stock"] .finStockTrendCard{
+  margin-top: 18px;
+}

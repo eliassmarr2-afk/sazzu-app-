@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif !important;
+    }
+  </style>
+  
+  <!-- FUENTES -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- 👉 Pega aquí el código que te di -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Tamil:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="view-transition" content="same-origin">
+  <title>Sazzú Control Tower</title>
+
+  <!-- CSS base del sistema -->
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/layout.css">
+  <link rel="stylesheet" href="./css/panel.css">
+  <link rel="stylesheet" href="./css/sidebar.css">
+
+  <!-- Override opcional -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body data-page="home">
+  <div class="appShell">
+    <div class="bodyGrid">
+      <!-- Sidebar -->
+      <aside class="sidebar" aria-label="Navegación" data-include="sidebar"></aside>
+
+      <!-- Main -->
+      <main class="main" aria-label="Contenido principal">
+
+        <!-- Header interno blanco -->
+        <header class="appHeader" aria-label="Encabezado general">
+          <div class="appHeader__left">
+            <div class="appHeader__title">Inicio</div>
+            <div class="appHeader__sub">Resumen operativo</div>
+          </div>
+
+          <div class="appHeader__right">
+            <div
+              class="u-row u-row--center"
+              style="gap:8px; flex-wrap:wrap; justify-content:flex-end;"
+            >
+              <span class="u-muted" style="font-size:13px;">Fecha</span>
+
+              <label class="u-muted" for="dtFrom" style="font-size:13px;">Desde</label>
+              <input id="dtFrom" type="date" class="u-input" style="max-width:140px;" />
+
+              <label class="u-muted" for="dtTo" style="font-size:13px;">Hasta</label>
+              <input id="dtTo" type="date" class="u-input" style="max-width:140px;" />
+
+              <button
+              id="btnApplyRange"
+              class="btn btn--primary"
+              type="button"
+              style="white-space:nowrap;"
+            >
+              Aplicar
+            </button>
+            
+            <button
+              id="btnApplyRangeGlobal"
+              class="btn"
+              type="button"
+              style="white-space:nowrap;"
+            >
+              Aplicar a todos
+            </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Barra de carga de Inicio -->
+        <div class="appLoadingBar" id="homeLoadingBar" aria-hidden="true">
+          <div class="appLoadingBar__inner"></div>
+        </div>
+
+        <!-- KPIs superiores -->
+        <section class="grid grid--3">
+          <!-- KPI 1 -->
+          <div class="u-card kpiCard">
+            <div class="u-cardInner kpi">
+              <div class="kpi__top">
+                <div class="kpi__left">
+                  <div class="kpiIconWrap" aria-hidden="true">
+                    <svg class="kpiIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
+                      <path d="M480-320q-33 0-56.5-23.5T400-400q0-33 23.5-56.5T480-480q33 0 56.5 23.5T560-400q0 33-23.5 56.5T480-320ZM295-680h370l80-160H215l80 160Zm41 560h288q90 0 153-62.5T840-336q0-38-13-74t-37-65L686-600H274L170-475q-24 29-37 65t-13 74q0 91 62.5 153.5T336-120Z"/>
+                    </svg>
+                  </div>
+
+                  <div class="u-sectionLabel">Facturación a valor futuro</div>
+                </div>
+                <span class="kpi__trend" id="kpiFacturacionTrend">+0%</span>
+              </div>
+
+              <div class="kpi__value" id="kpiFacturacion">$0</div>
+              <div class="kpi__hint">Rango seleccionado</div>
+            </div>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="u-card kpiCard">
+            <div class="u-cardInner kpi">
+              <div class="kpi__top">
+                <div class="kpi__left">
+                  <div class="kpiIconWrap" aria-hidden="true">
+                    <svg class="kpiIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
+                      <path d="M360-120q-100 0-170-70t-70-170v-240q0-100 70-170t170-70h240q100 0 170 70t70 170v240q0 100-70 170t-170 70H360Zm80-200 240-240-56-56-184 184-88-88-56 56 144 144Z"/>
+                    </svg>
+                  </div>
+
+                  <div class="u-sectionLabel">Pedidos</div>
+                </div>
+                <span class="kpi__trend" id="kpiPedidosTrend">+0%</span>
+              </div>
+
+              <div class="kpi__value" id="kpiPedidos">0</div>
+              <div class="kpi__hint">Hoy</div>
+            </div>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="u-card kpiCard">
+            <div class="u-cardInner kpi">
+              <div class="kpi__top">
+                <div class="kpi__left">
+                  <div class="kpiIconWrap" aria-hidden="true">
+                    <svg class="kpiIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
+                      <path d="M80-120v-80h360v-447q-26-9-45-28t-28-45H240l120 280q0 50-41 85t-99 35q-58 0-99-35t-41-85l120-280h-80v-80h247q12-35 43-57.5t70-22.5q39 0 70 22.5t43 57.5h247v80h-80l120 280q0 50-41 85t-99 35q-58 0-99-35t-41-85l120-280H593q-9 26-28 45t-45 28v447h360v80H80Zm585-320h150l-75-174-75 174Zm-520 0h150l-75-174-75 174Zm335-280q17 0 28.5-11.5T520-760q0-17-11.5-28.5T480-800q-17 0-28.5 11.5T440-760q0 17 11.5 28.5T480-720Z"/>
+                    </svg>
+                  </div>
+
+                  <div class="u-sectionLabel">Ticket promedio</div>
+                </div>
+                <span class="kpi__trend" id="kpiTicketTrend">+0%</span>
+              </div>
+
+              <div class="kpi__value" id="kpiTicket">$0</div>
+              <div class="kpi__hint">Hoy</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pedidos recientes + Top productos -->
+        <section class="grid grid--3 homeRow">
+          <!-- Pedidos recientes -->
+          <section class="u-card u-card--ordersCompact homeSpan2">
+            <div class="u-cardInner u-cardInner--tight">
+              <div class="blockTitle blockTitle--orders">
+                <div class="blockTitle__left">
+                  <h3>Pedidos recientes</h3>
+                  <span class="u-sectionLabel" id="pedidosInfo">Cargando…</span>
+                </div>
+
+                <div class="ordersPager" aria-label="Paginación de pedidos">
+                  <button class="pagerBtn pagerBtn--icon" id="btnPrevOrders" type="button" disabled aria-label="Anterior">‹</button>
+                  <div class="pagerMeta" id="ordersPagerMeta">—</div>
+                  <button class="pagerBtn pagerBtn--icon pagerBtn--primary" id="btnNextOrders" type="button" disabled aria-label="Siguiente">›</button>
+                </div>
+              </div>
+
+              <div id="lista-pedidos" class="list ordersList ordersList--compact" aria-label="Listado de pedidos">
+                <div class="u-muted" style="font-size:14px;">Cargando pedidos…</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Top productos -->
+          <section class="u-card topProdCard" role="button" tabindex="0" aria-label="Top productos: SKUs por ingresos">
+            <div class="u-cardInner topProdCard__inner">
+
+              <div class="topProdCard__top">
+                <div class="topProdIconWrap" aria-hidden="true">
+                  <svg class="topProdIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
+                    <path d="M120-120v-80h720v80H120Zm80-160v-320h120v320H200Zm220 0v-520h120v520H420Zm220 0v-200h120v200H640Z"/>
+                  </svg>
+                </div>
+
+                <div class="topProdCard__txt">
+                  <div class="topProdCard__title">Top 5 productos</div>
+                  <div class="topProdCard__sub">SKUs POR INGRESOS</div>
+                </div>
+              </div>
+
+              <div class="topProdCard__metaLine">
+                <div class="topProdRange" id="topProdRange">Datos —</div>
+                <div class="topProdTotal" id="topProdTotal">$0</div>
+              </div>
+
+              <div class="topProdList" id="topProdList" aria-label="Ranking top 5 por ingresos">
+                <div class="u-muted" style="font-size:14px; color: rgba(17,24,39,.75);">Cargando…</div>
+              </div>
+
+            </div>
+          </section>
+          
+        </section>
+
+        <!-- Demanda + Motor interno -->
+        <section class="homeDemandRow" aria-label="Demanda y Motor interno">
+
+          <!-- Demanda -->
+          <section class="u-card homeWideCard demandCardWide" id="demandCard" aria-label="Demanda por hora">
+            <div class="u-cardInner">
+              <div class="blockTitle">
+                <h3>Picos de demanda (horario)</h3>
+
+                <div class="demandTabs" role="tablist" aria-label="Días">
+                  <button class="demandTab is-active" type="button" data-day="0" role="tab">L</button>
+                  <button class="demandTab" type="button" data-day="1" role="tab">M</button>
+                  <button class="demandTab" type="button" data-day="2" role="tab">M</button>
+                  <button class="demandTab" type="button" data-day="3" role="tab">J</button>
+                  <button class="demandTab" type="button" data-day="4" role="tab">V</button>
+                  <button class="demandTab" type="button" data-day="5" role="tab">S</button>
+                  <button class="demandTab" type="button" data-day="6" role="tab">D</button>
+                </div>
+              </div>
+
+              <div class="demandMeta">
+                <div class="demandRange" id="demandRange">—</div>
+                <div class="demandKpis">
+                  <span class="demandPill" id="demandTotal">Total: —</span>
+                  <span class="demandPill demandPill--soft" id="demandPeak">Pico: —</span>
+                </div>
+              </div>
+
+              <div class="demandChartWrap demandChartWrap--wide">
+                <div class="demandChartStage" id="demandStage">
+                  <svg class="demandSpark demandSpark--wide" id="demandSpark" viewBox="0 0 600 90" preserveAspectRatio="none" aria-label="Demanda por hora">
+                    <path id="demandPath" d="" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <circle id="demandDot" cx="0" cy="0" r="4.2" fill="currentColor" opacity="0"></circle>
+                  </svg>
+
+                  <div class="demandTip" id="demandTip" hidden>
+                    <div class="demandTip__t" id="demandTipT">—</div>
+                    <div class="demandTip__v" id="demandTipV">—</div>
+                  </div>
+                </div>
+
+                <div class="demandHours demandHours--wide" id="demandHours"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Motor interno -->
+          <section class="u-card homeWideCard" aria-label="Bloque operativo interno">
+            <div class="u-cardInner u-cardInner--tight">
+              <div class="blockTitle">
+                <div class="blockTitle__left">
+                  <h3>Motor interno</h3>
+                  <span class="u-sectionLabel">AUTOMATIZACIÓN Y REGLAS</span>
+                </div>
+                <div class="u-muted" style="font-size:13px;">Estado: pendiente de configuración</div>
+              </div>
+
+              <div id="motor-interno" class="homeWideCard__body">
+                <div class="homeStateGrid" aria-label="Conteo por estado logístico (AG)">
+                  <div class="homeStateItem">
+                    <span class="stateBadge state--green">Entregado</span>
+                    <div class="homeStateValue" id="miEntregado">0</div>
+                  </div>
+
+                  <div class="homeStateItem">
+                    <span class="stateBadge state--navy">Despachado</span>
+                    <div class="homeStateValue" id="miDespachado">0</div>
+                  </div>
+
+                  <div class="homeStateItem">
+                    <span class="stateBadge state--sky">Pendiente</span>
+                    <div class="homeStateValue" id="miPendiente">0</div>
+                  </div>
+
+                  <div class="homeStateItem">
+                    <span class="stateBadge state--red">Intervenido</span>
+                    <div class="homeStateValue" id="miIntervenido">0</div>
+                  </div>
+                </div>
+
+                <div class="u-muted" style="font-size:12px; margin-top:10px;">
+                  Fuente: columna AG (Estado en logística) dentro del rango seleccionado.
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="./js/app.js"></script>
+  <script src="./js/home.js"></script>
+</body>
+</html>

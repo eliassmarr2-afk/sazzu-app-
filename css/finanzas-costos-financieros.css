@@ -1,0 +1,370 @@
+/* ======= INICIO · SLIDE COSTOS FINANCIEROS ======= */
+
+.finFinancialOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 180ms ease,
+      visibility 180ms ease;
+  }
+  
+  .finFinancialOverlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  
+  .finFinancialBackdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+  
+  .finFinancialOverlay.is-open .finFinancialBackdrop {
+    opacity: 1;
+  }
+  
+  .finFinancialPanel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 75%;
+    height: 100%;
+    background: #EDEDED;
+    box-shadow: -16px 0 40px rgba(15, 23, 42, 0.14);
+    overflow: hidden;
+    transform: translateX(100%);
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+  }
+  
+  .finFinancialOverlay.is-open .finFinancialPanel {
+    transform: translateX(0);
+  }
+  
+  .finFinancialPanelMount {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+  
+  .finFinancialPanel__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 32px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+  
+  /* ======= SLIDE INTERNO ======= */
+  
+  .finFinSlide {
+    min-height: 100%;
+    background: #EDEDED;
+    color: #1f2937;
+  }
+  
+  .finFinSlide__header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #EDEDED;
+  }
+  
+  .finFinSlide__headerInner {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 28px;
+  }
+  
+  .finFinSlide__title {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #111827;
+  }
+  
+  .finFinSlide__close {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(17, 24, 39, 0.10);
+    border-radius: 10px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 160ms ease,
+      border-color 160ms ease,
+      transform 160ms ease;
+  }
+  
+  .finFinSlide__close:hover {
+    background: #f8fafc;
+    border-color: rgba(17, 24, 39, 0.18);
+  }
+  
+  .finFinSlide__close:active {
+    transform: scale(0.98);
+  }
+  
+  .finFinSlide__divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(17, 24, 39, 0.08);
+  }
+  
+  .finFinSlide__body {
+    padding: 24px 28px 30px;
+  }
+  
+  .finFinSlide__bodyInner {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  
+  /* ======= HERO ======= */
+  
+  .finFinHero {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  
+  .finFinCard {
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.06);
+    border-radius: 5px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    padding: 18px 18px 16px;
+    min-height: 122px;
+  }
+  
+  .finFinCard__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+  }
+  
+  .finFinCard__value {
+    margin-top: 12px;
+    font-size: 30px;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #111827;
+  }
+  
+  .finFinCard__sub {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #6b7280;
+  }
+  
+  /* ======= LAYOUT PRINCIPAL ======= */
+  
+  .finFinContent {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+    gap: 18px;
+    align-items: start;
+  }
+  
+  .finFinFullRow {
+    display: block;
+  }
+  
+  .finFinPanelCard--full {
+    width: 100%;
+  }
+  
+  .finFinChartBox--large {
+    min-height: 360px;
+  }
+
+  .finFinMainCol {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  .finFinSideCol {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  /* ======= TARJETAS DE PANEL ======= */
+  
+  .finFinPanelCard {
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.06);
+    border-radius: 5px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    padding: 18px;
+  }
+  
+  .finFinPanelCard--side {
+    min-height: 100%;
+  }
+  
+  .finFinPanelCard__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  
+  .finFinPanelCard__kicker {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+  }
+  
+  .finFinPanelCard__title {
+    margin: 6px 0 0;
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  /* ======= BOXES DE GRÁFICO ======= */
+  
+  .finFinChartBox {
+    min-height: 320px;
+    border: 1px dashed rgba(36, 121, 255, 0.20);
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,249,252,0.96) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+  
+  .finFinChartBox__empty {
+    max-width: 420px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #6b7280;
+  }
+  
+  /* ======= NOTIFICACIONES ======= */
+  
+  .finFinNotifyList {
+    min-height: 520px;
+    max-height: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px dashed rgba(36, 121, 255, 0.20);
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,249,252,0.96) 100%);
+    padding: 16px;
+  }
+  
+  .finFinNotifyList__empty {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #6b7280;
+  }
+  
+  /* ======= RESPONSIVE ======= */
+  
+  @media (max-width: 1400px) {
+    .finFinHero {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 1100px) {
+    .finFinancialPanel {
+      width: 88%;
+    }
+  
+    .finFinContent {
+      grid-template-columns: 1fr;
+    }
+  
+    .finFinNotifyList {
+      min-height: 280px;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .finFinancialPanel {
+      width: 100%;
+    }
+  
+    .finFinSlide__headerInner {
+      padding: 0 18px;
+      min-height: 66px;
+    }
+  
+    .finFinSlide__title {
+      font-size: 20px;
+    }
+  
+    .finFinSlide__body {
+      padding: 18px 18px 24px;
+    }
+  
+    .finFinHero {
+      grid-template-columns: 1fr;
+    }
+  
+    .finFinCard__value {
+      font-size: 26px;
+    }
+  
+    .finFinPanelCard__title {
+      font-size: 18px;
+    }
+  
+    .finFinChartBox {
+      min-height: 260px;
+    }
+  }
+  
+  /* ======= FIN · SLIDE COSTOS FINANCIEROS ======= */
+
+  .finFinNotifyList {
+    min-height: 520px;
+    max-height: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px dashed rgba(36, 121, 255, 0.20);
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,249,252,0.96) 100%);
+    padding: 16px;
+  }

@@ -1,0 +1,132 @@
+<section class="finFinSlide" aria-label="Slide de costos financieros">
+    <header class="finFinSlide__header">
+      <div class="finFinSlide__headerInner">
+        <h2 class="finFinSlide__title">Costos financieros</h2>
+  
+        <button
+          type="button"
+          class="finFinSlide__close"
+          id="finFinancialClose"
+          aria-label="Cerrar slide de costos financieros"
+        >
+          ×
+        </button>
+      </div>
+  
+      <div class="finFinSlide__divider" aria-hidden="true"></div>
+    </header>
+  
+    <div class="finFinSlide__body">
+      <div class="finFinSlide__bodyInner">
+  
+        <section class="finFinHero" aria-label="Resumen financiero">
+          <article class="finFinCard">
+            <div class="finFinCard__label">Retención real promedio</div>
+            <div class="finFinCard__value" id="finFinHeroRetAvg">0%</div>
+            <div class="finFinCard__sub">Promedio consolidado sobre bruto.</div>
+          </article>
+  
+          <article class="finFinCard">
+            <div class="finFinCard__label">Retención total</div>
+            <div class="finFinCard__value" id="finFinHeroRetTotal">$ 0</div>
+            <div class="finFinCard__sub">Monto retenido por la pasarela.</div>
+          </article>
+  
+          <article class="finFinCard">
+            <div class="finFinCard__label">Promedio de cuotas</div>
+            <div class="finFinCard__value" id="finFinHeroAvgInst">0</div>
+            <div class="finFinCard__sub">Promedio de cuotas elegidas por compra.</div>
+          </article>
+  
+          <article class="finFinCard">
+            <div class="finFinCard__label">Brecha bruto vs neto</div>
+            <div class="finFinCard__value" id="finFinHeroGap">$ 0</div>
+            <div class="finFinCard__sub">Diferencia entre N y V.</div>
+          </article>
+        </section>
+  
+        <section class="finFinContent" aria-label="Contenido analítico del slide">
+          <div class="finFinMainCol">
+  
+            <article class="finFinPanelCard">
+              <div class="finFinPanelCard__head">
+                <div>
+                  <div class="finFinPanelCard__kicker">Tendencia</div>
+                  <h3 class="finFinPanelCard__title">Costo financiero total (%)</h3>
+                </div>
+              </div>
+  
+              <div
+                class="finFinChartBox"
+                id="finFinTrendChart"
+                aria-label="Gráfico de tendencia del costo financiero total"
+              >
+                <div class="finFinChartBox__empty">
+                  Acá vamos a renderizar la evolución de W en porcentaje.
+                </div>
+              </div>
+            </article>
+  
+            <article class="finFinPanelCard">
+              <div class="finFinPanelCard__head">
+                <div>
+                  <div class="finFinPanelCard__kicker">Brecha</div>
+                  <h3 class="finFinPanelCard__title">Bruto vs neto después de costos</h3>
+                </div>
+              </div>
+  
+              <div
+                class="finFinChartBox"
+                id="finFinGapChart"
+                aria-label="Gráfico de brecha entre bruto y neto"
+              >
+                <div class="finFinChartBox__empty">
+                  Acá vamos a renderizar la diferencia entre N y V.
+                </div>
+              </div>
+            </article>
+  
+          </div>
+  
+          <aside class="finFinSideCol" aria-label="Notificaciones de ingreso">
+            <article class="finFinPanelCard finFinPanelCard--side">
+              <div class="finFinPanelCard__head">
+                <div>
+                  <div class="finFinPanelCard__kicker">Seguimiento</div>
+                  <h3 class="finFinPanelCard__title">Notificaciones de ingreso</h3>
+                </div>
+              </div>
+  
+              <div class="finFinNotifyList" id="finFinNotifyList">
+                <div class="finFinNotifyList__empty">
+                  Acá vamos a listar compras con ingreso hoy, futuro o a corroborar.
+                </div>
+              </div>
+            </article>
+          </aside>
+        </section>
+  
+        <section class="finFinFullRow" aria-label="Análisis de cuotas">
+          <article class="finFinPanelCard finFinPanelCard--full">
+            <div class="finFinPanelCard__head">
+              <div>
+                <div class="finFinPanelCard__kicker">Cuotas</div>
+                <h3 class="finFinPanelCard__title">Promedio de cuotas elegidas por día</h3>
+              </div>
+            </div>
+  
+            <div
+              class="finFinChartBox finFinChartBox--large"
+              id="finFinInstallmentsChart"
+              aria-label="Gráfico de promedio de cuotas por día"
+            >
+              <div class="finFinChartBox__empty">
+                Acá vamos a renderizar el promedio de cuotas elegidas por día.
+              </div>
+            </div>
+          </article>
+        </section>
+  
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,417 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  body {
+    height: 100vh;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* IZQUIERDA */
+  .left-panel {
+    width: 40%;
+    background: #2479FF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  
+  
+  .left-panel h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+  }
+  
+  .left-panel p {
+    opacity: 0.8;
+  }
+  
+  /* DERECHA */
+  .right-panel {
+    width: 60%;
+    background: #0F172A;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
+  
+  .login-box {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-box h2 {
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  /* GOOGLE */
+  .google-btn {
+    background: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    cursor: pointer;
+  }
+  
+  /* DIVIDER */
+  .divider {
+    text-align: center;
+    color: #999;
+    margin: 15px 0;
+  }
+  
+  /* INPUTS */
+  .login-box input {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+  }
+  
+  /* LOGIN */
+  .login-btn {
+    background: #2479FF;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  /* LOGIN BOX */
+.login-box {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-box h2 {
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  /* GOOGLE BUTTON */
+  .google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .google-btn img {
+    width: 18px;
+  }
+  
+  /* DIVIDER */
+  .divider {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    margin: 15px 0;
+  }
+  
+  /* INPUTS */
+  .login-box input {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+  }
+  
+  /* LOGIN BUTTON */
+  .login-btn {
+    background: #0F172A;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  /* BANNER CONTENT */
+  .banner-content {
+    text-align: center;
+    max-width: 400px;
+  }
+  
+  .banner-content h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .banner-content p {
+    opacity: 0.7;
+  }
+  
+  #typed-text {
+    font-size: 42px;
+    line-height: 1.3;
+    font-weight: 600;
+    text-align: left;
+    max-width: 500px;
+  }
+  
+  /* Colores por concepto */
+  .word-data {
+    color: #38BDF8; /* celeste */
+  }
+  
+  .word-action {
+    color: #22C55E; /* verde */
+  }
+  
+  .word-efficiency {
+    color: #FACC15; /* amarillo */
+  }
+  
+  /* Cursor */
+  .cursor {
+    display: inline-block;
+    margin-left: 5px;
+    width: 2px;
+    background: white;
+    animation: blink 1s infinite;
+    height: 1em;
+    vertical-align: bottom;
+  }
+  
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+  }
+  /* =========================
+   ESCENA PRO
+========================= */
+
+.shapes-scene {
+    margin-top: 60px;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 220px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+  
+  
+  /* =========================
+     FORMAS
+  ========================= */
+  
+  .shape {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.6);
+    animation: appear 0.6s forwards ease, floatSoft 4s ease-in-out infinite;
+    box-shadow: 0 0 12px rgba(255,255,255,0.15);
+  }
+  
+  
+  /* POSICIONES CORRECTAS */
+.circle   { left: 20%; top: 80px; }
+.square   { left: 35%; top: 80px; }
+.triangle { left: 50%; top: 80px; }
+.pentagon { left: 65%; top: 80px; }
+.hexagon  { left: 80%; top: 80px; }
+
+  
+  /* COLORES + FORMAS */
+  
+  .circle {
+    background: #38BDF8;
+    border-radius: 50%;
+    animation-delay: 0s;
+    box-shadow: 0 0 20px rgba(56,189,248,0.6);
+  }
+  
+  
+  .square {
+    background: #22C55E;
+    animation-delay: 1s;
+    box-shadow: 0 0 20px rgba(34,197,94,0.6);
+  }
+  
+  
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 21px solid transparent;
+    border-right: 21px solid transparent;
+    border-bottom: 42px solid #FACC15;
+    animation-delay: 2s;
+    filter: drop-shadow(0 0 10px rgba(250,204,21,0.6));
+  }
+  
+  .pentagon {
+    background: #A78BFA;
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    animation-delay: 3s;
+    box-shadow: 0 0 20px rgba(167,139,250,0.6);
+  }
+  
+  
+  .hexagon {
+    background: #FB7185;
+    clip-path: polygon(
+      25% 0%, 75% 0%,
+      100% 50%, 75% 100%,
+      25% 100%, 0% 50%
+    );
+    animation-delay: 4s;
+    box-shadow: 0 0 20px rgba(251,113,133,0.6);
+  }
+  
+  
+  /* APARICIÓN */
+  @keyframes appear {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes floatSoft {
+    0% { transform: translateX(-50%) translateY(0px); }
+    50% { transform: translateX(-50%) translateY(-4px); }
+    100% { transform: translateX(-50%) translateY(0px); }
+  }
+  
+  /* =========================
+     LÍNEAS BASE
+  ========================= */
+  
+  .line {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.8),
+      rgba(255,255,255,0.05)
+    );
+    top: 100px;
+    transform: translateX(-50%);
+  }
+  
+  
+  
+  /* CONEXIONES */
+  .l1 { left: 27.5%; width: 10%; }
+.l2 { left: 42.5%; width: 10%; }
+.l3 { left: 42.5%; width: 25%; }
+
+  
+  /* =========================
+     FLUJO (ENERGÍA)
+  ========================= */
+  
+  .flow {
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, white);
+    top: 100px;
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  
+  
+  /* ANIMACIONES DE FLUJO */
+  
+  .flow1 {
+    left: 27.5%;
+    animation: move1 2s infinite;
+    animation-delay: 1s;
+  }
+  
+  .flow2 {
+    left: 42.5%;
+    animation: move2 2s infinite;
+    animation-delay: 2s;
+  }
+  
+  .flow3 {
+    left: 42.5%;
+    animation: move3 2s infinite;
+    animation-delay: 2.2s;
+  }
+  
+  
+  /* MOVIMIENTOS */
+  
+  @keyframes move1 {
+    0% { transform: translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateX(60px); opacity: 0; }
+  }
+  
+  @keyframes move2 {
+    0% { transform: translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateX(60px); opacity: 0; }
+  }
+  
+  @keyframes move3 {
+    0% { transform: translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateX(150px); opacity: 0; }
+  }
+  
+  /* LINK OLVIDÉ CONTRASEÑA */
+.forgot {
+    color: #1E90FF;
+    font-size: 13px;
+    margin-top: 8px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  /* BOTÓN CREAR CUENTA */
+  .create-account {
+    margin-top: 15px;
+    background: #f5f5f5;
+    color: #111;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  /* LINK INFO */
+  .what-is {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #111;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .logo {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 60px;
+  }
+  

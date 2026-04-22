@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="view-transition" content="same-origin">
+  <title>Pedidos · Sazzú Control Tower</title>
+
+  <!-- CSS base del sistema -->
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
+  
+  <!-- (Opcional) tu style.css anterior, por si lo querés mantener como override -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body data-page="pedidos">
+  <div class="appShell">
+    <div class="bodyGrid">
+
+      <!-- Sidebar -->
+     <!-- Sidebar (inyectado por app.js) -->
+<aside class="sidebar" aria-label="Navegación" data-include="sidebar"></aside>
+
+
+      <!-- Main -->
+      <main class="main" aria-label="Contenido principal">
+
+        <!-- Header interno -->
+        <header class="appHeader" aria-label="Encabezado general">
+          <div class="appHeader__left">
+            <div class="appHeader__title">Pedidos</div>
+            <div class="appHeader__sub">Centro operativo</div>
+          </div>
+
+          <div class="appHeader__right">
+            <button class="iconBtn" type="button" title="Buscar">⌕</button>
+            <button class="iconBtn" type="button" title="Notificaciones">🔔</button>
+
+            <!-- (Opcional) Reusamos tu dateFilter exactamente igual -->
+            <div class="dateFilter" id="dateFilter">
+              <button class="dateFilter__btn" id="btnToggleDates" type="button" aria-haspopup="true" aria-expanded="false">
+                Fechas
+              </button>
+
+              <div class="dateFilter__panel" id="datePanel" aria-label="Selector de fechas" hidden>
+                <div class="dateFilter__presets">
+                  <button class="filterPill" type="button" data-preset="today">Hoy</button>
+                  <button class="filterPill" type="button" data-preset="yesterday">Ayer</button>
+                  <button class="filterPill" type="button" data-preset="last7">Últimos 7 días</button>
+                  <button class="filterPill" type="button" data-preset="month">Este mes</button>
+                </div>
+
+                <div class="dateFilter__range">
+                  <label class="filterField">
+                    <span>Desde</span>
+                    <input id="dtFrom" type="datetime-local" />
+                  </label>
+
+                  <label class="filterField">
+                    <span>Hasta</span>
+                    <input id="dtTo" type="datetime-local" />
+                  </label>
+
+                  <button class="filterApply" id="btnApplyRange" type="button">Aplicar</button>
+                </div>
+              </div>
+            </div>
+
+            <button class="iconBtn" type="button" title="Usuario">👤</button>
+          </div>
+        </header>
+
+        <!-- Barra operativa (buscador + atajos) -->
+        <section class="u-card" aria-label="Herramientas de pedidos">
+          <div class="u-cardInner u-cardInner--tight">
+
+            <div class="blockTitle">
+              <div class="blockTitle__left">
+                <h3>Búsqueda y atajos</h3>
+                <span class="u-sectionLabel">OPERACIÓN</span>
+              </div>
+              <span class="u-muted" style="font-size:13px;">Estado: estructura base</span>
+            </div>
+
+            <!-- Nota: en Fase 1 dejamos el input simple (sin CSS nuevo).
+                 En Fase 2 lo estilizamos como el resto del sistema. -->
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <input id="ordersSearch" type="text" placeholder="Buscar por ID, email, cliente, SKU, tracking…"
+                     style="flex:1; min-width:260px; height:38px; border-radius:12px; border:1px solid var(--border); padding:0 12px; background:#fff; color:#111827;">
+
+              <button class="filterPill" type="button" data-quick="pendiente">Pendiente</button>
+              <button class="filterPill" type="button" data-quick="despachado">Despachado</button>
+              <button class="filterPill" type="button" data-quick="entregado">Entregado</button>
+              <button class="filterPill" type="button" data-quick="intervenido">Intervenido</button>
+
+              <button class="filterApply" id="btnClearOrders" type="button">Limpiar</button>
+            </div>
+
+          </div>
+        </section>
+
+               <!-- Card grande: pedidos -->
+        <section class="u-card" aria-label="Listado de pedidos">
+          <div class="u-cardInner u-cardInner--tight">
+
+            <div class="blockTitle">
+              <div class="blockTitle__left">
+                <h3>Pedidos</h3>
+                <span class="u-sectionLabel" id="ordersInfo">—</span>
+              </div>
+
+              <div class="ordersPager" aria-label="Paginación de pedidos">
+                <button class="pagerBtn pagerBtn--icon" id="btnPrevOrders" type="button" disabled aria-label="Anterior">‹</button>
+                <div class="pagerMeta" id="ordersPagerMeta">—</div>
+                <button class="pagerBtn pagerBtn--icon pagerBtn--primary" id="btnNextOrders" type="button" disabled aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <!-- Listado: muestra skeleton hasta que pedidos.js reemplace el contenido -->
+            <div id="ordersList" class="list ordersList" aria-label="Listado">
+              <!-- El skeleton lo maneja pedidos.js -->
+              <div class="u-muted" style="font-size:14px;">Cargando…</div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- JS global + JS del módulo -->
+  <script src="../js/app.js"></script>
+  <script src="../js/pedidos.js"></script>
+</body>
+</html>

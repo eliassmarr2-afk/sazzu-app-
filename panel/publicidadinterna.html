@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sazzú Control Tower - Publicidad interna</title>
+
+  <!-- CSS base del sistema -->
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
+
+  <!-- (Opcional) tu style.css anterior, por si lo querés mantener como override -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body data-page="publicidad-interna">
+  <div class="appShell">
+    <div class="bodyGrid">
+
+     <!-- Sidebar -->
+<!-- Sidebar (inyectado por app.js) -->
+<aside class="sidebar" aria-label="Navegación" data-include="sidebar"></aside>
+
+
+            <!-- Main -->
+            <main class="main" aria-label="Contenido principal">
+
+              <!-- Encabezado estático del panel (igual estructura que otros módulos) -->
+              <header class="appHeader" aria-label="Resumen de módulo">
+                <div class="headerContext">
+                  <div class="hcTitle">Publicidad interna</div>
+                  <div class="hcSub">Segmentación post-compra basada en patrones UTM</div>
+                </div>
+      
+                <div class="headerShortcuts">
+                  <div class="hsItem">Resumen</div>
+                  <div class="hsItem">Cohortes</div>
+                  <div class="hsItem">Públicos</div>
+                </div>
+              </header>
+      
+              <!-- Topbar específica de la página, dentro de una CARD blanca -->
+              <section class="card contentTopbar pageTop" aria-label="Filtros de Publicidad interna">
+                <div class="contentTopbar__left">
+                  <div class="contentTopbar__title">Filtros del rango</div>
+                </div>
+      
+                <div class="contentTopbar__right">
+                  <div class="piControls" aria-label="Filtros de fecha">
+                    <label class="piControls__field">
+                      <span class="piControls__lbl">Desde</span>
+                      <input class="piControls__input" type="date" id="piDesde">
+                    </label>
+      
+                    <label class="piControls__field">
+                      <span class="piControls__lbl">Hasta</span>
+                      <input class="piControls__input" type="date" id="piHasta">
+                    </label>
+      
+                    <button class="btnPrimary piBtnPrimary" id="piBtnFiltrar">Filtrar</button>
+                  </div>
+                </div>
+              </section>
+      
+              <!-- GRID: fila 1 -->
+              <section class="piGrid">
+          <!-- Col izquierda -->
+          <div class="piColLeft">
+
+            <!-- Card: selector de mix -->
+            <section class="card piCard" id="piCardMix">
+              <div class="card__head">
+                <div>
+                  <div class="card__title">Mix de segmentos</div>
+                  <div class="card__sub">Elegí qué dimensiones querés cruzar (estructura)</div>
+                </div>
+                <button class="btnGhost" id="piBtnResetMix" title="Reset">Reset</button>
+              </div>
+
+              <div class="piMix">
+                <div class="piMix__row">
+                  <div class="piSelect">
+                    <label class="piSelect__lbl">Dimensión 1</label>
+                    <select class="piSelect__sel" id="piDim1">
+                      <option value="utm_source">utm_source</option>
+                      <option value="utm_medium">utm_medium</option>
+                      <option value="utm_campaign">utm_campaign</option>
+                      <option value="utm_mensaje">utm_mensaje</option>
+                      <option value="utm_sku">utm_sku</option>
+                      <option value="utm_nicho">utm_nicho</option>
+                      <option value="utm_tipo_creativo">utm_tipo_creativo</option>
+                      <option value="utm_rango">utm_rango</option>
+                      <option value="utm_genero">utm_genero</option>
+                      <option value="utm_oferta">utm_oferta</option>
+                      <option value="ad_id">ad_id</option>
+                      <option value="adset_id">adset_id</option>
+                      <option value="campaign_id">campaign_id</option>
+                    </select>
+                  </div>
+
+                  <div class="piSelect">
+                    <label class="piSelect__lbl">Dimensión 2</label>
+                    <select class="piSelect__sel" id="piDim2">
+                      <option value="utm_nicho">utm_nicho</option>
+                      <option value="utm_tipo_creativo">utm_tipo_creativo</option>
+                      <option value="utm_oferta">utm_oferta</option>
+                      <option value="utm_mensaje">utm_mensaje</option>
+                      <option value="utm_campaign">utm_campaign</option>
+                      <option value="utm_rango">utm_rango</option>
+                      <option value="utm_genero">utm_genero</option>
+                      <option value="utm_source">utm_source</option>
+                      <option value="utm_medium">utm_medium</option>
+                      <option value="utm_sku">utm_sku</option>
+                      <option value="ad_id">ad_id</option>
+                      <option value="adset_id">adset_id</option>
+                      <option value="campaign_id">campaign_id</option>
+                    </select>
+                  </div>
+
+                  <div class="piSelect">
+                    <label class="piSelect__lbl">Dimensión 3</label>
+                    <select class="piSelect__sel" id="piDim3">
+                      <option value="utm_oferta">utm_oferta</option>
+                      <option value="utm_tipo_creativo">utm_tipo_creativo</option>
+                      <option value="utm_mensaje">utm_mensaje</option>
+                      <option value="utm_rango">utm_rango</option>
+                      <option value="utm_genero">utm_genero</option>
+                      <option value="utm_campaign">utm_campaign</option>
+                      <option value="utm_nicho">utm_nicho</option>
+                      <option value="utm_source">utm_source</option>
+                      <option value="utm_medium">utm_medium</option>
+                      <option value="utm_sku">utm_sku</option>
+                      <option value="ad_id">ad_id</option>
+                      <option value="adset_id">adset_id</option>
+                      <option value="campaign_id">campaign_id</option>
+                    </select>
+                  </div>
+
+                  <button class="btnPrimary" id="piBtnAplicarMix">Aplicar</button>
+                </div>
+
+                <div class="piMix__hint">
+                  Esto todavía no calcula nada: deja listo el esqueleto para que luego el backend devuelva cohortes por combinación.
+                </div>
+              </div>
+            </section>
+
+            <!-- Card: visual placeholder -->
+            <section class="card piCard" id="piCardVisual">
+              <div class="card__head">
+                <div>
+                  <div class="card__title">Mapa de cohortes</div>
+                  <div class="card__sub">Placeholder visual (sin lógica)</div>
+                </div>
+                <div class="piMiniKpis" aria-label="KPIs rápidos">
+                  <div class="piMiniKpi">
+                    <div class="piMiniKpi__lbl">Compras</div>
+                    <div class="piMiniKpi__val" id="piKpiCompras">—</div>
+                  </div>
+                  <div class="piMiniKpi">
+                    <div class="piMiniKpi__lbl">Ticket prom.</div>
+                    <div class="piMiniKpi__val" id="piKpiTicket">—</div>
+                  </div>
+                  <div class="piMiniKpi">
+                    <div class="piMiniKpi__lbl">Patrones</div>
+                    <div class="piMiniKpi__val" id="piKpiPatrones">—</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="piVisual">
+                <div class="piVisual__canvas" aria-hidden="true">
+                  <div class="piBubble b1"></div>
+                  <div class="piBubble b2"></div>
+                  <div class="piBubble b3"></div>
+                  <div class="piBubble b4"></div>
+                  <div class="piBubble b5"></div>
+                </div>
+
+                <div class="piLegend">
+                  <div class="piLegend__title">Cohortes (demo)</div>
+
+                  <div class="piLegend__item">
+                    <span class="piDot d1" aria-hidden="true"></span>
+                    <div class="piLegend__txt">
+                      <div class="piLegend__name">Belleza + Urgencia + Mujer</div>
+                      <div class="piLegend__meta">Compras: — · Variación: —</div>
+                    </div>
+                  </div>
+
+                  <div class="piLegend__item">
+                    <span class="piDot d2" aria-hidden="true"></span>
+                    <div class="piLegend__txt">
+                      <div class="piLegend__name">Hogar + Emocional + Ambos</div>
+                      <div class="piLegend__meta">Compras: — · Variación: —</div>
+                    </div>
+                  </div>
+
+                  <div class="piLegend__item">
+                    <span class="piDot d3" aria-hidden="true"></span>
+                    <div class="piLegend__txt">
+                      <div class="piLegend__name">Comida + Valor + Ambos</div>
+                      <div class="piLegend__meta">Compras: — · Variación: —</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- Col derecha -->
+          <aside class="piColRight">
+
+            <section class="card piCard" id="piCardTopSeg">
+              <div class="card__head">
+                <div>
+                  <div class="card__title">Top segmentos</div>
+                  <div class="card__sub">Los más relevantes del rango</div>
+                </div>
+              </div>
+
+              <div class="piTopList" id="piTopList">
+                <div class="piTopItem">
+                  <span class="piDot d1" aria-hidden="true"></span>
+                  <div class="piTopItem__txt">
+                    <div class="piTopItem__name">Belleza + Urgencia + Mujer</div>
+                    <div class="piTopItem__meta">Compras: —</div>
+                  </div>
+                  <div class="piTopItem__val">—</div>
+                </div>
+
+                <div class="piTopItem">
+                  <span class="piDot d2" aria-hidden="true"></span>
+                  <div class="piTopItem__txt">
+                    <div class="piTopItem__name">Hogar + Emocional + Ambos</div>
+                    <div class="piTopItem__meta">Compras: —</div>
+                  </div>
+                  <div class="piTopItem__val">—</div>
+                </div>
+
+                <div class="piTopItem">
+                  <span class="piDot d3" aria-hidden="true"></span>
+                  <div class="piTopItem__txt">
+                    <div class="piTopItem__name">Comida + Valor + Ambos</div>
+                    <div class="piTopItem__meta">Compras: —</div>
+                  </div>
+                  <div class="piTopItem__val">—</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card piCard" id="piCardTopClicks">
+              <div class="card__head">
+                <div>
+                  <div class="card__title">Top clicks internos</div>
+                  <div class="card__sub">Placeholder (futuro: eventos onsite)</div>
+                </div>
+                <button class="btnGhost" id="piBtnVerTodosClicks">Ver todos</button>
+              </div>
+
+              <div class="piClicks">
+                <div class="piClicks__row">
+                  <div class="piClicks__name">Bloque “Pack destacado”</div>
+                  <div class="piClicks__val">—</div>
+                </div>
+                <div class="piClicks__row">
+                  <div class="piClicks__name">Botón “Comprar ahora”</div>
+                  <div class="piClicks__val">—</div>
+                </div>
+                <div class="piClicks__row">
+                  <div class="piClicks__name">Bloque “Recomendación”</div>
+                  <div class="piClicks__val">—</div>
+                </div>
+              </div>
+            </section>
+
+          </aside>
+        </section>
+
+        <!-- Tabla: coincidencias relevantes -->
+        <section class="card piCard" id="piCardCoincidencias">
+          <div class="card__head">
+            <div>
+              <div class="card__title">Coincidencias relevantes</div>
+              <div class="card__sub">Listado de segmentos detectados (estructura)</div>
+            </div>
+          </div>
+
+          <div class="piTableWrap">
+            <table class="piTable" aria-label="Tabla de coincidencias relevantes">
+              <thead>
+                <tr>
+                  <th>Segmento</th>
+                  <th>Compras</th>
+                  <th>Volumen generado</th>
+                  <th>Estatus</th>
+                  <th style="width:140px;">Exportar</th>
+                </tr>
+              </thead>
+              <tbody id="piTbodyCoincidencias">
+                <tr>
+                  <td>beauty-lovers-urgentes</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td><span class="piStatus is-ok">listo</span></td>
+                  <td><button class="btnSoft" data-export="beauty-lovers-urgentes">CSV</button></td>
+                </tr>
+                <tr>
+                  <td>hogar-emo-fomo</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td><span class="piStatus is-warn">pendiente</span></td>
+                  <td><button class="btnSoft" data-export="hogar-emo-fomo">CSV</button></td>
+                </tr>
+                <tr>
+                  <td>cross-sell-gourmet</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td><span class="piStatus is-bad">sin datos</span></td>
+                  <td><button class="btnSoft" data-export="cross-sell-gourmet">CSV</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="piCard__foot">
+            <button class="btnGhost" id="piBtnVerTodosSeg">Ver todos</button>
+          </div>
+        </section>
+
+        <!-- Gestión de públicos -->
+        <section class="card piCard" id="piCardPublicos">
+          <div class="card__head">
+            <div>
+              <div class="card__title">Gestión de públicos</div>
+              <div class="card__sub">Salida operable: emails deduplicados y campos para personalizar</div>
+            </div>
+
+            <div class="piPublicosActions">
+              <button class="btnSoft" id="piBtnExportAudiencia">Exportar audiencia</button>
+              <button class="btnGhost" id="piBtnGuardarSegmento">Guardar segmento</button>
+            </div>
+          </div>
+
+          <div class="piPublicosGrid">
+            <div class="piPublicosLeft">
+              <div class="piForm">
+                <div class="piForm__row">
+                  <label class="piInput">
+                    <span class="piInput__lbl">Nombre del segmento</span>
+                    <input class="piInput__ctrl" id="piSegNombre" placeholder="Ej: belleza_urgencia_mujer">
+                  </label>
+
+                  <label class="piInput">
+                    <span class="piInput__lbl">Modo</span>
+                    <select class="piInput__ctrl" id="piSegModo">
+                      <option value="AND">Coincidencia estricta (AND)</option>
+                      <option value="OR">Coincidencia flexible (OR)</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="piForm__row">
+                  <label class="piInput">
+                    <span class="piInput__lbl">Regla rápida (demo)</span>
+                    <input class="piInput__ctrl" id="piSegRegla" placeholder="utm_nicho=belleza + utm_tipo_creativo=urgencia + utm_genero=mujer">
+                  </label>
+                </div>
+
+                <div class="piForm__hint">
+                  En la etapa de lógica, este bloque se convierte en un constructor de reglas con validación y previews.
+                </div>
+              </div>
+            </div>
+
+            <div class="piPublicosRight">
+              <div class="piAudienceBox">
+                <div class="piAudienceBox__title">Vista previa (placeholder)</div>
+                <div class="piAudienceBox__meta">Compradores únicos: — · Emails válidos: —</div>
+
+                <div class="piAudienceList" id="piAudienceList">
+                  <div class="piAudienceRow">
+                    <div class="piAudienceRow__name">Nombre Apellido</div>
+                    <div class="piAudienceRow__mail">email@dominio.com</div>
+                    <div class="piAudienceRow__tag">segmento</div>
+                  </div>
+                  <div class="piAudienceRow">
+                    <div class="piAudienceRow__name">Nombre Apellido</div>
+                    <div class="piAudienceRow__mail">email@dominio.com</div>
+                    <div class="piAudienceRow__tag">segmento</div>
+                  </div>
+                  <div class="piAudienceRow">
+                    <div class="piAudienceRow__name">Nombre Apellido</div>
+                    <div class="piAudienceRow__mail">email@dominio.com</div>
+                    <div class="piAudienceRow__tag">segmento</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- JS del sistema -->
+  <script src="../js/app.js"></script>
+
+  <!-- JS del módulo -->
+  <script src="../js/publicidadinterna.js"></script>
+</body>
+</html>

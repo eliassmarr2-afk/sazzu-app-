@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="view-transition" content="same-origin">
+  <title>Sazzú Control Tower - Finanzas</title>
+
+ <!-- CSS base del sistema -->
+ <link rel="stylesheet" href="../css/base.css">
+ <link rel="stylesheet" href="../css/layout.css">
+ <link rel="stylesheet" href="../css/panel.css">
+ <link rel="stylesheet" href="../css/sidebar.css">
+ <link rel="stylesheet" href="../css/finanzas-costos-financieros.css">
+
+ <!-- (Opcional) override -->
+ <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body data-page="finanzas">
+  <div class="appShell">
+
+    <div class="bodyGrid">
+      <!-- Sidebar -->
+      <aside class="sidebar" aria-label="Navegación">
+
+        <div class="sidebar__head">
+          <div class="u-sectionLabel">Navegación</div>
+        </div>
+
+        <!-- Cuenta -->
+        <div class="sidebar__account" role="button" tabindex="0" aria-label="Cuenta: DAX DAWER (demo)">
+          <div class="sidebar__avatar" aria-hidden="true"></div>
+          <div class="sidebar__accTxt">
+            <div class="sidebar__accName">DAX DAWER</div>
+            <div class="sidebar__accMeta">Cuenta demo</div>
+          </div>
+        </div>
+
+        <!-- Inicio destacado -->
+        <!-- OJO: desde /panel/ se vuelve a index con ../ -->
+        <a class="navHero" href="../index.html" aria-label="Inicio">
+          <div class="navHero__left">
+            <span class="navHero__ico" aria-hidden="true">⌂</span>
+            <span class="navHero__txt">INICIO</span>
+          </div>
+          <span class="navHero__chev" aria-hidden="true">›</span>
+        </a>
+
+        <!-- Grupos -->
+        <div class="sidebarGroups" aria-label="Módulos del panel">
+
+          <!-- Motores operativos -->
+          <details class="navGroup" open>
+            <summary class="navGroup__head">
+              <div class="navGroup__title">
+                <span class="navGroup__caret" aria-hidden="true">▼</span>
+                <div>
+                  <div class="navGroup__kicker">Motores operativos</div>
+                  <div class="navGroup__name">Compra</div>
+                </div>
+              </div>
+            </summary>
+
+            <div class="navGroup__body">
+              <!-- OJO: desde /panel/ los links internos NO llevan /panel/ -->
+              <a class="navSubItem" href="./pedidos.html">
+                <span class="navSubItem__ico" aria-hidden="true">⟠</span>
+                <span class="navSubItem__txt">Pedidos</span>
+              </a>
+
+              <a class="navSubItem is-active-sub" href="./finanzas.html">
+                <span class="navSubItem__ico" aria-hidden="true">$</span>
+                <span class="navSubItem__txt">Finanzas</span>
+              </a>
+
+              <a class="navSubItem" href="./logistica.html">
+                <span class="navSubItem__ico" aria-hidden="true">⟲</span>
+                <span class="navSubItem__txt">Logística</span>
+              </a>
+            </div>
+          </details>
+
+          <!-- Motores de crecimiento -->
+          <details class="navGroup" open>
+            <summary class="navGroup__head">
+              <div class="navGroup__title">
+                <span class="navGroup__caret" aria-hidden="true">▼</span>
+                <div>
+                  <div class="navGroup__kicker">Motores de crecimiento</div>
+                  <div class="navGroup__name">Recompra</div>
+                </div>
+              </div>
+            </summary>
+
+            <div class="navGroup__body">
+              <a class="navSubItem" href="./publicidad-utm.html">
+                <span class="navSubItem__ico" aria-hidden="true">◎</span>
+                <span class="navSubItem__txt">Publicidad / UTM</span>
+              </a>
+
+              <a class="navSubItem" href="./publicidad-externa.html">
+                <span class="navSubItem__ico" aria-hidden="true">⇅</span>
+                <span class="navSubItem__txt">Publicidad externa (CSV)</span>
+              </a>
+
+              <a class="navSubItem" href="./publicidadinterna.html">
+                <span class="navSubItem__ico" aria-hidden="true">✉</span>
+                <span class="navSubItem__txt">Publicidad interna</span>
+              </a>
+              
+            </div>
+          </details>
+
+          <!-- Páginas Shopify -->
+          <details class="navGroup">
+            <summary class="navGroup__head">
+              <div class="navGroup__title">
+                <span class="navGroup__caret" aria-hidden="true">▶</span>
+                <div>
+                  <div class="navGroup__kicker">Páginas Shopify</div>
+                  <div class="navGroup__name">Estructura</div>
+                </div>
+              </div>
+            </summary>
+
+            <div class="navGroup__body">
+              <a class="navSubItem" href="./paginas-editor.html">
+                <span class="navSubItem__ico" aria-hidden="true">▦</span>
+                <span class="navSubItem__txt">Editor Shopify</span>
+              </a>
+
+              <a class="navSubItem" href="./paginas-packs.html">
+                <span class="navSubItem__ico" aria-hidden="true">▣</span>
+                <span class="navSubItem__txt">Variantes / Packs</span>
+              </a>
+
+              <a class="navSubItem" href="./paginas-landing.html">
+                <span class="navSubItem__ico" aria-hidden="true">▤</span>
+                <span class="navSubItem__txt">Landing Builder</span>
+              </a>
+            </div>
+          </details>
+
+          <!-- Transversales -->
+          <details class="navGroup" open>
+            <summary class="navGroup__head">
+              <div class="navGroup__title">
+                <span class="navGroup__caret" aria-hidden="true">▼</span>
+                <div>
+                  <div class="navGroup__kicker">Transversales</div>
+                  <div class="navGroup__name">Sistema</div>
+                </div>
+              </div>
+            </summary>
+
+            <div class="navGroup__body">
+              <a class="navSubItem" href="./soporte.html">
+                <span class="navSubItem__ico" aria-hidden="true">?</span>
+                <span class="navSubItem__txt">Soporte</span>
+              </a>
+
+              <a class="navSubItem" href="./sistema.html">
+                <span class="navSubItem__ico" aria-hidden="true">⛭</span>
+                <span class="navSubItem__txt">Sistema</span>
+              </a>
+            </div>
+          </details>
+
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main" aria-label="Contenido principal">
+
+        <header class="appHeader" aria-label="Encabezado general">
+          <div class="appHeader__left">
+            <div class="appHeader__title">Finanzas</div>
+            <div class="appHeader__sub">Estructura inicial</div>
+          </div>
+        
+          <div class="appHeader__right">
+            <div
+              class="u-row u-row--center"
+              style="gap:8px; flex-wrap:wrap; justify-content:flex-end;"
+            >
+              <span class="u-muted" style="font-size:13px;">Fecha</span>
+        
+              <label class="u-muted" for="finDtFrom" style="font-size:13px;">Desde</label>
+              <input id="finDtFrom" type="date" class="u-input" style="max-width:140px;" />
+        
+              <label class="u-muted" for="finDtTo" style="font-size:13px;">Hasta</label>
+              <input id="finDtTo" type="date" class="u-input" style="max-width:140px;" />
+        
+              <button
+                id="btnApplyFin"
+                class="btn btn--primary"
+                type="button"
+                style="white-space:nowrap;"
+              >
+                Aplicar
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- CASHFLOW (ancho completo) -->
+        <section class="grid">
+          <div class="u-card" id="finCashflowCard">
+            <div class="u-cardInner">
+
+              <!-- Head -->
+              <div class="u-row u-row--between u-row--center" style="gap:12px;">
+                <div>
+                  <div class="u-sectionLabel">CASHFLOW</div>
+                  <div class="u-muted" style="margin-top:4px;" id="finRangeLabel">Rango: —</div>
+                </div>
+
+                <!-- Campanita de notificaciones financieras -->
+                <div class="finAlertsHead">
+                  <button
+                    id="btnFinAlerts"
+                    type="button"
+                    class="finAlertsBtn"
+                    aria-label="Ver notificaciones financieras"
+                  >
+                    <span class="finAlertsIcon" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                           height="20px"
+                           viewBox="0 -960 960 960"
+                           width="20px"
+                           role="img"
+                           aria-hidden="true">
+                        <path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/>
+                      </svg>
+                    </span>
+
+                    <!-- Badge numérico de alertas (se llenará desde JS) -->
+                    <span
+                      class="finAlertsBadge"
+                      id="finAlertsBadge"
+                      aria-hidden="true">
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- KPIs arriba -->
+              <div class="grid grid--4" style="margin-top:14px;">
+                <div class="u-miniStat">
+                  <div class="u-muted">Cashflow general (Σ N)</div>
+                  <div class="u-bigNum" id="kpiFinBrutoN">$ 0</div>
+                </div>
+
+                <div class="u-miniStat">
+                  <div class="u-muted">Bruto a ingresar (Σ V)</div>
+                  <div class="u-bigNum" id="kpiFinNetoV">$ 0</div>
+                </div>
+
+                <div class="u-miniStat">
+                  <div class="u-muted">Retención por cuotas (prom. U)</div>
+                  <div class="u-bigNum" id="kpiFinRetU">0%</div>
+                </div>
+
+                <div class="u-miniStat">
+                  <div class="u-muted">Retención real (prom. W)</div>
+                  <div class="u-bigNum" id="kpiFinRetW">0%</div>
+                </div>
+              </div>
+
+                      <!-- Gráfico -->
+        <div style="margin-top:14px;">
+          <div id="finCashflowChart" class="u-chartBox" aria-label="Gráfico de cashflow"></div>
+          
+          <!-- Leyenda -->
+          <div class="u-row u-row--center" style="gap:16px; margin-top:10px; flex-wrap:wrap;">
+            <div class="u-legend"><span class="u-dot u-dot--proc"></span> Cashflow diario (Procesado)</div>
+            <div class="u-legend"><span class="u-dot u-dot--ma"></span> Media móvil 7d</div>
+            <div class="u-legend"><span class="u-dot u-dot--pend"></span> A cobrar (Pendiente)</div>
+            <div class="u-legend"><span class="u-dot u-dot--int"></span> Intervenida</div>
+          </div>
+
+          <div class="u-muted" style="margin-top:8px;" id="finFootnote"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+    <!-- GRID DE COSTOS (4 arriba, 2 abajo, sin card contenedora) -->
+    <section class="grid grid--4 finCostsGrid" style="margin-top:16px;">
+
+      <!-- Costos de stock -->
+<article
+class="finCostCard finCostCard--stock21"
+id="btnFinCostStock"
+role="button"
+tabindex="0"
+aria-label="Abrir slide de costos de stock"
+>
+<div class="finCostStock21">
+  <div class="finCostStock21__headerRow">
+    <span class="finCostStock21__kicker">Stock Consumido Prorrateado</span>
+
+    <span
+      class="finCostStock21__trend is-neutral"
+      id="finCostStockTrendWrap"
+      aria-label="Variación del costo de stock"
+    >
+      <span id="finCostStockTrendPct">0%</span>
+      <span class="finCostStock21__trendArrow" id="finCostStockTrendArrow">→</span>
+    </span>
+  </div>
+
+  <div class="finCostStock21__bodyRow">
+    <div class="finCostStock21__left">
+      <div class="finCostStock21__value" id="finCostStock">$ 0</div>
+
+      <div class="finCostStock21__sub" id="finCostStockSub">
+        Costo Consumido Prorrateado del rango activo.
+      </div>
+    </div>
+
+    <div class="finCostStock21__right">
+      <div class="finCostStock21__chart" id="finCostStockChart" aria-label="Tendencia del costo consumido prorrateado">
+        <div class="finCostStock21__chartEmpty"></div>
+      </div>
+    </div>
+  </div>
+
+  <span class="finCostStock21__ctaArrow" aria-hidden="true">
+    <svg viewBox="0 0 20 20" class="finCostStock21__ctaArrowSvg">
+      <path d="M4.5 10h8.5"></path>
+      <path d="M10.5 6.5L14 10l-3.5 3.5"></path>
+    </svg>
+  </span>
+</div>
+</article>
+  
+      <!-- Costos logísticos -->
+      <article class="finCostCard">
+        <div class="finCostCard__icon" aria-hidden="true">
+          <svg class="kpiIcon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <!-- Camión -->
+            <path d="M3 6.5h10v7H9.8a2.7 2.7 0 0 0-5.4 0H3v-7Zm10 3h3.9l1.8 2.8V13.5h-5.7v-4Zm-6.6 6.5a1.7 1.7 0 1 1 0 3.4 1.7 1.7 0 0 1 0-3.4Zm10.8 0a1.7 1.7 0 1 1 0 3.4 1.7 1.7 0 0 1 0-3.4Z"/>
+          </svg>
+        </div>
+        <div class="finCostCard__meta">
+          <div class="finCostCard__label">Costos logísticos</div>
+          <div class="finCostCard__value" id="finCostLogistica">$ 0</div>
+          <div class="u-muted" style="font-size:12px;">
+            Envíos, devoluciones y manejo de paquetería.
+          </div>
+        </div>
+      </article>
+  
+                <!-- Costos financieros -->
+      <article
+      class="finCostCard finCostCard--financial21"
+      id="btnFinCostFinancial"
+      role="button"
+      tabindex="0"
+      aria-label="Abrir slide de costos financieros"
+    >
+      <div class="finCostFinancial21">
+        <div class="finCostFinancial21__headerRow">
+          <span class="finCostFinancial21__kicker">Costos financieros</span>
+
+          <span
+            class="finCostFinancial21__trend is-neutral"
+            id="finCostFinancialTrendWrap"
+            aria-label="Variación del costo financiero"
+          >
+            <span id="finCostFinancialTrendPct">0%</span>
+            <span class="finCostFinancial21__trendArrow" id="finCostFinancialTrendArrow">→</span>
+          </span>
+        </div>
+
+        <div class="finCostFinancial21__bodyRow">
+          <div class="finCostFinancial21__left">
+            <div class="finCostFinancial21__value" id="finCostFinancialValue">$ 0</div>
+
+            <div class="finCostFinancial21__sub" id="finCostFinancialSub">
+              Retención financiera total del rango activo.
+            </div>
+          </div>
+
+          <div class="finCostFinancial21__right">
+            <div
+              class="finCostFinancial21__chart"
+              id="finCostFinancialChart"
+              aria-label="Tendencia de costos financieros"
+            >
+              <div class="finCostFinancial21__chartEmpty"></div>
+            </div>
+          </div>
+        </div>
+
+        <span class="finCostFinancial21__ctaArrow" aria-hidden="true">
+          <svg viewBox="0 0 20 20" class="finCostFinancial21__ctaArrowSvg">
+            <path d="M4.5 10h8.5"></path>
+            <path d="M10.5 6.5L14 10l-3.5 3.5"></path>
+          </svg>
+        </span>
+      </div>
+    </article>
+  
+      <!-- Costos publicitarios -->
+      <article class="finCostCard">
+        <div class="finCostCard__icon" aria-hidden="true">
+          <svg class="kpiIcon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <!-- Megáfono -->
+            <path d="M4 10V7l9-3v14l-3-1.2V18H7.5L6 13.5V10H4Zm3 1v2.6l.9 2.4H10v-5L7 11Zm11-3.5h2v7h-2v-7Z"/>
+          </svg>
+        </div>
+        <div class="finCostCard__meta">
+          <div class="finCostCard__label">Costos publicitarios</div>
+          <div class="finCostCard__value" id="finCostAds">$ 0</div>
+          <div class="u-muted" style="font-size:12px;">
+            Inversión en campañas y medios de pago de anuncios.
+          </div>
+        </div>
+      </article>
+  
+      <!-- Fila de abajo: 2 cards anchas -->
+  
+      <!-- Costos operativos -->
+      <article class="finCostCard finCostCard--span2">
+        <div class="finCostCard__icon" aria-hidden="true">
+          <svg class="kpiIcon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <!-- Engranaje / operación -->
+            <path d="M11 3h2l.4 2.1 2 .8 1.8-1.3 1.4 1.4-1.3 1.8.8 2L21 12v2l-2.1.4-.8 2 1.3 1.8-1.4 1.4-1.8-1.3-2 .8L13 21h-2l-.4-2.1-2-.8-1.8 1.3-1.4-1.4 1.3-1.8-.8-2L3 14v-2l2.1-.4.8-2-1.3-1.8L6 6.4 7.8 7.7l2-.8L11 3Zm1 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
+          </svg>
+        </div>
+        <div class="finCostCard__meta">
+          <div class="finCostCard__label">Costos operativos</div>
+          <div class="finCostCard__value" id="finCostOperativo">$ 0</div>
+          <div class="u-muted" style="font-size:12px;">
+            Personal, plataformas, herramientas y estructura fija del negocio.
+          </div>
+        </div>
+      </article>
+  
+      <!-- Costos de adquisición -->
+      <article class="finCostCard finCostCard--span2">
+        <div class="finCostCard__icon" aria-hidden="true">
+          <svg class="kpiIcon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <!-- Diana / target -->
+            <path d="M12 4a8 8 0 1 1 0 16A8 8 0 0 1 12 4Zm0 2a6 6 0 1 0 0 12A6 6 0 0 0 12 6Zm0 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0-7v2m8 8h-2M6 12H4m10.5-7.5 1.4 1.4M7.1 16.9 5.7 18.3m0-11.6 1.4 1.4m10.2 9.2-1.4 1.4"/>
+          </svg>
+        </div>
+        <div class="finCostCard__meta">
+          <div class="finCostCard__label">Costos de adquisición</div>
+          <div class="finCostCard__value" id="finCostCAC">$ 0</div>
+          <div class="u-muted" style="font-size:12px;">
+            Costo por cliente nuevo (CAC) integrado con publicidad y ofertas.
+          </div>
+        </div>
+      </article>
+  
+    </section>
+  <!-- Contenedor lista (futuro) -->
+  <section class="grid" style="margin-top:16px;">
+    <div class="u-card">
+      <div class="u-cardInner">
+        <div class="u-sectionLabel">Pedidos (financiero)</div>
+        <div class="u-muted" style="margin-top:6px;">
+          (Se agrega luego: tabla + popup de control de ingresos)
+        </div>
+      </div>
+    </div>
+  </section>
+      
+<!-- Slide · Costos de stock -->
+<div
+  class="finStockOverlay"
+  id="finStockOverlay"
+  aria-hidden="true"
+>
+  <div class="finStockBackdrop" id="finStockBackdrop"></div>
+
+  <aside
+    class="finStockPanel"
+    id="finStockPanel"
+    role="dialog"
+    aria-modal="false"
+    aria-label="Costos de stock"
+  >
+    <div class="finStockPanelMount" id="finStockPanelMount">
+      <div class="finStockPanel__loading">
+        <div class="u-muted">Cargando slide de costos de stock...</div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Slide · Costos financieros -->
+<div
+  class="finFinancialOverlay"
+  id="finFinancialOverlay"
+  aria-hidden="true"
+>
+  <div class="finFinancialBackdrop" id="finFinancialBackdrop"></div>
+
+  <aside
+    class="finFinancialPanel"
+    id="finFinancialPanel"
+    role="dialog"
+    aria-modal="false"
+    aria-label="Costos financieros"
+  >
+    <div class="finFinancialPanelMount" id="finFinancialPanelMount">
+      <div class="finFinancialPanel__loading">
+        <div class="u-muted">Cargando slide de costos financieros...</div>
+      </div>
+    </div>
+  </aside>
+</div>
+  
+              <!-- Slide-over de notificaciones financieras (Finanzas) -->
+              <div
+                class="finAlertsOverlay"
+                id="finAlertsOverlay"
+                aria-hidden="true"
+              >
+                <!-- Fondo clicable para cerrar -->
+                <div class="finAlertsBackdrop" id="finAlertsBackdrop"></div>
+      
+                <!-- Panel lateral derecho -->
+                <aside
+                  class="finAlertsPanel"
+                  aria-label="Notificaciones financieras"
+                  role="dialog"
+                  aria-modal="false"
+                >
+                  <!-- Tabs: Confirmaciones / Historial -->
+                  <div
+                    class="finAlertsTabs"
+                    role="tablist"
+                    aria-label="Secciones de notificaciones financieras"
+                  >
+                    <button
+                      type="button"
+                      class="finAlertsTab is-active"
+                      id="finTabConfirmaciones"
+                      role="tab"
+                      aria-selected="true"
+                    >
+                      Confirmaciones
+                    </button>
+      
+                    <button
+                      type="button"
+                      class="finAlertsTab"
+                      id="finTabHistorial"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      Historial
+                    </button>
+                  </div>
+      
+                  <!-- Header del slide -->
+                  <header class="finAlertsPanel__head">
+                    <div>
+                      <div class="u-sectionLabel">Notificaciones financieras</div>
+                      <div class="u-muted" style="margin-top:4px;">
+                        Confirmá los cobros basados en la fecha de ingreso (columna Y) y el estado del ingreso (columna Z).
+                      </div>
+                    </div>
+      
+                    <button
+                      type="button"
+                      class="finAlertsClose"
+                      id="finAlertsClose"
+                      aria-label="Cerrar panel de notificaciones"
+                    >
+                      ×
+                    </button>
+                  </header>
+      
+                  <!-- Cuerpo del slide -->
+                  <div class="finAlertsBody">
+                    <!-- Panel: Confirmaciones -->
+                    <section
+                      id="finPanelConfirmaciones"
+                      class="finAlertsSection"
+                      role="tabpanel"
+                      aria-labelledby="finTabConfirmaciones"
+                    >
+                      <div class="u-muted" id="finAlertsEmpty">
+                        No hay cobros para confirmar hoy.
+                      </div>
+      
+                      <div class="finAlertsList" id="finAlertsList"></div>
+                    </section>
+      
+                    <!-- Panel: Historial -->
+                    <section
+                      id="finPanelHistorial"
+                      class="finAlertsSection"
+                      role="tabpanel"
+                      aria-labelledby="finTabHistorial"
+                      style="display:none;"
+                    >
+                      <div class="u-muted" style="margin-bottom:8px;">
+                        Historial de cambios de estado de ingresos. Los registros se guardan en la hoja “HistorialFinanzas”.
+                      </div>
+      
+                      <div class="finAlertsHistoryList" id="finAlertsHistoryList"></div>
+                    </section>
+                  </div>
+                </aside>
+              </div>
+      
+              <!-- Modal central de confirmación (Finanzas) -->
+              <div class="finConfirmModal" id="finConfirmModal" aria-hidden="true">
+                <div class="finConfirmModal__backdrop" id="finConfirmBackdrop"></div>
+      
+                <div
+                  class="finConfirmModal__dialog"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="finConfirmTitle"
+                >
+                  <div class="finConfirmModal__body">
+                    <h2 class="finConfirmModal__title" id="finConfirmTitle">
+                      Confirmar cambio de estado
+                    </h2>
+      
+                    <p class="finConfirmModal__text">
+                      ¿Confirmas cambiar el estado del pedido
+                      <span id="finConfirmPedido" class="finConfirmModal__pill">—</span>
+                      de
+                      <strong><span id="finConfirmEstadoAnterior">—</span></strong>
+                      a
+                      <strong><span id="finConfirmEstadoNuevo">—</span></strong>?
+                    </p>
+      
+                    <p class="finConfirmModal__note">
+                      Este cambio impacta en el cashflow y quedará registrado en <strong>HistorialFinanzas</strong>.
+                    </p>
+                  </div>
+      
+                  <div class="finConfirmModal__actions">
+                    <button
+                      type="button"
+                      class="finConfirmBtn finConfirmBtn--ghost"
+                      id="finConfirmCancel"
+                    >
+                      Volver
+                    </button>
+      
+                    <button
+                      type="button"
+                      class="finConfirmBtn finConfirmBtn--primary"
+                      id="finConfirmOk"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              </div>
+      
+            </main>
+          </div>
+        </div>
+      
+          <!-- JS base -->
+          <script src="../js/app.js"></script>
+
+          <!-- Slide financiero -->
+          <script src="../js/finanzas-costos-financieros.js"></script>
+        
+          <!-- Módulo específico del panel Finanzas -->
+          <script src="../js/finanzas.js"></script>
+      </body>
+      </html>

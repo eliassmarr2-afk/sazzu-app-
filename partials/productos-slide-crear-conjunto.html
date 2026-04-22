@@ -1,0 +1,659 @@
+<!-- =========================================
+PARTIAL: SUB-SLIDE CREAR CONJUNTO DE PRODUCTOS
+Hero superior + bloque de identidad del conjunto
+Todo queda dentro del mismo contenedor principal
+========================================= -->
+<div class="prodSlideOffers">
+
+    <!-- =========================
+    HERO INFORMATIVO SUPERIOR
+    Presenta el objetivo del sub-slide
+    ========================= -->
+    <div class="prodSlideOffers__hero">
+      <div class="prodSlideOffers__heroCardInfo">
+  
+        <div class="prodSlideOffers__heroAccent" aria-hidden="true"></div>
+  
+        <div class="prodSlideOffers__heroCardBody">
+          <div class="prodSlideOffers__heroIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="6" cy="7" r="2.1" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="18" cy="7" r="2.1" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="12" cy="17" r="2.1" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M7.8 8.3 10.4 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M16.2 8.3 13.6 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+  
+          <div class="prodSlideOffers__heroText">
+            <div class="prodSlideOffers__heroTitle">
+              Crear conjunto de productos
+            </div>
+  
+            <p class="prodSlideOffers__heroDesc">
+              Define la estructura base de una futura oferta seleccionando productos, cantidades y parámetros económicos. Este conjunto podrá utilizarse después en otros paneles del sistema para activar ofertas y mantener consistencia operativa entre módulos.
+            </p>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  
+    <!-- =========================
+    BLOQUE: IDENTIDAD DEL CONJUNTO
+    Define ID, tipo de oferta y estado inicial
+    ========================= -->
+    <div class="prodSetIdentity">
+  
+      <div class="prodSetIdentity__card">
+  
+        <div class="prodSetIdentity__header">
+          <div class="prodSetIdentity__title">
+            Identidad del conjunto
+          </div>
+  
+          <div class="prodSetIdentity__status prodSetIdentity__status--draft">
+            Borrador
+          </div>
+        </div>
+  
+        <div class="prodSetIdentity__body">
+  
+          <div class="prodSetIdentity__field">
+            <label class="prodSetIdentity__label" for="prodSetIdInput">
+              ID del conjunto
+            </label>
+  
+            <input
+              type="text"
+              class="prodSetIdentity__input"
+              id="prodSetIdInput"
+              placeholder="Ej: PACK-COCINA-01"
+            />
+  
+            <div class="prodSetIdentity__hint">
+              Este identificador se utiliza para reconocer el conjunto en otros módulos del sistema. Debe coincidir exactamente para que exista relación operativa.
+            </div>
+          </div>
+  
+          <div class="prodSetIdentity__field">
+            <label class="prodSetIdentity__label">
+              Tipo de conjunto
+            </label>
+  
+            <div class="prodSetIdentity__typeSelector">
+              <button
+                type="button"
+                class="prodSetIdentity__typeBtn is-active"
+                data-type="bundle">
+                Productos combinados (Bundle)
+              </button>
+  
+              <button
+                type="button"
+                class="prodSetIdentity__typeBtn"
+                data-type="cantidad">
+                Oferta en cantidad
+              </button>
+            </div>
+  
+            <div class="prodSetIdentity__hint">
+              Define si el conjunto estará compuesto por múltiples productos o por unidades de un mismo producto.
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  
+    </div>
+  <!-- =========================
+INICIO · BLOQUE · COMPOSICIÓN DEL CONJUNTO
+Define hasta 3 módulos de producto con SKU, nombre, costo y cantidad
+========================= -->
+<div class="prodSetCompose">
+
+    <div class="prodSetCompose__card">
+  
+        <div class="prodSetCompose__header">
+            <div class="prodSetCompose__topline">
+              <div class="prodSetCompose__title">
+                Composición del conjunto
+              </div>
+          
+              <div
+                class="prodSetCompose__ruleTag"
+                id="prodSetComposeRuleTag"
+                aria-live="polite">
+                Selecciona al menos 2 productos
+              </div>
+            </div>
+          
+            <div class="prodSetCompose__subtitle">
+              Selecciona los productos que formarán parte del conjunto y define la cantidad de unidades de cada uno.
+            </div>
+          </div>
+  
+      <div class="prodSetCompose__grid">
+  
+        <!-- =========================
+        INICIO · MÓDULO · PRODUCTO 1
+        Primer producto del conjunto
+        ========================= -->
+        <div class="prodSetItem prodSetItem--primary" data-pack-item="1">
+  
+          <div class="prodSetItem__top">
+            <div class="prodSetItem__index">
+              Producto 1
+            </div>
+  
+            <div class="prodSetItem__badge">
+              Obligatorio
+            </div>
+          </div>
+  
+          <div class="prodSetItem__body">
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetSku1">
+                SKU
+              </label>
+  
+              <select class="prodSetItem__select" id="prodSetSku1">
+                <option value="">Seleccionar SKU</option>
+              </select>
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetName1">
+                Nombre del producto
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetName1"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetCost1">
+                Costo proveedor
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetCost1"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetQty1">
+                Cantidad
+              </label>
+  
+              <input
+                type="number"
+                min="1"
+                step="1"
+                class="prodSetItem__input"
+                id="prodSetQty1"
+                placeholder="Ej: 1"
+              />
+            </div>
+  
+          </div>
+        </div>
+        <!-- =========================
+        FIN · MÓDULO · PRODUCTO 1
+        ========================= -->
+  
+        <!-- =========================
+        INICIO · MÓDULO · PRODUCTO 2
+        Segundo producto del conjunto
+        ========================= -->
+        <div class="prodSetItem" data-pack-item="2">
+  
+          <div class="prodSetItem__top">
+            <div class="prodSetItem__index">
+              Producto 2
+            </div>
+  
+            <div class="prodSetItem__badge prodSetItem__badge--soft">
+              Opcional
+            </div>
+          </div>
+  
+          <div class="prodSetItem__body">
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetSku2">
+                SKU
+              </label>
+  
+              <select class="prodSetItem__select" id="prodSetSku2">
+                <option value="">Seleccionar SKU</option>
+              </select>
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetName2">
+                Nombre del producto
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetName2"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetCost2">
+                Costo proveedor
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetCost2"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetQty2">
+                Cantidad
+              </label>
+  
+              <input
+                type="number"
+                min="1"
+                step="1"
+                class="prodSetItem__input"
+                id="prodSetQty2"
+                placeholder="Ej: 1"
+              />
+            </div>
+  
+          </div>
+        </div>
+        <!-- =========================
+        FIN · MÓDULO · PRODUCTO 2
+        ========================= -->
+  
+        <!-- =========================
+        INICIO · MÓDULO · PRODUCTO 3
+        Tercer producto del conjunto
+        ========================= -->
+        <div class="prodSetItem" data-pack-item="3">
+  
+          <div class="prodSetItem__top">
+            <div class="prodSetItem__index">
+              Producto 3
+            </div>
+  
+            <div class="prodSetItem__badge prodSetItem__badge--soft">
+              Opcional
+            </div>
+          </div>
+  
+          <div class="prodSetItem__body">
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetSku3">
+                SKU
+              </label>
+  
+              <select class="prodSetItem__select" id="prodSetSku3">
+                <option value="">Seleccionar SKU</option>
+              </select>
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetName3">
+                Nombre del producto
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetName3"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetCost3">
+                Costo proveedor
+              </label>
+  
+              <input
+                type="text"
+                class="prodSetItem__input prodSetItem__input--readonly"
+                id="prodSetCost3"
+                placeholder="Se completa automáticamente"
+                readonly
+              />
+            </div>
+  
+            <div class="prodSetItem__field">
+              <label class="prodSetItem__label" for="prodSetQty3">
+                Cantidad
+              </label>
+  
+              <input
+                type="number"
+                min="1"
+                step="1"
+                class="prodSetItem__input"
+                id="prodSetQty3"
+                placeholder="Ej: 1"
+              />
+            </div>
+  
+          </div>
+        </div>
+        <!-- =========================
+        FIN · MÓDULO · PRODUCTO 3
+        ========================= -->
+  
+      </div>
+  
+      <div class="prodSetCompose__note">
+        El sistema utilizará los SKU disponibles en tu base de productos para completar automáticamente el nombre y el costo proveedor de cada módulo.
+      </div>
+  
+    </div>
+  
+  </div>
+  <!-- =========================
+  FIN · BLOQUE · COMPOSICIÓN DEL CONJUNTO
+  ========================= -->
+<!-- =========================
+INICIO · BLOQUE · PARÁMETROS ECONÓMICOS
+Define los valores manuales que alimentan la estructura económica del conjunto
+========================= -->
+<div class="prodSetEconomics">
+
+    <div class="prodSetEconomics__card">
+  
+      <div class="prodSetEconomics__header">
+        <div class="prodSetEconomics__title">
+          Parámetros económicos
+        </div>
+  
+        <div class="prodSetEconomics__subtitle">
+          Completa los valores base que el sistema utilizará para calcular la estructura económica del conjunto dentro de TablaConstructorPacks.
+        </div>
+      </div>
+  
+      <div class="prodSetEconomics__grid">
+  
+        <!-- Campo: CPA -->
+        <div class="prodSetEconomics__field">
+          <label class="prodSetEconomics__label" for="prodSetCpa">
+            CPA
+          </label>
+  
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            class="prodSetEconomics__input"
+            id="prodSetCpa"
+            placeholder="Ej: 3200"
+          />
+  
+          <div class="prodSetEconomics__hint">
+            Costo por adquisición aplicado al conjunto.
+          </div>
+        </div>
+  
+        <!-- Campo: Envío -->
+        <div class="prodSetEconomics__field">
+          <label class="prodSetEconomics__label" for="prodSetShipping">
+            Envío
+          </label>
+  
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            class="prodSetEconomics__input"
+            id="prodSetShipping"
+            placeholder="Ej: 2500"
+          />
+  
+          <div class="prodSetEconomics__hint">
+            Valor logístico estimado para la oferta.
+          </div>
+        </div>
+  
+        <!-- Campo: Margen -->
+        <div class="prodSetEconomics__field">
+          <label class="prodSetEconomics__label" for="prodSetMargin">
+            Margen (%)
+          </label>
+  
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            class="prodSetEconomics__input"
+            id="prodSetMargin"
+            placeholder="Ej: 35"
+          />
+  
+          <div class="prodSetEconomics__hint">
+            Porcentaje de margen objetivo sobre la estructura del pack.
+          </div>
+        </div>
+  
+        <!-- Campo: Escenario financiero -->
+        <div class="prodSetEconomics__field">
+          <label class="prodSetEconomics__label" for="prodSetFinanceScenario">
+            Escenario financiero
+          </label>
+  
+          <select class="prodSetEconomics__select" id="prodSetFinanceScenario">
+            <option value="">Seleccionar escenario</option>
+          </select>
+  
+          <div class="prodSetEconomics__hint">
+            Este valor se aplicará sobre los cálculos económicos del constructor.
+          </div>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>
+  <!-- =========================
+  FIN · BLOQUE · PARÁMETROS ECONÓMICOS
+  ========================= -->
+  <!-- =========================
+<!-- =========================
+INICIO · BLOQUE · RESUMEN DEL CONJUNTO
+Versión minimalista sin tarjetas internas
+========================= -->
+<div class="prodSetSummary">
+
+    <div class="prodSetSummary__card">
+  
+      <div class="prodSetSummary__header">
+        <div class="prodSetSummary__eyebrow">
+          Vista consolidada del conjunto
+        </div>
+  
+        <div class="prodSetSummary__title">
+          Resumen del conjunto
+        </div>
+  
+        <div class="prodSetSummary__subtitle">
+          Revisa la composición, la estructura comercial y la salida económica general antes de guardar el conjunto dentro del sistema.
+        </div>
+      </div>
+  
+      <div class="prodSetSummary__body">
+  
+        <div class="prodSetSummary__facts">
+  
+          <div class="prodSetSummary__fact">
+            <div class="prodSetSummary__factLabel">SKU utilizados</div>
+            <div class="prodSetSummary__factValue" id="prodSetSummarySkuCount">0</div>
+          </div>
+  
+          <div class="prodSetSummary__fact">
+            <div class="prodSetSummary__factLabel">Unidades totales</div>
+            <div class="prodSetSummary__factValue" id="prodSetSummaryUnitCount">0</div>
+          </div>
+  
+          <div class="prodSetSummary__fact">
+            <div class="prodSetSummary__factLabel">Costo proveedor total</div>
+            <div class="prodSetSummary__factValue" id="prodSetSummarySupplierCost">$ 0,00</div>
+          </div>
+  
+          <div class="prodSetSummary__fact">
+            <div class="prodSetSummary__factLabel">Tipo de estructura</div>
+            <div class="prodSetSummary__factValue prodSetSummary__factValue--soft" id="prodSetSummaryType">Más de un SKU</div>
+          </div>
+  
+          <div class="prodSetSummary__fact">
+            <div class="prodSetSummary__factLabel">Escenario financiero</div>
+            <div class="prodSetSummary__factValue prodSetSummary__factValue--soft" id="prodSetSummaryScenario">Sin definir</div>
+          </div>
+  
+        </div>
+  
+        <div class="prodSetSummary__result">
+          <div class="prodSetSummary__resultLabel">Precio final pack</div>
+          <div class="prodSetSummary__resultValue" id="prodSetSummaryFinalPrice">Pendiente</div>
+          <div class="prodSetSummary__resultHint" id="prodSetSummaryFinalPriceHint">
+            Se calculará con la lógica real de TablaConstructorPacks.
+          </div>
+        </div>
+  
+      </div>
+  
+      <div class="prodSetSummary__footer">
+  
+        <div class="prodSetSummary__statusWrap">
+          <div class="prodSetSummary__statusLabel">Estado actual</div>
+          <div class="prodSetSummary__statusValue prodSetSummary__statusValue--draft" id="prodSetSummaryStatus">
+            Borrador
+          </div>
+        </div>
+  
+        <div class="prodSetSummary__messageWrap">
+          <div class="prodSetSummary__messageLabel">Observación del sistema</div>
+          <div class="prodSetSummary__statusText" id="prodSetSummaryMessage">
+            Completa la identidad, la composición y los parámetros económicos para avanzar con el conjunto.
+          </div>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>
+  <!-- =========================
+  FIN · BLOQUE · RESUMEN DEL CONJUNTO
+  ========================= -->
+  
+<!-- =========================
+INICIO · BLOQUE · NOTA OPERATIVA FINAL
+Versión estable sin doble contenedor ni conflictos de layout
+========================= -->
+<div class="prodSetInfo">
+
+    <div style="
+      width: 100%;
+      padding: 16px 16px 15px;
+      border-radius: 5px;
+      background: #ffffff;
+      border: 1px solid #e5ebf4;
+    ">
+  
+      <div style="
+        font-size: 13px;
+        font-weight: 700;
+        color: #172033;
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+      ">
+        Consideración operativa del conjunto
+      </div>
+  
+      <div style="
+        font-size: 13px;
+        line-height: 1.6;
+        color: #61708b;
+        font-weight: 500;
+      ">
+        Este panel crea la estructura base del conjunto dentro de TablaConstructorPacks, pero no activa la oferta por sí misma. El conjunto podrá utilizarse más adelante en otros módulos del sistema para construir ofertas, vincular diseño comercial y validar coincidencias entre paneles mediante el mismo ID operativo.
+      </div>
+  
+    </div>
+  
+  </div>
+  <!-- =========================
+  FIN · BLOQUE · NOTA OPERATIVA FINAL
+  ========================= -->
+  
+<!-- =========================
+INICIO · ACCIONES DEL CONJUNTO (SIN CARD)
+Botones sobre fondo gris, alineados horizontalmente
+========================= -->
+<div class="prodSetActions">
+
+  <button
+    type="button"
+    class="prodSetActions__btn prodSetActions__btn--ghost"
+    id="prodSetCancelBtn">
+    Cancelar
+  </button>
+
+  <button
+    type="button"
+    class="prodSetActions__btn prodSetActions__btn--dark"
+    id="prodSetDraftBtn">
+    Guardar borrador
+  </button>
+
+  <button
+    type="button"
+    class="prodSetActions__btn prodSetActions__btn--primary"
+    id="prodSetSaveBtn">
+    Guardar conjunto
+  </button>
+
+  <button
+    type="button"
+    class="prodSetActions__btn prodSetActions__btn--secondary"
+    id="prodSetCreateAnotherBtn"
+    hidden>
+    Crear otro conjunto
+  </button>
+</div>
+  <!-- =========================
+  FIN · ACCIONES DEL CONJUNTO
+  ========================= -->
+  <!-- =========================
+INICIO · SPACER FINAL DEL SUB-SLIDE
+Genera aire visual al final del contenido
+========================= -->
+<div style="height: 42px; flex: 0 0 42px;"></div>
+<!-- =========================
+FIN · SPACER FINAL DEL SUB-SLIDE
+========================= -->
+  </div>
