@@ -1,11 +1,12 @@
-  .pubUtmPage {
+body[data-page="publicidad-utm"] {
     background: #f5f7fb;
+  }
+  
+  .pubUtmPage {
     padding: 22px;
     display: flex;
     flex-direction: column;
     gap: 18px;
-    position: relative;
-    isolation: isolate;
   }
   
   .pubUtmHeader {
@@ -67,8 +68,8 @@
   }
   
   .pubUtmBtn--primary {
-    background: #2779FF;
-    border-color: #2779FF;
+    background: #2479ff;
+    border-color: #2479ff;
     color: #ffffff;
   }
   
@@ -129,7 +130,7 @@
     border: 0;
     background: #eef2f7;
     color: #4a5565;
-    border-radius: 5px;
+    border-radius: 999px;
     min-height: 38px;
     padding: 0 16px;
     font-size: 13px;
@@ -139,7 +140,7 @@
   }
   
   .pubUtmTab.is-active {
-    background: #2779FF;
+    background: #2479ff;
     color: #ffffff;
   }
   
@@ -197,7 +198,7 @@
   .pubUtmParamItem__name {
     font-size: 14px;
     font-weight: 800;
-    color: #2779FF;
+    color: #2479ff;
     margin-bottom: 6px;
   }
   
@@ -283,7 +284,7 @@
   .pubUtmFilter {
     min-height: 36px;
     border: 1px solid #d8e1ee;
-    border-radius: 5px;
+    border-radius: 999px;
     background: #ffffff;
     color: #435064;
     padding: 0 14px;
@@ -294,18 +295,8 @@
   
   .pubUtmFilter.is-active {
     background: #edf4ff;
-    color: #2779FF;
+    color: #2479ff;
     border-color: #bfd5ff;
-  }
-
-  .pubUtmPage .pubUtmSlideMount {
-    position: relative;
-    z-index: 2;
-  }
-
-  .pubUtmPage .pubUtmSlideMount > * {
-    border-radius: 0;
-    max-width: 100%;
   }
   
   .pubUtmTableWrap {
@@ -365,7 +356,7 @@
     .pubUtmHero {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-  
+    git status
     .pubUtmRuleGrid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
