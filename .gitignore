@@ -1,2 +1,10 @@
 /.DS_Store
 /FuenteOficialMontserrat,Noto_Sans_Tamil,Raleway.zip
+
+# Supabase local config
+/js/config/supabase-config.js
+
+# Environment files
+.env
+.env.local
+.env.production
