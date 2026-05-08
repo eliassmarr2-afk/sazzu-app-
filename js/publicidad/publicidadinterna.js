@@ -516,6 +516,12 @@ No conecta todavía con Supabase, Make ni Brevo.
         return;
       }
 
+      const publishBtn = event.target.closest("[data-pi-publish-campaign]");
+      if (publishBtn) {
+        publicarCampaniaInterna_(root, publishBtn.dataset.piPublishCampaign, publishBtn);
+        return;
+      }
+
       const mockActionBtn = event.target.closest("[data-pi-mock-action]");
       if (mockActionBtn) {
         showToast_(root, "Acción visual preparada. Todavía no conecta con Supabase.");
@@ -1456,6 +1462,124 @@ No conecta todavía con Supabase, Make ni Brevo.
     }
     /* FIN · Guardar campaña real en Supabase · Publicidad Interna */
 
+
+    /* FIN · Guardar campaña real en Supabase · Publicidad Interna */
+
+    /* INICIO · Publicar campaña real en Supabase · Publicidad Interna */
+    async function publicarCampaniaInterna_(root, campaniaId, button) {
+      const id = String(campaniaId || "").trim();
+
+      if (!id) {
+        showToast_(root, "No se pudo identificar la campaña a publicar.");
+        return;
+      }
+
+      const previousHtml = button ? button.innerHTML : "";
+
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = "<span>Publicando...</span>";
+      }
+
+      try {
+        const result = await publicarCampaniaInternaEnSupabase_(id);
+
+        if (!result || result.ok !== true) {
+          throw new Error(result && result.error ? result.error : "Supabase no confirmó la publicación.");
+        }
+
+        showToast_(
+          root,
+          "Campaña publicada. Trabajo Make/Brevo pendiente creado para " +
+            result.miembros_estimados +
+            " contacto" +
+            (Number(result.miembros_estimados) === 1 ? "" : "s") +
+            "."
+        );
+
+        await loadCampaniasDesdeSupabase_(root);
+      } catch (error) {
+        console.error("[publicidadinterna] Error publicando campaña:", error);
+
+        showToast_(
+          root,
+          "No se pudo publicar la campaña: " +
+            String(error && error.message ? error.message : error)
+        );
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = previousHtml;
+        }
+      }
+    }
+
+    async function publicarCampaniaInternaEnSupabase_(campaniaId) {
+      const config = window.SAZZU_SUPABASE_CONFIG || {};
+
+      let url = String(config.url || config.projectUrl || config.apiUrl || "").trim();
+      url = url.replace(/\/$/, "");
+      url = url.replace(/\/rest\/v1$/, "");
+
+      const key = String(
+        config.anonKey ||
+        config.publishableKey ||
+        config.publicKey ||
+        config.key ||
+        ""
+      ).trim();
+
+      if (!url || !key) {
+        throw new Error("Falta configurar Supabase URL o publishable key.");
+      }
+
+      const endpoint = [
+        url,
+        "/rest/v1/rpc/rpc_publicar_campania_interna"
+      ].join("");
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "apikey": key,
+          "Authorization": "Bearer " + key,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          p_payload: {
+            campania_id: campaniaId
+          }
+        })
+      });
+
+      const text = await response.text();
+      let data = null;
+
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (error) {
+        data = {
+          ok: false,
+          error: text || "Respuesta no JSON desde Supabase."
+        };
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "HTTP " +
+            response.status +
+            " · " +
+            (data && data.error ? data.error : text)
+        );
+      }
+
+      return data;
+    }
+    /* FIN · Publicar campaña real en Supabase · Publicidad Interna */
+
+    /* FIN · Supabase read · Publicidad Interna */
+
     /* FIN · Supabase read · Publicidad Interna */
     
     
@@ -1586,18 +1710,36 @@ No conecta todavía con Supabase, Make ni Brevo.
           '</div>',
 
           '<div class="piCampaignCard__actions">',
-            '<button class="piBtn piBtn--ghost" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
-              'Ver detalle',
-            '</button>',
-            '<button class="piBtn piBtn--primary" type="button" data-pi-mock-action>',
-              '<span class="piBtn__icon" aria-hidden="true">', icon_("chart"), '</span>',
-              escapeHtml_(campaign.accion_principal_sugerida),
-            '</button>',
-          '</div>',
+  '<button class="piBtn piBtn--ghost" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
+    'Ver detalle',
+  '</button>',
+  renderCampaignPrimaryAction_(campaign),
+'</div>',
         '</div>',
       '</article>'
     ].join("");
   }
+
+  /* INICIO · Acción principal por estado · Publicidad Interna */
+  function renderCampaignPrimaryAction_(campaign) {
+    const estado = String(campaign && campaign.estado_campania ? campaign.estado_campania : "").toLowerCase();
+    const id = String(campaign && campaign.id ? campaign.id : "");
+
+    if (estado === "borrador") {
+      return [
+        '<button class="piBtn piBtn--primary" type="button" data-pi-publish-campaign="', escapeHtml_(id), '">',
+          'Publicar campaña',
+        '</button>'
+      ].join("");
+    }
+
+    return [
+      '<button class="piBtn piBtn--primary" type="button" data-pi-mock-action>',
+        escapeHtml_(campaign.accion_principal_sugerida || "Ver métricas"),
+      '</button>'
+    ].join("");
+  }
+  /* FIN · Acción principal por estado · Publicidad Interna */
 
   async function openDetail_(root, campaignId) {
     const campaign = getCampaignSource_().find(function (item) {
