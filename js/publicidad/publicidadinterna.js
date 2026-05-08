@@ -86,7 +86,13 @@ No conecta todavía con Supabase, Make ni Brevo.
     campaigns: [],
     loading: false,
     error: "",
-    usingFallback: true
+    usingFallback: true,
+
+    audienceSets: [],
+    selectedAudienceSetIds: [],
+    loadingAudienceSets: false,
+    audienceSetsError: "",
+    audienceSetsRequested: false
   };
 
   window.__PUB_INTERNA_STATE__ = STATE;
@@ -283,31 +289,12 @@ No conecta todavía con Supabase, Make ni Brevo.
                   </div>
                 </div>
 
-                <div class="piAudienceMockList">
-                  <label class="piAudienceOption">
-                    <input type="checkbox" checked>
-                    <span>
-                      <strong>Camping verano compradores</strong>
-                      <small>280 miembros estimados · Recompra</small>
-                    </span>
-                  </label>
-
-                  <label class="piAudienceOption">
-                    <input type="checkbox">
-                    <span>
-                      <strong>Descanso hogar interesados</strong>
-                      <small>145 miembros estimados · Cross-sell</small>
-                    </span>
-                  </label>
-
-                  <label class="piAudienceOption">
-                    <input type="checkbox">
-                    <span>
-                      <strong>Clientes para recompra general</strong>
-                      <small>520 miembros estimados · Reactivación</small>
-                    </span>
-                  </label>
+                <div class="piAudienceMockList" data-pi-audiences-list>
+                <div class="piEmpty">
+                  <strong>Cargando conjuntos disponibles...</strong>
+                  <p>Supabase está preparando los conjuntos creados desde Publicidad UTM.</p>
                 </div>
+              </div>
               </div>
 
               <div class="piFormBlock">
@@ -434,7 +421,14 @@ No conecta todavía con Supabase, Make ni Brevo.
 
       const openSlideBtn = event.target.closest("[data-pi-open-slide]");
       if (openSlideBtn) {
-        openSlide_(root, openSlideBtn.dataset.piOpenSlide);
+        const slideName = openSlideBtn.dataset.piOpenSlide || "";
+
+        openSlide_(root, slideName);
+
+        if (slideName === "new") {
+          loadConjuntosDisponiblesDesdeSupabase_(root);
+        }
+
         return;
       }
 
@@ -456,6 +450,28 @@ No conecta todavía con Supabase, Make ni Brevo.
       }
     });
 
+    /* INICIO · Selección de conjuntos disponibles · Publicidad Interna */
+    root.addEventListener("change", function (event) {
+      const audienceCheckbox = event.target.closest("[data-pi-audience-checkbox]");
+      if (!audienceCheckbox) return;
+
+      const id = String(audienceCheckbox.value || "").trim();
+      if (!id) return;
+
+      if (audienceCheckbox.checked) {
+        if (!STATE.selectedAudienceSetIds.includes(id)) {
+          STATE.selectedAudienceSetIds.push(id);
+        }
+      } else {
+        STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (item) {
+          return item !== id;
+        });
+      }
+
+      renderConjuntosDisponibles_(root);
+    });
+    /* FIN · Selección de conjuntos disponibles · Publicidad Interna */
+
     const searchInput = root.querySelector("[data-pi-search]");
     if (searchInput) {
       searchInput.addEventListener("input", function () {
@@ -468,7 +484,25 @@ No conecta todavía con Supabase, Make ni Brevo.
     if (newForm) {
       newForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        showToast_(root, "Borrador visual preparado. Luego lo conectamos a Supabase.");
+
+        const totalSeleccionados = STATE.selectedAudienceSetIds.length;
+
+        if (!totalSeleccionados) {
+          showToast_(root, "Seleccioná al menos un conjunto de audiencia para crear la campaña.");
+          return;
+        }
+
+        showToast_(
+          root,
+          "Borrador visual preparado con " +
+            totalSeleccionados +
+            " conjunto" +
+            (totalSeleccionados === 1 ? "" : "s") +
+            " seleccionado" +
+            (totalSeleccionados === 1 ? "" : "s") +
+            "."
+        );
+
         closeSlides_(root);
       });
     }
@@ -705,6 +739,201 @@ No conecta todavía con Supabase, Make ni Brevo.
       const number = Number(value);
       return Number.isFinite(number) ? number : 0;
     }
+
+    /* INICIO · Conjuntos disponibles desde Supabase · Publicidad Interna */
+    async function loadConjuntosDisponiblesDesdeSupabase_(root) {
+      if (!root) return;
+
+      if (STATE.loadingAudienceSets) {
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      if (STATE.audienceSetsRequested && STATE.audienceSets.length) {
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      const config = window.SAZZU_SUPABASE_CONFIG || {};
+
+      let url = String(config.url || config.projectUrl || config.apiUrl || "").trim();
+      url = url.replace(/\/$/, "");
+      url = url.replace(/\/rest\/v1$/, "");
+
+      const key = String(
+        config.anonKey ||
+        config.publishableKey ||
+        config.publicKey ||
+        config.key ||
+        ""
+      ).trim();
+
+      if (!url || !key) {
+        STATE.audienceSetsError = "Falta configurar Supabase URL o publishable key.";
+        STATE.loadingAudienceSets = false;
+        STATE.audienceSetsRequested = true;
+        renderConjuntosDisponibles_(root);
+        showToast_(root, "No se pudieron cargar conjuntos: falta configuración de Supabase.");
+        return;
+      }
+
+      STATE.loadingAudienceSets = true;
+      STATE.audienceSetsError = "";
+      STATE.audienceSetsRequested = true;
+
+      renderConjuntosDisponibles_(root);
+
+      try {
+        const endpoint = [
+          url,
+          "/rest/v1/vista_conjuntos_audiencia_disponibles",
+          "?select=*",
+          "&order=fecha_actualizacion.desc"
+        ].join("");
+
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: {
+            "apikey": key,
+            "Authorization": "Bearer " + key,
+            "Accept": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("HTTP " + response.status + " · " + errorText);
+        }
+
+        const rows = await response.json();
+
+        STATE.audienceSets = Array.isArray(rows)
+          ? rows.map(normalizeConjuntoDisponibleDesdeSupabase_)
+          : [];
+
+        const validIds = STATE.audienceSets.map(function (item) {
+          return item.id;
+        });
+
+        STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (id) {
+          return validIds.includes(id);
+        });
+
+        STATE.loadingAudienceSets = false;
+        STATE.audienceSetsError = "";
+
+        renderConjuntosDisponibles_(root);
+
+        if (STATE.audienceSets.length) {
+          showToast_(root, "Conjuntos reales cargados desde Supabase.");
+        } else {
+          showToast_(root, "Supabase respondió, pero no hay conjuntos disponibles.");
+        }
+      } catch (error) {
+        STATE.loadingAudienceSets = false;
+        STATE.audienceSetsError = String(error && error.message ? error.message : error);
+        console.error("[publicidadinterna] Error leyendo conjuntos disponibles:", error);
+
+        renderConjuntosDisponibles_(root);
+        showToast_(root, "No se pudieron cargar los conjuntos disponibles.");
+      }
+    }
+
+    function normalizeConjuntoDisponibleDesdeSupabase_(row) {
+      const sourceId = String(row.source_conjunto_id || "").trim();
+      const uuid = String(row.conjunto_audiencia_id || "").trim();
+      const nombre = String(row.nombre || "Conjunto sin nombre").trim();
+
+      const miembrosActivos = toNumber_(row.miembros_activos_reales);
+      const cantidadMiembros = toNumber_(row.cantidad_miembros);
+      const miembros = miembrosActivos || cantidadMiembros || 0;
+
+      return {
+        id: uuid || sourceId || nombre,
+        sourceId: sourceId,
+        nombre: nombre,
+        descripcion: String(row.descripcion || "").trim(),
+        moduloOrigen: String(row.modulo_origen || "").trim(),
+        clasificacion: String(row.clasificacion || "publicidad_interna").trim(),
+        estado: String(row.estado || "activo").trim(),
+        cantidadMiembros: cantidadMiembros,
+        miembrosActivos: miembrosActivos,
+        miembros: miembros,
+        fechaActualizacion: String(row.fecha_actualizacion || "").trim()
+      };
+    }
+
+    function renderConjuntosDisponibles_(root) {
+      const node = root.querySelector("[data-pi-audiences-list]");
+      if (!node) return;
+
+      if (STATE.loadingAudienceSets) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>Cargando conjuntos disponibles...</strong>',
+            '<p>Consultando Supabase para traer los públicos creados desde Publicidad UTM.</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      if (STATE.audienceSetsError) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>No se pudieron cargar los conjuntos.</strong>',
+            '<p>', escapeHtml_(STATE.audienceSetsError), '</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      if (!STATE.audienceSets.length) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>No hay conjuntos disponibles.</strong>',
+            '<p>Primero creá o sincronizá conjuntos desde Publicidad UTM.</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      node.innerHTML = STATE.audienceSets.map(renderConjuntoDisponibleOption_).join("");
+    }
+
+    function renderConjuntoDisponibleOption_(item) {
+      const checked = STATE.selectedAudienceSetIds.includes(item.id) ? " checked" : "";
+      const sourceLabel = item.sourceId ? item.sourceId + " · " : "";
+      const miembros = item.miembros || item.miembrosActivos || item.cantidadMiembros || 0;
+
+      return [
+        '<label class="piAudienceOption" data-pi-audience-option="', escapeHtml_(item.id), '">',
+          '<input ',
+            'type="checkbox" ',
+            'value="', escapeHtml_(item.id), '" ',
+            'data-pi-audience-checkbox',
+            checked,
+          '>',
+          '<span>',
+            '<strong>',
+              escapeHtml_(sourceLabel),
+              escapeHtml_(item.nombre),
+            '</strong>',
+            '<small>',
+              formatNumber_(miembros),
+              ' miembros activos · ',
+              escapeHtml_(labelObjetivo_(item.clasificacion)),
+              ' · ',
+              escapeHtml_(item.estado),
+            '</small>',
+            item.descripcion
+              ? '<small>' + escapeHtml_(item.descripcion) + '</small>'
+              : '',
+          '</span>',
+        '</label>'
+      ].join("");
+    }
+    /* FIN · Conjuntos disponibles desde Supabase · Publicidad Interna */
+
     /* FIN · Supabase read · Publicidad Interna */
 
   function renderKpis_(root) {
