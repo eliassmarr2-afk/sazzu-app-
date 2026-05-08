@@ -92,7 +92,13 @@ No conecta todavía con Supabase, Make ni Brevo.
     selectedAudienceSetIds: [],
     loadingAudienceSets: false,
     audienceSetsError: "",
-    audienceSetsRequested: false
+    audienceSetsRequested: false,
+
+    brevoDestinations: [],
+    selectedBrevoDestinationId: "",
+    loadingBrevoDestinations: false,
+    brevoDestinationsError: "",
+    brevoDestinationsRequested: false
   };
 
   window.__PUB_INTERNA_STATE__ = STATE;
@@ -252,30 +258,45 @@ No conecta todavía con Supabase, Make ni Brevo.
                 </div>
 
                 <label class="piField">
-                  <span>Nombre de campaña</span>
-                  <input type="text" value="Recompra Pack Camping" placeholder="Ej: Recompra Pack Camping">
+                <span>Nombre de campaña</span>
+                <input
+                  type="text"
+                  value="Recompra Pack Camping"
+                  placeholder="Ej: Recompra Pack Camping"
+                  data-pi-campaign-name
+                >
+              </label>
+
+              <label class="piField">
+                <span>Descripción interna</span>
+                <textarea
+                  rows="3"
+                  placeholder="Describe brevemente para qué sirve esta campaña."
+                  data-pi-campaign-description
+                >Campaña interna creada desde Protocol Data.</textarea>
+              </label>
+
+              <div class="piFieldGrid">
+                <label class="piField">
+                  <span>Objetivo</span>
+                  <select data-pi-campaign-objective>
+                    <option value="recompra">Recompra</option>
+                    <option value="cross_sell">Venta cruzada</option>
+                    <option value="reactivacion">Reactivación</option>
+                    <option value="postventa">Postventa</option>
+                    <option value="publicidad_interna">Publicidad interna</option>
+                  </select>
                 </label>
 
-                <div class="piFieldGrid">
-                  <label class="piField">
-                    <span>Objetivo</span>
-                    <select>
-                      <option>Recompra</option>
-                      <option>Venta cruzada</option>
-                      <option>Reactivación</option>
-                      <option>Postventa</option>
-                    </select>
-                  </label>
-
-                  <label class="piField">
-                    <span>Canal</span>
-                    <select>
-                      <option>Email</option>
-                      <option>WhatsApp</option>
-                      <option>SMS</option>
-                    </select>
-                  </label>
-                </div>
+                <label class="piField">
+                  <span>Canal</span>
+                  <select data-pi-campaign-channel>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="sms">SMS</option>
+                  </select>
+                </label>
+              </div>
               </div>
 
               <div class="piFormBlock">
@@ -296,6 +317,56 @@ No conecta todavía con Supabase, Make ni Brevo.
                 </div>
               </div>
               </div>
+
+              <!-- INICIO · Destino Brevo -->
+              <div class="piFormBlock">
+                <div class="piFormBlock__head">
+                  <span class="piMiniIcon" aria-hidden="true">
+                    ${icon_("send")}
+                  </span>
+                  <div>
+                    <h3>Destino Brevo</h3>
+                    <p>Seleccioná la lista, automatización o ruta de envío que ejecutará esta campaña.</p>
+                  </div>
+                </div>
+
+                <label class="piField">
+                  <span>Ruta de envío</span>
+                  <select data-pi-brevo-destination-select>
+                    <option value="">Cargando destinos Brevo...</option>
+                  </select>
+                </label>
+
+                <div data-pi-brevo-destination-detail>
+                  <div class="piEmpty">
+                    <strong>Seleccioná un destino Brevo.</strong>
+                    <p>Protocol Data usará este destino para indicar a Make/Brevo dónde sincronizar los contactos.</p>
+                  </div>
+                </div>
+
+                <div class="piFieldGrid">
+                  <label class="piField">
+                    <span>Asunto sugerido</span>
+                    <input type="text" data-pi-email-subject placeholder="Ej: Tu oferta sigue disponible">
+                  </label>
+
+                  <label class="piField">
+                    <span>Preheader sugerido</span>
+                    <input type="text" data-pi-email-preheader placeholder="Texto breve previo al correo">
+                  </label>
+                </div>
+
+                <label class="piField">
+                  <span>Mensaje base</span>
+                  <textarea data-pi-email-message rows="4" placeholder="Describe el mensaje principal de la campaña."></textarea>
+                </label>
+
+                <label class="piField">
+                  <span>URL principal / CTA</span>
+                  <input type="url" data-pi-email-cta placeholder="https://sazzu.store">
+                </label>
+              </div>
+              <!-- FIN · Destino Brevo -->
 
               <div class="piFormBlock">
                 <div class="piFormBlock__head">
@@ -427,6 +498,7 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         if (slideName === "new") {
           loadConjuntosDisponiblesDesdeSupabase_(root);
+          loadBrevoDestinosDisponiblesDesdeSupabase_(root);
         }
 
         return;
@@ -450,27 +522,37 @@ No conecta todavía con Supabase, Make ni Brevo.
       }
     });
 
-    /* INICIO · Selección de conjuntos disponibles · Publicidad Interna */
-    root.addEventListener("change", function (event) {
-      const audienceCheckbox = event.target.closest("[data-pi-audience-checkbox]");
-      if (!audienceCheckbox) return;
-
-      const id = String(audienceCheckbox.value || "").trim();
-      if (!id) return;
-
-      if (audienceCheckbox.checked) {
-        if (!STATE.selectedAudienceSetIds.includes(id)) {
-          STATE.selectedAudienceSetIds.push(id);
-        }
-      } else {
-        STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (item) {
-          return item !== id;
+        /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
+        root.addEventListener("change", function (event) {
+          const audienceCheckbox = event.target.closest("[data-pi-audience-checkbox]");
+          if (audienceCheckbox) {
+            const id = String(audienceCheckbox.value || "").trim();
+            if (!id) return;
+    
+            if (audienceCheckbox.checked) {
+              if (!STATE.selectedAudienceSetIds.includes(id)) {
+                STATE.selectedAudienceSetIds.push(id);
+              }
+            } else {
+              STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (item) {
+                return item !== id;
+              });
+            }
+    
+            renderConjuntosDisponibles_(root);
+            return;
+          }
+    
+          const brevoSelect = event.target.closest("[data-pi-brevo-destination-select]");
+          if (brevoSelect) {
+            STATE.selectedBrevoDestinationId = String(brevoSelect.value || "").trim();
+    
+            applyBrevoDestinoDefaults_(root);
+            renderBrevoDestinoDetalle_(root);
+            return;
+          }
         });
-      }
-
-      renderConjuntosDisponibles_(root);
-    });
-    /* FIN · Selección de conjuntos disponibles · Publicidad Interna */
+        /* FIN · Selección de conjuntos y destino Brevo · Publicidad Interna */
 
     const searchInput = root.querySelector("[data-pi-search]");
     if (searchInput) {
@@ -482,28 +564,10 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     const newForm = root.querySelector("[data-pi-new-form]");
     if (newForm) {
-      newForm.addEventListener("submit", function (event) {
+      newForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const totalSeleccionados = STATE.selectedAudienceSetIds.length;
-
-        if (!totalSeleccionados) {
-          showToast_(root, "Seleccioná al menos un conjunto de audiencia para crear la campaña.");
-          return;
-        }
-
-        showToast_(
-          root,
-          "Borrador visual preparado con " +
-            totalSeleccionados +
-            " conjunto" +
-            (totalSeleccionados === 1 ? "" : "s") +
-            " seleccionado" +
-            (totalSeleccionados === 1 ? "" : "s") +
-            "."
-        );
-
-        closeSlides_(root);
+        await guardarCampaniaInternaBorrador_(root, newForm);
       });
     }
 
@@ -934,7 +998,467 @@ No conecta todavía con Supabase, Make ni Brevo.
     }
     /* FIN · Conjuntos disponibles desde Supabase · Publicidad Interna */
 
+
+    /* FIN · Conjuntos disponibles desde Supabase · Publicidad Interna */
+
+    /* INICIO · Destinos Brevo desde Supabase · Publicidad Interna */
+    async function loadBrevoDestinosDisponiblesDesdeSupabase_(root) {
+      if (!root) return;
+
+      if (STATE.loadingBrevoDestinations) {
+        renderBrevoDestinos_(root);
+        return;
+      }
+
+      if (STATE.brevoDestinationsRequested && STATE.brevoDestinations.length) {
+        renderBrevoDestinos_(root);
+        renderBrevoDestinoDetalle_(root);
+        return;
+      }
+
+      const config = window.SAZZU_SUPABASE_CONFIG || {};
+
+      let url = String(config.url || config.projectUrl || config.apiUrl || "").trim();
+      url = url.replace(/\/$/, "");
+      url = url.replace(/\/rest\/v1$/, "");
+
+      const key = String(
+        config.anonKey ||
+        config.publishableKey ||
+        config.publicKey ||
+        config.key ||
+        ""
+      ).trim();
+
+      if (!url || !key) {
+        STATE.brevoDestinationsError = "Falta configurar Supabase URL o publishable key.";
+        STATE.loadingBrevoDestinations = false;
+        STATE.brevoDestinationsRequested = true;
+        renderBrevoDestinos_(root);
+        showToast_(root, "No se pudieron cargar destinos Brevo: falta configuración de Supabase.");
+        return;
+      }
+
+      STATE.loadingBrevoDestinations = true;
+      STATE.brevoDestinationsError = "";
+      STATE.brevoDestinationsRequested = true;
+
+      renderBrevoDestinos_(root);
+
+      try {
+        const endpoint = [
+          url,
+          "/rest/v1/vista_brevo_destinos_envio_disponibles",
+          "?select=*",
+          "&order=prioridad.asc,nombre_destino.asc"
+        ].join("");
+
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: {
+            "apikey": key,
+            "Authorization": "Bearer " + key,
+            "Accept": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("HTTP " + response.status + " · " + errorText);
+        }
+
+        const rows = await response.json();
+
+        STATE.brevoDestinations = Array.isArray(rows)
+          ? rows.map(normalizeBrevoDestinoDesdeSupabase_)
+          : [];
+
+        const validIds = STATE.brevoDestinations.map(function (item) {
+          return item.id;
+        });
+
+        if (STATE.selectedBrevoDestinationId && !validIds.includes(STATE.selectedBrevoDestinationId)) {
+          STATE.selectedBrevoDestinationId = "";
+        }
+
+        STATE.loadingBrevoDestinations = false;
+        STATE.brevoDestinationsError = "";
+
+        renderBrevoDestinos_(root);
+        renderBrevoDestinoDetalle_(root);
+
+        if (STATE.brevoDestinations.length) {
+          showToast_(root, "Destinos Brevo cargados desde Supabase.");
+        } else {
+          showToast_(root, "Supabase respondió, pero no hay destinos Brevo activos.");
+        }
+      } catch (error) {
+        STATE.loadingBrevoDestinations = false;
+        STATE.brevoDestinationsError = String(error && error.message ? error.message : error);
+        console.error("[publicidadinterna] Error leyendo destinos Brevo:", error);
+
+        renderBrevoDestinos_(root);
+        renderBrevoDestinoDetalle_(root);
+        showToast_(root, "No se pudieron cargar los destinos Brevo.");
+      }
+    }
+
+    function normalizeBrevoDestinoDesdeSupabase_(row) {
+      return {
+        id: String(row.brevo_destino_envio_id || "").trim(),
+        nombre: String(row.nombre_destino || "Destino Brevo sin nombre").trim(),
+        descripcion: String(row.descripcion || "").trim(),
+
+        tipoDestino: String(row.tipo_destino || "lista_automatizacion").trim(),
+        canal: String(row.canal || "email").trim(),
+        proveedorEnvio: String(row.proveedor_envio || "brevo").trim(),
+        estado: String(row.estado || "activo").trim(),
+        objetivoComercial: String(row.objetivo_comercial || "publicidad_interna").trim(),
+
+        brevoListaId: String(row.brevo_lista_id || "").trim(),
+        brevoListaNombre: String(row.brevo_lista_nombre || "").trim(),
+
+        brevoSegmentoId: String(row.brevo_segmento_id || "").trim(),
+        brevoSegmentoNombre: String(row.brevo_segmento_nombre || "").trim(),
+
+        brevoAutomatizacionId: String(row.brevo_automatizacion_id || "").trim(),
+        brevoAutomatizacionNombre: String(row.brevo_automatizacion_nombre || "").trim(),
+
+        brevoTemplateId: String(row.brevo_template_id || "").trim(),
+        brevoTemplateNombre: String(row.brevo_template_nombre || "").trim(),
+
+        triggerBrevo: String(row.trigger_brevo || "contacto_agregado_a_lista").trim(),
+
+        asuntoDefault: String(row.asunto_default || "").trim(),
+        preheaderDefault: String(row.preheader_default || "").trim(),
+        mensajeBaseDefault: String(row.mensaje_base_default || "").trim(),
+        urlCtaDefault: String(row.url_cta_default || "").trim(),
+
+        prioridad: toNumber_(row.prioridad)
+      };
+    }
+
+    function renderBrevoDestinos_(root) {
+      const select = root.querySelector("[data-pi-brevo-destination-select]");
+      if (!select) return;
+
+      if (STATE.loadingBrevoDestinations) {
+        select.innerHTML = '<option value="">Cargando destinos Brevo...</option>';
+        select.disabled = true;
+        return;
+      }
+
+      select.disabled = false;
+
+      if (STATE.brevoDestinationsError) {
+        select.innerHTML = '<option value="">No se pudieron cargar destinos Brevo</option>';
+        return;
+      }
+
+      if (!STATE.brevoDestinations.length) {
+        select.innerHTML = '<option value="">No hay destinos Brevo activos</option>';
+        return;
+      }
+
+      select.innerHTML = [
+        '<option value="">Seleccionar destino Brevo...</option>',
+        STATE.brevoDestinations.map(function (item) {
+          const selected = item.id === STATE.selectedBrevoDestinationId ? " selected" : "";
+
+          return [
+            '<option value="', escapeHtml_(item.id), '"', selected, '>',
+              escapeHtml_(item.nombre),
+              ' · ',
+              escapeHtml_(formatBrevoDestinoTipo_(item.tipoDestino)),
+              item.brevoListaNombre ? ' · ' + escapeHtml_(item.brevoListaNombre) : '',
+            '</option>'
+          ].join("");
+        }).join("")
+      ].join("");
+    }
+
+    function renderBrevoDestinoDetalle_(root) {
+      const node = root.querySelector("[data-pi-brevo-destination-detail]");
+      if (!node) return;
+
+      if (STATE.loadingBrevoDestinations) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>Cargando destino Brevo...</strong>',
+            '<p>Consultando rutas de envío disponibles.</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      if (STATE.brevoDestinationsError) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>No se pudieron cargar los destinos Brevo.</strong>',
+            '<p>', escapeHtml_(STATE.brevoDestinationsError), '</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      const destino = getSelectedBrevoDestino_();
+
+      if (!destino) {
+        node.innerHTML = [
+          '<div class="piEmpty">',
+            '<strong>Seleccioná un destino Brevo.</strong>',
+            '<p>Protocol Data usará esta ruta para indicar a Make/Brevo dónde sincronizar los contactos.</p>',
+          '</div>'
+        ].join("");
+        return;
+      }
+
+      node.innerHTML = [
+        '<div class="piReading">',
+          '<strong>', escapeHtml_(destino.nombre), '</strong>',
+          '<p>',
+            escapeHtml_(destino.descripcion || "Ruta de envío disponible para campañas internas."),
+          '</p>',
+          '<p>',
+            'Lista: <strong>', escapeHtml_(destino.brevoListaNombre || destino.brevoListaId || "No definida"), '</strong>',
+            ' · Automatización: <strong>', escapeHtml_(destino.brevoAutomatizacionNombre || destino.brevoAutomatizacionId || "No definida"), '</strong>',
+          '</p>',
+          '<p>',
+            'Trigger: ', escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)),
+            ' · Template: ', escapeHtml_(destino.brevoTemplateNombre || destino.brevoTemplateId || "No definido"),
+          '</p>',
+        '</div>'
+      ].join("");
+    }
+
+    function applyBrevoDestinoDefaults_(root) {
+      const destino = getSelectedBrevoDestino_();
+      if (!destino) return;
+
+      const subjectInput = root.querySelector("[data-pi-email-subject]");
+      const preheaderInput = root.querySelector("[data-pi-email-preheader]");
+      const messageInput = root.querySelector("[data-pi-email-message]");
+      const ctaInput = root.querySelector("[data-pi-email-cta]");
+
+      if (subjectInput && !subjectInput.value.trim()) {
+        subjectInput.value = destino.asuntoDefault || "";
+      }
+
+      if (preheaderInput && !preheaderInput.value.trim()) {
+        preheaderInput.value = destino.preheaderDefault || "";
+      }
+
+      if (messageInput && !messageInput.value.trim()) {
+        messageInput.value = destino.mensajeBaseDefault || "";
+      }
+
+      if (ctaInput && !ctaInput.value.trim()) {
+        ctaInput.value = destino.urlCtaDefault || "";
+      }
+    }
+
+    function getSelectedBrevoDestino_() {
+      if (!STATE.selectedBrevoDestinationId) return null;
+
+      return STATE.brevoDestinations.find(function (item) {
+        return item.id === STATE.selectedBrevoDestinationId;
+      }) || null;
+    }
+
+    function formatBrevoDestinoTipo_(tipo) {
+      const map = {
+        lista: "Lista",
+        segmento: "Segmento",
+        automatizacion: "Automatización",
+        lista_automatizacion: "Lista + Automatización",
+        template_directo: "Template directo"
+      };
+
+      return map[tipo] || tipo || "Destino";
+    }
+
+    function formatBrevoTrigger_(trigger) {
+      const map = {
+        contacto_agregado_a_lista: "Contacto agregado a lista"
+      };
+
+      return map[trigger] || trigger || "Trigger no definido";
+    }
+    /* FIN · Destinos Brevo desde Supabase · Publicidad Interna */
+
+
+    /* FIN · Destinos Brevo desde Supabase · Publicidad Interna */
+
+    /* INICIO · Guardar campaña real en Supabase · Publicidad Interna */
+    async function guardarCampaniaInternaBorrador_(root, form) {
+      if (!root || !form) return;
+
+      const totalSeleccionados = STATE.selectedAudienceSetIds.length;
+
+      if (!totalSeleccionados) {
+        showToast_(root, "Seleccioná al menos un conjunto de audiencia para crear la campaña.");
+        return;
+      }
+
+      if (!STATE.selectedBrevoDestinationId) {
+        showToast_(root, "Seleccioná un destino Brevo para definir dónde se ejecutará la campaña.");
+        return;
+      }
+
+      const nombreInput = form.querySelector("[data-pi-campaign-name]");
+      const descripcionInput = form.querySelector("[data-pi-campaign-description]");
+      const objetivoInput = form.querySelector("[data-pi-campaign-objective]");
+      const canalInput = form.querySelector("[data-pi-campaign-channel]");
+
+      const subjectInput = form.querySelector("[data-pi-email-subject]");
+      const preheaderInput = form.querySelector("[data-pi-email-preheader]");
+      const messageInput = form.querySelector("[data-pi-email-message]");
+      const ctaInput = form.querySelector("[data-pi-email-cta]");
+
+      const nombre = String(nombreInput ? nombreInput.value : "").trim();
+      const descripcion = String(descripcionInput ? descripcionInput.value : "").trim();
+      const objetivo = String(objetivoInput ? objetivoInput.value : "publicidad_interna").trim();
+      const canal = String(canalInput ? canalInput.value : "email").trim();
+
+      const asunto = String(subjectInput ? subjectInput.value : "").trim();
+      const preheader = String(preheaderInput ? preheaderInput.value : "").trim();
+      const mensaje = String(messageInput ? messageInput.value : "").trim();
+      const urlCta = String(ctaInput ? ctaInput.value : "").trim();
+
+      if (!nombre) {
+        showToast_(root, "Escribí un nombre para la campaña.");
+        if (nombreInput) nombreInput.focus();
+        return;
+      }
+
+      const payload = {
+        nombre: nombre,
+        descripcion: descripcion,
+        objetivo: objetivo,
+        canal: canal,
+
+        conjuntos_audiencia_ids: STATE.selectedAudienceSetIds.slice(),
+        brevo_destino_envio_id: STATE.selectedBrevoDestinationId,
+
+        asunto_email: asunto,
+        preheader_email: preheader,
+        mensaje_base: mensaje,
+        url_cta: urlCta
+      };
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const previousHtml = submitBtn ? submitBtn.innerHTML : "";
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Guardando borrador...</span>';
+      }
+
+      try {
+        const result = await crearCampaniaInternaBorradorEnSupabase_(payload);
+
+        if (!result || result.ok !== true) {
+          throw new Error(result && result.error ? result.error : "Supabase no confirmó la creación del borrador.");
+        }
+
+        showToast_(
+          root,
+          "Campaña guardada como borrador con " +
+            result.conjuntos_vinculados +
+            " conjunto" +
+            (Number(result.conjuntos_vinculados) === 1 ? "" : "s") +
+            " y " +
+            result.miembros_estimados_activos +
+            " contacto" +
+            (Number(result.miembros_estimados_activos) === 1 ? "" : "s") +
+            " estimado" +
+            (Number(result.miembros_estimados_activos) === 1 ? "" : "s") +
+            "."
+        );
+
+        closeSlides_(root);
+
+        await loadCampaniasDesdeSupabase_(root);
+      } catch (error) {
+        console.error("[publicidadinterna] Error creando campaña borrador:", error);
+        showToast_(
+          root,
+          "No se pudo guardar el borrador: " +
+            String(error && error.message ? error.message : error)
+        );
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = previousHtml;
+        }
+      }
+    }
+
+    async function crearCampaniaInternaBorradorEnSupabase_(payload) {
+      const config = window.SAZZU_SUPABASE_CONFIG || {};
+
+      let url = String(config.url || config.projectUrl || config.apiUrl || "").trim();
+      url = url.replace(/\/$/, "");
+      url = url.replace(/\/rest\/v1$/, "");
+
+      const key = String(
+        config.anonKey ||
+        config.publishableKey ||
+        config.publicKey ||
+        config.key ||
+        ""
+      ).trim();
+
+      if (!url || !key) {
+        throw new Error("Falta configurar Supabase URL o publishable key.");
+      }
+
+      const endpoint = [
+        url,
+        "/rest/v1/rpc/rpc_crear_campania_interna_borrador"
+      ].join("");
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "apikey": key,
+          "Authorization": "Bearer " + key,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          p_payload: payload
+        })
+      });
+
+      const text = await response.text();
+      let data = null;
+
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (error) {
+        data = {
+          ok: false,
+          error: text || "Respuesta no JSON desde Supabase."
+        };
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "HTTP " +
+            response.status +
+            " · " +
+            (data && data.error ? data.error : text)
+        );
+      }
+
+      return data;
+    }
+    /* FIN · Guardar campaña real en Supabase · Publicidad Interna */
+
     /* FIN · Supabase read · Publicidad Interna */
+    
+    
 
   function renderKpis_(root) {
     const node = root.querySelector("[data-pi-kpis]");
