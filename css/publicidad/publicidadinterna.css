@@ -881,3 +881,633 @@ INICIO - Indicador fuente de datos · Publicidad Interna
 /* ============================================================
 FIN - Indicador fuente de datos · Publicidad Interna
 ============================================================ */
+
+/* ============================================================
+   Publicidad Interna · Selector múltiple de conjuntos
+   ============================================================ */
+
+.piAudiencePicker {
+  position: relative;
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.piAudiencePicker__trigger {
+  width: 100%;
+  appearance: none;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 12px;
+  min-height: 72px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .04);
+}
+
+.piAudiencePicker.is-open .piAudiencePicker__trigger {
+  border-color: #2479FF;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .10);
+}
+
+.piAudiencePicker__triggerIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #2479FF;
+  background: #EDF4FF;
+}
+
+.piAudiencePicker__triggerIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.piAudiencePicker__triggerCopy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.piAudiencePicker__triggerCopy strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.piAudiencePicker__triggerCopy small {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.piAudiencePicker__chevron {
+  color: #667085;
+  font-size: 20px;
+  line-height: 1;
+  text-align: center;
+}
+
+.piAudiencePicker__dropdown {
+  position: absolute;
+  z-index: 70;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: min(560px, calc(100vh - 180px));
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, .10);
+  border-radius: 18px;
+  background: #FFFFFF;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, .18);
+  padding: 12px;
+}
+
+.piAudiencePicker__searchRow {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #E4EAF3;
+  border-radius: 12px;
+  background: #F8FAFC;
+}
+
+.piAudiencePicker__searchIcon {
+  color: #2479FF;
+  display: inline-flex;
+}
+
+.piAudiencePicker__searchIcon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.piAudiencePicker__searchRow input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.piAudiencePicker__searchRow input::placeholder {
+  color: #98A2B3;
+}
+
+.piAudiencePicker__sortRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.piAudiencePicker__sortBtn {
+  appearance: none;
+  border: 1px solid #E4EAF3;
+  background: #FFFFFF;
+  color: #475467;
+  border-radius: 999px;
+  min-height: 30px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.piAudiencePicker__sortBtn.is-active {
+  border-color: rgba(36, 121, 255, .30);
+  background: #EDF4FF;
+  color: #2479FF;
+}
+
+.piAudiencePicker__list {
+  display: grid;
+  gap: 8px;
+  max-height: 410px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.piAudiencePicker__item {
+  width: 100%;
+  appearance: none;
+  border: 1px solid #E4EAF3;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+}
+
+.piAudiencePicker__item:hover {
+  border-color: rgba(36, 121, 255, .32);
+  background: #F8FBFF;
+}
+
+.piAudiencePicker__item.is-selected {
+  border-color: #2479FF;
+  background: #EAF2FF;
+}
+
+.piAudiencePicker__itemIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piAudiencePicker__itemIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.piAudiencePicker__itemIcon--recompra { background: #DCFCE7; color: #16A34A; }
+.piAudiencePicker__itemIcon--cross_sell { background: #FFF7ED; color: #F97316; }
+.piAudiencePicker__itemIcon--upsell { background: #EDF4FF; color: #2479FF; }
+.piAudiencePicker__itemIcon--fidelizacion { background: #EEF2FF; color: #4F46E5; }
+.piAudiencePicker__itemIcon--reactivacion { background: #EFF6FF; color: #2563EB; }
+.piAudiencePicker__itemIcon--educacion { background: #F5F3FF; color: #7C3AED; }
+.piAudiencePicker__itemIcon--experimentacion { background: #FAE8FF; color: #A855F7; }
+.piAudiencePicker__itemIcon--mayorista { background: #ECFEFF; color: #0891B2; }
+.piAudiencePicker__itemIcon--publicidad_interna { background: #EDF4FF; color: #2479FF; }
+
+.piAudiencePicker__itemMain {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.piAudiencePicker__itemTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.piAudiencePicker__itemTop strong {
+  min-width: 0;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.piAudiencePicker__itemTop em {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.piAudiencePicker__itemMain small {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.piAudiencePicker__itemDesc {
+  color: #475467 !important;
+}
+
+.piAudiencePicker__composition {
+  width: fit-content;
+  margin-top: 3px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.piAudiencePicker__itemSide {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.piAudiencePicker__check {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2479FF;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.piAudiencePicker__item:not(.is-selected) .piAudiencePicker__check {
+  background: #E5EAF2;
+  color: transparent;
+}
+
+.piAudiencePicker__bubbles {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 6px;
+}
+
+.piAudiencePicker__bubble {
+  width: 22px;
+  height: 22px;
+  margin-left: -6px;
+  border-radius: 999px;
+  border: 2px solid #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  box-shadow: 0 6px 12px rgba(15, 23, 42, .10);
+}
+
+.piAudiencePicker__bubble--0 { background: #2479FF; }
+.piAudiencePicker__bubble--1 { background: #7C3AED; }
+.piAudiencePicker__bubble--2 { background: #22C55E; }
+.piAudiencePicker__bubble--more { background: #111827; min-width: 26px; padding: 0 5px; }
+
+.piAudiencePicker__summary {
+  border: 1px solid #E4EAF3;
+  border-radius: 14px;
+  background: #FFFFFF;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.piAudiencePicker__summary.is-empty {
+  background: #F8FAFC;
+}
+
+.piAudiencePicker__summaryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.piAudiencePicker__summaryHead strong {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.piAudiencePicker__summaryHead button,
+.piAudiencePicker__chip button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #2479FF;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.piAudiencePicker__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.piAudiencePicker__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: #EDF4FF;
+  color: #1D4ED8;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.piAudiencePicker__chip button {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(36, 121, 255, .12);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piAudiencePicker__summary p,
+.piAudiencePicker__summary span {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.piAudiencePicker__empty {
+  padding: 18px;
+  border-radius: 14px;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  display: grid;
+  gap: 5px;
+}
+
+.piAudiencePicker__empty strong {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.piAudiencePicker__empty span {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* ============================================================
+   Publicidad Interna · Pulido selector múltiple de conjuntos
+   ============================================================ */
+
+/* Header con ayuda */
+.piFormBlock__head--withHelp {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 32px !important;
+  align-items: start !important;
+  gap: 12px !important;
+}
+
+.piAudienceHelp {
+  position: relative !important;
+  justify-self: end !important;
+  z-index: 30 !important;
+}
+
+.piAudienceHelp__btn {
+  appearance: none !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 5px !important;
+  border: 0 !important;
+  background: #EDF4FF !important;
+  color: #2479FF !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.piAudienceHelp__tooltip {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  width: 320px !important;
+  padding: 13px 14px !important;
+  border-radius: 5px !important;
+  background: #2479FF !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 18px 44px rgba(36, 121, 255, .28) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-4px) !important;
+  transition: opacity .16s ease, transform .16s ease, visibility .16s ease !important;
+  pointer-events: none !important;
+}
+
+.piAudienceHelp:hover .piAudienceHelp__tooltip,
+.piAudienceHelp:focus-within .piAudienceHelp__tooltip {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+
+.piAudienceHelp__tooltip strong {
+  display: block !important;
+  margin: 0 0 6px !important;
+  color: #FFFFFF !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+.piAudienceHelp__tooltip p {
+  margin: 0 !important;
+  color: rgba(255,255,255,.86) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  line-height: 1.45 !important;
+}
+
+/* Radius 5px general del selector */
+.piAudiencePicker__trigger,
+.piAudiencePicker__dropdown,
+.piAudiencePicker__searchRow,
+.piAudiencePicker__sortBtn,
+.piAudiencePicker__item,
+.piAudiencePicker__summary,
+.piAudiencePicker__empty,
+.piAudiencePicker__composition,
+.piAudiencePicker__chip,
+.piAudiencePicker__selectedCard {
+  border-radius: 5px !important;
+}
+
+/* Dropdown item: celeste agua, sin borde visible salvo seleccionado */
+.piAudiencePicker__item {
+  background: #EAFBFF !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+
+.piAudiencePicker__item:hover {
+  background: #E6F8FF !important;
+  border-color: transparent !important;
+}
+
+.piAudiencePicker__item.is-selected {
+  background: #EAFBFF !important;
+  border-color: #2479FF !important;
+  box-shadow: 0 0 0 2px rgba(36, 121, 255, .08) !important;
+}
+
+/* Check como punto azul, no palomita */
+.piAudiencePicker__check {
+  width: 11px !important;
+  height: 11px !important;
+  border-radius: 999px !important;
+  background: #2479FF !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  box-shadow: 0 0 0 4px rgba(36, 121, 255, .12) !important;
+}
+
+.piAudiencePicker__item:not(.is-selected) .piAudiencePicker__check {
+  width: 9px !important;
+  height: 9px !important;
+  background: #D8E2F3 !important;
+  box-shadow: none !important;
+  color: transparent !important;
+}
+
+/* Resumen cerrado: cards verdes con título/subtítulo */
+.piAudiencePicker__summary--selected {
+  background: #FFFFFF !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+.piAudiencePicker__selectedGrid {
+  display: grid !important;
+  gap: 8px !important;
+}
+
+.piAudiencePicker__selectedCard {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) 24px !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 11px !important;
+  background: #DCFCE7 !important;
+  border: 0 !important;
+}
+
+.piAudiencePicker__selectedIcon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(22, 163, 74, .12) !important;
+  color: #16A34A !important;
+}
+
+.piAudiencePicker__selectedIcon svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.piAudiencePicker__selectedCopy {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+}
+
+.piAudiencePicker__selectedCopy strong,
+.piAudiencePicker__selectedCopy small {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.piAudiencePicker__selectedCopy strong {
+  color: #14532D !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+.piAudiencePicker__selectedCopy small {
+  color: #15803D !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+.piAudiencePicker__selectedCard button {
+  appearance: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(22, 163, 74, .14) !important;
+  color: #14532D !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.piAudiencePicker__summary--selected > p {
+  padding: 0 2px !important;
+}
+
+/* Limpieza de chips viejos por si queda cache/render anterior */
+.piAudiencePicker__chips {
+  display: none !important;
+}
+

@@ -90,6 +90,11 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     audienceSets: [],
     selectedAudienceSetIds: [],
+
+    audienceDropdownOpen: false,
+    audienceSearch: "",
+    audienceSort: "recent",
+
     loadingAudienceSets: false,
     audienceSetsError: "",
     audienceSetsRequested: false,
@@ -300,13 +305,28 @@ No conecta todavía con Supabase, Make ni Brevo.
               </div>
 
               <div class="piFormBlock">
-                <div class="piFormBlock__head">
+                <div class="piFormBlock__head piFormBlock__head--withHelp">
                   <span class="piMiniIcon" aria-hidden="true">
                     ${icon_("users")}
                   </span>
+
                   <div>
                     <h3>Conjuntos de audiencia</h3>
                     <p>Seleccioná los públicos que participarán en la campaña.</p>
+                  </div>
+
+                  <div class="piAudienceHelp">
+                    <button type="button" class="piAudienceHelp__btn" aria-label="Ayuda sobre selección de conjuntos">
+                      ?
+                    </button>
+
+                    <div class="piAudienceHelp__tooltip" role="tooltip">
+                      <strong>Selección de conjuntos</strong>
+                      <p>
+                        Para seleccionar un conjunto de audiencias, primero debe existir al menos uno creado y disponible desde Publicidad UTM.
+                        Podés combinar varios conjuntos en una misma campaña; luego Make/Brevo usará esa selección para sincronizar los contactos del flujo.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -522,11 +542,96 @@ No conecta todavía con Supabase, Make ni Brevo.
         return;
       }
 
+      const audienceTrigger = event.target.closest("[data-pi-audience-trigger]");
+      if (audienceTrigger) {
+        event.preventDefault();
+        STATE.audienceDropdownOpen = !STATE.audienceDropdownOpen;
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      const audienceSortBtn = event.target.closest("[data-pi-audience-sort]");
+      if (audienceSortBtn) {
+        event.preventDefault();
+        STATE.audienceSort = audienceSortBtn.dataset.piAudienceSort || "recent";
+        STATE.audienceDropdownOpen = true;
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      const audiencePickBtn = event.target.closest("[data-pi-audience-pick]");
+      if (audiencePickBtn) {
+        event.preventDefault();
+
+        const id = String(audiencePickBtn.dataset.piAudiencePick || "").trim();
+        if (!id) return;
+
+        if (STATE.selectedAudienceSetIds.includes(id)) {
+          STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (item) {
+            return item !== id;
+          });
+        } else {
+          STATE.selectedAudienceSetIds.push(id);
+        }
+
+        STATE.audienceDropdownOpen = true;
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      const audienceRemoveBtn = event.target.closest("[data-pi-audience-remove]");
+      if (audienceRemoveBtn) {
+        event.preventDefault();
+
+        const id = String(audienceRemoveBtn.dataset.piAudienceRemove || "").trim();
+        STATE.selectedAudienceSetIds = STATE.selectedAudienceSetIds.filter(function (item) {
+          return item !== id;
+        });
+
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      const audienceClearBtn = event.target.closest("[data-pi-audience-clear]");
+      if (audienceClearBtn) {
+        event.preventDefault();
+
+        STATE.selectedAudienceSetIds = [];
+        renderConjuntosDisponibles_(root);
+        return;
+      }
+
+      if (STATE.audienceDropdownOpen && !event.target.closest("[data-pi-audience-picker]")) {
+        STATE.audienceDropdownOpen = false;
+        renderConjuntosDisponibles_(root);
+      }
+
       const mockActionBtn = event.target.closest("[data-pi-mock-action]");
       if (mockActionBtn) {
         showToast_(root, "Acción visual preparada. Todavía no conecta con Supabase.");
       }
     });
+
+        /* INICIO · Selector múltiple de conjuntos · Publicidad Interna */
+        root.addEventListener("input", function (event) {
+          const audienceSearchInput = event.target.closest("[data-pi-audience-search]");
+          if (!audienceSearchInput) return;
+
+          STATE.audienceSearch = String(audienceSearchInput.value || "");
+          STATE.audienceDropdownOpen = true;
+
+          renderConjuntosDisponibles_(root);
+
+          const nextInput = root.querySelector("[data-pi-audience-search]");
+          if (nextInput) {
+            nextInput.focus();
+            const len = nextInput.value.length;
+            try {
+              nextInput.setSelectionRange(len, len);
+            } catch (error) {}
+          }
+        });
+        /* FIN · Selector múltiple de conjuntos · Publicidad Interna */
 
         /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
         root.addEventListener("change", function (event) {
@@ -911,25 +1016,58 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     function normalizeConjuntoDisponibleDesdeSupabase_(row) {
       const sourceId = String(row.source_conjunto_id || "").trim();
-      const uuid = String(row.conjunto_audiencia_id || "").trim();
-      const nombre = String(row.nombre || "Conjunto sin nombre").trim();
+      const uuid = String(row.conjunto_audiencia_id || row.id || "").trim();
+      const nombre = String(row.nombre || row.nombre_conjunto || "Conjunto sin nombre").trim();
 
-      const miembrosActivos = toNumber_(row.miembros_activos_reales);
-      const cantidadMiembros = toNumber_(row.cantidad_miembros);
+      const metadata = row && typeof row.metadata === "object" && row.metadata
+        ? row.metadata
+        : {};
+
+      const miembrosActivos = toNumber_(row.miembros_activos_reales || row.miembros_actuales_count);
+      const cantidadMiembros = toNumber_(row.cantidad_miembros || row.miembros_count);
       const miembros = miembrosActivos || cantidadMiembros || 0;
+
+      const audienciasCount = toNumber_(
+        row.audiencias_count ||
+        row.cantidad_audiencias ||
+        metadata.audiencias_count ||
+        metadata.audienciasCount
+      );
+
+      const parametrosCount = toNumber_(
+        row.parametros_count ||
+        row.parametros_totales ||
+        row.condiciones_count ||
+        metadata.parametros_count ||
+        metadata.parametrosTotales ||
+        metadata.condiciones_count
+      );
+
+      const clasificacion = String(
+        row.clasificacion ||
+        row.objetivo_comercial ||
+        metadata.objetivo_comercial ||
+        "publicidad_interna"
+      ).trim();
 
       return {
         id: uuid || sourceId || nombre,
         sourceId: sourceId,
         nombre: nombre,
-        descripcion: String(row.descripcion || "").trim(),
+        descripcion: String(row.descripcion || row.descripcion_conjunto || "").trim(),
         moduloOrigen: String(row.modulo_origen || "").trim(),
-        clasificacion: String(row.clasificacion || "publicidad_interna").trim(),
+        clasificacion: clasificacion,
         estado: String(row.estado || "activo").trim(),
+
         cantidadMiembros: cantidadMiembros,
         miembrosActivos: miembrosActivos,
         miembros: miembros,
-        fechaActualizacion: String(row.fecha_actualizacion || "").trim()
+
+        audienciasCount: audienciasCount,
+        parametrosCount: parametrosCount,
+
+        fechaCreacion: String(row.fecha_creacion || row.created_at || "").trim(),
+        fechaActualizacion: String(row.fecha_actualizacion || row.updated_at || "").trim()
       };
     }
 
@@ -967,40 +1105,309 @@ No conecta todavía con Supabase, Make ni Brevo.
         return;
       }
 
-      node.innerHTML = STATE.audienceSets.map(renderConjuntoDisponibleOption_).join("");
+      const selected = getSelectedAudienceSets_();
+      const visible = getVisibleAudienceSets_();
+      const selectedMembers = selected.reduce(function (acc, item) {
+        return acc + toNumber_(item.miembros || item.miembrosActivos || item.cantidadMiembros);
+      }, 0);
+
+      node.innerHTML = [
+        '<div class="piAudiencePicker ', STATE.audienceDropdownOpen ? "is-open" : "", '" data-pi-audience-picker>',
+
+          '<button type="button" class="piAudiencePicker__trigger" data-pi-audience-trigger>',
+            '<span class="piAudiencePicker__triggerIcon" aria-hidden="true">', icon_("users"), '</span>',
+            '<span class="piAudiencePicker__triggerCopy">',
+              '<strong>',
+                selected.length
+                  ? escapeHtml_(selected.length + " conjunto" + (selected.length === 1 ? " seleccionado" : "s seleccionados"))
+                  : 'Seleccionar conjuntos de audiencia',
+              '</strong>',
+              '<small>',
+                selected.length
+                  ? escapeHtml_(formatNumber_(selectedMembers) + " usuarios estimados · " + selected.length + " público" + (selected.length === 1 ? "" : "s"))
+                  : 'Buscá por nombre, clasificación, estado o código.',
+              '</small>',
+            '</span>',
+            '<span class="piAudiencePicker__chevron" aria-hidden="true">⌄</span>',
+          '</button>',
+
+          STATE.audienceDropdownOpen ? [
+            '<div class="piAudiencePicker__dropdown">',
+              '<div class="piAudiencePicker__searchRow">',
+                '<span class="piAudiencePicker__searchIcon" aria-hidden="true">', icon_("search"), '</span>',
+                '<input type="search" data-pi-audience-search value="', escapeHtml_(STATE.audienceSearch || ""), '" placeholder="Buscar conjunto, clasificación o código...">',
+              '</div>',
+
+              '<div class="piAudiencePicker__sortRow" aria-label="Ordenar conjuntos">',
+                renderAudienceSortButton_("recent", "Más recientes"),
+                renderAudienceSortButton_("oldest", "Más antiguos"),
+              '</div>',
+
+              '<div class="piAudiencePicker__list">',
+                visible.length
+                  ? visible.map(renderConjuntoDisponibleDropdownItem_).join("")
+                  : renderAudienceDropdownEmpty_(),
+              '</div>',
+            '</div>'
+          ].join("") : '',
+
+          renderSelectedAudienceSummary_(selected, selectedMembers),
+
+        '</div>'
+      ].join("");
     }
 
-    function renderConjuntoDisponibleOption_(item) {
-      const checked = STATE.selectedAudienceSetIds.includes(item.id) ? " checked" : "";
-      const sourceLabel = item.sourceId ? item.sourceId + " · " : "";
-      const miembros = item.miembros || item.miembrosActivos || item.cantidadMiembros || 0;
+    function getSelectedAudienceSets_() {
+      return STATE.selectedAudienceSetIds
+        .map(function (id) {
+          return STATE.audienceSets.find(function (item) {
+            return item.id === id;
+          }) || null;
+        })
+        .filter(Boolean);
+    }
+
+    function getVisibleAudienceSets_() {
+      const query = String(STATE.audienceSearch || "").trim().toLowerCase();
+      const sort = String(STATE.audienceSort || "recent");
+
+      let items = STATE.audienceSets.slice();
+
+      if (query) {
+        items = items.filter(function (item) {
+          return [
+            item.nombre,
+            item.sourceId,
+            item.descripcion,
+            item.estado,
+            item.clasificacion,
+            labelObjetivo_(item.clasificacion)
+          ].join(" ").toLowerCase().includes(query);
+        });
+      }
+
+      items.sort(function (a, b) {
+        if (sort === "oldest") {
+          return getAudienceSetSortTime_(a) - getAudienceSetSortTime_(b);
+        }
+
+        return getAudienceSetSortTime_(b) - getAudienceSetSortTime_(a);
+      });
+
+      return items;
+    }
+
+    function getAudienceSetSortTime_(item) {
+      const raw = item.fechaCreacion || item.fechaActualizacion || "";
+      const time = Date.parse(raw);
+      return Number.isFinite(time) ? time : 0;
+    }
+
+    function isNewAudienceSet_(item) {
+      const raw = item.fechaCreacion || item.fechaActualizacion || "";
+      const time = Date.parse(raw);
+
+      if (!Number.isFinite(time)) return false;
+
+      const diffMs = Date.now() - time;
+      return diffMs >= 0 && diffMs <= (48 * 60 * 60 * 1000);
+    }
+
+    function renderAudienceSortButton_(sort, label) {
+      const active = String(STATE.audienceSort || "recent") === sort ? " is-active" : "";
 
       return [
-        '<label class="piAudienceOption" data-pi-audience-option="', escapeHtml_(item.id), '">',
-          '<input ',
-            'type="checkbox" ',
-            'value="', escapeHtml_(item.id), '" ',
-            'data-pi-audience-checkbox',
-            checked,
-          '>',
-          '<span>',
-            '<strong>',
-              escapeHtml_(sourceLabel),
-              escapeHtml_(item.nombre),
-            '</strong>',
+        '<button type="button" class="piAudiencePicker__sortBtn', active, '" data-pi-audience-sort="', escapeHtml_(sort), '">',
+          escapeHtml_(label),
+        '</button>'
+      ].join("");
+    }
+
+    function renderAudienceDropdownEmpty_() {
+      return [
+        '<div class="piAudiencePicker__empty">',
+          '<strong>No encontramos conjuntos con ese filtro.</strong>',
+          '<span>Probá buscar por clasificación, nombre, código o estado.</span>',
+        '</div>'
+      ].join("");
+    }
+
+    function renderConjuntoDisponibleDropdownItem_(item) {
+      const selected = STATE.selectedAudienceSetIds.includes(item.id);
+      const miembros = item.miembros || item.miembrosActivos || item.cantidadMiembros || 0;
+      const commercialKey = normalizeCommercialKind_(item.clasificacion);
+      const composition = buildAudienceCompositionLabel_(item);
+
+      return [
+        '<button type="button" class="piAudiencePicker__item ', selected ? "is-selected" : "", '" data-pi-audience-pick="', escapeHtml_(item.id), '">',
+
+          '<span class="piAudiencePicker__itemIcon piAudiencePicker__itemIcon--', escapeHtml_(commercialKey), '" aria-hidden="true">',
+            commercialIcon_(commercialKey),
+          '</span>',
+
+          '<span class="piAudiencePicker__itemMain">',
+            '<span class="piAudiencePicker__itemTop">',
+              '<strong>', escapeHtml_(item.nombre), '</strong>',
+              isNewAudienceSet_(item) ? '<em>Nuevo</em>' : '',
+            '</span>',
+
             '<small>',
-              formatNumber_(miembros),
-              ' miembros activos · ',
+              escapeHtml_(formatNumber_(miembros)),
+              ' usuarios activos · ',
               escapeHtml_(labelObjetivo_(item.clasificacion)),
               ' · ',
               escapeHtml_(item.estado),
             '</small>',
+
             item.descripcion
-              ? '<small>' + escapeHtml_(item.descripcion) + '</small>'
+              ? '<small class="piAudiencePicker__itemDesc">' + escapeHtml_(item.descripcion) + '</small>'
               : '',
+
+            '<span class="piAudiencePicker__composition">',
+              escapeHtml_(composition),
+            '</span>',
           '</span>',
-        '</label>'
+
+          '<span class="piAudiencePicker__itemSide">',
+            renderAudienceMiniBubbles_(item),
+            '<span class="piAudiencePicker__check">', selected ? "✓" : "", '</span>',
+          '</span>',
+
+        '</button>'
       ].join("");
+    }
+
+    function renderSelectedAudienceSummary_(selected, totalMembers) {
+      if (!selected.length) {
+        return [
+          '<div class="piAudiencePicker__summary is-empty">',
+            '<strong>Sin conjuntos seleccionados</strong>',
+            '<span>La campaña necesita al menos un público para poder guardarse.</span>',
+          '</div>'
+        ].join("");
+      }
+
+      return [
+        '<div class="piAudiencePicker__summary piAudiencePicker__summary--selected">',
+          '<div class="piAudiencePicker__summaryHead">',
+            '<strong>', escapeHtml_(selected.length + " conjunto" + (selected.length === 1 ? "" : "s") + " seleccionado" + (selected.length === 1 ? "" : "s")), '</strong>',
+            '<button type="button" data-pi-audience-clear>Limpiar selección</button>',
+          '</div>',
+
+          '<div class="piAudiencePicker__selectedGrid">',
+            selected.map(function (item) {
+              const miembros = item.miembros || item.miembrosActivos || item.cantidadMiembros || 0;
+              const subtitle = [
+                formatNumber_(miembros) + " usuarios",
+                labelObjetivo_(item.clasificacion),
+                item.estado || "activo"
+              ].filter(Boolean).join(" · ");
+
+              return [
+                '<article class="piAudiencePicker__selectedCard">',
+                  '<span class="piAudiencePicker__selectedIcon piAudiencePicker__itemIcon--', escapeHtml_(normalizeCommercialKind_(item.clasificacion)), '" aria-hidden="true">',
+                    commercialIcon_(normalizeCommercialKind_(item.clasificacion)),
+                  '</span>',
+
+                  '<span class="piAudiencePicker__selectedCopy">',
+                    '<strong title="', escapeHtml_(item.nombre), '">', escapeHtml_(item.nombre), '</strong>',
+                    '<small title="', escapeHtml_(subtitle), '">', escapeHtml_(subtitle), '</small>',
+                  '</span>',
+
+                  '<button type="button" data-pi-audience-remove="', escapeHtml_(item.id), '" aria-label="Quitar conjunto">×</button>',
+                '</article>'
+              ].join("");
+            }).join(""),
+          '</div>',
+
+          '<p>',
+            escapeHtml_(formatNumber_(totalMembers)),
+            ' usuarios estimados antes de depuración Make/Brevo.',
+          '</p>',
+        '</div>'
+      ].join("");
+    }
+
+    function buildAudienceCompositionLabel_(item) {
+      const parts = [];
+
+      if (item.audienciasCount) {
+        parts.push(formatNumber_(item.audienciasCount) + " audiencias");
+      }
+
+      if (item.parametrosCount) {
+        parts.push(formatNumber_(item.parametrosCount) + " parámetros");
+      }
+
+      if (!parts.length && item.sourceId) {
+        parts.push("Código " + item.sourceId);
+      }
+
+      if (!parts.length) {
+        parts.push("Composición disponible al ampliar la vista UTM");
+      }
+
+      return parts.join(" · ");
+    }
+
+    function renderAudienceMiniBubbles_(item) {
+      const miembros = toNumber_(item.miembros || item.miembrosActivos || item.cantidadMiembros);
+      const words = String(item.nombre || item.clasificacion || "U")
+        .split(/\s+/)
+        .map(function (word) {
+          return word.replace(/[^a-zA-Z0-9ÁÉÍÓÚÜÑáéíóúüñ]/g, "");
+        })
+        .filter(Boolean);
+
+      const initials = words.slice(0, 3).map(function (word) {
+        return word.slice(0, 1).toUpperCase();
+      });
+
+      while (initials.length < 3) {
+        initials.push(String(item.clasificacion || "U").slice(initials.length, initials.length + 1).toUpperCase() || "U");
+      }
+
+      return [
+        '<span class="piAudiencePicker__bubbles" title="', escapeHtml_(formatNumber_(miembros) + " usuarios estimados"), '">',
+          initials.slice(0, 3).map(function (letter, index) {
+            return '<i class="piAudiencePicker__bubble piAudiencePicker__bubble--' + index + '">' + escapeHtml_(letter) + '</i>';
+          }).join(""),
+          miembros > 3 ? '<i class="piAudiencePicker__bubble piAudiencePicker__bubble--more">+' + escapeHtml_(String(Math.max(miembros - 3, 0))) + '</i>' : '',
+        '</span>'
+      ].join("");
+    }
+
+    function normalizeCommercialKind_(value) {
+      const raw = String(value || "").trim().toLowerCase()
+        .replace(/\s+/g, "_")
+        .replace(/-/g, "_");
+
+      if (raw.includes("recompra")) return "recompra";
+      if (raw.includes("cross")) return "cross_sell";
+      if (raw.includes("upsell") || raw.includes("up_sell")) return "upsell";
+      if (raw.includes("fidel")) return "fidelizacion";
+      if (raw.includes("react")) return "reactivacion";
+      if (raw.includes("educ")) return "educacion";
+      if (raw.includes("exper")) return "experimentacion";
+      if (raw.includes("mayor") || raw.includes("volumen")) return "mayorista";
+
+      return "publicidad_interna";
+    }
+
+    function commercialIcon_(kind) {
+      const icons = {
+        recompra: '<svg viewBox="0 0 24 24" fill="none"><path d="M7 7h8a5 5 0 0 1 0 10h-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 7l3-3M7 7l3 3M17 17H9a5 5 0 0 1 0-10h1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17 17l-3-3M17 17l-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        cross_sell: '<svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="6" r="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="18" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8.3 11l7.4-4M8.3 13l7.4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        upsell: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7 10l5-5 5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+        fidelizacion: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+        reactivacion: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 4v7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7.2 6.8A7 7 0 1 0 16.8 6.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        educacion: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 5.5h10a3 3 0 0 1 3 3V19H8a3 3 0 0 1-3-3V5.5z" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h7M8 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+        experimentacion: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.4 4.3L18 9l-4.6 1.7L12 15l-1.4-4.3L6 9l4.6-1.7L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8L18 14z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        mayorista: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 8l8-4 8 4-8 4-8-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 8v8l8 4 8-4V8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 12v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        publicidad_interna: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 13V7a2 2 0 0 1 2-2h3l7-2v18l-7-2H6a2 2 0 0 1-2-2v-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 7v10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+      };
+
+      return icons[kind] || icons.publicidad_interna;
     }
     /* FIN · Conjuntos disponibles desde Supabase · Publicidad Interna */
 
