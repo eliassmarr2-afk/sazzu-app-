@@ -76,7 +76,15 @@ audienceComparisonDateRange: {
   to: "",
   open: false
 },
-audienceComparisonRequestKey: ""
+audienceComparisonRequestKey: "",
+
+/* INICIO · STATE · Papelera de conjuntos UTM */
+deletingConjuntoId: "",
+trashConjuntosItems: [],
+trashConjuntosLoading: false,
+trashConjuntosError: "",
+trashConjuntosRequested: false
+/* FIN · STATE · Papelera de conjuntos UTM */
 /* FIN · STATE · Comparador por parámetro UTM */
         /* FIN · STATE · Miembros de conjuntos de audiencias */
   };
@@ -912,11 +920,22 @@ function ensureMounts_(root) {
               <h2 class="pubUtmCard__title">Conjuntos de audiencias</h2>
             </div>
 
-            <div class="pubUtmHeader__actions">
-              <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-open-create-set="1">
-                Crear conjunto de audiencias
+            <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-open-create-set="1">
+            Crear conjunto de audiencias
+          </button>
+
+          <details class="pubUtmOpsMenu" data-conjuntos-trash-menu>
+            <summary class="pubUtmConjuntoCard__quickBtn" aria-label="Más acciones de conjuntos">
+              <span></span><span></span><span></span>
+            </summary>
+
+            <div class="pubUtmOpsMenu__panel" role="menu" aria-label="Acciones de conjuntos">
+              <button type="button" class="pubUtmOpsMenu__item" role="menuitem" data-conjuntos-trash-open>
+                <span>Ver registros eliminados</span>
               </button>
             </div>
+          </details>
+        </div>
           </div>
 
           <p class="pubUtmPanelSlide__text">
@@ -2529,6 +2548,227 @@ function refreshPublicidadUtmConjuntosAfterCreate_(root) {
       return STATE.conjuntosAudiencias;
     });
 }
+
+/* INICIO · Supabase · Papelera de conjuntos desde Publicidad UTM */
+function findPublicidadUtmConjuntoById_(conjuntoId) {
+  const id = String(conjuntoId || "").trim();
+  const payload = STATE.conjuntosAudiencias || {};
+  const conjuntos = Array.isArray(payload.conjuntos) ? payload.conjuntos : [];
+
+  return conjuntos.find(function (item) {
+    return String(item.conjunto_id || item.id || "") === id;
+  }) || null;
+}
+
+function enviarPublicidadUtmConjuntoAPapeleraSupabase_(conjuntoId) {
+  const config = resolvePublicidadUtmSupabaseConfig_();
+  const id = String(conjuntoId || "").trim();
+
+  if (!id) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_enviar_conjunto_a_papelera",
+      error: "Falta conjunto_id para enviar a papelera."
+    });
+  }
+
+  if (!config.ok) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_enviar_conjunto_a_papelera",
+      error: config.error
+    });
+  }
+
+  return supabaseRpcRequest_(config, "rpc_panel_utm_enviar_conjunto_a_papelera", {
+    p_conjunto_id: id,
+    p_motivo: "Enviado a papelera desde Publicidad UTM",
+    p_usuario_accion: "panel_publicidad_utm"
+  }).then(function (res) {
+    if (!res || res.ok !== true) {
+      return {
+        ok: false,
+        source: "rpc_panel_utm_enviar_conjunto_a_papelera",
+        blocked: !!(res && res.blocked),
+        reason: res && res.reason ? res.reason : "",
+        message: res && res.message ? res.message : "",
+        dependencias: res && res.dependencias ? res.dependencias : {},
+        error: res && res.error
+          ? res.error
+          : res && res.message
+            ? res.message
+            : "No se pudo enviar el conjunto a papelera.",
+        raw: res
+      };
+    }
+
+    return res;
+  });
+}
+
+function eliminarPublicidadUtmConjuntoDesdeMenu_(root, conjuntoId, button) {
+  const id = String(conjuntoId || "").trim();
+
+  if (!id) {
+    window.alert("No se pudo identificar el conjunto.");
+    return;
+  }
+
+  const conjunto = findPublicidadUtmConjuntoById_(id);
+  const nombre = conjunto
+    ? String(conjunto.nombre_conjunto || conjunto.codigo_conjunto || id)
+    : id;
+
+    openPubUtmActionModal_(root, {
+      tone: "danger",
+      icon: "delete",
+      eyebrow: "Enviar a papelera",
+      title: "¿Enviar este conjunto a papelera?",
+      text: "El conjunto dejará de aparecer en Publicidad UTM y tampoco estará disponible para nuevas campañas en Publicidad Interna.",
+      confirmLabel: "Enviar a papelera",
+      detailsHtml: `
+        <div class="pubUtmActionModal__row">
+          <strong>${escapeHtml_(nombre)}</strong>
+          <span>Podrás restaurarlo luego desde la papelera de conjuntos.</span>
+        </div>
+      `
+    }).then(function (confirmar) {
+      if (!confirmar) return;
+  
+      ejecutarEnvioConjuntoAPapelera_(root, id, button);
+    });
+  
+    return;
+
+  const previousHtml = button ? button.innerHTML : "";
+  STATE.deletingConjuntoId = id;
+
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = "<span>Eliminando...</span>";
+  }
+
+  enviarPublicidadUtmConjuntoAPapeleraSupabase_(id)
+    .then(function (res) {
+      if (!res || res.ok !== true) {
+        if (res && res.blocked) {
+          const deps = res.dependencias || {};
+          window.alert(
+            "No se puede eliminar este conjunto todavía.\n\n" +
+            (res.message || "Tiene dependencias activas.") +
+            "\n\nCampañas internas vinculadas: " +
+            String(deps.campania_conjuntos_audiencia_count || 0)
+          );
+          return null;
+        }
+
+        throw new Error(
+          res && res.error
+            ? res.error
+            : "Supabase no confirmó la eliminación."
+        );
+      }
+
+      STATE.trashConjuntosRequested = false;
+      STATE.trashConjuntosItems = [];
+
+      return refreshPublicidadUtmConjuntosAfterCreate_(root).then(function () {
+        window.alert("Conjunto enviado a papelera correctamente.");
+        return res;
+      });
+    })
+    .catch(function (err) {
+      console.error("[Publicidad UTM] Error enviando conjunto a papelera:", err);
+      window.alert(
+        "No se pudo enviar el conjunto a papelera.\n\n" +
+        String(err && err.message ? err.message : err)
+      );
+    })
+    .then(function () {
+      STATE.deletingConjuntoId = "";
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = previousHtml;
+      }
+    });
+}
+/* FIN · Supabase · Papelera de conjuntos desde Publicidad UTM */
+
+
+function ejecutarEnvioConjuntoAPapelera_(root, id, button) {
+  const previousHtml = button ? button.innerHTML : "";
+  STATE.deletingConjuntoId = id;
+
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = "<span>Eliminando...</span>";
+  }
+
+  enviarPublicidadUtmConjuntoAPapeleraSupabase_(id)
+    .then(function (res) {
+      if (!res || res.ok !== true) {
+        if (res && res.blocked) {
+          const deps = res.dependencias || {};
+
+          return notifyPubUtmAction_(root, {
+            tone: "warning",
+            icon: "delete",
+            eyebrow: "Eliminación bloqueada",
+            title: "Este conjunto tiene dependencias activas",
+            text: res.message || "Primero pausá, modificá o desvinculá los flujos asociados antes de eliminarlo.",
+            confirmLabel: "Entendido",
+            detailsHtml: `
+              <div class="pubUtmActionModal__row">
+                <strong>Campañas internas vinculadas</strong>
+                <span>${escapeHtml_(String(deps.campania_conjuntos_audiencia_count || 0))}</span>
+              </div>
+            `
+          });
+        }
+
+        throw new Error(
+          res && res.error
+            ? res.error
+            : "Supabase no confirmó la eliminación."
+        );
+      }
+
+      STATE.trashConjuntosRequested = false;
+      STATE.trashConjuntosItems = [];
+
+      return refreshPublicidadUtmConjuntosAfterCreate_(root).then(function () {
+        return notifyPubUtmAction_(root, {
+          tone: "success",
+          icon: "delete",
+          title: "Conjunto enviado a papelera",
+          text: "El conjunto fue descartado desde Publicidad UTM y archivado en Publicidad Interna.",
+          confirmLabel: "Perfecto"
+        });
+      });
+    })
+    .catch(function (err) {
+      console.error("[Publicidad UTM] Error enviando conjunto a papelera:", err);
+
+      return notifyPubUtmAction_(root, {
+        tone: "danger",
+        icon: "delete",
+        title: "No se pudo enviar a papelera",
+        text: String(err && err.message ? err.message : err),
+        confirmLabel: "Revisar"
+      });
+    })
+    .then(function () {
+      STATE.deletingConjuntoId = "";
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = previousHtml;
+      }
+    });
+}
+
+
 /* FIN · Supabase · Crear conjunto desde panel */
 
    function loadPublicidadUtmConjuntosSupabase_() {
@@ -3149,12 +3389,24 @@ function renderConjuntosAudiencias_(root) {
           </button>
 
           <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-open-create-set="1">
-            Crear conjunto de audiencias
-          </button>
-        </div>
-      </div>
+          Crear conjunto de audiencias
+        </button>
 
-      <div class="pubUtmConjuntosUnified__searchRow ${searchOpen ? "is-open" : ""}" data-conjuntos-search-row>
+        <details class="pubUtmOpsMenu pubUtmConjuntosTrashMenu" data-conjuntos-trash-menu>
+          <summary class="pubUtmConjuntoCard__quickBtn" aria-label="Más acciones de conjuntos">
+            <span></span><span></span><span></span>
+          </summary>
+
+          <div class="pubUtmOpsMenu__panel" role="menu" aria-label="Acciones de conjuntos">
+            <button type="button" class="pubUtmOpsMenu__item" role="menuitem" data-conjuntos-trash-open>
+              <span>Ver registros eliminados</span>
+            </button>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="pubUtmConjuntosUnified__searchRow ${searchOpen ? "is-open" : ""}" data-conjuntos-search-row>
         <form class="pubUtmConjuntosUnified__searchForm" data-conjuntos-search-form>
           <div class="pubUtmConjuntosUnified__searchBox">
             <span aria-hidden="true">${buildConjuntosSearchIcon_()}</span>
@@ -3267,13 +3519,17 @@ function ensureConjuntosLibrarySlide_(root) {
           </div>
 
           <div class="pubUtmHeader__actions">
-            <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-open-create-set="1">
-              Crear conjunto
-            </button>
+          <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-open-create-set="1">
+          Crear conjunto
+        </button>
 
-            <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-conjuntos-library-close="1">
-              Cerrar
-            </button>
+        <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-conjuntos-trash-open>
+          Ver papelera
+        </button>
+
+        <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-conjuntos-library-close="1">
+          Cerrar
+        </button>
           </div>
         </header>
 
@@ -3392,6 +3648,46 @@ function bindConjuntosLibraryEvents_(root) {
       slide.setAttribute("data-visible-limit", String(current + 25));
 
       renderConjuntosLibrarySlideContent_(root);
+      return;
+    }
+
+    const openTrashBtn = ev.target.closest("[data-conjuntos-trash-open]");
+    if (openTrashBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      const menu = openTrashBtn.closest("[data-conjuntos-trash-menu]");
+      if (menu) menu.removeAttribute("open");
+
+      openConjuntosTrashSlide_(root);
+      return;
+    }
+
+    const closeTrashBtn = ev.target.closest("[data-conjuntos-trash-close]");
+    if (closeTrashBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      closeConjuntosTrashSlide_(root);
+      return;
+    }
+
+    const refreshTrashBtn = ev.target.closest("[data-conjuntos-trash-refresh]");
+    if (refreshTrashBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      loadPublicidadUtmPapeleraConjuntosSupabase_(root, { force: true });
+      return;
+    }
+
+    const restoreTrashBtn = ev.target.closest("[data-conjuntos-trash-restore]");
+    if (restoreTrashBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      restaurarPublicidadUtmConjuntoDesdePapelera_(root, restoreTrashBtn.getAttribute("data-conjuntos-trash-restore") || "", restoreTrashBtn);
+      return;
     }
   });
 
@@ -3449,6 +3745,490 @@ function closeConjuntosLibrarySlide_(root) {
   clearTimeout(root.__conjuntosLibraryTimer);
 
   syncPubUtmOverlayMode_();
+}
+
+/* INICIO · Modal profesional acciones UTM */
+function ensurePubUtmActionModal_(root) {
+  if (!root) return null;
+
+  let modal = root.querySelector("[data-pubutm-action-modal]");
+  if (modal) return modal;
+
+  const mount = root.querySelector("#pubUtmSlideMount") || root;
+
+  mount.insertAdjacentHTML("beforeend", `
+    <section class="pubUtmActionModal" data-pubutm-action-modal aria-hidden="true">
+      <div class="pubUtmActionModal__backdrop" data-pubutm-action-modal-cancel></div>
+
+      <div class="pubUtmActionModal__panel" role="dialog" aria-modal="true">
+        <div class="pubUtmActionModal__head">
+          <span class="pubUtmActionModal__icon" data-pubutm-action-modal-icon aria-hidden="true"></span>
+
+          <div>
+            <div class="pubUtmCard__eyebrow" data-pubutm-action-modal-eyebrow>Confirmación</div>
+            <h3 data-pubutm-action-modal-title>Confirmar acción</h3>
+            <p data-pubutm-action-modal-text>Esta acción requiere confirmación.</p>
+          </div>
+        </div>
+
+        <div class="pubUtmActionModal__details" data-pubutm-action-modal-details hidden></div>
+
+        <div class="pubUtmActionModal__actions">
+          <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-pubutm-action-modal-cancel>
+            Cancelar
+          </button>
+
+          <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-pubutm-action-modal-confirm>
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </section>
+  `);
+
+  return root.querySelector("[data-pubutm-action-modal]");
+}
+
+function openPubUtmActionModal_(root, config) {
+  return new Promise(function (resolve) {
+    const modal = ensurePubUtmActionModal_(root);
+    if (!modal) {
+      resolve(false);
+      return;
+    }
+
+    const cfg = config || {};
+    const title = modal.querySelector("[data-pubutm-action-modal-title]");
+    const text = modal.querySelector("[data-pubutm-action-modal-text]");
+    const eyebrow = modal.querySelector("[data-pubutm-action-modal-eyebrow]");
+    const details = modal.querySelector("[data-pubutm-action-modal-details]");
+    const icon = modal.querySelector("[data-pubutm-action-modal-icon]");
+    const confirmBtn = modal.querySelector("[data-pubutm-action-modal-confirm]");
+    const cancelBtns = modal.querySelectorAll("[data-pubutm-action-modal-cancel]");
+
+    if (title) title.textContent = cfg.title || "Confirmar acción";
+    if (text) text.textContent = cfg.text || "";
+    if (eyebrow) eyebrow.textContent = cfg.eyebrow || "Confirmación";
+    if (icon) icon.innerHTML = getConjuntoQuickActionIcon_(cfg.icon || "open");
+
+    if (details) {
+      const html = String(cfg.detailsHtml || "").trim();
+      details.hidden = !html;
+      details.innerHTML = html;
+    }
+
+    if (confirmBtn) {
+      confirmBtn.textContent = cfg.confirmLabel || "Confirmar";
+      confirmBtn.classList.toggle("pubUtmBtn--danger", cfg.tone === "danger");
+    }
+
+    modal.classList.remove("pubUtmActionModal--danger", "pubUtmActionModal--success", "pubUtmActionModal--warning");
+    modal.classList.add("is-open");
+
+    if (cfg.tone) {
+      modal.classList.add("pubUtmActionModal--" + cfg.tone);
+    }
+
+    modal.setAttribute("aria-hidden", "false");
+
+    const cleanup = function (value) {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+
+      if (confirmBtn) confirmBtn.onclick = null;
+
+      cancelBtns.forEach(function (btn) {
+        btn.onclick = null;
+      });
+
+      resolve(value);
+    };
+
+    if (confirmBtn) {
+      confirmBtn.onclick = function (event) {
+        event.preventDefault();
+        cleanup(true);
+      };
+    }
+
+    cancelBtns.forEach(function (btn) {
+      btn.onclick = function (event) {
+        event.preventDefault();
+        cleanup(false);
+      };
+    });
+  });
+}
+
+function notifyPubUtmAction_(root, config) {
+  return openPubUtmActionModal_(root, Object.assign({
+    eyebrow: "Resultado",
+    confirmLabel: "Entendido",
+    icon: "open"
+  }, config || {}));
+}
+/* FIN · Modal profesional acciones UTM */
+
+
+/* INICIO · Papelera visual de conjuntos UTM */
+function ensureConjuntosTrashSlide_(root) {
+  if (!root) return;
+  if (root.querySelector("[data-pubutm-conjuntos-trash-slide]")) return;
+
+  const mount = root.querySelector("#pubUtmSlideMount") || root;
+
+  mount.insertAdjacentHTML("beforeend", `
+    <aside class="pubUtmConjuntosLibrarySlide" data-pubutm-conjuntos-trash-slide aria-hidden="true">
+      <div class="pubUtmConjuntosLibrarySlide__backdrop" data-conjuntos-trash-close="1"></div>
+
+      <div class="pubUtmConjuntosLibrarySlide__panel">
+        <header class="pubUtmConjuntosLibrarySlide__head">
+          <div class="pubUtmConjuntosLibrarySlide__identity">
+            <span class="pubUtmConjuntosLibrarySlide__icon" aria-hidden="true">
+              ${getConjuntoQuickActionIcon_("delete")}
+            </span>
+
+            <div>
+              <div class="pubUtmCard__eyebrow">Papelera de conjuntos</div>
+              <h2>Registros eliminados</h2>
+              <p>
+                Conjuntos descartados desde Publicidad UTM. No aparecen en la biblioteca ni pueden usarse en nuevas campañas internas.
+              </p>
+            </div>
+          </div>
+
+          <div class="pubUtmHeader__actions">
+            <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-conjuntos-trash-refresh>
+              Actualizar
+            </button>
+
+            <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-conjuntos-trash-close="1">
+              Cerrar
+            </button>
+          </div>
+        </header>
+
+        <section class="pubUtmLibrarySlideTools">
+          <div class="pubUtmConjuntosLibrarySlide__meta">
+            <strong data-conjuntos-trash-total>—</strong>
+            <span>conjuntos en papelera</span>
+          </div>
+        </section>
+
+        <section class="pubUtmConjuntosLibrarySlide__body" data-conjuntos-trash-body>
+          <div class="pubUtmConjuntosLibrarySlide__empty">
+            Cargando papelera...
+          </div>
+        </section>
+      </div>
+    </aside>
+  `);
+}
+
+function openConjuntosTrashSlide_(root) {
+  ensureConjuntosTrashSlide_(root);
+
+  const slide = root.querySelector("[data-pubutm-conjuntos-trash-slide]");
+  if (!slide) return;
+
+  slide.classList.add("is-open");
+  slide.setAttribute("aria-hidden", "false");
+
+  root.classList.add("pubUtmConjuntosTrashStackOpen");
+
+  const main = root.closest("main") || root;
+  main.classList.add("pubUtmSlideOpen");
+
+  renderConjuntosTrashSlideContent_(root);
+  loadPublicidadUtmPapeleraConjuntosSupabase_(root, { force: true });
+
+  syncPubUtmOverlayMode_();
+}
+
+function closeConjuntosTrashSlide_(root) {
+  const slide = root.querySelector("[data-pubutm-conjuntos-trash-slide]");
+  if (!slide) return;
+
+  slide.classList.remove("is-open");
+  slide.setAttribute("aria-hidden", "true");
+
+  root.classList.remove("pubUtmConjuntosTrashStackOpen");
+
+  const main = root.closest("main") || root;
+  main.classList.remove("pubUtmSlideOpen");
+
+  syncPubUtmOverlayMode_();
+}
+
+function loadPublicidadUtmPapeleraConjuntosSupabase_(root, options) {
+  const force = !!(options && options.force);
+  const config = resolvePublicidadUtmSupabaseConfig_();
+
+  if (!config.ok) {
+    STATE.trashConjuntosError = config.error;
+    STATE.trashConjuntosLoading = false;
+    renderConjuntosTrashSlideContent_(root);
+    return Promise.resolve({
+      ok: false,
+      error: config.error
+    });
+  }
+
+  if (STATE.trashConjuntosLoading) {
+    renderConjuntosTrashSlideContent_(root);
+    return Promise.resolve({
+      ok: true,
+      loading: true
+    });
+  }
+
+  if (!force && STATE.trashConjuntosRequested) {
+    renderConjuntosTrashSlideContent_(root);
+    return Promise.resolve({
+      ok: true,
+      cached: true
+    });
+  }
+
+  STATE.trashConjuntosLoading = true;
+  STATE.trashConjuntosError = "";
+  STATE.trashConjuntosRequested = true;
+
+  renderConjuntosTrashSlideContent_(root);
+
+  return supabaseRpcRequest_(config, "rpc_panel_utm_listar_papelera_conjuntos", {
+    p_estado_papelera: "en_papelera",
+    p_limit: 100,
+    p_offset: 0
+  }).then(function (res) {
+    if (!res || res.ok !== true) {
+      throw new Error(
+        res && res.error
+          ? res.error
+          : "No se pudo cargar la papelera de conjuntos."
+      );
+    }
+
+    STATE.trashConjuntosItems = Array.isArray(res.items) ? res.items : [];
+    STATE.trashConjuntosLoading = false;
+    STATE.trashConjuntosError = "";
+
+    renderConjuntosTrashSlideContent_(root);
+
+    return res;
+  }).catch(function (err) {
+    STATE.trashConjuntosLoading = false;
+    STATE.trashConjuntosError = String(err && err.message ? err.message : err);
+
+    console.error("[Publicidad UTM] Error cargando papelera de conjuntos:", err);
+    renderConjuntosTrashSlideContent_(root);
+
+    return {
+      ok: false,
+      error: STATE.trashConjuntosError
+    };
+  });
+}
+
+function renderConjuntosTrashSlideContent_(root) {
+  const slide = root.querySelector("[data-pubutm-conjuntos-trash-slide]");
+  if (!slide) return;
+
+  const body = slide.querySelector("[data-conjuntos-trash-body]");
+  const total = slide.querySelector("[data-conjuntos-trash-total]");
+  if (!body) return;
+
+  if (total) {
+    total.textContent = formatInteger_(STATE.trashConjuntosItems.length || 0);
+  }
+
+  if (STATE.trashConjuntosLoading) {
+    body.innerHTML = `
+      <div class="pubUtmConjuntosLibrarySlide__empty">
+        Cargando conjuntos eliminados...
+      </div>
+    `;
+    return;
+  }
+
+  if (STATE.trashConjuntosError) {
+    body.innerHTML = `
+      <div class="pubUtmConjuntosLibrarySlide__empty">
+        <strong>No se pudo cargar la papelera.</strong>
+        <span>${escapeHtml_(STATE.trashConjuntosError)}</span>
+      </div>
+    `;
+    return;
+  }
+
+  if (!STATE.trashConjuntosItems.length) {
+    body.innerHTML = `
+      <div class="pubUtmConjuntosLibrarySlide__empty">
+        <strong>No hay conjuntos en papelera.</strong>
+        <span>Los conjuntos eliminados desde Publicidad UTM aparecerán acá.</span>
+      </div>
+    `;
+    return;
+  }
+
+  body.innerHTML = `
+    <div class="pubUtmConjuntosLibrarySlide__grid">
+      ${STATE.trashConjuntosItems.map(renderConjuntosTrashCard_).join("")}
+    </div>
+  `;
+}
+
+function renderConjuntosTrashCard_(item) {
+  const dependencias = item.dependencias_json || {};
+  const miembros = Number(dependencias.miembros_utm_actuales_count || 0);
+  const audiencias = Number(dependencias.audiencias_relacionadas_count || 0);
+  const campanias = Number(dependencias.campania_conjuntos_audiencia_count || 0);
+
+  return `
+    <article class="pubUtmConjuntoCard pubUtmConjuntoCard--folder">
+      <span class="pubUtmConjuntoCard__newBadge">Papelera</span>
+
+      <div class="pubUtmConjuntoCard__head">
+        <div class="pubUtmConjuntoCard__identity">
+          <span class="pubUtmConjuntoCard__icon" aria-hidden="true">
+            ${getConjuntoQuickActionIcon_("delete")}
+          </span>
+
+          <div>
+            <h3>${escapeHtml_(item.nombre_conjunto || item.nombre || "Conjunto eliminado")}</h3>
+            <p>${escapeHtml_(item.codigo_conjunto || item.source_conjunto_id || "")}</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="pubUtmConjuntoCard__desc">
+        ${escapeHtml_(item.motivo || "Sin motivo registrado.")}
+      </p>
+
+      <div class="pubUtmConjuntoCard__stats">
+        <span>
+          <strong>${formatInteger_(miembros)}</strong>
+          miembros
+        </span>
+        <span>
+          <strong>${formatInteger_(audiencias)}</strong>
+          audiencias
+        </span>
+        <span>
+          <strong>${formatInteger_(campanias)}</strong>
+          campañas
+        </span>
+      </div>
+
+      <div class="pubUtmConjuntoCard__footer">
+        <span>${escapeHtml_(item.estado_papelera || "en_papelera")}</span>
+
+        <button
+          type="button"
+          class="pubUtmBtn pubUtmBtn--primary"
+          data-conjuntos-trash-restore="${escapeHtml_(item.papelera_id || "")}"
+        >
+          Restaurar
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+function restaurarPublicidadUtmConjuntoDesdePapelera_(root, papeleraId, button) {
+  const id = String(papeleraId || "").trim();
+
+  if (!id) {
+    notifyPubUtmAction_(root, {
+      tone: "warning",
+      icon: "delete",
+      title: "No se pudo identificar el registro",
+      text: "El sistema no recibió el ID de papelera necesario para restaurar el conjunto."
+    });
+    return;
+  }
+
+  openPubUtmActionModal_(root, {
+    tone: "success",
+    icon: "open",
+    eyebrow: "Restaurar conjunto",
+    title: "¿Restaurar este conjunto?",
+    text: "El conjunto volverá a aparecer en Publicidad UTM y también estará disponible para nuevas campañas en Publicidad Interna.",
+    confirmLabel: "Restaurar conjunto",
+    detailsHtml: `
+      <div class="pubUtmActionModal__row">
+        <strong>Impacto operativo</strong>
+        <span>Se reactivará la tabla madre UTM, la copia operativa y el sync hacia Publicidad Interna.</span>
+      </div>
+    `
+  }).then(function (confirmar) {
+    if (!confirmar) return null;
+
+    const config = resolvePublicidadUtmSupabaseConfig_();
+
+    if (!config.ok) {
+      return notifyPubUtmAction_(root, {
+        tone: "warning",
+        icon: "delete",
+        title: "Supabase no está configurado",
+        text: config.error
+      });
+    }
+
+    const previousHtml = button ? button.innerHTML : "";
+
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = "Restaurando...";
+    }
+
+    return supabaseRpcRequest_(config, "rpc_panel_utm_restaurar_conjunto_desde_papelera", {
+      p_papelera_id: id,
+      p_usuario_accion: "panel_publicidad_utm"
+    }).then(function (res) {
+      if (!res || res.ok !== true) {
+        throw new Error(
+          res && res.error
+            ? res.error
+            : "Supabase no confirmó la restauración."
+        );
+      }
+
+      STATE.trashConjuntosRequested = false;
+      STATE.trashConjuntosItems = [];
+
+      return refreshPublicidadUtmConjuntosAfterCreate_(root)
+        .then(function () {
+          return loadPublicidadUtmPapeleraConjuntosSupabase_(root, { force: true });
+        })
+        .then(function () {
+          renderConjuntosTrashSlideContent_(root);
+
+          return notifyPubUtmAction_(root, {
+            tone: "success",
+            icon: "open",
+            title: "Conjunto restaurado",
+            text: "El conjunto volvió a estar disponible en Publicidad UTM y Publicidad Interna.",
+            confirmLabel: "Perfecto"
+          });
+        });
+    }).catch(function (err) {
+      console.error("[Publicidad UTM] Error restaurando conjunto:", err);
+
+      return notifyPubUtmAction_(root, {
+        tone: "danger",
+        icon: "delete",
+        title: "No se pudo restaurar",
+        text: String(err && err.message ? err.message : err),
+        confirmLabel: "Revisar"
+      });
+    }).then(function () {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = previousHtml;
+      }
+    });
+  });
 }
 
 function renderConjuntosLibrarySlideContent_(root) {
@@ -3739,6 +4519,21 @@ function bindConjuntosBibliotecaUnified_(root, mount) {
 
       if (action === "open") {
         openAudienceSetDetailSlide_(root, conjuntoId);
+        return;
+      }
+
+      if (action === "delete") {
+        eliminarPublicidadUtmConjuntoDesdeMenu_(root, conjuntoId, item);
+        return;
+      }
+
+      if (action === "duplicate") {
+        window.alert("Duplicar conjunto todavía no está conectado.");
+        return;
+      }
+
+      if (action === "flow") {
+        window.alert("Crear flujo todavía no está conectado.");
         return;
       }
 
