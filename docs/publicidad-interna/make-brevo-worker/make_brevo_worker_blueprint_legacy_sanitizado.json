@@ -1,0 +1,360 @@
+{
+  "name": "Integration HTTP",
+  "flow": [
+    {
+      "id": 11,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/rpc/rpc_brevo_worker_preflight",
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "contentType": "json",
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true,
+        "inputMethod": "jsonString",
+        "jsonStringBodyContent": "{\n  \"p_payload\": {\n    \"limit\": 50\n  }\n}"
+      },
+      "metadata": {
+        "note": "Preflight worker. Blueprint sanitizado: reemplazar variables placeholder dentro de Make, no versionar secretos."
+      }
+    },
+    {
+      "id": 1,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/vista_brevo_trabajos_pendientes_make?select=*&limit=1",
+        "method": "get",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true
+      },
+      "metadata": {
+        "note": "Lee 1 trabajo pendiente. Futuro: paginar o procesar lote controlado por preflight."
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "filter": {
+        "name": "Solo continuar si hay trabajos pendientes",
+        "conditions": [
+          [
+            {
+              "a": "{{1.data}}",
+              "o": "array:greater",
+              "b": "0"
+            }
+          ]
+        ]
+      },
+      "mapper": {
+        "array": "{{1.data}}"
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/rpc/rpc_brevo_marcar_trabajo_resultado",
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "contentType": "json",
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true,
+        "inputMethod": "jsonString",
+        "jsonStringBodyContent": "{\n  \"p_payload\": {\n    \"trabajo_id\": \"{{2.trabajo_id}}\",\n    \"estado\": \"procesando\",\n    \"cantidad_contactos_sincronizados\": 0,\n    \"cantidad_contactos_error\": 0,\n    \"make_execution_id\": null,\n    \"payload_respuesta\": {\n      \"origen\": \"make\",\n      \"fase\": \"inicio_procesamiento\"\n    },\n    \"errores\": [],\n    \"metadata\": {\n      \"worker\": \"PD · Brevo Sync Worker\",\n      \"paso\": \"marcar_procesando\"\n    }\n  }\n}"
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/rpc/rpc_brevo_obtener_contactos_trabajo",
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "contentType": "json",
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true,
+        "inputMethod": "jsonString",
+        "jsonStringBodyContent": "{\n  \"p_payload\": {\n    \"trabajo_id\": \"{{2.trabajo_id}}\",\n    \"limit\": 100,\n    \"offset\": 0\n  }\n}"
+      },
+      "metadata": {
+        "note": "Legacy: solo trae 100 contactos. Futuro: paginación por offset o cursor."
+      }
+    },
+    {
+      "id": 6,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{5.data.contactos}}"
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "https://api.brevo.com/v3/contacts",
+        "method": "post",
+        "headers": [
+          {
+            "name": "api-key",
+            "value": "{{BREVO_API_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "contentType": "json",
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true,
+        "inputMethod": "jsonString",
+        "jsonStringBodyContent": "{\n  \"email\": \"{{6.email}}\",\n  \"listIds\": [{{6.brevo_lista_id}}],\n  \"updateEnabled\": true\n}"
+      },
+      "metadata": {
+        "note": "Payload mínimo legacy. Futuro: agregar attributes, nombre, telefono, fuente, UTM, campaña y metadata."
+      },
+      "onerror": [
+        {
+          "id": 10,
+          "module": "http:MakeRequest",
+          "version": 4,
+          "parameters": {
+            "authenticationType": "noAuth",
+            "tlsType": "",
+            "proxyKeychain": ""
+          },
+          "mapper": {
+            "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/rpc/rpc_brevo_marcar_trabajo_resultado",
+            "method": "post",
+            "headers": [
+              {
+                "name": "apikey",
+                "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "contentType": "json",
+            "parseResponse": true,
+            "stopOnHttpError": true,
+            "allowRedirects": true,
+            "shareCookies": false,
+            "requestCompressedContent": true,
+            "inputMethod": "jsonString",
+            "jsonStringBodyContent": "{\n  \"p_payload\": {\n    \"trabajo_id\": \"{{2.trabajo_id}}\",\n    \"estado\": \"error\",\n    \"cantidad_contactos_sincronizados\": 0,\n    \"cantidad_contactos_error\": 1,\n    \"make_execution_id\": null,\n    \"payload_respuesta\": {\n      \"origen\": \"make\",\n      \"fase\": \"sincronizacion_contactos_brevo\",\n      \"detalle\": \"Brevo rechazó o no pudo procesar al menos un contacto\"\n    },\n    \"errores\": [\n      {\n        \"modulo\": \"HTTP 7 · Brevo crear/actualizar contacto\",\n        \"tipo\": \"brevo_contact_sync_error\",\n        \"mensaje\": \"Error detectado durante la creación o actualización de contacto en Brevo\"\n      }\n    ],\n    \"metadata\": {\n      \"worker\": \"PD · Brevo Sync Worker\",\n      \"paso\": \"marcar_error\",\n      \"fuente_error\": \"brevo_contacts_api\"\n    }\n  }\n}"
+          },
+          "metadata": {
+            "note": "Sanitizado. Se eliminó token suelto que estaba después del JSON en blueprint original."
+          }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "module": "builtin:BasicAggregator",
+      "version": 1,
+      "parameters": {
+        "feeder": 6
+      },
+      "mapper": {
+        "statusCode": "{{7.statusCode}}"
+      }
+    },
+    {
+      "id": 9,
+      "module": "http:MakeRequest",
+      "version": 4,
+      "parameters": {
+        "authenticationType": "noAuth",
+        "tlsType": "",
+        "proxyKeychain": ""
+      },
+      "mapper": {
+        "url": "{{SUPABASE_PROJECT_URL}}/rest/v1/rpc/rpc_brevo_marcar_trabajo_resultado",
+        "method": "post",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_ROLE_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "contentType": "json",
+        "parseResponse": true,
+        "stopOnHttpError": true,
+        "allowRedirects": true,
+        "shareCookies": false,
+        "requestCompressedContent": true,
+        "inputMethod": "jsonString",
+        "jsonStringBodyContent": "{\n  \"p_payload\": {\n    \"trabajo_id\": \"{{2.trabajo_id}}\",\n    \"estado\": \"completado\",\n    \"cantidad_contactos_sincronizados\": {{length(8.array)}},\n    \"cantidad_contactos_error\": 0,\n    \"make_execution_id\": null,\n    \"payload_respuesta\": {\n      \"origen\": \"make\",\n      \"fase\": \"sincronizacion_contactos_brevo\",\n      \"detalle\": \"Contactos enviados a Brevo y trabajo cerrado desde Make\"\n    },\n    \"errores\": [],\n    \"metadata\": {\n      \"worker\": \"PD · Brevo Sync Worker\",\n      \"paso\": \"marcar_completado\"\n    }\n  }\n}"
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "slots": null,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us2.make.com",
+    "notes": [
+      "Blueprint sanitizado para documentación técnica. No contiene secretos reales.",
+      "No debe importarse como escenario final sin revisar módulos, variables y paginación."
+    ]
+  }
+}
