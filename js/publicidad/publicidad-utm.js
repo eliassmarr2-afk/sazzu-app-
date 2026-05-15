@@ -2610,7 +2610,12 @@ function eliminarPublicidadUtmConjuntoDesdeMenu_(root, conjuntoId, button) {
   const id = String(conjuntoId || "").trim();
 
   if (!id) {
-    window.alert("No se pudo identificar el conjunto.");
+    notifyPubUtmAction_(root, {
+      tone: "warning",
+      icon: "delete",
+      title: "No se pudo identificar el conjunto",
+      text: "El sistema no recibió el ID necesario para enviar este conjunto a papelera."
+    });
     return;
   }
 
@@ -2619,85 +2624,29 @@ function eliminarPublicidadUtmConjuntoDesdeMenu_(root, conjuntoId, button) {
     ? String(conjunto.nombre_conjunto || conjunto.codigo_conjunto || id)
     : id;
 
-    openPubUtmActionModal_(root, {
-      tone: "danger",
-      icon: "delete",
-      eyebrow: "Enviar a papelera",
-      title: "¿Enviar este conjunto a papelera?",
-      text: "El conjunto dejará de aparecer en Publicidad UTM y tampoco estará disponible para nuevas campañas en Publicidad Interna.",
-      confirmLabel: "Enviar a papelera",
-      detailsHtml: `
-        <div class="pubUtmActionModal__row">
-          <strong>${escapeHtml_(nombre)}</strong>
-          <span>Podrás restaurarlo luego desde la papelera de conjuntos.</span>
-        </div>
-      `
-    }).then(function (confirmar) {
-      if (!confirmar) return;
-  
-      ejecutarEnvioConjuntoAPapelera_(root, id, button);
-    });
-  
-    return;
-
-  const previousHtml = button ? button.innerHTML : "";
-  STATE.deletingConjuntoId = id;
-
-  if (button) {
-    button.disabled = true;
-    button.innerHTML = "<span>Eliminando...</span>";
-  }
-
-  enviarPublicidadUtmConjuntoAPapeleraSupabase_(id)
-    .then(function (res) {
-      if (!res || res.ok !== true) {
-        if (res && res.blocked) {
-          const deps = res.dependencias || {};
-          window.alert(
-            "No se puede eliminar este conjunto todavía.\n\n" +
-            (res.message || "Tiene dependencias activas.") +
-            "\n\nCampañas internas vinculadas: " +
-            String(deps.campania_conjuntos_audiencia_count || 0)
-          );
-          return null;
-        }
-
-        throw new Error(
-          res && res.error
-            ? res.error
-            : "Supabase no confirmó la eliminación."
-        );
-      }
-
-      STATE.trashConjuntosRequested = false;
-      STATE.trashConjuntosItems = [];
-
-      return refreshPublicidadUtmConjuntosAfterCreate_(root).then(function () {
-        window.alert("Conjunto enviado a papelera correctamente.");
-        return res;
-      });
-    })
-    .catch(function (err) {
-      console.error("[Publicidad UTM] Error enviando conjunto a papelera:", err);
-      window.alert(
-        "No se pudo enviar el conjunto a papelera.\n\n" +
-        String(err && err.message ? err.message : err)
-      );
-    })
-    .then(function () {
-      STATE.deletingConjuntoId = "";
-
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = previousHtml;
-      }
-    });
+  openPubUtmActionModal_(root, {
+    tone: "danger",
+    icon: "delete",
+    eyebrow: "Enviar a papelera",
+    title: "¿Enviar este conjunto a papelera?",
+    text: "El conjunto dejará de aparecer en Publicidad UTM y tampoco estará disponible para nuevas campañas en Publicidad Interna.",
+    confirmLabel: "Enviar a papelera",
+    detailsHtml: `
+      <div class="pubUtmActionModal__row">
+        <strong>${escapeHtml_(nombre)}</strong>
+        <span>Podrás restaurarlo luego desde la papelera de conjuntos.</span>
+      </div>
+    `
+  }).then(function (confirmar) {
+    if (!confirmar) return;
+    ejecutarEnvioConjuntoAPapelera_(root, id, button);
+  });
 }
-/* FIN · Supabase · Papelera de conjuntos desde Publicidad UTM */
 
 
 function ejecutarEnvioConjuntoAPapelera_(root, id, button) {
   const previousHtml = button ? button.innerHTML : "";
+
   STATE.deletingConjuntoId = id;
 
   if (button) {
@@ -4083,9 +4032,10 @@ function renderConjuntosTrashCard_(item) {
   const miembros = Number(dependencias.miembros_utm_actuales_count || 0);
   const audiencias = Number(dependencias.audiencias_relacionadas_count || 0);
   const campanias = Number(dependencias.campania_conjuntos_audiencia_count || 0);
+  const papeleraId = String(item.papelera_id || "").trim();
 
   return `
-    <article class="pubUtmConjuntoCard pubUtmConjuntoCard--folder">
+    <article class="pubUtmConjuntoCard pubUtmConjuntoCard--folder pubUtmTrashCard">
       <span class="pubUtmConjuntoCard__newBadge">Papelera</span>
 
       <div class="pubUtmConjuntoCard__head">
@@ -4120,20 +4070,34 @@ function renderConjuntosTrashCard_(item) {
         </span>
       </div>
 
-      <div class="pubUtmConjuntoCard__footer">
-        <span>${escapeHtml_(item.estado_papelera || "en_papelera")}</span>
+      <div class="pubUtmTrashCard__bottom">
+        <span class="pubUtmTrashCard__state">
+          ${escapeHtml_(item.estado_papelera || "en_papelera")}
+        </span>
 
-        <button
-          type="button"
-          class="pubUtmBtn pubUtmBtn--primary"
-          data-conjuntos-trash-restore="${escapeHtml_(item.papelera_id || "")}"
-        >
-          Restaurar
-        </button>
+        <div class="pubUtmTrashCard__actions">
+          <button
+            type="button"
+            class="pubUtmBtn pubUtmBtn--primary"
+            data-conjuntos-trash-restore="${escapeHtml_(papeleraId)}"
+          >
+            Restaurar
+          </button>
+
+          <button
+            type="button"
+            class="pubUtmBtn pubUtmBtn--danger"
+            disabled
+            title="Pendiente de RPC definitiva"
+          >
+            Eliminar definitivo
+          </button>
+        </div>
       </div>
     </article>
   `;
 }
+
 
 function restaurarPublicidadUtmConjuntoDesdePapelera_(root, papeleraId, button) {
   const id = String(papeleraId || "").trim();

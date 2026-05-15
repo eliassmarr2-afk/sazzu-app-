@@ -19005,3 +19005,172 @@ body.pubUtmOverlayMode .pubUtmAevaInline {
 /* =========================================================
    FIN · Smart Select · Clasificación comercial sin corte
    ========================================================= */
+
+/* ============================================================
+   UTM · Papelera de conjuntos · Modal profesional + acciones
+   ============================================================ */
+
+.pubUtmActionModal {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.pubUtmActionModal.is-open {
+  display: flex;
+}
+
+.pubUtmActionModal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 27, 45, .46);
+  backdrop-filter: blur(5px);
+}
+
+.pubUtmActionModal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(520px, calc(100vw - 40px));
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 28px 80px rgba(15, 27, 45, .24);
+  padding: 22px;
+}
+
+.pubUtmActionModal__head {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pubUtmActionModal__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-50);
+  color: var(--blue-500);
+}
+
+.pubUtmActionModal--danger .pubUtmActionModal__icon {
+  background: var(--red-50);
+  color: var(--red-500);
+}
+
+.pubUtmActionModal--warning .pubUtmActionModal__icon {
+  background: var(--amber-50);
+  color: var(--amber-500);
+}
+
+.pubUtmActionModal--success .pubUtmActionModal__icon {
+  background: var(--green-50);
+  color: var(--green-500);
+}
+
+.pubUtmActionModal__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.pubUtmActionModal__head h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.pubUtmActionModal__head p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.pubUtmActionModal__details {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-card-soft);
+}
+
+.pubUtmActionModal__row {
+  display: grid;
+  gap: 4px;
+}
+
+.pubUtmActionModal__row strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.pubUtmActionModal__row span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.pubUtmActionModal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pubUtmBtn--danger {
+  border-color: rgba(220, 38, 38, .25);
+  background: var(--red-500);
+  color: var(--text-inverse);
+}
+
+.pubUtmBtn--danger:hover:not(:disabled) {
+  background: #B91C1C;
+}
+
+.pubUtmBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.pubUtmTrashCard {
+  min-height: 272px;
+}
+
+.pubUtmTrashCard__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.pubUtmTrashCard__state {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.pubUtmTrashCard__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pubUtmTrashCard__actions .pubUtmBtn {
+  min-height: 34px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
