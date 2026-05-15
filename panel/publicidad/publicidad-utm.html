@@ -1,226 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publicidad UTM · Sazzú Control Tower</title>
-  <link rel="stylesheet" href="/css/publicidad/publicidad-utm.css" />
-</head>
-<body data-page="publicidad-utm">
-  <aside class="sidebar" data-include="sidebar"></aside>
-
-  <main class="main">
-    <section class="pubUtmPage" aria-label="Panel Publicidad UTM">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="view-transition" content="same-origin" />
+    <title>Publicidad UTM · Sazzú Control Tower</title>
+  
+    <!-- INICIO · CSS base del sistema -->
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/panel.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- FIN · CSS base del sistema -->
+  
+    <!-- INICIO · CSS específico Publicidad UTM -->
+    <link rel="stylesheet" href="/css/publicidad/publicidad-utm.css" />
+    <!-- FIN · CSS específico Publicidad UTM -->
+  </head>
+  <body data-page="publicidad-utm">
+    <div class="appShell">
+      <div class="bodyGrid">
+        <!-- INICIO · Sidebar oficial cargado por app.js -->
+        <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
+        <!-- FIN · Sidebar oficial cargado por app.js -->
+  
+        <main class="main" aria-label="Contenido principal">
+    <section id="pubUtmPage" class="pubUtmPage" aria-label="Panel Publicidad UTM">
       <header class="pubUtmHeader">
         <div class="pubUtmHeader__copy">
-          <div class="pubUtmHeader__eyebrow">Motores de crecimiento</div>
+          <div class="pubUtmHeader__eyebrow">Sazzú · Ecosistema UTM</div>
           <h1 class="pubUtmHeader__title">Publicidad UTM</h1>
           <p class="pubUtmHeader__desc">
-            Motor de atribución comercial para cruzar tráfico, UTMs, anuncios, ventas reales y recompra.
+            Centro operativo para analizar, seleccionar y organizar audiencias automáticas
+            detectadas por el motor UTM.
+          </p>
+          <p class="pubUtmHeader__meta">
+            Build <strong data-pubutm-build>—</strong>
+            · Generado <strong data-pubutm-generated-at>—</strong>
           </p>
         </div>
 
         <div class="pubUtmHeader__actions">
-          <button class="pubUtmBtn pubUtmBtn--ghost" type="button">Importar estructura</button>
-          <button class="pubUtmBtn pubUtmBtn--primary" type="button">Nueva regla UTM</button>
+          <button class="pubUtmBtn pubUtmBtn--ghost" type="button">
+            Rebuild Audiencias
+          </button>
+
+          <button class="pubUtmBtn pubUtmBtn--ghost" type="button">
+            Rebuild Control
+          </button>
+
+          <button class="pubUtmBtn pubUtmBtn--primary" type="button" data-open-create-set="1">
+            Crear conjunto
+          </button>
+
+          <button class="pubUtmBtn pubUtmBtn--ghost" type="button">
+            Actualizar métricas
+          </button>
+
+          <button class="pubUtmBtn pubUtmBtn--ghost" type="button">
+            Ver incidencias
+          </button>
         </div>
       </header>
 
       <section class="pubUtmHero" aria-label="Resumen ejecutivo">
         <article class="pubUtmKpi">
-          <div class="pubUtmKpi__label">Ventas atribuidas</div>
-          <div class="pubUtmKpi__value">0</div>
-          <div class="pubUtmKpi__meta">Esperando cruce con Backend</div>
+          <div class="pubUtmKpi__label">Audiencias automáticas activas</div>
+          <div class="pubUtmKpi__value" data-kpi="audiencias_activas">—</div>
+          <div class="pubUtmKpi__meta">Lectura desde UTM_AudienciasCabecera</div>
         </article>
 
         <article class="pubUtmKpi">
-          <div class="pubUtmKpi__label">Facturación atribuida</div>
-          <div class="pubUtmKpi__value">$0</div>
-          <div class="pubUtmKpi__meta">Todavía sin motor de hojas</div>
+          <div class="pubUtmKpi__label">Audiencias atómicas</div>
+          <div class="pubUtmKpi__value" data-kpi="audiencias_atomicas">—</div>
+          <div class="pubUtmKpi__meta">Bloques base detectados por patrón</div>
         </article>
 
         <article class="pubUtmKpi">
-          <div class="pubUtmKpi__label">Clientes únicos</div>
-          <div class="pubUtmKpi__value">0</div>
-          <div class="pubUtmKpi__meta">Base atribuible pendiente</div>
+          <div class="pubUtmKpi__label">Audiencias compuestas</div>
+          <div class="pubUtmKpi__value" data-kpi="audiencias_compuestas">—</div>
+          <div class="pubUtmKpi__meta">Cruces automáticos entre familias útiles</div>
         </article>
 
         <article class="pubUtmKpi">
-          <div class="pubUtmKpi__label">Variables activas</div>
-          <div class="pubUtmKpi__value">10</div>
-          <div class="pubUtmKpi__meta">Taxonomía inicial preparada</div>
+          <div class="pubUtmKpi__label">Conjuntos personalizados</div>
+          <div class="pubUtmKpi__value" data-kpi="conjuntos_personalizados">—</div>
+          <div class="pubUtmKpi__meta">Se activan en la siguiente fase</div>
         </article>
 
         <article class="pubUtmKpi">
-          <div class="pubUtmKpi__label">ROAS real</div>
-          <div class="pubUtmKpi__value">—</div>
-          <div class="pubUtmKpi__meta">Depende de Publicidad Externa</div>
+          <div class="pubUtmKpi__label">Miembros totales</div>
+          <div class="pubUtmKpi__value" data-kpi="miembros_totales">—</div>
+          <div class="pubUtmKpi__meta">Lectura desde UTM_AudienciasMiembros</div>
+        </article>
+
+        <article class="pubUtmKpi">
+          <div class="pubUtmKpi__label">Última actualización</div>
+          <div class="pubUtmKpi__value" data-kpi="ultima_actualizacion">—</div>
+          <div class="pubUtmKpi__meta">Marca operativa del ecosistema</div>
+        </article>
+
+        <article class="pubUtmKpi">
+          <div class="pubUtmKpi__label">Estado del motor UTM</div>
+          <div class="pubUtmKpi__value" data-kpi="estado_motor">—</div>
+          <div class="pubUtmKpi__meta">Cabecera · Detalle · Miembros · Control</div>
         </article>
       </section>
 
-      <nav class="pubUtmTabs" aria-label="Secciones del panel">
-        <button class="pubUtmTab is-active" type="button" data-tab="parametros">Parámetros UTM</button>
-        <button class="pubUtmTab" type="button" data-tab="resumen">Resumen</button>
-        <button class="pubUtmTab" type="button" data-tab="cruce">Cruce atribución</button>
-        <button class="pubUtmTab" type="button" data-tab="audiencias">Audiencias</button>
-        <button class="pubUtmTab" type="button" data-tab="cohortes">Cohortes / LTV</button>
+      <nav class="pubUtmTabs" aria-label="Secciones de Publicidad UTM">
+        <button class="pubUtmTab is-active" type="button" data-tab-target="audiencias">
+          Audiencias automáticas
+        </button>
+        <button class="pubUtmTab" type="button" data-tab-target="conjuntos">
+          Conjuntos
+        </button>
+        <button class="pubUtmTab" type="button" data-tab-target="control">
+          Control
+        </button>
       </nav>
 
-      <section class="pubUtmTabPanel is-active" data-tab-panel="parametros">
-        <div class="pubUtmMainGrid">
-          <article class="pubUtmCard">
-            <div class="pubUtmCard__head">
-              <div>
-                <div class="pubUtmCard__eyebrow">Taxonomía</div>
-                <h2 class="pubUtmCard__title">Parámetros que va a leer el sistema</h2>
-              </div>
-              <button class="pubUtmBtn pubUtmBtn--ghost" type="button">Editar mapa</button>
+      <section class="pubUtmTabPanel is-active" data-tab-panel="audiencias">
+        <article class="pubUtmCard pubUtmCard--full">
+          <div class="pubUtmToolbar">
+            <div class="pubUtmSearchWrap">
+              <input
+                class="pubUtmSearch"
+                type="text"
+                placeholder="Buscar por nombre, origen o tipo…"
+                disabled
+              />
             </div>
 
-            <div class="pubUtmParamGrid">
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_source</div>
-                <div class="pubUtmParamItem__desc">Origen del tráfico</div>
-                <div class="pubUtmParamItem__example">meta / google / tiktok / email</div>
-              </article>
+            <div class="pubUtmFilters">
+              <button class="pubUtmFilter is-active" type="button" data-audience-type="todas">
+                Todas
+              </button>
+              <button class="pubUtmFilter" type="button" data-audience-type="atomica">
+                Atómicas
+              </button>
+              <button class="pubUtmFilter" type="button" data-audience-type="compuesta">
+                Compuestas
+              </button>
+              <button class="pubUtmFilter" type="button" data-audience-type="derivada">
+                Derivadas
+              </button>
+            </div>
+          </div>
+        </article>
 
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_medium</div>
-                <div class="pubUtmParamItem__desc">Tipo de canal</div>
-                <div class="pubUtmParamItem__example">paid_social / cpc / email</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_campaign</div>
-                <div class="pubUtmParamItem__desc">Campaña comercial</div>
-                <div class="pubUtmParamItem__example">cepillo-3en1-latam</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_conjunto</div>
-                <div class="pubUtmParamItem__desc">Conjunto o cluster de pauta</div>
-                <div class="pubUtmParamItem__example">mujeres-25-44-intereses</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_id_ad</div>
-                <div class="pubUtmParamItem__desc">ID del anuncio</div>
-                <div class="pubUtmParamItem__example">23849XXXXXX</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_mensaje</div>
-                <div class="pubUtmParamItem__desc">Ángulo o promesa</div>
-                <div class="pubUtmParamItem__example">ahorra-tiempo / dolor / wow</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_nicho</div>
-                <div class="pubUtmParamItem__desc">Vertical o nicho</div>
-                <div class="pubUtmParamItem__example">beauty / hogar / auto</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_creativo</div>
-                <div class="pubUtmParamItem__desc">Tipo de creativo</div>
-                <div class="pubUtmParamItem__example">ugc / demo / testimonial</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_oferta</div>
-                <div class="pubUtmParamItem__desc">Oferta activa</div>
-                <div class="pubUtmParamItem__example">x2 / 20off / envio-gratis</div>
-              </article>
-
-              <article class="pubUtmParamItem">
-                <div class="pubUtmParamItem__name">utm_genero</div>
-                <div class="pubUtmParamItem__desc">Segmentación declarada</div>
-                <div class="pubUtmParamItem__example">f / m / unisex</div>
-              </article>
+        <div class="pubUtmAudienceGrid" data-pubutm-audiences-list>
+          <article class="pubUtmCard pubUtmCard--full">
+            <div class="pubUtmEmptyState">
+              <h2>Cargando audiencias automáticas</h2>
+              <p>El panel va a pintar acá las audiencias reales detectadas por el motor UTM.</p>
             </div>
           </article>
-
-          <aside class="pubUtmCard pubUtmCard--side">
-            <div class="pubUtmCard__head">
-              <div>
-                <div class="pubUtmCard__eyebrow">Estado inicial</div>
-                <h2 class="pubUtmCard__title">Qué va a hacer este panel</h2>
-              </div>
-            </div>
-
-            <ul class="pubUtmChecklist">
-              <li>Recibir UTMs desde Backend</li>
-              <li>Cruzar UTMs con Meta / Google / TikTok</li>
-              <li>Detectar ventas, recompra y valor de vida</li>
-              <li>Enviar públicos útiles a Publicidad Interna</li>
-              <li>Convertir campañas en inteligencia de negocio</li>
-            </ul>
-          </aside>
         </div>
+      </section>
 
+      <section class="pubUtmTabPanel" data-tab-panel="conjuntos">
+        <article class="pubUtmCard pubUtmCard--full">
+          <div class="pubUtmEmptyState">
+            <h2>Conjuntos personalizados</h2>
+            <p>
+              En esta etapa todavía no guardamos conjuntos. Primero estamos leyendo y
+              organizando audiencias automáticas reales.
+            </p>
+            <button class="pubUtmBtn pubUtmBtn--primary" type="button" data-open-create-set="1">
+              Crear conjunto de audiencias
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <section class="pubUtmTabPanel" data-tab-panel="control">
         <article class="pubUtmCard pubUtmCard--full">
           <div class="pubUtmCard__head">
             <div>
               <div class="pubUtmCard__eyebrow">Gobierno del dato</div>
-              <h2 class="pubUtmCard__title">Reglas base de lectura</h2>
-            </div>
-          </div>
-
-          <div class="pubUtmRuleGrid">
-            <div class="pubUtmRule">
-              <div class="pubUtmRule__title">1. Datos externos</div>
-              <p>Se leen por el día nativo de la plataforma para no desfasar gasto, clics o conversiones.</p>
-            </div>
-
-            <div class="pubUtmRule">
-              <div class="pubUtmRule__title">2. Datos internos</div>
-              <p>Se guardan en horario operativo canónico de Sazzú con ISO y offset explícito -03:00.</p>
-            </div>
-
-            <div class="pubUtmRule">
-              <div class="pubUtmRule__title">3. Cruce de atribución</div>
-              <p>Se resuelve por UTMs, IDs publicitarios y entidad cliente para medir ventas reales y recompra.</p>
-            </div>
-
-            <div class="pubUtmRule">
-              <div class="pubUtmRule__title">4. Resultado final</div>
-              <p>La salida útil del sistema no es un clic. Es cliente, facturación, margen, recompra y LTV.</p>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section class="pubUtmTabPanel" data-tab-panel="resumen">
-        <article class="pubUtmCard pubUtmCard--full">
-          <div class="pubUtmEmptyState">
-            <h2>Resumen ejecutivo de atribución</h2>
-            <p>
-              Este bloque mostrará ventas atribuidas, facturación real, ROAS cruzado, CPA real, clientes únicos y rendimiento por variable UTM.
-            </p>
-          </div>
-        </article>
-      </section>
-
-      <section class="pubUtmTabPanel" data-tab-panel="cruce">
-        <article class="pubUtmCard pubUtmCard--full">
-          <div class="pubUtmCard__head">
-            <div>
-              <div class="pubUtmCard__eyebrow">Tabla maestra</div>
-              <h2 class="pubUtmCard__title">Cruce de atribución</h2>
-            </div>
-            <button class="pubUtmBtn pubUtmBtn--ghost" type="button">Abrir slide</button>
-          </div>
-
-          <div class="pubUtmToolbar">
-            <div class="pubUtmSearchWrap">
-              <input class="pubUtmSearch" type="text" placeholder="Buscar por campaña, anuncio, mensaje o cliente" />
-            </div>
-
-            <div class="pubUtmFilters">
-              <button class="pubUtmFilter is-active" type="button">Todo</button>
-              <button class="pubUtmFilter" type="button">Con venta</button>
-              <button class="pubUtmFilter" type="button">Sin venta</button>
-              <button class="pubUtmFilter" type="button">Recompra</button>
+              <h2 class="pubUtmCard__title">Relaciones y jerarquías de audiencias</h2>
             </div>
           </div>
 
@@ -228,20 +187,18 @@
             <table class="pubUtmTable">
               <thead>
                 <tr>
-                  <th>Campaña</th>
-                  <th>Conjunto</th>
-                  <th>Anuncio</th>
-                  <th>Mensaje</th>
-                  <th>Nicho</th>
-                  <th>Oferta</th>
-                  <th>Ventas</th>
-                  <th>Facturación</th>
-                  <th>ROAS</th>
+                  <th>Audiencia</th>
+                  <th>Estructura</th>
+                  <th>Nivel</th>
+                  <th>Derivada de</th>
+                  <th>Solapamiento</th>
+                  <th>Bloque</th>
+                  <th>Prioridad</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-pubutm-control-body>
                 <tr>
-                  <td colspan="9" class="pubUtmTable__empty">Todavía no hay hoja maestra de atribución conectada.</td>
+                  <td colspan="7">Cargando capa de control…</td>
                 </tr>
               </tbody>
             </table>
@@ -249,34 +206,108 @@
         </article>
       </section>
 
-      <section class="pubUtmTabPanel" data-tab-panel="audiencias">
-        <article class="pubUtmCard pubUtmCard--full">
-          <div class="pubUtmEmptyState">
-            <h2>Audiencias derivadas</h2>
-            <p>
-              Acá se construirán públicos inteligentes nacidos del cruce entre tráfico, UTMs, ventas y recompra.
-            </p>
-          </div>
-        </article>
-      </section>
+      <aside
+        id="pubUtmCreateSetSlide"
+        class="pubUtmPanelSlide pubUtmSlide"
+        data-pubutm-slide
+        aria-hidden="true"
+      >
+        <div class="pubUtmPanelSlide__dialog">
+          <div class="pubUtmPanelSlide__head">
+            <div>
+              <div class="pubUtmCard__eyebrow">Constructor</div>
+              <h2 class="pubUtmCard__title">Crear conjunto de audiencias</h2>
+            </div>
 
-      <section class="pubUtmTabPanel" data-tab-panel="cohortes">
-        <article class="pubUtmCard pubUtmCard--full">
-          <div class="pubUtmEmptyState">
-            <h2>Cohortes y valor de vida</h2>
-            <p>
-              Este bloque se va a usar para medir LTV, recompra, payback y amortización del CAC por cohorte.
-            </p>
+            <button
+              class="pubUtmBtn pubUtmBtn--ghost"
+              type="button"
+              data-close-slide="1"
+              aria-label="Cerrar slide"
+            >
+              Cerrar
+            </button>
           </div>
-        </article>
-      </section>
+
+          <div class="pubUtmPanelSlide__body">
+            <article class="pubUtmCard pubUtmCard--full">
+              <div class="pubUtmCard__head">
+                <div>
+                  <div class="pubUtmCard__eyebrow">Paso 1</div>
+                  <h3 class="pubUtmCard__title">Seleccionar audiencias fuente</h3>
+                </div>
+              </div>
+              <p class="pubUtmPanelSlide__text">
+                Acá van a entrar audiencias automáticas atómicas, compuestas o derivadas para
+                combinarlas después en conjuntos operativos.
+              </p>
+            </article>
+
+            <article class="pubUtmCard pubUtmCard--full">
+              <div class="pubUtmCard__head">
+                <div>
+                  <div class="pubUtmCard__eyebrow">Paso 2</div>
+                  <h3 class="pubUtmCard__title">Definir lógica de inclusión / exclusión</h3>
+                </div>
+              </div>
+              <p class="pubUtmPanelSlide__text">
+                En la siguiente fase vamos a definir reglas tipo incluir, excluir, deduplicar y
+                limitar según comportamiento del público.
+              </p>
+            </article>
+
+            <article class="pubUtmCard pubUtmCard--full">
+              <div class="pubUtmCard__head">
+                <div>
+                  <div class="pubUtmCard__eyebrow">Paso 3</div>
+                  <h3 class="pubUtmCard__title">Nombrar el conjunto</h3>
+                </div>
+              </div>
+              <label class="pubUtmField">
+                <span class="pubUtmField__label">Nombre del conjunto</span>
+                <input
+                  class="pubUtmSearch"
+                  type="text"
+                  placeholder="Ej. Recuperación clientes con intención"
+                  disabled
+                />
+              </label>
+            </article>
+
+            <article class="pubUtmCard pubUtmCard--full">
+              <div class="pubUtmCard__head">
+                <div>
+                  <div class="pubUtmCard__eyebrow">Paso 4</div>
+                  <h3 class="pubUtmCard__title">Guardar</h3>
+                </div>
+              </div>
+              <p class="pubUtmPanelSlide__text">
+                El guardado real del conjunto y su vínculo con otros paneles lo conectamos en la
+                siguiente etapa.
+              </p>
+            </article>
+          </div>
+
+          <div class="pubUtmPanelSlide__footer">
+            <button class="pubUtmBtn pubUtmBtn--ghost" type="button" data-close-slide="1">
+              Cancelar
+            </button>
+            <button class="pubUtmBtn pubUtmBtn--primary" type="button" disabled>
+              Guardar conjunto
+            </button>
+          </div>
+        </div>
+      </aside>
 
       <div id="pubUtmSlideMount" class="pubUtmSlideMount" aria-live="polite"></div>
       <div id="pubUtmSubSlideMount" class="pubUtmSlideMount" aria-live="polite"></div>
     </section>
   </main>
+</div>
+</div>
 
-  <script src="/js/app.js"></script>
-  <script src="/js/publicidad/publicidad-utm.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/config/supabase-config.js"></script>
+<script src="/js/publicidad/publicidad-utm.js"></script>
 </body>
 </html>
