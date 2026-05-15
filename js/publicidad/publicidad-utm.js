@@ -3347,7 +3347,10 @@ function renderConjuntosAudiencias_(root) {
           </summary>
 
           <div class="pubUtmOpsMenu__panel" role="menu" aria-label="Acciones de conjuntos">
-            <button type="button" class="pubUtmOpsMenu__item" role="menuitem" data-conjuntos-trash-open>
+            <button type="button" class="pubUtmOpsMenu__item pubUtmOpsMenu__item--trash" role="menuitem" data-conjuntos-trash-open>
+              <span class="pubUtmOpsMenu__icon" aria-hidden="true">
+                ${getConjuntoQuickActionIcon_("delete")}
+              </span>
               <span>Ver registros eliminados</span>
             </button>
           </div>
@@ -4070,34 +4073,31 @@ function renderConjuntosTrashCard_(item) {
         </span>
       </div>
 
-      <div class="pubUtmTrashCard__bottom">
-        <span class="pubUtmTrashCard__state">
-          ${escapeHtml_(item.estado_papelera || "en_papelera")}
-        </span>
+      <div class="pubUtmTrashCard__state">
+        ${escapeHtml_(item.estado_papelera || "en_papelera")}
+      </div>
 
-        <div class="pubUtmTrashCard__actions">
-          <button
-            type="button"
-            class="pubUtmBtn pubUtmBtn--primary"
-            data-conjuntos-trash-restore="${escapeHtml_(papeleraId)}"
-          >
-            Restaurar
-          </button>
+      <div class="pubUtmTrashCard__actions">
+        <button
+          type="button"
+          class="pubUtmTrashActionBtn pubUtmTrashActionBtn--restore"
+          data-conjuntos-trash-restore="${escapeHtml_(papeleraId)}"
+        >
+          Restaurar
+        </button>
 
-          <button
-            type="button"
-            class="pubUtmBtn pubUtmBtn--danger"
-            disabled
-            title="Pendiente de RPC definitiva"
-          >
-            Eliminar definitivo
-          </button>
-        </div>
+        <button
+          type="button"
+          class="pubUtmTrashActionBtn pubUtmTrashActionBtn--disabled"
+          disabled
+          title="Pendiente de RPC definitiva"
+        >
+          Eliminar definitivo
+        </button>
       </div>
     </article>
   `;
 }
-
 
 function restaurarPublicidadUtmConjuntoDesdePapelera_(root, papeleraId, button) {
   const id = String(papeleraId || "").trim();

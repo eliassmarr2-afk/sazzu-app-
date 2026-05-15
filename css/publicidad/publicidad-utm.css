@@ -19174,3 +19174,221 @@ body.pubUtmOverlayMode .pubUtmAevaInline {
   font-size: 12px;
 }
 
+/* ============================================================
+   UTM · Fix visual papelera · Acciones visibles + menú compacto
+   ============================================================ */
+
+.pubUtmConjuntosTrashMenu {
+  position: relative !important;
+  flex: 0 0 auto !important;
+}
+
+.pubUtmConjuntosTrashMenu .pubUtmConjuntoCard__quickBtn {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(36, 121, 255, .45) !important;
+  color: #0f1b2d !important;
+}
+
+.pubUtmConjuntosTrashMenu .pubUtmOpsMenu__panel {
+  width: 244px !important;
+  min-width: 244px !important;
+  right: 0 !important;
+  left: auto !important;
+  padding: 8px !important;
+}
+
+.pubUtmConjuntosTrashMenu .pubUtmOpsMenu__item,
+.pubUtmOpsMenu__item--trash {
+  width: 100% !important;
+  min-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 9px !important;
+  white-space: nowrap !important;
+  text-align: left !important;
+  line-height: 1 !important;
+}
+
+.pubUtmOpsMenu__icon {
+  width: 18px !important;
+  height: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 18px !important;
+  color: #2479FF !important;
+}
+
+.pubUtmOpsMenu__icon svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.pubUtmTrashCard {
+  min-height: 318px !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: visible !important;
+}
+
+.pubUtmTrashCard .pubUtmConjuntoCard__stats {
+  margin-top: 14px !important;
+}
+
+.pubUtmTrashCard__actions {
+  width: 100% !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  margin-top: auto !important;
+  padding-top: 16px !important;
+  border-top: 1px solid rgba(15, 23, 42, .10) !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+.pubUtmTrashCard__actions .pubUtmBtn {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 36px !important;
+  padding: 9px 13px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.pubUtmTrashCard__state {
+  display: inline-flex !important;
+  width: fit-content !important;
+  margin-top: 12px !important;
+  padding: 5px 9px !important;
+  border-radius: 999px !important;
+  background: #F1F4F8 !important;
+  color: #64748B !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.pubUtmTrashCard .pubUtmBtn--danger:disabled {
+  background: #FEE2E2 !important;
+  border-color: rgba(220, 38, 38, .18) !important;
+  color: #991B1B !important;
+  opacity: .72 !important;
+}
+
+/* ============================================================
+   UTM · Fix fuerte papelera · Botones propios sin herencia
+   ============================================================ */
+
+.pubUtmTrashCard {
+  min-height: 340px !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: visible !important;
+  padding-bottom: 18px !important;
+}
+
+.pubUtmTrashCard .pubUtmConjuntoCard__stats {
+  margin-top: 16px !important;
+  margin-bottom: 0 !important;
+}
+
+.pubUtmTrashCard__state {
+  display: inline-flex !important;
+  width: fit-content !important;
+  margin-top: 14px !important;
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: #F1F4F8 !important;
+  color: #64748B !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+}
+
+.pubUtmTrashCard__actions {
+  width: 100% !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  margin-top: auto !important;
+  padding-top: 18px !important;
+  border-top: 1px solid rgba(15, 23, 42, .10) !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+
+.pubUtmTrashActionBtn {
+  appearance: none !important;
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  position: relative !important;
+  z-index: 25 !important;
+}
+
+.pubUtmTrashActionBtn--restore {
+  background: #2479FF !important;
+  border-color: #2479FF !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 22px rgba(36, 121, 255, .18) !important;
+}
+
+.pubUtmTrashActionBtn--restore:hover {
+  background: #1A63E0 !important;
+  border-color: #1A63E0 !important;
+}
+
+.pubUtmTrashActionBtn--disabled {
+  background: #FEE2E2 !important;
+  border-color: rgba(220, 38, 38, .18) !important;
+  color: #991B1B !important;
+  cursor: not-allowed !important;
+  opacity: .72 !important;
+}
+
+.pubUtmConjuntosTrashMenu .pubUtmOpsMenu__panel {
+  width: 260px !important;
+  min-width: 260px !important;
+}
+
+.pubUtmOpsMenu__item--trash {
+  white-space: nowrap !important;
+  min-width: 220px !important;
+}
+
+.pubUtmOpsMenu__item--trash span:last-child {
+  white-space: nowrap !important;
+}
+
