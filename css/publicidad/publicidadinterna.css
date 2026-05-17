@@ -2616,49 +2616,75 @@ FIN · Publicidad Interna · Administrador operativo
 ============================================================ */
 
 /* ============================================================
-INICIO · Publicidad Interna · Ajuste visual administrador full width
+INICIO · Publicidad Interna · Ajuste visual administrador full width V2
+Objetivo:
+- Zona superior gris operativa hasta la barra de acciones.
+- Contenedores internos blancos.
+- Desde el listado hacia abajo: fondo blanco.
+- Líneas divisorias full width dentro del panel.
 ============================================================ */
 
 body[data-page="publicidadinterna"] {
   background: #FFFFFF;
 }
 
+/* Base general del panel */
 .piShell {
   background: #FFFFFF;
-  padding: 14px 16px 18px;
+  padding: 0 16px 18px;
+  color: #111827;
+  max-width: none;
+  width: 100%;
 }
 
-/* Header general: sin tarjeta, compacto y con línea divisoria */
+/* ============================================================
+ZONA SUPERIOR · Fondo gris operativo
+============================================================ */
+
+.piAdminTopbar,
+.piAdminSegments,
+.piAdminSearchPanel,
+.piAdminWorkspace {
+  position: relative;
+}
+
+/* Header compacto, sin tarjeta, sobre fondo gris */
 .piAdminTopbar {
-  background: #FFFFFF;
+  background: #F3F5F8;
   border: 0;
-  border-bottom: 1px solid #E5EAF2;
+  border-bottom: 1px solid #DDE4EE;
   border-radius: 0;
   box-shadow: none;
-  padding: 0 0 10px;
-  margin-bottom: 0;
+  padding: 10px 16px 10px;
+  margin: 0 -16px;
+  min-height: 56px;
 }
 
+/* Título compacto */
 .piAdminBrand {
-  min-width: 210px;
+  min-width: 220px;
 }
 
 .piAdminBrand .piEyebrow {
   font-size: 10px;
-  letter-spacing: .14em;
+  letter-spacing: .16em;
+  color: #667085;
 }
 
 .piAdminBrand .piTitle {
-  font-size: 23px;
+  font-size: 22px;
   line-height: 1;
-  margin-top: 5px;
+  margin-top: 4px;
   letter-spacing: -0.035em;
 }
 
+/* Operador visual */
 .piOperator__trigger {
-  height: 38px;
-  background: #F8FAFC;
-  border-color: #DDE5F0;
+  height: 36px;
+  background: #FFFFFF;
+  border-color: #D6DEE9;
+  border-radius: 5px;
+  box-shadow: none;
 }
 
 .piOperator__avatar,
@@ -2666,6 +2692,22 @@ body[data-page="publicidadinterna"] {
   width: 28px;
   height: 28px;
   font-size: 11px;
+}
+
+.piAdminAvatar--azul {
+  background: #2479FF;
+}
+
+.piAdminAvatar--violeta {
+  background: #7C3AED;
+}
+
+.piAdminAvatar--verde {
+  background: #16A34A;
+}
+
+.piAdminAvatar--naranja {
+  background: #EA580C;
 }
 
 .piAdminRefreshState span {
@@ -2676,17 +2718,30 @@ body[data-page="publicidadinterna"] {
   font-size: 10px;
 }
 
-/* Segmentos: sobre fondo blanco, sin tarjeta, con líneas finas */
+/* Botones topbar más compactos */
+.piAdminTopbar .piBtn {
+  height: 34px;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+/* ============================================================
+SEGMENTOS · Fondo gris, líneas full width
+============================================================ */
+
 .piAdminSegments {
-  background: #FFFFFF;
+  background: #F3F5F8;
   border: 0;
-  border-top: 1px solid #E5EAF2;
-  border-bottom: 1px solid #E5EAF2;
+  border-bottom: 1px solid #DDE4EE;
   border-radius: 0;
   box-shadow: none;
-  padding: 8px 0;
-  margin: 0 0 10px;
+  padding: 8px 16px;
+  margin: 0 -16px;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .piAdminSegments__left {
@@ -2694,22 +2749,34 @@ body[data-page="publicidadinterna"] {
   align-items: center;
   gap: 7px;
   overflow-x: auto;
+  min-width: 0;
 }
 
 .piSegment {
   height: 34px;
   background: #FFFFFF;
-  border-color: #DDE5F0;
+  border: 1px solid #D6DEE9;
   color: #334155;
+  border-radius: 5px;
   padding: 0 10px;
+  box-shadow: none;
+  flex: 0 0 auto;
 }
 
 .piSegment span {
+  width: 17px;
+  height: 17px;
   color: #2479FF;
+}
+
+.piSegment svg {
+  width: 17px;
+  height: 17px;
 }
 
 .piSegment strong {
   font-size: 11px;
+  font-weight: 900;
 }
 
 .piSegment.is-active {
@@ -2766,48 +2833,78 @@ body[data-page="publicidadinterna"] {
   font-weight: 900;
 }
 
-/* Search sobre fondo general */
+/* ============================================================
+BUSCADOR · Fondo gris detrás, input blanco
+============================================================ */
+
 .piAdminSearchPanel {
-  margin-bottom: 10px;
+  background: #F3F5F8;
+  padding: 8px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid #DDE4EE;
 }
 
 .piAdminSearch {
-  height: 42px;
-  border-color: #DDE5F0;
+  height: 40px;
+  border: 1px solid #D6DEE9;
   box-shadow: none;
   background: #FFFFFF;
+  border-radius: 5px;
 }
 
-/* Workspace sin tarjeta contenedora */
+.piAdminSearch__icon {
+  width: 19px;
+  height: 19px;
+  color: #2479FF;
+}
+
+.piAdminSearch__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.piAdminSearch input {
+  font-size: 13px;
+}
+
+/* ============================================================
+WORKSPACE · Fondo gris hasta barra Crear campaña
+============================================================ */
+
 .piAdminWorkspace {
-  background: #FFFFFF;
+  background: #F3F5F8;
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  padding: 0;
+  padding: 8px 16px 0;
+  margin: 0 -16px;
 }
 
-/* Tabs estilo carpeta operativa */
+/* Tabs tipo carpeta sobre gris */
 .piAdminTabsRow {
-  border-bottom: 1px solid #DDE5F0;
-  margin-bottom: 10px;
+  background: #F3F5F8;
+  border-bottom: 1px solid #D6DEE9;
+  margin: 0 0 8px;
+  padding: 0;
   align-items: flex-end;
 }
 
 .piAdminTabs {
   gap: 0;
   position: relative;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .piAdminTab {
-  min-width: 170px;
-  min-height: 48px;
-  border: 1px solid #DDE5F0;
+  min-width: 172px;
+  min-height: 46px;
+  border: 1px solid #D6DEE9;
   border-bottom: 0;
-  background: #F2F5F9;
+  background: #E9EDF3;
   color: #64748B;
   border-radius: 6px 6px 0 0;
-  padding: 9px 13px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -2831,7 +2928,7 @@ body[data-page="publicidadinterna"] {
 }
 
 .piAdminTab:hover {
-  background: #E9EEF5;
+  background: #DFE6EF;
 }
 
 .piAdminTab.is-active {
@@ -2839,7 +2936,6 @@ body[data-page="publicidadinterna"] {
   border-color: #2479FF;
   color: #FFFFFF;
   box-shadow: 0 10px 22px rgba(36, 121, 255, .22);
-  transform: translateY(1px);
 }
 
 .piAdminTab.is-active::after {
@@ -2893,31 +2989,139 @@ body[data-page="publicidadinterna"] {
   font-weight: 900;
 }
 
+/* Selector de fecha */
 .piAdminDateRange {
   margin-bottom: 7px;
   height: 34px;
-  border-color: #DDE5F0;
+  border: 1px solid #D6DEE9;
+  background: #FFFFFF;
+  border-radius: 5px;
 }
 
-/* Acciones rápidas más compactas y sin sensación de bloque aparte */
+/* ============================================================
+ACCIONES RÁPIDAS · Última línea gris
+============================================================ */
+
 .piAdminActionBar {
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  background: #F3F5F8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #D6DEE9;
+  overflow-x: auto;
+}
+
+.piAdminActionBar .piBtn {
+  height: 36px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+/* ============================================================
+DESDE ACÁ HACIA ABAJO · Fondo blanco absoluto
+============================================================ */
+
+.piKpiGrid {
+  background: #FFFFFF;
+  margin: 0 -16px;
+  padding: 12px 16px;
   border-bottom: 1px solid #EEF2F7;
 }
 
-/* KPI sin sensación de tarjeta general */
-.piKpiGrid {
-  margin-bottom: 12px;
+.piKpi {
+  box-shadow: none;
+  border-color: #E4EAF2;
 }
 
-/* Listado más integrado al fondo */
 .piCampaignList {
-  margin-top: 0;
+  background: #FFFFFF;
+  margin: 0 -16px;
+  padding: 0 16px 18px;
+}
+
+/* Placeholder de tabs también sobre fondo blanco inferior */
+.piAdminPlaceholder {
+  margin-top: 12px;
+  min-height: 260px;
+  border: 1px dashed #CBD5E1;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.piAdminPlaceholder__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 5px;
+  background: #EAF2FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.piAdminPlaceholder__icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piAdminPlaceholder strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piAdminPlaceholder p {
+  margin: 6px 0 0;
+  max-width: 620px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5f6b7a;
+}
+
+.piAdminPlaceholder small {
+  display: inline-flex;
+  margin-top: 12px;
+  height: 26px;
+  align-items: center;
+  border-radius: 999px;
+  background: #EAF2FF;
+  color: #2479FF;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 /* Responsive */
 @media (max-width: 960px) {
+  .piAdminTopbar,
+  .piAdminTopbar__left,
+  .piAdminTopbar__right,
+  .piAdminTabsRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .piAdminRefreshState {
+    text-align: left;
+  }
+
+  .piAdminBrand {
+    min-width: 0;
+  }
+
   .piAdminSegments {
     align-items: stretch;
     flex-direction: column;
@@ -2937,5 +3141,1026 @@ body[data-page="publicidadinterna"] {
 }
 
 /* ============================================================
-FIN · Publicidad Interna · Ajuste visual administrador full width
+FIN · Publicidad Interna · Ajuste visual administrador full width V2
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Corrección ancho útil del panel
+Objetivo:
+- Usar todo el ancho disponible del área principal.
+- Reducir padding lateral artificial.
+- Mantener intacta la lógica JS/Supabase/Make/Brevo.
+============================================================ */
+
+/* El módulo ocupa todo el ancho disponible dentro del main */
+body[data-page="publicidadinterna"] #pubInternaPage,
+body[data-page="publicidadinterna"] [data-pi-root],
+body[data-page="publicidadinterna"] .piShell {
+  width: 100%;
+  max-width: none;
+}
+
+/* Reducimos el padding lateral base del shell */
+body[data-page="publicidadinterna"] .piShell {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* La zona superior gris ocupa todo el ancho del módulo */
+body[data-page="publicidadinterna"] .piAdminTopbar,
+body[data-page="publicidadinterna"] .piAdminSegments,
+body[data-page="publicidadinterna"] .piAdminSearchPanel,
+body[data-page="publicidadinterna"] .piAdminWorkspace,
+body[data-page="publicidadinterna"] .piKpiGrid,
+body[data-page="publicidadinterna"] .piCampaignList {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* El contenido interno mantiene aire, pero la línea divisoria llega al borde */
+body[data-page="publicidadinterna"] .piAdminTopbar,
+body[data-page="publicidadinterna"] .piAdminSegments,
+body[data-page="publicidadinterna"] .piAdminSearchPanel,
+body[data-page="publicidadinterna"] .piAdminWorkspace {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Desde KPIs/listado hacia abajo, fondo blanco full width */
+body[data-page="publicidadinterna"] .piKpiGrid,
+body[data-page="publicidadinterna"] .piCampaignList {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Si el main del SPA está agregando padding, lo neutralizamos solo en esta página */
+body[data-page="publicidadinterna"] main:has(#pubInternaPage),
+body[data-page="publicidadinterna"] main:has([data-pi-root]) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Fallback por si el navegador no aplica :has() en algún contexto */
+body[data-page="publicidadinterna"] main.main,
+body[data-page="publicidadinterna"] main.main-product {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Corrección ancho útil del panel
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Tabla operativa de campañas
+============================================================ */
+
+.piCampaignTableShell {
+  background: #FFFFFF;
+  border-top: 1px solid #E5EAF2;
+}
+
+.piCampaignTableTop {
+  min-height: 52px;
+  border-bottom: 1px solid #E5EAF2;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.piCampaignTableTop strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piCampaignTableTop p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #667085;
+}
+
+.piCampaignTableTop__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.piTableMiniBtn {
+  height: 34px;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  color: #334155;
+}
+
+.piTableMiniBtn span {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  color: #2479FF;
+}
+
+.piTableMiniBtn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piTableMiniBtn strong {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.piCampaignTableScroll {
+  width: 100%;
+  overflow-x: auto;
+  background: #FFFFFF;
+}
+
+.piCampaignTable {
+  width: 100%;
+  min-width: 1320px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #FFFFFF;
+}
+
+.piCampaignTable th {
+  height: 38px;
+  border-bottom: 1px solid #D8E2F3;
+  background: #F8FAFC;
+  color: #475467;
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 900;
+  text-align: left;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.piCampaignTable td {
+  min-height: 58px;
+  border-bottom: 1px solid #EEF2F7;
+  color: #111827;
+  font-size: 12px;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.piCampaignRow {
+  background: #FFFFFF;
+}
+
+.piCampaignRow:hover {
+  background: #F8FBFF;
+}
+
+.piCampaignRow.is-selected {
+  background: #EEF6FF;
+}
+
+.piCampaignRow.has-error {
+  background: #FFF8F8;
+}
+
+.piCampaignRow.has-error:hover {
+  background: #FFF1F1;
+}
+
+.piColSelect {
+  width: 42px;
+}
+
+.piColToggle {
+  width: 76px;
+}
+
+.piColCampaign {
+  width: 310px;
+}
+
+.piColActions {
+  width: 110px;
+  text-align: right;
+}
+
+.piTableCheck {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.piTableCheck input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.piTableCheck span {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piTableCheck input:checked + span {
+  background: #2479FF;
+  border-color: #2479FF;
+}
+
+.piTableCheck input:checked + span::after {
+  content: "";
+  width: 7px;
+  height: 4px;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #FFFFFF;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.piToggle {
+  width: 38px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #CBD5E1;
+  padding: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: background .18s ease;
+}
+
+.piToggle span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .18);
+  transition: transform .18s ease;
+}
+
+.piToggle.is-on {
+  background: #2479FF;
+}
+
+.piToggle.is-on span {
+  transform: translateX(16px);
+}
+
+.piTableCampaign {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.piTableCampaign__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  background: #EAF2FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piTableCampaign__icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piTableCampaign strong {
+  display: block;
+  max-width: 245px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piTableCampaign small {
+  display: block;
+  max-width: 245px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piTablePill {
+  height: 24px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.piTableBrevo {
+  min-width: 0;
+}
+
+.piTableBrevo strong {
+  display: block;
+  max-width: 190px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piTableBrevo small {
+  display: block;
+  max-width: 190px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piTableNumber {
+  font-size: 13px;
+  font-weight: 950;
+  color: #111827;
+}
+
+.piTableNumber.is-danger {
+  color: #B42318;
+}
+
+.piTableProgress {
+  display: grid;
+  gap: 5px;
+  min-width: 90px;
+}
+
+.piTableProgress div {
+  width: 88px;
+  height: 6px;
+  border-radius: 999px;
+  background: #E5EAF2;
+  overflow: hidden;
+}
+
+.piTableProgress div span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2479FF;
+}
+
+.piTableProgress strong {
+  font-size: 11px;
+  color: #334155;
+  font-weight: 900;
+}
+
+.piTableJob {
+  height: 24px;
+  border-radius: 999px;
+  background: #ECFDF3;
+  color: #067647;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.piTableJob.is-error {
+  background: #FEF3F2;
+  color: #B42318;
+}
+
+.piTableDate {
+  color: #475467;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.piTableAction {
+  height: 30px;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  color: #111827;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.piTableAction:hover {
+  background: #F8FAFC;
+}
+
+.piTableAction--primary {
+  background: #2479FF;
+  border-color: #2479FF;
+  color: #FFFFFF;
+}
+
+.piEmpty--table {
+  background: #FFFFFF;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+@media (max-width: 960px) {
+  .piCampaignTableTop {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .piCampaignTableTop__actions {
+    overflow-x: auto;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Tabla operativa de campañas
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Corrección tabla full width segura
+Objetivo:
+- Desde “Crear campaña” hacia abajo: fondo blanco absoluto.
+- Sin padding lateral gris visible.
+- Sin cortar contenido a la derecha.
+- Tabla con scroll horizontal real.
+- KPIs más compactos.
+- Filas alternadas blanco / celeste agua.
+============================================================ */
+
+/* 1. El main no debe agregar padding lateral en Publicidad Interna */
+body[data-page="publicidadinterna"] .main,
+body[data-page="publicidadinterna"] main.main,
+body[data-page="publicidadinterna"] .bodyGrid > .main {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  gap: 0 !important;
+  overflow-x: visible !important;
+}
+
+/* 2. El shell usa todo el ancho disponible, sin ocultar desbordes */
+body[data-page="publicidadinterna"] #pubInternaPage,
+body[data-page="publicidadinterna"] .piShell {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: visible !important;
+}
+
+/* 3. Zona superior sigue gris y con padding interno controlado */
+body[data-page="publicidadinterna"] .piAdminTopbar,
+body[data-page="publicidadinterna"] .piAdminSegments,
+body[data-page="publicidadinterna"] .piAdminSearchPanel,
+body[data-page="publicidadinterna"] .piAdminWorkspace {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. Desde KPIs hacia abajo: blanco absoluto, borde a borde */
+body[data-page="publicidadinterna"] .piKpiGrid,
+body[data-page="publicidadinterna"] .piCampaignList {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+  background: #FFFFFF !important;
+}
+
+/* ============================================================
+KPIs compactos
+============================================================ */
+
+body[data-page="publicidadinterna"] .piKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  border-top: 1px solid #E5EAF2;
+  border-bottom: 1px solid #E5EAF2;
+}
+
+body[data-page="publicidadinterna"] .piKpi {
+  min-height: 72px !important;
+  padding: 9px 12px !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+  border-color: #E2E8F0 !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__label {
+  font-size: 10.5px !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 5px !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__icon svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__value {
+  margin-top: 6px !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__note {
+  margin-top: 4px !important;
+  font-size: 10.5px !important;
+}
+
+/* ============================================================
+Tabla full width sin pérdida lateral
+============================================================ */
+
+body[data-page="publicidadinterna"] .piCampaignTableShell {
+  width: 100% !important;
+  max-width: 100% !important;
+  background: #FFFFFF !important;
+  border-top: 0 !important;
+  overflow: visible !important;
+}
+
+/* Header de tabla: nunca debe perder botones a la derecha */
+body[data-page="publicidadinterna"] .piCampaignTableTop {
+  width: 100% !important;
+  min-height: 50px;
+  padding: 9px 16px !important;
+  box-sizing: border-box !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #D8E2F3 !important;
+  background: #FFFFFF !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableTop > div:first-child {
+  min-width: 0;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+/* Botones del header más compactos */
+body[data-page="publicidadinterna"] .piTableMiniBtn {
+  height: 32px !important;
+  flex: 0 0 auto;
+}
+
+/* Esta es la única zona que puede scrollear horizontalmente */
+body[data-page="publicidadinterna"] .piCampaignTableScroll {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E5EAF2;
+}
+
+/* La tabla puede ser más ancha que el viewport, pero vive dentro del scroll */
+body[data-page="publicidadinterna"] .piCampaignTable {
+  width: 100%;
+  min-width: 1560px !important;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: #FFFFFF !important;
+}
+
+/* Header compacto */
+body[data-page="publicidadinterna"] .piCampaignTable th {
+  height: 34px !important;
+  padding: 0 10px !important;
+  font-size: 10.5px !important;
+  background: #F8FAFC !important;
+  border-bottom: 1px solid #D8E2F3 !important;
+  white-space: nowrap;
+}
+
+/* Celdas compactas */
+body[data-page="publicidadinterna"] .piCampaignTable td {
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #E6ECF3 !important;
+  vertical-align: middle;
+}
+
+/* Alternancia blanco / celeste agua */
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(odd) {
+  background: #FFFFFF !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(even) {
+  background: #EFFBFD !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:hover {
+  background: #E8F4FF !important;
+}
+
+/* Selección por encima de alternancia */
+body[data-page="publicidadinterna"] .piCampaignRow.is-selected {
+  background: #EAF2FF !important;
+}
+
+/* Error por encima de todo */
+body[data-page="publicidadinterna"] .piCampaignRow.has-error {
+  background: #FFF1F1 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignRow.has-error:hover {
+  background: #FFE5E5 !important;
+}
+
+/* Columnas */
+body[data-page="publicidadinterna"] .piColSelect {
+  width: 42px !important;
+}
+
+body[data-page="publicidadinterna"] .piColToggle {
+  width: 72px !important;
+}
+
+body[data-page="publicidadinterna"] .piColCampaign {
+  width: 340px !important;
+}
+
+body[data-page="publicidadinterna"] .piColActions {
+  width: 120px !important;
+  text-align: right;
+}
+
+/* Campaña compacta */
+body[data-page="publicidadinterna"] .piTableCampaign {
+  grid-template-columns: 30px minmax(0, 1fr) !important;
+  gap: 8px !important;
+}
+
+body[data-page="publicidadinterna"] .piTableCampaign__icon {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+body[data-page="publicidadinterna"] .piTableCampaign__icon svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+body[data-page="publicidadinterna"] .piTableCampaign strong {
+  max-width: 285px !important;
+  font-size: 12.5px !important;
+}
+
+body[data-page="publicidadinterna"] .piTableCampaign small {
+  max-width: 285px !important;
+  font-size: 10.5px !important;
+}
+
+/* Botones compactos */
+body[data-page="publicidadinterna"] .piTableAction {
+  height: 28px !important;
+  font-size: 10.5px !important;
+}
+
+/* Scrollbar horizontal visible */
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar,
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions::-webkit-scrollbar {
+  height: 9px;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-track,
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-thumb,
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+  border: 2px solid #F1F5F9;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-thumb:hover,
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Responsive seguro: el header baja acciones en vez de perderlas */
+@media (max-width: 980px) {
+  body[data-page="publicidadinterna"] .piCampaignTableTop {
+    grid-template-columns: 1fr !important;
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignTableTop__actions {
+    justify-content: flex-start;
+  }
+
+  body[data-page="publicidadinterna"] .piKpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Corrección tabla full width segura
+============================================================ */
+
+/* ============================================================
+INICIO · Publicidad Interna · Fix final scroll tabla + borde izquierdo
+Objetivo:
+- El scroll horizontal pertenece SOLO a la tabla.
+- El panel completo NO debe desplazarse horizontalmente.
+- Desde Crear campaña hacia abajo no debe existir franja gris lateral.
+============================================================ */
+
+/* 1. El documento y el panel NO scrollean horizontalmente */
+html,
+body {
+  overflow-x: hidden;
+}
+
+body[data-page="publicidadinterna"] .main,
+body[data-page="publicidadinterna"] main.main,
+body[data-page="publicidadinterna"] .bodyGrid > .main {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
+}
+
+body[data-page="publicidadinterna"] #pubInternaPage,
+body[data-page="publicidadinterna"] .piShell {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* 2. Zona superior: puede tener padding interno, pero no generar scroll global */
+body[data-page="publicidadinterna"] .piAdminTopbar,
+body[data-page="publicidadinterna"] .piAdminSegments,
+body[data-page="publicidadinterna"] .piAdminSearchPanel,
+body[data-page="publicidadinterna"] .piAdminWorkspace {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* 3. Desde KPIs hacia abajo: fondo blanco total, sin franja gris lateral */
+body[data-page="publicidadinterna"] .piKpiGrid,
+body[data-page="publicidadinterna"] .piCampaignList {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  background: #FFFFFF !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* 4. KPIs: blancos, compactos y sin empujar ancho */
+body[data-page="publicidadinterna"] .piKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  border-top: 1px solid #E5EAF2;
+  border-bottom: 1px solid #E5EAF2;
+}
+
+body[data-page="publicidadinterna"] .piKpi {
+  min-width: 0 !important;
+  min-height: 72px !important;
+  padding: 9px 12px !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+  border-color: #E2E8F0 !important;
+}
+
+body[data-page="publicidadinterna"] .piKpi__value {
+  margin-top: 6px !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+/* 5. Contenedor de tabla: NO debe empujar el panel */
+body[data-page="publicidadinterna"] .piCampaignTableShell {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  background: #FFFFFF !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  border-top: 0 !important;
+}
+
+/* 6. Header de la tabla: botones visibles, sin cortar ni empujar */
+body[data-page="publicidadinterna"] .piCampaignTableTop {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 9px 16px !important;
+  box-sizing: border-box !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #D8E2F3 !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  overflow-x: hidden !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableTop > div:first-child {
+  min-width: 0 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableTop__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+body[data-page="publicidadinterna"] .piTableMiniBtn {
+  flex: 0 0 auto;
+  height: 32px !important;
+}
+
+/* 7. ÚNICA zona con scroll horizontal: la tabla */
+body[data-page="publicidadinterna"] .piCampaignTableScroll {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  background: #FFFFFF !important;
+  box-sizing: border-box !important;
+  border-bottom: 1px solid #E5EAF2;
+}
+
+/* 8. La tabla puede ser más ancha, pero queda encerrada en su scroll */
+body[data-page="publicidadinterna"] .piCampaignTable {
+  width: 1560px !important;
+  min-width: 1560px !important;
+  max-width: none !important;
+  table-layout: fixed !important;
+  border-collapse: collapse;
+  background: #FFFFFF !important;
+}
+
+/* 9. Encabezado y celdas compactas */
+body[data-page="publicidadinterna"] .piCampaignTable th {
+  height: 34px !important;
+  padding: 0 10px !important;
+  font-size: 10.5px !important;
+  background: #F8FAFC !important;
+  border-bottom: 1px solid #D8E2F3 !important;
+  white-space: nowrap;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable td {
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #E6ECF3 !important;
+  vertical-align: middle;
+}
+
+/* 10. Filas alternadas */
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(odd) {
+  background: #FFFFFF !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(even) {
+  background: #EFFBFD !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:hover {
+  background: #E8F4FF !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignRow.is-selected {
+  background: #EAF2FF !important;
+}
+
+/* 11. Error siempre prevalece sobre alternancia */
+body[data-page="publicidadinterna"] .piCampaignRow.has-error {
+  background: #FFF1F1 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignRow.has-error:hover {
+  background: #FFE5E5 !important;
+}
+
+/* 12. Scrollbar visible SOLO en tabla */
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar {
+  height: 9px;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+  border: 2px solid #F1F5F9;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* 13. Responsive seguro */
+@media (max-width: 980px) {
+  body[data-page="publicidadinterna"] .piKpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignTableTop {
+    grid-template-columns: 1fr !important;
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignTableTop__actions {
+    justify-content: flex-start;
+    overflow-x: auto !important;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Fix final scroll tabla + borde izquierdo
 ============================================================ */

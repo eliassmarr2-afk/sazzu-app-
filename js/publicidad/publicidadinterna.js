@@ -846,11 +846,37 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
         root.addEventListener("change", function (event) {
-          const dateRangeSelect = event.target.closest("[data-pi-date-range]");
-          if (dateRangeSelect) {
-            STATE.dateRange = String(dateRangeSelect.value || "todo");
+          const selectAllCampaigns = event.target.closest("[data-pi-select-all-campaigns]");
+          if (selectAllCampaigns) {
+            const visibleCampaigns = getFilteredCampaigns_();
+
+            STATE.selectedCampaignIds = selectAllCampaigns.checked
+              ? visibleCampaigns.map(function (campaign) {
+                  return campaign.id;
+                })
+              : [];
+
             renderCampaigns_(root);
-            showToast_(root, "Rango visual actualizado.");
+            return;
+          }
+
+          const campaignCheckbox = event.target.closest("[data-pi-select-campaign]");
+          if (campaignCheckbox) {
+            const id = String(campaignCheckbox.value || "").trim();
+
+            if (!id) return;
+
+            if (campaignCheckbox.checked) {
+              if (!STATE.selectedCampaignIds.includes(id)) {
+                STATE.selectedCampaignIds.push(id);
+              }
+            } else {
+              STATE.selectedCampaignIds = STATE.selectedCampaignIds.filter(function (item) {
+                return item !== id;
+              });
+            }
+
+            renderCampaigns_(root);
             return;
           }
 
@@ -2867,7 +2893,6 @@ No conecta todavía con Supabase, Make ni Brevo.
     const node = root.querySelector("[data-pi-campaigns]");
     if (!node) return;
 
-
     if (STATE.activeAdminTab === "conjuntos") {
       node.innerHTML = renderAdminTabPlaceholder_({
         icon: "users",
@@ -2887,12 +2912,12 @@ No conecta todavía con Supabase, Make ni Brevo.
       });
       return;
     }
-    
+
     const campaigns = getFilteredCampaigns_();
 
     if (!campaigns.length) {
       node.innerHTML = [
-        '<div class="piEmpty">',
+        '<div class="piEmpty piEmpty--table">',
           '<strong>No hay campañas para este filtro.</strong>',
           '<p>Probá cambiar el filtro o crear una nueva campaña interna.</p>',
         '</div>'
@@ -2900,9 +2925,159 @@ No conecta todavía con Supabase, Make ni Brevo.
       return;
     }
 
-    node.innerHTML = campaigns.map(renderCampaignCard_).join("");
+    node.innerHTML = renderCampaignsTable_(campaigns);
   }
-
+  
+    /* INICIO · Tabla de campañas · Publicidad Interna */
+    function renderCampaignsTable_(campaigns) {
+      const selectedCount = STATE.selectedCampaignIds.length;
+      const allVisibleSelected = campaigns.length > 0 && campaigns.every(function (campaign) {
+        return STATE.selectedCampaignIds.includes(campaign.id);
+      });
+  
+      return [
+        '<div class="piCampaignTableShell">',
+          '<div class="piCampaignTableTop">',
+            '<div>',
+              '<strong>Campañas internas</strong>',
+              '<p>', formatNumber_(campaigns.length), ' campaña', campaigns.length === 1 ? '' : 's', ' visibles · ', formatNumber_(selectedCount), ' seleccionada', selectedCount === 1 ? '' : 's', '</p>',
+            '</div>',
+  
+            '<div class="piCampaignTableTop__actions">',
+              '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="columnas">',
+                '<span aria-hidden="true">', icon_("list"), '</span>',
+                '<strong>Columnas: Operativo</strong>',
+              '</button>',
+              '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="desglose">',
+                '<span aria-hidden="true">', icon_("sequence"), '</span>',
+                '<strong>Desglose</strong>',
+              '</button>',
+            '</div>',
+          '</div>',
+  
+          '<div class="piCampaignTableScroll">',
+            '<table class="piCampaignTable">',
+              '<thead>',
+                '<tr>',
+                  '<th class="piColSelect">',
+                    '<label class="piTableCheck">',
+                      '<input type="checkbox" data-pi-select-all-campaigns ', allVisibleSelected ? 'checked' : '', '>',
+                      '<span></span>',
+                    '</label>',
+                  '</th>',
+                  '<th class="piColToggle">Entrega</th>',
+                  '<th class="piColCampaign">Campaña</th>',
+                  '<th>Objetivo</th>',
+                  '<th>Estado</th>',
+                  '<th>Destino Brevo</th>',
+                  '<th>Sincronizados</th>',
+                  '<th>Errores</th>',
+                  '<th>Progreso</th>',
+                  '<th>Trabajo</th>',
+                  '<th>Última ejecución</th>',
+                  '<th class="piColActions">Acción</th>',
+                '</tr>',
+              '</thead>',
+              '<tbody>',
+                campaigns.map(renderCampaignRow_).join(""),
+              '</tbody>',
+            '</table>',
+          '</div>',
+        '</div>'
+      ].join("");
+    }
+  
+    function renderCampaignRow_(campaign) {
+      const selected = STATE.selectedCampaignIds.includes(campaign.id);
+      const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
+      const progress = Math.max(0, Math.min(100, toNumber_(campaign.progreso_sync_pct)));
+      const brevoListLabel = formatBrevoListCardLabel_(campaign);
+      const isActive = String(campaign.estado_campania || "").toLowerCase() === "activa";
+      const isDraft = String(campaign.estado_campania || "").toLowerCase() === "borrador";
+      const hasError = campaign.contactos_error > 0 || String(campaign.estado_operativo_panel || "").includes("error");
+      const lastExecution = campaign.fecha_ultimo_trabajo || campaign.trabajo_fecha_creacion || "";
+  
+      return [
+        '<tr class="piCampaignRow ', selected ? 'is-selected ' : '', hasError ? 'has-error ' : '', '">',
+          '<td class="piColSelect">',
+            '<label class="piTableCheck">',
+              '<input type="checkbox" value="', escapeHtml_(campaign.id), '" data-pi-select-campaign ', selected ? 'checked' : '', '>',
+              '<span></span>',
+            '</label>',
+          '</td>',
+  
+          '<td class="piColToggle">',
+            '<button class="piToggle ', isActive ? 'is-on' : '', '" type="button" data-pi-admin-disabled="toggle" title="Activar/pausar estará disponible en una próxima fase.">',
+              '<span></span>',
+            '</button>',
+          '</td>',
+  
+          '<td class="piColCampaign">',
+            '<div class="piTableCampaign">',
+              '<span class="piTableCampaign__icon" aria-hidden="true">', icon_("campaign"), '</span>',
+              '<div>',
+                '<strong>', escapeHtml_(campaign.campania), '</strong>',
+                '<small>', escapeHtml_(campaign.lectura_rapida || "Campaña interna."), '</small>',
+              '</div>',
+            '</div>',
+          '</td>',
+  
+          '<td>',
+            '<span class="piTablePill">', escapeHtml_(labelObjetivo_(campaign.objetivo)), '</span>',
+          '</td>',
+  
+          '<td>',
+            '<span class="piStatus ', statusClass_(campaign), '">', escapeHtml_(campaign.estado_visible), '</span>',
+          '</td>',
+  
+          '<td>',
+            '<div class="piTableBrevo">',
+              '<strong>', escapeHtml_(brevoListLabel), '</strong>',
+              '<small>', escapeHtml_(campaign.brevo_automatizacion_nombre_destino || "Automatización no informada"), '</small>',
+            '</div>',
+          '</td>',
+  
+          '<td>',
+            '<strong class="piTableNumber">', escapeHtml_(syncLabel), '</strong>',
+          '</td>',
+  
+          '<td>',
+            '<strong class="piTableNumber ', campaign.contactos_error > 0 ? 'is-danger' : '', '">', formatNumber_(campaign.contactos_error), '</strong>',
+          '</td>',
+  
+          '<td>',
+            '<div class="piTableProgress">',
+              '<div><span style="width:', escapeHtml_(String(progress)), '%"></span></div>',
+              '<strong>', formatNumber_(progress), '%</strong>',
+            '</div>',
+          '</td>',
+  
+          '<td>',
+            '<span class="piTableJob ', hasError ? 'is-error' : '', '">', escapeHtml_(labelTrabajoEstado_(campaign.trabajo_estado)), '</span>',
+          '</td>',
+  
+          '<td>',
+            '<span class="piTableDate">', escapeHtml_(lastExecution ? formatDateTime_(lastExecution) : "Sin ejecución"), '</span>',
+          '</td>',
+  
+          '<td class="piColActions">',
+            isDraft
+              ? [
+                  '<button class="piTableAction piTableAction--primary" type="button" data-pi-publish-campaign="', escapeHtml_(campaign.id), '">',
+                    'Publicar',
+                  '</button>'
+                ].join("")
+              : [
+                  '<button class="piTableAction" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
+                    hasError ? 'Revisar' : 'Detalle',
+                  '</button>'
+                ].join(""),
+          '</td>',
+        '</tr>'
+      ].join("");
+    }
+    /* FIN · Tabla de campañas · Publicidad Interna */
+  
   function renderCampaignCard_(campaign) {
     const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
     const progressLabel = formatNumber_(campaign.progreso_sync_pct) + "%";
