@@ -812,8 +812,9 @@ No conecta todavía con Supabase, Make ni Brevo.
       try {
         const endpoint = [
           url,
-          "/rest/v1/vista_panel_publicidad_interna",
-          "?select=*"
+          "/rest/v1/vista_publicidad_interna_campanias_operativas",
+          "?select=*",
+          "&order=fecha_ultimo_trabajo.desc.nullslast,campania_id.desc"
         ].join("");
   
         const response = await fetch(endpoint, {
@@ -847,40 +848,48 @@ No conecta todavía con Supabase, Make ni Brevo.
         STATE.error = "";
   
         render_(root);
-        showToast_(root, "Datos reales cargados desde Supabase.");
+        showToast_(root, "Vista operativa cargada desde Supabase.");
       } catch (error) {
         STATE.loading = false;
         STATE.error = String(error && error.message ? error.message : error);
         STATE.usingFallback = true;
         STATE.campaigns = FALLBACK_CAMPAIGNS.slice();
   
-        console.error("[publicidadinterna] Error leyendo Supabase:", error);
+        console.error("[publicidadinterna] Error leyendo vista operativa Supabase:", error);
         render_(root);
-        showToast_(root, "No se pudo leer Supabase. Usando respaldo visual.");
+        showToast_(root, "No se pudo leer la vista operativa. Usando respaldo visual.");
       }
     }
   
     function normalizeCampaniaDesdeSupabase_(row) {
-      const campania = String(row.campania || "Campaña sin nombre");
+      const campania = String(row.campania_nombre || row.campania || "Campaña sin nombre");
+      const estadoOperativo = String(row.estado_operativo_panel || "configuracion_incompleta");
+      const trabajoEstado = String(row.trabajo_estado || "");
+      const contactosEstimados = toNumber_(row.contactos_estimados || row.miembros_estimados);
+      const contactosSincronizados = toNumber_(row.contactos_sincronizados || row.enviados);
+      const contactosError = toNumber_(row.contactos_error);
+      const progresoSync = toNumber_(row.progreso_sync_pct);
+      const brevoListaId = String(row.trabajo_brevo_lista_id || row.brevo_lista_id_destino || "").trim();
+      const brevoListaNombre = String(row.brevo_lista_nombre_destino || "").trim();
   
       return {
         id: String(row.campania_id || campania),
         campania: campania,
-        descripcion: String(row.descripcion || ""),
-        objetivo: String(row.objetivo || "publicidad_interna"),
+        descripcion: String(row.campania_descripcion || row.descripcion || ""),
+        objetivo: String(row.objetivo || row.brevo_objetivo_comercial || "publicidad_interna"),
         canal: String(row.canal || "email"),
         proveedor_envio: String(row.proveedor_envio || "brevo"),
   
-        estado_campania: String(row.estado_campania || "borrador"),
-        estado_visible: String(row.estado_visible || row.estado_campania || "Borrador"),
-        estado_operativo_panel: String(row.estado_operativo_panel || "configuracion_incompleta"),
+        estado_campania: String(row.campania_estado || row.estado_campania || "borrador"),
+        estado_visible: labelEstadoOperativo_(estadoOperativo, row.campania_estado || row.estado_campania),
+        estado_operativo_panel: estadoOperativo,
         accion_principal_sugerida: String(row.accion_principal_sugerida || "Ver detalle"),
-        lectura_rapida: String(row.lectura_rapida || "Campaña cargada desde Supabase."),
+        lectura_rapida: String(row.lectura_operativa || row.lectura_rapida || "Campaña cargada desde Supabase."),
   
-        conjuntos_asociados: toNumber_(row.conjuntos_asociados),
-        miembros_estimados: toNumber_(row.miembros_estimados),
-        miembros_reales_activos: toNumber_(row.miembros_reales_activos),
-        miembros_no_disponibles: toNumber_(row.miembros_no_disponibles),
+        conjuntos_asociados: toNumber_(row.conjuntos_activos || row.conjuntos_asociados),
+        miembros_estimados: contactosEstimados,
+        miembros_reales_activos: contactosSincronizados,
+        miembros_no_disponibles: contactosError,
   
         pasos_totales: toNumber_(row.pasos_totales),
         pasos_borrador: toNumber_(row.pasos_borrador),
@@ -888,17 +897,38 @@ No conecta todavía con Supabase, Make ni Brevo.
   
         trabajos_totales: toNumber_(row.trabajos_totales),
         trabajos_pendientes: toNumber_(row.trabajos_pendientes),
+        trabajos_procesando: toNumber_(row.trabajos_procesando),
         trabajos_completados: toNumber_(row.trabajos_completados),
         trabajos_error: toNumber_(row.trabajos_error),
   
-        enviados: toNumber_(row.enviados),
-        entregados: toNumber_(row.entregados),
+        trabajo_id: String(row.trabajo_id || ""),
+        trabajo_estado: trabajoEstado,
+        trabajo_fecha_creacion: String(row.trabajo_fecha_creacion || ""),
+        trabajo_fecha_programada: String(row.trabajo_fecha_programada || ""),
+        fecha_ultimo_trabajo: String(row.fecha_ultimo_trabajo || ""),
+  
+        brevo_destino_envio_id: String(row.brevo_destino_envio_id || ""),
+        brevo_codigo_destino: String(row.brevo_codigo_destino || ""),
+        brevo_nombre_destino: String(row.brevo_nombre_destino || ""),
+        brevo_lista_id_destino: String(row.brevo_lista_id_destino || ""),
+        brevo_lista_nombre_destino: brevoListaNombre,
+        brevo_automatizacion_nombre_destino: String(row.brevo_automatizacion_nombre_destino || ""),
+        brevo_trigger_destino: String(row.brevo_trigger_destino || ""),
+        trabajo_brevo_lista_id: brevoListaId,
+  
+        contactos_estimados: contactosEstimados,
+        contactos_sincronizados: contactosSincronizados,
+        contactos_error: contactosError,
+        progreso_sync_pct: progresoSync,
+  
+        enviados: contactosSincronizados,
+        entregados: contactosSincronizados,
         abiertos: toNumber_(row.abiertos),
         clicks: toNumber_(row.clicks),
         rebotes: toNumber_(row.rebotes),
         desuscripciones: toNumber_(row.desuscripciones),
   
-        tasa_entrega_pct: toNumber_(row.tasa_entrega_pct),
+        tasa_entrega_pct: contactosEstimados ? Math.round((contactosSincronizados / contactosEstimados) * 100) : 0,
         tasa_apertura_pct: toNumber_(row.tasa_apertura_pct),
         tasa_click_pct: toNumber_(row.tasa_click_pct),
         tasa_rebote_pct: toNumber_(row.tasa_rebote_pct),
@@ -908,8 +938,8 @@ No conecta todavía con Supabase, Make ni Brevo.
           {
             nombre: "Conjuntos asociados",
             rol: "Principal",
-            miembros_estimados: toNumber_(row.miembros_estimados),
-            miembros_reales: toNumber_(row.miembros_reales_activos)
+            miembros_estimados: contactosEstimados,
+            miembros_reales: contactosSincronizados
           }
         ],
   
@@ -917,6 +947,62 @@ No conecta todavía con Supabase, Make ni Brevo.
       };
     }
   
+    function labelEstadoOperativo_(estadoOperativo, estadoCampania) {
+      const estado = String(estadoOperativo || "").toLowerCase();
+      const campania = String(estadoCampania || "").toLowerCase();
+
+      const map = {
+        borrador: "Borrador",
+        activa_sin_trabajo: "Activa · sin trabajo",
+        pendiente_make: "Pendiente Make",
+        procesando_make: "Procesando",
+        sincronizada: "Sincronizada",
+        sincronizada_con_errores: "Sincronizada con errores",
+        error_make_brevo: "Error Make/Brevo",
+        pausada: "Pausada",
+        inactiva: "Inactiva",
+        estado_no_clasificado: "Sin clasificar"
+      };
+
+      if (map[estado]) return map[estado];
+
+      if (campania === "activa") return "Activa";
+      if (campania === "borrador") return "Borrador";
+      if (campania === "pausada") return "Pausada";
+      if (campania === "inactiva") return "Inactiva";
+
+      return "Borrador";
+    }
+
+    function labelTrabajoEstado_(estado) {
+      const value = String(estado || "").toLowerCase();
+
+      const map = {
+        pendiente: "Pendiente",
+        procesando: "Procesando",
+        completado: "Completado",
+        error: "Error"
+      };
+
+      return map[value] || "Sin trabajo";
+    }
+
+    function formatBrevoListCardLabel_(campaign) {
+      const id = String(
+        campaign.trabajo_brevo_lista_id ||
+        campaign.brevo_lista_id_destino ||
+        ""
+      ).trim();
+
+      const name = String(campaign.brevo_lista_nombre_destino || "").trim();
+
+      if (id && name) return "Lista #" + id + " · " + name;
+      if (id) return "Lista #" + id;
+      if (name) return name;
+
+      return "Sin lista Brevo";
+    }
+
     function buildPasosResumen_(row) {
       const total = Math.max(toNumber_(row.pasos_totales), 0);
   
@@ -2321,6 +2407,10 @@ No conecta todavía con Supabase, Make ni Brevo.
   }
 
   function renderCampaignCard_(campaign) {
+    const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
+    const progressLabel = formatNumber_(campaign.progreso_sync_pct) + "%";
+    const brevoListLabel = formatBrevoListCardLabel_(campaign);
+
     return [
       '<article class="piCampaignCard">',
         '<div class="piCampaignCard__top">',
@@ -2348,10 +2438,10 @@ No conecta todavía con Supabase, Make ni Brevo.
           '</div>',
 
           '<div class="piMetricGrid">',
-            metric_("Miembros", campaign.miembros_reales_activos + " / " + campaign.miembros_estimados),
-            metric_("Enviados", campaign.enviados),
-            metric_("Apertura", campaign.tasa_apertura_pct + "%"),
-            metric_("Click", campaign.tasa_click_pct + "%"),
+            metric_("Sincronizados", syncLabel),
+            metric_("Errores", campaign.contactos_error),
+            metric_("Progreso", progressLabel),
+            metric_("Trabajo", labelTrabajoEstado_(campaign.trabajo_estado)),
           '</div>',
         '</div>',
 
@@ -2359,15 +2449,15 @@ No conecta todavía con Supabase, Make ni Brevo.
           '<div class="piCampaignCard__footnote">',
             escapeHtml_(campaign.conjuntos_asociados), ' conjunto · ',
             escapeHtml_(campaign.pasos_totales), ' pasos · ',
-            escapeHtml_(campaign.trabajos_completados), ' trabajo Make/Brevo completado',
+            escapeHtml_(brevoListLabel),
           '</div>',
 
           '<div class="piCampaignCard__actions">',
-  '<button class="piBtn piBtn--ghost" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
-    'Ver detalle',
-  '</button>',
-  renderCampaignPrimaryAction_(campaign),
-'</div>',
+            '<button class="piBtn piBtn--ghost" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
+              'Ver detalle',
+            '</button>',
+            renderCampaignPrimaryAction_(campaign),
+          '</div>',
         '</div>',
       '</article>'
     ].join("");
@@ -2376,6 +2466,7 @@ No conecta todavía con Supabase, Make ni Brevo.
   /* INICIO · Acción principal por estado · Publicidad Interna */
   function renderCampaignPrimaryAction_(campaign) {
     const estado = String(campaign && campaign.estado_campania ? campaign.estado_campania : "").toLowerCase();
+    const operativo = String(campaign && campaign.estado_operativo_panel ? campaign.estado_operativo_panel : "").toLowerCase();
     const id = String(campaign && campaign.id ? campaign.id : "");
 
     if (estado === "borrador") {
@@ -2386,9 +2477,17 @@ No conecta todavía con Supabase, Make ni Brevo.
       ].join("");
     }
 
+    if (operativo === "error_make_brevo" || operativo === "sincronizada_con_errores") {
+      return [
+        '<button class="piBtn piBtn--primary" type="button" data-pi-open-detail="', escapeHtml_(id), '">',
+          'Revisar errores',
+        '</button>'
+      ].join("");
+    }
+
     return [
-      '<button class="piBtn piBtn--primary" type="button" data-pi-mock-action>',
-        escapeHtml_(campaign.accion_principal_sugerida || "Ver métricas"),
+      '<button class="piBtn piBtn--primary" type="button" data-pi-open-detail="', escapeHtml_(id), '">',
+        escapeHtml_(campaign.accion_principal_sugerida || "Ver detalle"),
       '</button>'
     ].join("");
   }
@@ -2846,18 +2945,41 @@ No conecta todavía con Supabase, Make ni Brevo.
 
   function getFilteredCampaigns_() {
     return getCampaignSource_().filter(function (campaign) {
-      const matchesSearch = !STATE.search ||
-        campaign.campania.toLowerCase().includes(STATE.search) ||
-        campaign.objetivo.toLowerCase().includes(STATE.search) ||
-        campaign.estado_visible.toLowerCase().includes(STATE.search);
+      const searchHaystack = [
+        campaign.campania,
+        campaign.objetivo,
+        campaign.estado_visible,
+        campaign.estado_operativo_panel,
+        campaign.trabajo_estado,
+        campaign.brevo_lista_nombre_destino,
+        campaign.brevo_nombre_destino
+      ].join(" ").toLowerCase();
+
+      const matchesSearch = !STATE.search || searchHaystack.includes(STATE.search);
 
       if (!matchesSearch) return false;
+
+      const operativo = String(campaign.estado_operativo_panel || "").toLowerCase();
 
       if (STATE.filter === "todas") return true;
       if (STATE.filter === "activa") return campaign.estado_campania === "activa";
       if (STATE.filter === "borrador") return campaign.estado_campania === "borrador";
-      if (STATE.filter === "pendiente") return campaign.trabajos_pendientes > 0;
-      if (STATE.filter === "error") return campaign.trabajos_error > 0;
+      if (STATE.filter === "pendiente") {
+        return (
+          campaign.trabajos_pendientes > 0 ||
+          campaign.trabajos_procesando > 0 ||
+          operativo === "pendiente_make" ||
+          operativo === "procesando_make"
+        );
+      }
+      if (STATE.filter === "error") {
+        return (
+          campaign.trabajos_error > 0 ||
+          campaign.contactos_error > 0 ||
+          operativo === "error_make_brevo" ||
+          operativo === "sincronizada_con_errores"
+        );
+      }
 
       return true;
     });
@@ -2873,10 +2995,20 @@ No conecta todavía con Supabase, Make ni Brevo.
   }
 
   function statusClass_(campaign) {
-    if (campaign.estado_campania === "activa") return "piStatus--active";
-    if (campaign.estado_campania === "borrador") return "piStatus--draft";
+    const operativo = String(campaign && campaign.estado_operativo_panel ? campaign.estado_operativo_panel : "").toLowerCase();
+    const estado = String(campaign && campaign.estado_campania ? campaign.estado_campania : "").toLowerCase();
+
+    if (operativo === "error_make_brevo" || operativo === "sincronizada_con_errores") return "piStatus--error";
+    if (operativo === "pendiente_make" || operativo === "procesando_make") return "piStatus--pending";
+    if (operativo === "sincronizada") return "piStatus--active";
+
+    if (estado === "activa") return "piStatus--active";
+    if (estado === "borrador") return "piStatus--draft";
+    if (estado === "error") return "piStatus--error";
+
     if (campaign.trabajos_pendientes > 0) return "piStatus--pending";
-    if (campaign.trabajos_error > 0 || campaign.estado_campania === "error") return "piStatus--error";
+    if (campaign.trabajos_error > 0) return "piStatus--error";
+
     return "piStatus--draft";
   }
 
