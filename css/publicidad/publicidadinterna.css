@@ -465,7 +465,7 @@ body[data-page="publicidadinterna"] {
 .piSlide {
   position: relative;
   z-index: 2;
-  width: min(720px, calc(100vw - 28px));
+  width: min(860px, calc(100vw - 28px));
   height: 100%;
   background: #EDEDED;
   box-shadow: -18px 0 38px rgba(15, 23, 42, .18);
@@ -1511,3 +1511,1431 @@ FIN - Indicador fuente de datos · Publicidad Interna
   display: none !important;
 }
 
+/* ============================================================
+INICIO · Publicidad Interna · Destino Brevo limpio
+============================================================ */
+
+.piBrevoManagedNotice {
+  margin-top: 12px;
+  border: 1px solid #D8E7FF;
+  background: #F4F8FF;
+  border-radius: 5px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.piBrevoManagedNotice__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  background: #EAF2FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.piBrevoManagedNotice__icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piBrevoManagedNotice strong {
+  display: block;
+  font-size: 13px;
+  color: #1f2937;
+  font-weight: 900;
+}
+
+.piBrevoManagedNotice p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f6b7a;
+}
+
+.piBrevoRouteCard {
+  border: 1px solid #D8E7FF;
+  background: #F8FBFF;
+  border-radius: 5px;
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.piBrevoRouteCard__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.piBrevoRouteCard__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  background: #2479FF;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-shadow: 0 10px 20px rgba(36, 121, 255, .18);
+}
+
+.piBrevoRouteCard__icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piBrevoRouteCard__top strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piBrevoRouteCard__top p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f6b7a;
+}
+
+.piBrevoRouteGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.piBrevoRouteMetric {
+  border: 1px solid #E1E8F4;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 10px;
+  min-height: 66px;
+}
+
+.piBrevoRouteMetric span {
+  display: block;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #8a94a6;
+}
+
+.piBrevoRouteMetric strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #1f2937;
+  font-weight: 900;
+}
+
+.piBrevoRouteCard__managed {
+  border: 1px dashed #BFD7FF;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.piBrevoRouteCard__managed strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #2479FF;
+}
+
+.piBrevoRouteCard__managed p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f6b7a;
+}
+
+@media (max-width: 760px) {
+  .piBrevoRouteGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Destino Brevo limpio
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Smart select Destino Brevo
+============================================================ */
+
+.piBrevoDestinationPicker {
+  position: relative;
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+
+.piBrevoDestinationPicker__trigger {
+  width: 100%;
+  min-height: 72px;
+  appearance: none;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.piBrevoDestinationPicker__trigger:hover {
+  border-color: #BFD7FF;
+  background: #F8FBFF;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .05);
+}
+
+.piBrevoDestinationPicker.is-open .piBrevoDestinationPicker__trigger {
+  border-color: #2479FF;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .12);
+}
+
+.piBrevoDestinationPicker__trigger.is-loading,
+.piBrevoDestinationPicker__trigger.is-error {
+  cursor: default;
+  opacity: .86;
+}
+
+.piBrevoDestinationPicker__triggerIcon,
+.piBrevoDestinationPicker__itemIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 5px;
+  background: #EAF2FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piBrevoDestinationPicker__triggerIcon svg,
+.piBrevoDestinationPicker__itemIcon svg,
+.piBrevoDestinationPicker__searchIcon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piBrevoDestinationPicker__triggerIcon--recompra,
+.piBrevoDestinationPicker__itemIcon--recompra {
+  background: #EAFBF0;
+  color: #16A34A;
+}
+
+.piBrevoDestinationPicker__triggerIcon--cross_sell,
+.piBrevoDestinationPicker__itemIcon--cross_sell {
+  background: #FFF3E8;
+  color: #EA580C;
+}
+
+.piBrevoDestinationPicker__triggerIcon--upsell,
+.piBrevoDestinationPicker__itemIcon--upsell {
+  background: #EEF4FF;
+  color: #2479FF;
+}
+
+.piBrevoDestinationPicker__triggerIcon--fidelizacion,
+.piBrevoDestinationPicker__itemIcon--fidelizacion {
+  background: #FEEFEE;
+  color: #E11D48;
+}
+
+.piBrevoDestinationPicker__triggerIcon--reactivacion,
+.piBrevoDestinationPicker__itemIcon--reactivacion {
+  background: #F5F3FF;
+  color: #7C3AED;
+}
+
+.piBrevoDestinationPicker__triggerIcon--educacion,
+.piBrevoDestinationPicker__itemIcon--educacion {
+  background: #ECFEFF;
+  color: #0891B2;
+}
+
+.piBrevoDestinationPicker__triggerIcon--experimentacion,
+.piBrevoDestinationPicker__itemIcon--experimentacion {
+  background: #FAF5FF;
+  color: #9333EA;
+}
+
+.piBrevoDestinationPicker__triggerIcon--mayorista,
+.piBrevoDestinationPicker__itemIcon--mayorista {
+  background: #FDF6E7;
+  color: #B45309;
+}
+
+.piBrevoDestinationPicker__triggerCopy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.piBrevoDestinationPicker__triggerCopy strong {
+  display: block;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piBrevoDestinationPicker__triggerCopy small {
+  display: block;
+  color: #5f6b7a;
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.piBrevoDestinationPicker__default {
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #EAFBF0;
+  color: #166534;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.piBrevoDestinationPicker__chevron {
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.piBrevoDestinationPicker__dropdown {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid #D8E2F3;
+  border-radius: 5px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
+  overflow: hidden;
+}
+
+.piBrevoDestinationPicker__searchRow {
+  height: 48px;
+  border-bottom: 1px solid #E7ECF4;
+  background: #F8FBFF;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+}
+
+.piBrevoDestinationPicker__searchIcon {
+  width: 18px;
+  height: 18px;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.piBrevoDestinationPicker__searchRow input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 13px;
+  color: #111827;
+}
+
+.piBrevoDestinationPicker__hint {
+  padding: 10px 12px;
+  border-bottom: 1px solid #E7ECF4;
+  background: #FFFFFF;
+  display: grid;
+  gap: 3px;
+}
+
+.piBrevoDestinationPicker__hint strong {
+  font-size: 12px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piBrevoDestinationPicker__hint span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #6b7280;
+}
+
+.piBrevoDestinationPicker__list {
+  max-height: 360px;
+  overflow: auto;
+  padding: 8px;
+  display: grid;
+  gap: 7px;
+  background: #F4F6FA;
+}
+
+.piBrevoDestinationPicker__item {
+  width: 100%;
+  border: 1px solid #E1E8F4;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: flex-start;
+  gap: 11px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.piBrevoDestinationPicker__item:hover {
+  border-color: #BFD7FF;
+  background: #F8FBFF;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .05);
+}
+
+.piBrevoDestinationPicker__item.is-selected {
+  border-color: #2479FF;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .10);
+}
+
+.piBrevoDestinationPicker__itemMain {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.piBrevoDestinationPicker__itemTop {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.piBrevoDestinationPicker__itemTop strong {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.piBrevoDestinationPicker__itemTop em {
+  height: 21px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #EEF4FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.piBrevoDestinationPicker__itemTop em.is-active {
+  background: #EAFBF0;
+  color: #166534;
+}
+
+.piBrevoDestinationPicker__itemMain small {
+  color: #5f6b7a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.piBrevoDestinationPicker__itemRoute {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.piBrevoDestinationPicker__itemRoute b {
+  min-height: 24px;
+  border-radius: 5px;
+  background: #F1F5F9;
+  color: #334155;
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.piBrevoDestinationPicker__itemDesc {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.piBrevoDestinationPicker__itemSide {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.piBrevoDestinationPicker__itemSide small {
+  color: #8a94a6;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.piBrevoDestinationPicker__check {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #EEF4FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.piBrevoDestinationPicker__empty {
+  background: #FFFFFF;
+  border: 1px dashed #CBD5E1;
+  border-radius: 5px;
+  padding: 18px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.piBrevoDestinationPicker__empty strong {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.piBrevoDestinationPicker__empty span {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.piBrevoDestinationPicker__footer {
+  border-top: 1px solid #E7ECF4;
+  background: #FFFFFF;
+  padding: 8px;
+}
+
+.piBrevoDestinationPicker__footer button,
+.piBrevoDestinationPicker__createSolo {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #D8E7FF;
+  border-radius: 5px;
+  background: #F4F8FF;
+  color: #2479FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.piBrevoDestinationPicker__footer button:hover,
+.piBrevoDestinationPicker__createSolo:hover {
+  background: #EAF2FF;
+  border-color: #BFD7FF;
+}
+
+.piBrevoDestinationPicker__footer button span {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #2479FF;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piBrevoDestinationPicker__footer button small {
+  color: #5f6b7a;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .piBrevoDestinationPicker__trigger,
+  .piBrevoDestinationPicker__item {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+
+  .piBrevoDestinationPicker__list {
+    max-height: 300px;
+  }
+
+  .piBrevoDestinationPicker__itemRoute {
+    flex-direction: column;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Smart select Destino Brevo
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Ajuste visual dropdowns
+Objetivo:
+1. Tarjetas seleccionables con celeste agua más visible.
+2. Más sombra detrás del desplegable.
+3. Quitar palomita del dropdown Brevo.
+============================================================ */
+
+/* 1. Sombra más firme detrás de ambos desplegables */
+.piAudiencePicker__dropdown,
+.piBrevoDestinationPicker__dropdown {
+  box-shadow: 0 34px 92px rgba(15, 23, 42, .30) !important;
+}
+
+/* 2. Color celeste agua más pronunciado para tarjetas seleccionables */
+.piAudiencePicker__item,
+.piBrevoDestinationPicker__item {
+  background: #E1F0FF !important;
+  border-color: #BBD7FF !important;
+  box-shadow: none !important;
+}
+
+/* Hover: mantiene el mismo concepto, apenas más marcado */
+.piAudiencePicker__item:hover,
+.piBrevoDestinationPicker__item:hover {
+  background: #D6EAFF !important;
+  border-color: #96C1FF !important;
+  box-shadow: none !important;
+}
+
+/* Seleccionadas: un punto más fuerte, sin sombra individual */
+.piAudiencePicker__item.is-selected,
+.piBrevoDestinationPicker__item.is-selected {
+  background: #D1E7FF !important;
+  border-color: #2479FF !important;
+  box-shadow: none !important;
+}
+
+/* 3. Quitar la palomita del dropdown Brevo */
+.piBrevoDestinationPicker__check {
+  display: none !important;
+}
+
+/* Ajuste menor para que el lateral derecho del item Brevo no quede raro */
+.piBrevoDestinationPicker__itemSide {
+  align-self: start !important;
+  gap: 0 !important;
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Ajuste visual dropdowns
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Administrador operativo
+============================================================ */
+
+.piAdminTopbar {
+  background: #FFFFFF;
+  border: 1px solid rgba(17, 24, 39, .08);
+  border-radius: 5px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .07);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.piAdminTopbar__left,
+.piAdminTopbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.piAdminBrand {
+  min-width: 240px;
+}
+
+.piAdminBrand .piTitle {
+  font-size: 26px;
+  margin-top: 5px;
+}
+
+.piOperator {
+  position: relative;
+}
+
+.piOperator__trigger {
+  height: 44px;
+  border: 1px solid #D8E2F3;
+  background: #F8FBFF;
+  border-radius: 5px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.piOperator__copy {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.piOperator__copy strong {
+  font-size: 12px;
+  color: #111827;
+  font-weight: 900;
+}
+
+.piOperator__copy small {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.piOperator__chevron {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.piOperator__avatar,
+.piAdminAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+
+.piAdminAvatar--azul {
+  background: #2479FF;
+}
+
+.piAdminAvatar--violeta {
+  background: #7C3AED;
+}
+
+.piAdminAvatar--verde {
+  background: #16A34A;
+}
+
+.piAdminAvatar--naranja {
+  background: #EA580C;
+}
+
+.piOperator__dropdown {
+  display: none;
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 260px;
+  background: #FFFFFF;
+  border: 1px solid #D8E2F3;
+  border-radius: 5px;
+  box-shadow: 0 24px 68px rgba(15, 23, 42, .25);
+  padding: 8px;
+}
+
+.piOperator__dropdown.is-open {
+  display: grid;
+  gap: 6px;
+}
+
+.piOperator__option {
+  width: 100%;
+  border: 1px solid transparent;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.piOperator__option:hover,
+.piOperator__option.is-selected {
+  background: #E1F0FF;
+  border-color: #BBD7FF;
+}
+
+.piOperator__option span:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.piOperator__option strong {
+  font-size: 12px;
+  color: #111827;
+  font-weight: 900;
+}
+
+.piOperator__option small {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.piAdminRefreshState {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.piAdminRefreshState span {
+  font-size: 12px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piAdminRefreshState small {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.piAdminTopbar [data-pi-review-count] {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.piAdminSegments {
+  background: #FFFFFF;
+  border: 1px solid rgba(17, 24, 39, .08);
+  border-radius: 5px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.piSegment {
+  height: 38px;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.piSegment span {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  color: #2479FF;
+}
+
+.piSegment svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piSegment strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.piSegment.is-active {
+  background: #2479FF;
+  border-color: #2479FF;
+  color: #FFFFFF;
+}
+
+.piSegment.is-active span {
+  color: #FFFFFF;
+}
+
+.piAdminSearchPanel {
+  margin-bottom: 12px;
+}
+
+.piAdminSearch {
+  height: 46px;
+  width: 100%;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 5px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.piAdminSearch__icon {
+  width: 20px;
+  height: 20px;
+  color: #2479FF;
+  display: inline-flex;
+}
+
+.piAdminSearch__icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piAdminSearch input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
+}
+
+.piAdminWorkspace {
+  background: #FFFFFF;
+  border: 1px solid rgba(17, 24, 39, .08);
+  border-radius: 5px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .07);
+  padding: 12px;
+}
+
+.piAdminTabsRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #E5EAF2;
+  margin-bottom: 10px;
+}
+
+.piAdminTabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.piAdminTab {
+  min-width: 138px;
+  border: 1px solid #D8E2F3;
+  border-bottom: 0;
+  background: #F8FAFC;
+  border-radius: 5px 5px 0 0;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+  cursor: pointer;
+  text-align: left;
+  transform: translateY(1px);
+}
+
+.piAdminTab strong {
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piAdminTab small {
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.piAdminTab.is-active {
+  background: #FFFFFF;
+  border-color: #2479FF;
+  box-shadow: inset 0 3px 0 #2479FF;
+}
+
+.piAdminDateRange {
+  height: 36px;
+  border: 1px solid #D8E2F3;
+  border-radius: 5px;
+  background: #FFFFFF;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.piAdminActionBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+
+.piAdminPlaceholder {
+  min-height: 260px;
+  border: 1px dashed #CBD5E1;
+  background: #F8FBFF;
+  border-radius: 5px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.piAdminPlaceholder__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 5px;
+  background: #EAF2FF;
+  color: #2479FF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.piAdminPlaceholder__icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piAdminPlaceholder strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.piAdminPlaceholder p {
+  margin: 6px 0 0;
+  max-width: 620px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5f6b7a;
+}
+
+.piAdminPlaceholder small {
+  display: inline-flex;
+  margin-top: 12px;
+  height: 26px;
+  align-items: center;
+  border-radius: 999px;
+  background: #EAF2FF;
+  color: #2479FF;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@media (max-width: 960px) {
+  .piAdminTopbar,
+  .piAdminTopbar__left,
+  .piAdminTopbar__right,
+  .piAdminTabsRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .piAdminRefreshState {
+    text-align: left;
+  }
+
+  .piAdminBrand {
+    min-width: 0;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Administrador operativo
+============================================================ */
+
+/* ============================================================
+INICIO · Publicidad Interna · Ajuste visual administrador full width
+============================================================ */
+
+body[data-page="publicidadinterna"] {
+  background: #FFFFFF;
+}
+
+.piShell {
+  background: #FFFFFF;
+  padding: 14px 16px 18px;
+}
+
+/* Header general: sin tarjeta, compacto y con línea divisoria */
+.piAdminTopbar {
+  background: #FFFFFF;
+  border: 0;
+  border-bottom: 1px solid #E5EAF2;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 10px;
+  margin-bottom: 0;
+}
+
+.piAdminBrand {
+  min-width: 210px;
+}
+
+.piAdminBrand .piEyebrow {
+  font-size: 10px;
+  letter-spacing: .14em;
+}
+
+.piAdminBrand .piTitle {
+  font-size: 23px;
+  line-height: 1;
+  margin-top: 5px;
+  letter-spacing: -0.035em;
+}
+
+.piOperator__trigger {
+  height: 38px;
+  background: #F8FAFC;
+  border-color: #DDE5F0;
+}
+
+.piOperator__avatar,
+.piAdminAvatar {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.piAdminRefreshState span {
+  font-size: 11px;
+}
+
+.piAdminRefreshState small {
+  font-size: 10px;
+}
+
+/* Segmentos: sobre fondo blanco, sin tarjeta, con líneas finas */
+.piAdminSegments {
+  background: #FFFFFF;
+  border: 0;
+  border-top: 1px solid #E5EAF2;
+  border-bottom: 1px solid #E5EAF2;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 8px 0;
+  margin: 0 0 10px;
+  justify-content: space-between;
+}
+
+.piAdminSegments__left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow-x: auto;
+}
+
+.piSegment {
+  height: 34px;
+  background: #FFFFFF;
+  border-color: #DDE5F0;
+  color: #334155;
+  padding: 0 10px;
+}
+
+.piSegment span {
+  color: #2479FF;
+}
+
+.piSegment strong {
+  font-size: 11px;
+}
+
+.piSegment.is-active {
+  background: #2479FF;
+  border-color: #2479FF;
+  color: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(36, 121, 255, .18);
+}
+
+.piSegment.is-active span {
+  color: #FFFFFF;
+}
+
+/* Botón Crear vista */
+.piCreateViewBtn {
+  height: 34px;
+  border: 1px solid #B9E4EF;
+  background: #E2F8FB;
+  color: #126B86;
+  border-radius: 5px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.piCreateViewBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(18, 107, 134, .14);
+  background: #D7F3F8;
+}
+
+.piCreateViewBtn span {
+  width: 17px;
+  height: 17px;
+  display: inline-flex;
+}
+
+.piCreateViewBtn svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piCreateViewBtn strong {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* Search sobre fondo general */
+.piAdminSearchPanel {
+  margin-bottom: 10px;
+}
+
+.piAdminSearch {
+  height: 42px;
+  border-color: #DDE5F0;
+  box-shadow: none;
+  background: #FFFFFF;
+}
+
+/* Workspace sin tarjeta contenedora */
+.piAdminWorkspace {
+  background: #FFFFFF;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Tabs estilo carpeta operativa */
+.piAdminTabsRow {
+  border-bottom: 1px solid #DDE5F0;
+  margin-bottom: 10px;
+  align-items: flex-end;
+}
+
+.piAdminTabs {
+  gap: 0;
+  position: relative;
+}
+
+.piAdminTab {
+  min-width: 170px;
+  min-height: 48px;
+  border: 1px solid #DDE5F0;
+  border-bottom: 0;
+  background: #F2F5F9;
+  color: #64748B;
+  border-radius: 6px 6px 0 0;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateY(1px);
+  margin-right: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.piAdminTab::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: transparent;
+  transition: background .18s ease;
+}
+
+.piAdminTab:hover {
+  background: #E9EEF5;
+}
+
+.piAdminTab.is-active {
+  background: #2479FF;
+  border-color: #2479FF;
+  color: #FFFFFF;
+  box-shadow: 0 10px 22px rgba(36, 121, 255, .22);
+  transform: translateY(1px);
+}
+
+.piAdminTab.is-active::after {
+  background: rgba(255, 255, 255, .75);
+}
+
+.piAdminTab__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: rgba(100, 116, 139, .10);
+  color: #64748B;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.piAdminTab.is-active .piAdminTab__icon {
+  background: rgba(255, 255, 255, .18);
+  color: #FFFFFF;
+}
+
+.piAdminTab__icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.piAdminTab__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.piAdminTab strong {
+  font-size: 12px;
+  color: currentColor;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.piAdminTab small {
+  color: currentColor;
+  opacity: .78;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.piAdminDateRange {
+  margin-bottom: 7px;
+  height: 34px;
+  border-color: #DDE5F0;
+}
+
+/* Acciones rápidas más compactas y sin sensación de bloque aparte */
+.piAdminActionBar {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EEF2F7;
+}
+
+/* KPI sin sensación de tarjeta general */
+.piKpiGrid {
+  margin-bottom: 12px;
+}
+
+/* Listado más integrado al fondo */
+.piCampaignList {
+  margin-top: 0;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .piAdminSegments {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .piAdminSegments__left {
+    width: 100%;
+  }
+
+  .piCreateViewBtn {
+    justify-content: center;
+  }
+
+  .piAdminTab {
+    min-width: 150px;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Ajuste visual administrador full width
+============================================================ */

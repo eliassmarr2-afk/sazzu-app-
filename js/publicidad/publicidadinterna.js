@@ -105,7 +105,18 @@ No conecta todavía con Supabase, Make ni Brevo.
     brevoDestinationSearch: "",
     loadingBrevoDestinations: false,
     brevoDestinationsError: "",
-    brevoDestinationsRequested: false
+    brevoDestinationsRequested: false,
+
+    adminTopbar: null,
+    adminTabs: [],
+    adminOperators: [],
+    activeAdminTab: "campanias",
+    selectedOperatorCode: "OP_PI_001",
+    operatorDropdownOpen: false,
+    selectedCampaignIds: [],
+    dateRange: "todo",
+    loadingAdminContext: false,
+    adminContextError: ""
   };
 
   window.__PUB_INTERNA_STATE__ = STATE;
@@ -174,65 +185,149 @@ No conecta todavía con Supabase, Make ni Brevo.
     root.dataset.piShellReady = "1";
 
     root.innerHTML = `
-      <!-- INICIO · Header Publicidad Interna -->
-      <header class="piHeader">
-        <div class="piHeader__copy">
+    <!-- INICIO · Administrador Publicidad Interna -->
+    <header class="piAdminTopbar">
+      <div class="piAdminTopbar__left">
+        <div class="piAdminBrand">
           <div class="piEyebrow">Motores de crecimiento</div>
           <h1 class="piTitle">Publicidad Interna</h1>
-          <p class="piSubtitle">
-            Crea campañas internas sobre conjuntos de audiencia, configura secuencias y controla el estado operativo con Make y Brevo.
-          </p>
-          <p class="piHeader__meta">
-          <div class="piHeader__metaRow">
-          <p class="piHeader__meta">
-            Build <strong data-pi-build>${escapeHtml_(PUB_INTERNA_FRONT_BUILD)}</strong>
-          </p>
-
-          <div class="piDataSource is-fallback" data-pi-data-source title="Origen actual de los datos del panel">
-            <span class="piDataSource__dot" aria-hidden="true"></span>
-            <span data-pi-data-source-label>Fuente: respaldo visual</span>
-          </div>
-        </div>
-          </p>
         </div>
 
-        <div class="piHeader__actions">
-          <button class="piBtn piBtn--primary" type="button" data-pi-open-slide="new">
-            <span class="piBtn__icon" aria-hidden="true">
-              ${icon_("plus")}
+        <div class="piOperator" data-pi-operator>
+          <button class="piOperator__trigger" type="button" data-pi-operator-trigger>
+            <span class="piOperator__avatar piOperator__avatar--azul" data-pi-operator-avatar>1</span>
+            <span class="piOperator__copy">
+              <strong data-pi-operator-name>Usuario 1</strong>
+              <small data-pi-operator-role>operador_publicidad</small>
             </span>
-            <span>Nueva campaña</span>
+            <span class="piOperator__chevron">⌄</span>
+          </button>
+
+          <div class="piOperator__dropdown" data-pi-operator-dropdown></div>
+        </div>
+      </div>
+
+      <div class="piAdminTopbar__right">
+        <div class="piAdminRefreshState">
+          <span data-pi-admin-updated>Actualizado desde Supabase</span>
+          <small data-pi-admin-updated-detail>Sincronización operativa</small>
+        </div>
+
+        <button class="piBtn piBtn--ghost" type="button" data-pi-refresh-admin>
+          <span class="piBtn__icon" aria-hidden="true">${icon_("sync")}</span>
+          <span>Actualizar</span>
+        </button>
+
+        <button class="piBtn piBtn--primary" type="button" data-pi-review-drafts>
+          <span>Revisar cambios</span>
+          <strong data-pi-review-count>0</strong>
+        </button>
+
+        <span class="piAdminAvatar piAdminAvatar--azul" data-pi-admin-avatar>1</span>
+      </div>
+    </header>
+
+    <section class="piAdminSegments" aria-label="Segmentos operativos">
+    <div class="piAdminSegments__left">
+      <button class="piSegment is-active" type="button" data-pi-filter="todas">
+        <span>${icon_("list")}</span>
+        <strong>Todos</strong>
+      </button>
+
+      <button class="piSegment" type="button" data-pi-filter="ejecucion">
+        <span>${icon_("sync")}</span>
+        <strong>Con ejecución</strong>
+      </button>
+
+      <button class="piSegment" type="button" data-pi-filter="acciones">
+        <span>${icon_("open")}</span>
+        <strong>Acciones requeridas</strong>
+      </button>
+
+      <button class="piSegment" type="button" data-pi-filter="activa">
+        <span>${icon_("campaign")}</span>
+        <strong>Activas</strong>
+      </button>
+
+      <button class="piSegment" type="button" data-pi-filter="borrador">
+        <span>${icon_("check")}</span>
+        <strong>Borradores</strong>
+      </button>
+
+      <button class="piSegment" type="button" data-pi-filter="error">
+        <span>${icon_("sync")}</span>
+        <strong>Errores</strong>
+      </button>
+    </div>
+
+    <button class="piCreateViewBtn" type="button" data-pi-admin-disabled="vista">
+      <span aria-hidden="true">${icon_("sequence")}</span>
+      <strong>Crear vista</strong>
+    </button>
+  </section>
+
+    <section class="piAdminSearchPanel">
+      <label class="piAdminSearch" aria-label="Buscar campaña, conjunto o contenido">
+        <span class="piAdminSearch__icon" aria-hidden="true">
+          ${icon_("search")}
+        </span>
+        <input type="search" placeholder="Buscar por campaña, lista Brevo, estado, objetivo o conjunto..." data-pi-search>
+      </label>
+    </section>
+
+    <section class="piAdminWorkspace">
+      <div class="piAdminTabsRow">
+        <div class="piAdminTabs" data-pi-admin-tabs>
+          <button class="piAdminTab is-active" type="button" data-pi-admin-tab="campanias">
+            <strong>Campañas</strong>
+            <small>0</small>
+          </button>
+
+          <button class="piAdminTab" type="button" data-pi-admin-tab="conjuntos">
+            <strong>Conjuntos de audiencia</strong>
+            <small>0</small>
+          </button>
+
+          <button class="piAdminTab" type="button" data-pi-admin-tab="contenidos">
+            <strong>Contenidos</strong>
+            <small>0</small>
           </button>
         </div>
-      </header>
-      <!-- FIN · Header Publicidad Interna -->
+
+        <select class="piAdminDateRange" data-pi-date-range>
+          <option value="todo">Todo el historial</option>
+          <option value="hoy">Hoy</option>
+          <option value="7d">Últimos 7 días</option>
+          <option value="mes">Este mes</option>
+        </select>
+      </div>
+
+      <div class="piAdminActionBar">
+        <button class="piBtn piBtn--primary" type="button" data-pi-open-slide="new">
+          <span class="piBtn__icon" aria-hidden="true">${icon_("plus")}</span>
+          <span>Crear campaña</span>
+        </button>
+
+        <button class="piBtn piBtn--ghost" type="button" data-pi-admin-disabled="duplicar">
+          Duplicar
+        </button>
+
+        <button class="piBtn piBtn--ghost" type="button" data-pi-admin-disabled="pausar">
+          Pausar
+        </button>
+
+        
+      </div>
 
       <!-- INICIO · KPIs Publicidad Interna -->
       <section class="piKpiGrid" data-pi-kpis aria-label="Resumen de Publicidad Interna"></section>
       <!-- FIN · KPIs Publicidad Interna -->
 
-      <!-- INICIO · Toolbar Publicidad Interna -->
-      <section class="piToolbar" aria-label="Filtros de campañas">
-        <div class="piToolbar__left">
-          <button class="piFilter is-active" type="button" data-pi-filter="todas">Todas</button>
-          <button class="piFilter" type="button" data-pi-filter="activa">Activas</button>
-          <button class="piFilter" type="button" data-pi-filter="borrador">Borrador</button>
-          <button class="piFilter" type="button" data-pi-filter="pendiente">Pendientes</button>
-          <button class="piFilter" type="button" data-pi-filter="error">Errores</button>
-        </div>
-
-        <label class="piSearch" aria-label="Buscar campaña">
-          <span class="piSearch__icon" aria-hidden="true">
-            ${icon_("search")}
-          </span>
-          <input type="search" placeholder="Buscar campaña..." data-pi-search>
-        </label>
-      </section>
-      <!-- FIN · Toolbar Publicidad Interna -->
-
-      <!-- INICIO · Listado campañas -->
-      <section class="piCampaignList" data-pi-campaigns aria-label="Listado de campañas internas"></section>
-      <!-- FIN · Listado campañas -->
+      <!-- INICIO · Listado campañas / tabs -->
+      <section class="piCampaignList" data-pi-campaigns aria-label="Administrador de campañas internas"></section>
+      <!-- FIN · Listado campañas / tabs -->
+    </section>
+    <!-- FIN · Administrador Publicidad Interna -->
 
       <!-- INICIO · Layer slides Publicidad Interna -->
       <div class="piSlideLayer" data-pi-slide-layer aria-hidden="true">
@@ -484,6 +579,7 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     if (root.dataset.piDataRequested !== "1") {
       root.dataset.piDataRequested = "1";
+      loadPublicidadInternaAdminContext_(root);
       loadCampaniasDesdeSupabase_(root);
     }
 
@@ -504,6 +600,72 @@ No conecta todavía con Supabase, Make ni Brevo.
         });
 
         renderCampaigns_(root);
+        return;
+      }
+
+      const refreshBtn = event.target.closest("[data-pi-refresh-admin]");
+      if (refreshBtn) {
+        event.preventDefault();
+        loadPublicidadInternaAdminContext_(root);
+        loadCampaniasDesdeSupabase_(root);
+        showToast_(root, "Actualizando administrador desde Supabase.");
+        return;
+      }
+
+      const reviewBtn = event.target.closest("[data-pi-review-drafts]");
+      if (reviewBtn) {
+        event.preventDefault();
+
+        STATE.filter = "borrador";
+
+        root.querySelectorAll("[data-pi-filter]").forEach(function (btn) {
+          btn.classList.toggle("is-active", btn.dataset.piFilter === "borrador");
+        });
+
+        renderCampaigns_(root);
+        showToast_(root, "Mostrando campañas en borrador.");
+        return;
+      }
+
+      const tabBtn = event.target.closest("[data-pi-admin-tab]");
+      if (tabBtn) {
+        event.preventDefault();
+
+        STATE.activeAdminTab = tabBtn.dataset.piAdminTab || "campanias";
+
+        root.querySelectorAll("[data-pi-admin-tab]").forEach(function (btn) {
+          btn.classList.toggle("is-active", btn === tabBtn);
+        });
+
+        renderCampaigns_(root);
+        return;
+      }
+
+      const operatorTrigger = event.target.closest("[data-pi-operator-trigger]");
+      if (operatorTrigger) {
+        event.preventDefault();
+        STATE.operatorDropdownOpen = !STATE.operatorDropdownOpen;
+        renderAdminOperator_(root);
+        return;
+      }
+
+      const operatorPick = event.target.closest("[data-pi-operator-pick]");
+      if (operatorPick) {
+        event.preventDefault();
+
+        STATE.selectedOperatorCode = String(operatorPick.dataset.piOperatorPick || "OP_PI_001");
+        STATE.operatorDropdownOpen = false;
+
+        renderAdminTopbar_(root);
+        renderAdminOperator_(root);
+        showToast_(root, "Operador visual actualizado.");
+        return;
+      }
+
+      const disabledAdminBtn = event.target.closest("[data-pi-admin-disabled]");
+      if (disabledAdminBtn) {
+        event.preventDefault();
+        showToast_(root, "Acción preparada para una fase posterior.");
         return;
       }
 
@@ -684,6 +846,14 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
         root.addEventListener("change", function (event) {
+          const dateRangeSelect = event.target.closest("[data-pi-date-range]");
+          if (dateRangeSelect) {
+            STATE.dateRange = String(dateRangeSelect.value || "todo");
+            renderCampaigns_(root);
+            showToast_(root, "Rango visual actualizado.");
+            return;
+          }
+
           const audienceCheckbox = event.target.closest("[data-pi-audience-checkbox]");
           if (audienceCheckbox) {
             const id = String(audienceCheckbox.value || "").trim();
@@ -740,9 +910,315 @@ No conecta todavía con Supabase, Make ni Brevo.
 
   function render_(root) {
     renderDataSource_(root);
+    renderAdminTopbar_(root);
+    renderAdminTabs_(root);
     renderKpis_(root);
     renderCampaigns_(root);
   }
+
+
+    /* INICIO · Administrador visual · Publicidad Interna */
+    async function loadPublicidadInternaAdminContext_(root) {
+      if (!root) return;
+
+      const config = window.SAZZU_SUPABASE_CONFIG || {};
+
+      let url = String(config.url || config.projectUrl || config.apiUrl || "").trim();
+      url = url.replace(/\/$/, "");
+      url = url.replace(/\/rest\/v1$/, "");
+
+      const key = String(
+        config.anonKey ||
+        config.publishableKey ||
+        config.publicKey ||
+        config.key ||
+        ""
+      ).trim();
+
+      if (!url || !key) {
+        STATE.adminContextError = "Falta configurar Supabase URL o publishable key.";
+        renderAdminTopbar_(root);
+        renderAdminTabs_(root);
+        return;
+      }
+
+      STATE.loadingAdminContext = true;
+      STATE.adminContextError = "";
+
+      try {
+        const headers = {
+          "apikey": key,
+          "Authorization": "Bearer " + key,
+          "Accept": "application/json"
+        };
+
+        const topbarEndpoint = [
+          url,
+          "/rest/v1/vista_publicidad_interna_topbar_operativa",
+          "?select=*",
+          "&limit=1"
+        ].join("");
+
+        const tabsEndpoint = [
+          url,
+          "/rest/v1/vista_publicidad_interna_tabs_resumen",
+          "?select=*"
+        ].join("");
+
+        const operatorsEndpoint = [
+          url,
+          "/rest/v1/pi_publicidad_operadores",
+          "?select=*",
+          "&estado=eq.activo",
+          "&order=codigo_operador.asc"
+        ].join("");
+
+        const responses = await Promise.all([
+          fetch(topbarEndpoint, { method: "GET", headers: headers }),
+          fetch(tabsEndpoint, { method: "GET", headers: headers }),
+          fetch(operatorsEndpoint, { method: "GET", headers: headers })
+        ]);
+
+        for (let i = 0; i < responses.length; i += 1) {
+          if (!responses[i].ok) {
+            const text = await responses[i].text();
+            throw new Error("HTTP " + responses[i].status + " · " + text);
+          }
+        }
+
+        const topbarRows = await responses[0].json();
+        const tabRows = await responses[1].json();
+        const operatorRows = await responses[2].json();
+
+        STATE.adminTopbar = Array.isArray(topbarRows) && topbarRows.length
+          ? normalizeAdminTopbar_(topbarRows[0])
+          : null;
+
+        STATE.adminTabs = Array.isArray(tabRows)
+          ? tabRows.map(normalizeAdminTab_)
+          : [];
+
+        STATE.adminOperators = Array.isArray(operatorRows)
+          ? operatorRows.map(normalizeAdminOperator_)
+          : [];
+
+        if (STATE.adminTopbar && STATE.adminTopbar.codigoOperador) {
+          STATE.selectedOperatorCode = STATE.selectedOperatorCode || STATE.adminTopbar.codigoOperador;
+        }
+
+        STATE.loadingAdminContext = false;
+        STATE.adminContextError = "";
+
+        renderAdminTopbar_(root);
+        renderAdminTabs_(root);
+      } catch (error) {
+        STATE.loadingAdminContext = false;
+        STATE.adminContextError = String(error && error.message ? error.message : error);
+        console.error("[publicidadinterna] Error cargando contexto administrador:", error);
+
+        renderAdminTopbar_(root);
+        renderAdminTabs_(root);
+      }
+    }
+
+    function normalizeAdminTopbar_(row) {
+      return {
+        operadorId: String(row.operador_id || ""),
+        codigoOperador: String(row.codigo_operador || "OP_PI_001"),
+        nombreOperador: String(row.nombre_operador || "Usuario 1"),
+        inicialVisible: String(row.inicial_visible || "1"),
+        colorToken: String(row.color_token || "azul"),
+        rolOperativo: String(row.rol_operativo || "operador_publicidad"),
+
+        campaniasTotales: toNumber_(row.campanias_totales),
+        campaniasActivas: toNumber_(row.campanias_activas),
+        campaniasBorrador: toNumber_(row.campanias_borrador),
+        trabajosEnMovimiento: toNumber_(row.trabajos_en_movimiento),
+        campaniasConError: toNumber_(row.campanias_con_error),
+        cambiosParaRevisar: toNumber_(row.cambios_para_revisar),
+        contactosEstimados: toNumber_(row.contactos_estimados),
+        contactosSincronizados: toNumber_(row.contactos_sincronizados),
+        contactosError: toNumber_(row.contactos_error),
+
+        ultimaActualizacionOperativa: String(row.ultima_actualizacion_operativa || ""),
+        consultaGeneradaEn: String(row.consulta_generada_en || ""),
+        lecturaActualizacion: String(row.lectura_actualizacion || "Actualizado desde Supabase")
+      };
+    }
+
+    function normalizeAdminTab_(row) {
+      return {
+        id: String(row.tab_id || ""),
+        label: String(row.tab_label || ""),
+        total: toNumber_(row.total_items),
+        activos: toNumber_(row.activos),
+        borradores: toNumber_(row.borradores),
+        errores: toNumber_(row.errores),
+        descripcion: String(row.descripcion || "")
+      };
+    }
+
+    function normalizeAdminOperator_(row) {
+      return {
+        codigo: String(row.codigo_operador || ""),
+        nombre: String(row.nombre_operador || "Usuario"),
+        inicial: String(row.inicial_visible || "?"),
+        color: String(row.color_token || "azul"),
+        rol: String(row.rol_operativo || "operador_publicidad")
+      };
+    }
+
+    function getSelectedAdminOperator_() {
+      const selected = STATE.adminOperators.find(function (operator) {
+        return operator.codigo === STATE.selectedOperatorCode;
+      });
+
+      if (selected) return selected;
+
+      if (STATE.adminTopbar) {
+        return {
+          codigo: STATE.adminTopbar.codigoOperador,
+          nombre: STATE.adminTopbar.nombreOperador,
+          inicial: STATE.adminTopbar.inicialVisible,
+          color: STATE.adminTopbar.colorToken,
+          rol: STATE.adminTopbar.rolOperativo
+        };
+      }
+
+      return {
+        codigo: "OP_PI_001",
+        nombre: "Usuario 1",
+        inicial: "1",
+        color: "azul",
+        rol: "operador_publicidad"
+      };
+    }
+
+    function renderAdminTopbar_(root) {
+      if (!root) return;
+
+      const operator = getSelectedAdminOperator_();
+      const topbar = STATE.adminTopbar || {};
+      const avatarClass = "piAdminAvatar--" + normalizeOperatorColor_(operator.color);
+
+      const operatorName = root.querySelector("[data-pi-operator-name]");
+      const operatorRole = root.querySelector("[data-pi-operator-role]");
+      const operatorAvatar = root.querySelector("[data-pi-operator-avatar]");
+      const adminAvatar = root.querySelector("[data-pi-admin-avatar]");
+      const updated = root.querySelector("[data-pi-admin-updated]");
+      const updatedDetail = root.querySelector("[data-pi-admin-updated-detail]");
+      const reviewCount = root.querySelector("[data-pi-review-count]");
+
+      if (operatorName) operatorName.textContent = operator.nombre;
+      if (operatorRole) operatorRole.textContent = titleCase_(operator.rol);
+      if (operatorAvatar) {
+        operatorAvatar.textContent = operator.inicial;
+        operatorAvatar.className = "piOperator__avatar " + avatarClass;
+      }
+      if (adminAvatar) {
+        adminAvatar.textContent = operator.inicial;
+        adminAvatar.className = "piAdminAvatar " + avatarClass;
+      }
+
+      if (updated) {
+        updated.textContent = topbar.lecturaActualizacion || "Actualizado desde Supabase";
+      }
+
+      if (updatedDetail) {
+        updatedDetail.textContent = topbar.ultimaActualizacionOperativa
+          ? "Última ejecución: " + formatDateTime_(topbar.ultimaActualizacionOperativa)
+          : "Sin ejecuciones registradas";
+      }
+
+      if (reviewCount) {
+        reviewCount.textContent = formatNumber_(topbar.cambiosParaRevisar || 0);
+      }
+
+      renderAdminOperator_(root);
+    }
+
+    function renderAdminOperator_(root) {
+      const dropdown = root.querySelector("[data-pi-operator-dropdown]");
+      if (!dropdown) return;
+
+      if (!STATE.operatorDropdownOpen) {
+        dropdown.innerHTML = "";
+        dropdown.classList.remove("is-open");
+        return;
+      }
+
+      const operators = STATE.adminOperators.length
+        ? STATE.adminOperators
+        : [
+            { codigo: "OP_PI_001", nombre: "Usuario 1", inicial: "1", color: "azul", rol: "operador_publicidad" },
+            { codigo: "OP_PI_002", nombre: "Usuario 2", inicial: "2", color: "violeta", rol: "operador_publicidad" },
+            { codigo: "OP_PI_003", nombre: "Usuario 3", inicial: "3", color: "verde", rol: "supervisor_publicidad" }
+          ];
+
+      dropdown.classList.add("is-open");
+      dropdown.innerHTML = operators.map(function (operator) {
+        const selected = operator.codigo === STATE.selectedOperatorCode;
+
+        return [
+          '<button type="button" class="piOperator__option ', selected ? "is-selected" : "", '" data-pi-operator-pick="', escapeHtml_(operator.codigo), '">',
+            '<span class="piOperator__avatar piAdminAvatar--', escapeHtml_(normalizeOperatorColor_(operator.color)), '">', escapeHtml_(operator.inicial), '</span>',
+            '<span>',
+              '<strong>', escapeHtml_(operator.nombre), '</strong>',
+              '<small>', escapeHtml_(titleCase_(operator.rol)), '</small>',
+            '</span>',
+          '</button>'
+        ].join("");
+      }).join("");
+    }
+    function getAdminTabIcon_(tabId) {
+      const id = String(tabId || "").toLowerCase();
+
+      if (id === "campanias") return "campaign";
+      if (id === "conjuntos") return "users";
+      if (id === "contenidos") return "open";
+
+      return "list";
+    }
+
+    function renderAdminTabs_(root) {
+      const node = root.querySelector("[data-pi-admin-tabs]");
+      if (!node) return;
+
+      const tabs = STATE.adminTabs.length
+        ? STATE.adminTabs
+        : [
+            { id: "campanias", label: "Campañas", total: getCampaignSource_().length, descripcion: "Campañas internas." },
+            { id: "conjuntos", label: "Conjuntos de audiencia", total: 0, descripcion: "Vista futura." },
+            { id: "contenidos", label: "Contenidos", total: 0, descripcion: "Vista futura." }
+          ];
+
+            node.innerHTML = tabs.map(function (tab) {
+        const active = STATE.activeAdminTab === tab.id;
+        const iconName = getAdminTabIcon_(tab.id);
+
+        return [
+          '<button class="piAdminTab ', active ? "is-active" : "", '" type="button" data-pi-admin-tab="', escapeHtml_(tab.id), '" title="', escapeHtml_(tab.descripcion), '">',
+            '<span class="piAdminTab__icon" aria-hidden="true">', icon_(iconName), '</span>',
+            '<span class="piAdminTab__copy">',
+              '<strong>', escapeHtml_(tab.label), '</strong>',
+              '<small>', escapeHtml_(formatNumber_(tab.total)), '</small>',
+            '</span>',
+          '</button>'
+        ].join("");
+      }).join("");
+    }
+
+    function normalizeOperatorColor_(value) {
+      const color = String(value || "azul").toLowerCase();
+      if (color.includes("violeta")) return "violeta";
+      if (color.includes("verde")) return "verde";
+      if (color.includes("naranja")) return "naranja";
+      return "azul";
+    }
+    /* FIN · Administrador visual · Publicidad Interna */
+
+
+
     /* INICIO · Indicador fuente de datos · Publicidad Interna */
     function renderDataSource_(root) {
       const badge = root.querySelector("[data-pi-data-source]");
@@ -2391,6 +2867,27 @@ No conecta todavía con Supabase, Make ni Brevo.
     const node = root.querySelector("[data-pi-campaigns]");
     if (!node) return;
 
+
+    if (STATE.activeAdminTab === "conjuntos") {
+      node.innerHTML = renderAdminTabPlaceholder_({
+        icon: "users",
+        title: "Conjuntos de audiencia",
+        text: "Esta vista mostrará los conjuntos usados por campañas internas. La administración principal seguirá viviendo en Publicidad UTM.",
+        action: "Vista preparada"
+      });
+      return;
+    }
+
+    if (STATE.activeAdminTab === "contenidos") {
+      node.innerHTML = renderAdminTabPlaceholder_({
+        icon: "open",
+        title: "Contenidos",
+        text: "Esta vista mostrará automatizaciones, plantillas y correos gestionados desde Brevo. Por ahora Protocol Data solo gobierna públicos y rutas.",
+        action: "Brevo como fuente"
+      });
+      return;
+    }
+    
     const campaigns = getFilteredCampaigns_();
 
     if (!campaigns.length) {
@@ -2962,6 +3459,22 @@ No conecta todavía con Supabase, Make ni Brevo.
       const operativo = String(campaign.estado_operativo_panel || "").toLowerCase();
 
       if (STATE.filter === "todas") return true;
+
+      if (STATE.filter === "ejecucion") {
+        return !!campaign.trabajo_id || campaign.trabajos_totales > 0;
+      }
+
+      if (STATE.filter === "acciones") {
+        return (
+          campaign.estado_campania === "borrador" ||
+          campaign.trabajos_error > 0 ||
+          campaign.contactos_error > 0 ||
+          operativo === "error_make_brevo" ||
+          operativo === "sincronizada_con_errores" ||
+          operativo === "activa_sin_trabajo"
+        );
+      }
+
       if (STATE.filter === "activa") return campaign.estado_campania === "activa";
       if (STATE.filter === "borrador") return campaign.estado_campania === "borrador";
       if (STATE.filter === "pendiente") {
@@ -2985,6 +3498,20 @@ No conecta todavía con Supabase, Make ni Brevo.
     });
   }
 
+
+  function renderAdminTabPlaceholder_(config) {
+    return [
+      '<div class="piAdminPlaceholder">',
+        '<span class="piAdminPlaceholder__icon" aria-hidden="true">', icon_(config.icon || "list"), '</span>',
+        '<div>',
+          '<strong>', escapeHtml_(config.title || "Vista preparada"), '</strong>',
+          '<p>', escapeHtml_(config.text || "Esta sección será habilitada en una próxima fase."), '</p>',
+          '<small>', escapeHtml_(config.action || "Preparado"), '</small>',
+        '</div>',
+      '</div>'
+    ].join("");
+  }
+  
   function metric_(label, value) {
     return [
       '<div class="piMetric">',
