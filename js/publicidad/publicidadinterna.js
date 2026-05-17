@@ -101,6 +101,8 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     brevoDestinations: [],
     selectedBrevoDestinationId: "",
+    brevoDestinationDropdownOpen: false,
+    brevoDestinationSearch: "",
     loadingBrevoDestinations: false,
     brevoDestinationsError: "",
     brevoDestinationsRequested: false
@@ -350,41 +352,36 @@ No conecta todavía con Supabase, Make ni Brevo.
                   </div>
                 </div>
 
-                <label class="piField">
-                  <span>Ruta de envío</span>
-                  <select data-pi-brevo-destination-select>
-                    <option value="">Cargando destinos Brevo...</option>
-                  </select>
-                </label>
-
-                <div data-pi-brevo-destination-detail>
+                <div class="piField">
+                <span>Ruta de envío</span>
+                <div data-pi-brevo-destination-picker-shell>
                   <div class="piEmpty">
-                    <strong>Seleccioná un destino Brevo.</strong>
-                    <p>Protocol Data usará este destino para indicar a Make/Brevo dónde sincronizar los contactos.</p>
+                    <strong>Cargando destinos Brevo...</strong>
+                    <p>Consultando rutas disponibles desde Supabase.</p>
                   </div>
                 </div>
+              </div>
 
-                <div class="piFieldGrid">
-                  <label class="piField">
-                    <span>Asunto sugerido</span>
-                    <input type="text" data-pi-email-subject placeholder="Ej: Tu oferta sigue disponible">
-                  </label>
-
-                  <label class="piField">
-                    <span>Preheader sugerido</span>
-                    <input type="text" data-pi-email-preheader placeholder="Texto breve previo al correo">
-                  </label>
+                <div data-pi-brevo-destination-detail>
+                <div class="piEmpty">
+                  <strong>Seleccioná un destino Brevo.</strong>
+                  <p>Protocol Data usará este destino para indicar a Make/Brevo dónde sincronizar los contactos.</p>
                 </div>
+              </div>
 
-                <label class="piField">
-                  <span>Mensaje base</span>
-                  <textarea data-pi-email-message rows="4" placeholder="Describe el mensaje principal de la campaña."></textarea>
-                </label>
+              <div class="piBrevoManagedNotice">
+                <span class="piBrevoManagedNotice__icon" aria-hidden="true">
+                  ${icon_("send")}
+                </span>
 
-                <label class="piField">
-                  <span>URL principal / CTA</span>
-                  <input type="url" data-pi-email-cta placeholder="https://sazzu.store">
-                </label>
+                <div>
+                  <strong>Contenido gestionado desde Brevo</strong>
+                  <p>
+                    Protocol Data selecciona públicos y rutas de ejecución. El asunto, plantilla, contenido,
+                    demoras y automatización final se editan directamente dentro de Brevo.
+                  </p>
+                </div>
+              </div>
               </div>
               <!-- FIN · Destino Brevo -->
 
@@ -601,9 +598,42 @@ No conecta todavía con Supabase, Make ni Brevo.
         return;
       }
 
+      const brevoTrigger = event.target.closest("[data-pi-brevo-destination-trigger]");
+      if (brevoTrigger) {
+        event.preventDefault();
+        STATE.brevoDestinationDropdownOpen = !STATE.brevoDestinationDropdownOpen;
+        renderBrevoDestinos_(root);
+        return;
+      }
+
+      const brevoPickBtn = event.target.closest("[data-pi-brevo-destination-pick]");
+      if (brevoPickBtn) {
+        event.preventDefault();
+
+        STATE.selectedBrevoDestinationId = String(brevoPickBtn.dataset.piBrevoDestinationPick || "").trim();
+        STATE.brevoDestinationDropdownOpen = false;
+
+        applyBrevoDestinoDefaults_(root);
+        renderBrevoDestinos_(root);
+        renderBrevoDestinoDetalle_(root);
+        return;
+      }
+
+      const brevoCreateBtn = event.target.closest("[data-pi-brevo-create-destination]");
+      if (brevoCreateBtn) {
+        event.preventDefault();
+        showToast_(root, "Próximo paso: crear nueva lista Brevo desde Protocol Data.");
+        return;
+      }
+
       if (STATE.audienceDropdownOpen && !event.target.closest("[data-pi-audience-picker]")) {
         STATE.audienceDropdownOpen = false;
         renderConjuntosDisponibles_(root);
+      }
+
+      if (STATE.brevoDestinationDropdownOpen && !event.target.closest("[data-pi-brevo-destination-picker]")) {
+        STATE.brevoDestinationDropdownOpen = false;
+        renderBrevoDestinos_(root);
       }
 
       const mockActionBtn = event.target.closest("[data-pi-mock-action]");
@@ -612,26 +642,45 @@ No conecta todavía con Supabase, Make ni Brevo.
       }
     });
 
-        /* INICIO · Selector múltiple de conjuntos · Publicidad Interna */
-        root.addEventListener("input", function (event) {
-          const audienceSearchInput = event.target.closest("[data-pi-audience-search]");
-          if (!audienceSearchInput) return;
-
-          STATE.audienceSearch = String(audienceSearchInput.value || "");
-          STATE.audienceDropdownOpen = true;
-
-          renderConjuntosDisponibles_(root);
-
-          const nextInput = root.querySelector("[data-pi-audience-search]");
-          if (nextInput) {
-            nextInput.focus();
-            const len = nextInput.value.length;
-            try {
-              nextInput.setSelectionRange(len, len);
-            } catch (error) {}
-          }
-        });
-        /* FIN · Selector múltiple de conjuntos · Publicidad Interna */
+                /* INICIO · Selectores con búsqueda · Publicidad Interna */
+                root.addEventListener("input", function (event) {
+                  const audienceSearchInput = event.target.closest("[data-pi-audience-search]");
+                  if (audienceSearchInput) {
+                    STATE.audienceSearch = String(audienceSearchInput.value || "");
+                    STATE.audienceDropdownOpen = true;
+        
+                    renderConjuntosDisponibles_(root);
+        
+                    const nextInput = root.querySelector("[data-pi-audience-search]");
+                    if (nextInput) {
+                      nextInput.focus();
+                      const len = nextInput.value.length;
+                      try {
+                        nextInput.setSelectionRange(len, len);
+                      } catch (error) {}
+                    }
+        
+                    return;
+                  }
+        
+                  const brevoSearchInput = event.target.closest("[data-pi-brevo-destination-search]");
+                  if (brevoSearchInput) {
+                    STATE.brevoDestinationSearch = String(brevoSearchInput.value || "");
+                    STATE.brevoDestinationDropdownOpen = true;
+        
+                    renderBrevoDestinos_(root);
+        
+                    const nextInput = root.querySelector("[data-pi-brevo-destination-search]");
+                    if (nextInput) {
+                      nextInput.focus();
+                      const len = nextInput.value.length;
+                      try {
+                        nextInput.setSelectionRange(len, len);
+                      } catch (error) {}
+                    }
+                  }
+                });
+                /* FIN · Selectores con búsqueda · Publicidad Interna */
 
         /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
         root.addEventListener("change", function (event) {
@@ -1519,6 +1568,8 @@ No conecta todavía con Supabase, Make ni Brevo.
     function normalizeBrevoDestinoDesdeSupabase_(row) {
       return {
         id: String(row.brevo_destino_envio_id || "").trim(),
+        codigoDestino: String(row.codigo_destino || "").trim(),
+        esDefault: row.es_default === true,
         nombre: String(row.nombre_destino || "Destino Brevo sin nombre").trim(),
         descripcion: String(row.descripcion || "").trim(),
 
@@ -1552,41 +1603,227 @@ No conecta todavía con Supabase, Make ni Brevo.
     }
 
     function renderBrevoDestinos_(root) {
-      const select = root.querySelector("[data-pi-brevo-destination-select]");
-      if (!select) return;
+      const shell = root.querySelector("[data-pi-brevo-destination-picker-shell]");
+      if (!shell) return;
 
       if (STATE.loadingBrevoDestinations) {
-        select.innerHTML = '<option value="">Cargando destinos Brevo...</option>';
-        select.disabled = true;
+        shell.innerHTML = [
+          '<div class="piBrevoDestinationPicker">',
+            '<button type="button" class="piBrevoDestinationPicker__trigger is-loading" disabled>',
+              '<span class="piBrevoDestinationPicker__triggerIcon" aria-hidden="true">', icon_("send"), '</span>',
+              '<span class="piBrevoDestinationPicker__triggerCopy">',
+                '<strong>Cargando destinos Brevo...</strong>',
+                '<small>Consultando rutas de envío desde Supabase.</small>',
+              '</span>',
+            '</button>',
+          '</div>'
+        ].join("");
         return;
       }
 
-      select.disabled = false;
-
       if (STATE.brevoDestinationsError) {
-        select.innerHTML = '<option value="">No se pudieron cargar destinos Brevo</option>';
+        shell.innerHTML = [
+          '<div class="piBrevoDestinationPicker">',
+            '<button type="button" class="piBrevoDestinationPicker__trigger is-error" disabled>',
+              '<span class="piBrevoDestinationPicker__triggerIcon" aria-hidden="true">', icon_("send"), '</span>',
+              '<span class="piBrevoDestinationPicker__triggerCopy">',
+                '<strong>No se pudieron cargar destinos Brevo</strong>',
+                '<small>', escapeHtml_(STATE.brevoDestinationsError), '</small>',
+              '</span>',
+            '</button>',
+          '</div>'
+        ].join("");
         return;
       }
 
       if (!STATE.brevoDestinations.length) {
-        select.innerHTML = '<option value="">No hay destinos Brevo activos</option>';
+        shell.innerHTML = [
+          '<div class="piBrevoDestinationPicker">',
+            '<button type="button" class="piBrevoDestinationPicker__trigger" data-pi-brevo-destination-trigger>',
+              '<span class="piBrevoDestinationPicker__triggerIcon" aria-hidden="true">', icon_("send"), '</span>',
+              '<span class="piBrevoDestinationPicker__triggerCopy">',
+                '<strong>No hay destinos Brevo activos</strong>',
+                '<small>Creá o sincronizá una lista Brevo para continuar.</small>',
+              '</span>',
+              '<span class="piBrevoDestinationPicker__chevron" aria-hidden="true">⌄</span>',
+            '</button>',
+            '<button type="button" class="piBrevoDestinationPicker__createSolo" data-pi-brevo-create-destination>',
+              '+ Nueva lista',
+            '</button>',
+          '</div>'
+        ].join("");
         return;
       }
 
-      select.innerHTML = [
-        '<option value="">Seleccionar destino Brevo...</option>',
-        STATE.brevoDestinations.map(function (item) {
-          const selected = item.id === STATE.selectedBrevoDestinationId ? " selected" : "";
+      const destino = getSelectedBrevoDestino_();
+      const visible = getVisibleBrevoDestinos_();
 
+      const triggerTitle = destino
+        ? destino.nombre
+        : "Seleccionar destino Brevo";
+
+      const triggerSubtitle = destino
+        ? [
+            destino.brevoListaId ? "Lista #" + destino.brevoListaId : "",
+            destino.objetivoComercial ? labelObjetivo_(destino.objetivoComercial) : "",
+            destino.brevoAutomatizacionNombre ? "Automatización activa" : "Sin automatización registrada"
+          ].filter(Boolean).join(" · ")
+        : "Elegí la ruta donde Make/Brevo sincronizará los contactos.";
+
+      shell.innerHTML = [
+        '<div class="piBrevoDestinationPicker ', STATE.brevoDestinationDropdownOpen ? "is-open" : "", '" data-pi-brevo-destination-picker>',
+
+          '<button type="button" class="piBrevoDestinationPicker__trigger" data-pi-brevo-destination-trigger>',
+            '<span class="piBrevoDestinationPicker__triggerIcon piBrevoDestinationPicker__triggerIcon--', escapeHtml_(normalizeCommercialKind_(destino ? destino.objetivoComercial : "publicidad_interna")), '" aria-hidden="true">',
+              commercialIcon_(normalizeCommercialKind_(destino ? destino.objetivoComercial : "publicidad_interna")),
+            '</span>',
+
+            '<span class="piBrevoDestinationPicker__triggerCopy">',
+              '<strong>', escapeHtml_(triggerTitle), '</strong>',
+              '<small>', escapeHtml_(triggerSubtitle), '</small>',
+            '</span>',
+
+            destino && destino.esDefault ? '<span class="piBrevoDestinationPicker__default">Default</span>' : '',
+
+            '<span class="piBrevoDestinationPicker__chevron" aria-hidden="true">⌄</span>',
+          '</button>',
+
+          STATE.brevoDestinationDropdownOpen ? [
+            '<div class="piBrevoDestinationPicker__dropdown">',
+              '<div class="piBrevoDestinationPicker__searchRow">',
+                '<span class="piBrevoDestinationPicker__searchIcon" aria-hidden="true">', icon_("search"), '</span>',
+                '<input type="search" data-pi-brevo-destination-search value="', escapeHtml_(STATE.brevoDestinationSearch || ""), '" placeholder="Buscar destino, lista, automatización u objetivo...">',
+              '</div>',
+
+              '<div class="piBrevoDestinationPicker__hint">',
+                '<strong>Elegí por objetivo operativo.</strong>',
+                '<span>La lista debe coincidir con el tipo de campaña: recompra, cross sell, fidelización, reactivación u otra ruta activa.</span>',
+              '</div>',
+
+              '<div class="piBrevoDestinationPicker__list">',
+                visible.length
+                  ? visible.map(renderBrevoDestinoDropdownItem_).join("")
+                  : renderBrevoDestinationEmpty_(),
+              '</div>',
+
+              '<div class="piBrevoDestinationPicker__footer">',
+                '<button type="button" data-pi-brevo-create-destination>',
+                  '<span aria-hidden="true">+</span>',
+                  '<strong>Nueva lista</strong>',
+                  '<small>Crear destino Brevo desde Protocol Data</small>',
+                '</button>',
+              '</div>',
+            '</div>'
+          ].join("") : '',
+
+        '</div>'
+      ].join("");
+    }
+
+    
+    function getVisibleBrevoDestinos_() {
+      const query = String(STATE.brevoDestinationSearch || "").trim().toLowerCase();
+
+      let items = Array.isArray(STATE.brevoDestinations)
+        ? STATE.brevoDestinations.slice()
+        : [];
+
+      if (query) {
+        items = items.filter(function (item) {
           return [
-            '<option value="', escapeHtml_(item.id), '"', selected, '>',
-              escapeHtml_(item.nombre),
+            item.nombre,
+            item.codigoDestino,
+            item.descripcion,
+            item.tipoDestino,
+            item.canal,
+            item.estado,
+            item.objetivoComercial,
+            labelObjetivo_(item.objetivoComercial),
+            item.brevoListaId,
+            item.brevoListaNombre,
+            item.brevoAutomatizacionId,
+            item.brevoAutomatizacionNombre,
+            item.brevoTemplateId,
+            item.brevoTemplateNombre,
+            item.triggerBrevo
+          ].join(" ").toLowerCase().includes(query);
+        });
+      }
+
+      items.sort(function (a, b) {
+        const prioridadA = toNumber_(a.prioridad || 100);
+        const prioridadB = toNumber_(b.prioridad || 100);
+
+        if (prioridadA !== prioridadB) return prioridadA - prioridadB;
+
+        if (a.esDefault !== b.esDefault) return a.esDefault ? -1 : 1;
+
+        return String(a.nombre || "").localeCompare(String(b.nombre || ""));
+      });
+
+      return items;
+    }
+
+    function renderBrevoDestinationEmpty_() {
+      return [
+        '<div class="piBrevoDestinationPicker__empty">',
+          '<strong>No encontramos destinos con ese filtro.</strong>',
+          '<span>Probá buscar por nombre de lista, automatización, objetivo o código.</span>',
+        '</div>'
+      ].join("");
+    }
+
+    function renderBrevoDestinoDropdownItem_(item) {
+      const selected = item.id === STATE.selectedBrevoDestinationId;
+      const kind = normalizeCommercialKind_(item.objetivoComercial);
+      const listLabel = item.brevoListaId
+        ? "Lista #" + item.brevoListaId + (item.brevoListaNombre ? " · " + item.brevoListaNombre : "")
+        : (item.brevoListaNombre || "Lista no definida");
+
+      const automationLabel = item.brevoAutomatizacionNombre || item.brevoAutomatizacionId || "Sin automatización registrada";
+      const triggerLabel = formatBrevoTrigger_(item.triggerBrevo);
+
+      return [
+        '<button type="button" class="piBrevoDestinationPicker__item ', selected ? "is-selected" : "", '" data-pi-brevo-destination-pick="', escapeHtml_(item.id), '">',
+
+          '<span class="piBrevoDestinationPicker__itemIcon piBrevoDestinationPicker__itemIcon--', escapeHtml_(kind), '" aria-hidden="true">',
+            commercialIcon_(kind),
+          '</span>',
+
+          '<span class="piBrevoDestinationPicker__itemMain">',
+            '<span class="piBrevoDestinationPicker__itemTop">',
+              '<strong>', escapeHtml_(item.nombre), '</strong>',
+              item.esDefault ? '<em>Default</em>' : '',
+              item.estado === "activo" ? '<em class="is-active">Activo</em>' : '',
+            '</span>',
+
+            '<small>',
+              escapeHtml_(labelObjetivo_(item.objetivoComercial)),
               ' · ',
               escapeHtml_(formatBrevoDestinoTipo_(item.tipoDestino)),
-              item.brevoListaNombre ? ' · ' + escapeHtml_(item.brevoListaNombre) : '',
-            '</option>'
-          ].join("");
-        }).join("")
+              ' · ',
+              escapeHtml_(item.canal || "email"),
+            '</small>',
+
+            '<span class="piBrevoDestinationPicker__itemRoute">',
+              '<b>', escapeHtml_(listLabel), '</b>',
+              '<b>', escapeHtml_(automationLabel), '</b>',
+              '<b>', escapeHtml_(triggerLabel), '</b>',
+            '</span>',
+
+            item.descripcion
+              ? '<span class="piBrevoDestinationPicker__itemDesc">' + escapeHtml_(item.descripcion) + '</span>'
+              : '',
+          '</span>',
+
+          '<span class="piBrevoDestinationPicker__itemSide">',
+            item.codigoDestino
+              ? '<small>' + escapeHtml_(item.codigoDestino) + '</small>'
+              : '',
+            '<span class="piBrevoDestinationPicker__check">', selected ? "✓" : "", '</span>',
+          '</span>',
+
+        '</button>'
       ].join("");
     }
 
@@ -1627,47 +1864,56 @@ No conecta todavía con Supabase, Make ni Brevo.
       }
 
       node.innerHTML = [
-        '<div class="piReading">',
-          '<strong>', escapeHtml_(destino.nombre), '</strong>',
-          '<p>',
-            escapeHtml_(destino.descripcion || "Ruta de envío disponible para campañas internas."),
-          '</p>',
-          '<p>',
-            'Lista: <strong>', escapeHtml_(destino.brevoListaNombre || destino.brevoListaId || "No definida"), '</strong>',
-            ' · Automatización: <strong>', escapeHtml_(destino.brevoAutomatizacionNombre || destino.brevoAutomatizacionId || "No definida"), '</strong>',
-          '</p>',
-          '<p>',
-            'Trigger: ', escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)),
-            ' · Template: ', escapeHtml_(destino.brevoTemplateNombre || destino.brevoTemplateId || "No definido"),
-          '</p>',
+        '<div class="piBrevoRouteCard">',
+          '<div class="piBrevoRouteCard__top">',
+            '<span class="piBrevoRouteCard__icon" aria-hidden="true">', icon_("send"), '</span>',
+            '<div>',
+              '<strong>', escapeHtml_(destino.nombre), '</strong>',
+              '<p>', escapeHtml_(destino.descripcion || "Ruta de envío disponible para campañas internas."), '</p>',
+            '</div>',
+          '</div>',
+
+          '<div class="piBrevoRouteGrid">',
+            '<div class="piBrevoRouteMetric">',
+              '<span>Lista Brevo</span>',
+              '<strong>',
+                destino.brevoListaId ? '#'+escapeHtml_(destino.brevoListaId) + ' · ' : '',
+                escapeHtml_(destino.brevoListaNombre || "No definida"),
+              '</strong>',
+            '</div>',
+
+            '<div class="piBrevoRouteMetric">',
+              '<span>Automatización</span>',
+              '<strong>', escapeHtml_(destino.brevoAutomatizacionNombre || destino.brevoAutomatizacionId || "No definida"), '</strong>',
+            '</div>',
+
+            '<div class="piBrevoRouteMetric">',
+              '<span>Tipo de ruta</span>',
+              '<strong>', escapeHtml_(formatBrevoDestinoTipo_(destino.tipoDestino)), '</strong>',
+            '</div>',
+
+            '<div class="piBrevoRouteMetric">',
+              '<span>Trigger</span>',
+              '<strong>', escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)), '</strong>',
+            '</div>',
+          '</div>',
+
+          '<div class="piBrevoRouteCard__managed">',
+            '<strong>El contenido del correo se edita desde Brevo.</strong>',
+            '<p>Protocol Data solo enviará contactos a esta ruta. Make ejecutará la sincronización y Brevo manejará plantilla, asunto, tiempos y automatización.</p>',
+          '</div>',
         '</div>'
       ].join("");
     }
 
     function applyBrevoDestinoDefaults_(root) {
+      /*
+        Publicidad Interna no edita contenido de correo desde Protocol Data.
+        El destino Brevo define la ruta operativa.
+        Asunto, preheader, plantilla, delays y contenido se gestionan dentro de Brevo.
+      */
       const destino = getSelectedBrevoDestino_();
-      if (!destino) return;
-
-      const subjectInput = root.querySelector("[data-pi-email-subject]");
-      const preheaderInput = root.querySelector("[data-pi-email-preheader]");
-      const messageInput = root.querySelector("[data-pi-email-message]");
-      const ctaInput = root.querySelector("[data-pi-email-cta]");
-
-      if (subjectInput && !subjectInput.value.trim()) {
-        subjectInput.value = destino.asuntoDefault || "";
-      }
-
-      if (preheaderInput && !preheaderInput.value.trim()) {
-        preheaderInput.value = destino.preheaderDefault || "";
-      }
-
-      if (messageInput && !messageInput.value.trim()) {
-        messageInput.value = destino.mensajeBaseDefault || "";
-      }
-
-      if (ctaInput && !ctaInput.value.trim()) {
-        ctaInput.value = destino.urlCtaDefault || "";
-      }
+      if (!root || !destino) return;
     }
 
     function getSelectedBrevoDestino_() {
