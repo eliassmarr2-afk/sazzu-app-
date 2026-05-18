@@ -4953,3 +4953,83 @@ body[data-page="publicidadinterna"] .piSlideLayer {
 /* ============================================================
 FIN · Publicidad Interna · Animación forzada slide Crear campaña
 ============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Validaciones constructor campaña
+============================================================ */
+
+body[data-page="publicidadinterna"] [data-pi-builder-save-draft].is-disabled,
+body[data-page="publicidadinterna"] [data-pi-builder-save-draft]:disabled {
+  opacity: .58;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidationBlock {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidationBlock__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidationBlock__title strong {
+  font-size: 11px;
+  font-weight: 950;
+  color: #475467;
+  text-transform: uppercase;
+  letter-spacing: .045em;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidationBlock__title span {
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #2479FF;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item {
+  min-height: 30px;
+  height: auto;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item small {
+  grid-column: 2;
+  margin-top: 3px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: currentColor;
+  opacity: .78;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation--warnings .piBuilderValidation__item.is-ok {
+  background: #F8FAFC;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation--warnings .piBuilderValidation__item.is-ok span {
+  background: #E2E8F0;
+  color: #475467;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation--warnings .piBuilderValidation__item.is-pending {
+  background: #FFF6E5;
+  color: #9A5B00;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation--warnings .piBuilderValidation__item.is-pending span {
+  background: #F79009;
+  color: #FFFFFF;
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Validaciones constructor campaña
+============================================================ */

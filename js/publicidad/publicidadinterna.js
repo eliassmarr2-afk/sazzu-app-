@@ -721,12 +721,12 @@ No conecta todavía con Supabase, Make ni Brevo.
 
               <div class="piSlide__footer piCampaignBuilderFooter">
                 <button class="piBtn piBtn--ghost" type="button" data-pi-close-slide>Cancelar</button>
-                <button class="piBtn piBtn--primary" type="submit">
-                  <span class="piBtn__icon" aria-hidden="true">
-                    ${icon_("check")}
-                  </span>
-                  <span>Guardar borrador</span>
-                </button>
+                <button class="piBtn piBtn--primary" type="submit" data-pi-builder-save-draft disabled>
+  <span class="piBtn__icon" aria-hidden="true">
+    ${icon_("check")}
+  </span>
+  <span data-pi-builder-save-label>Completar requisitos</span>
+</button>
               </div>
             </form>
           </div>
@@ -968,6 +968,7 @@ No conecta todavía con Supabase, Make ni Brevo.
         });
 
         renderConjuntosDisponibles_(root);
+        renderCampaignBuilderSummary_(root);
         return;
       }
 
@@ -977,6 +978,7 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         STATE.selectedAudienceSetIds = [];
         renderConjuntosDisponibles_(root);
+        renderCampaignBuilderSummary_(root);
         return;
       }
 
@@ -1219,7 +1221,9 @@ No conecta todavía con Supabase, Make ni Brevo.
               });
             }
     
-            renderConjuntosDisponibles_(root);
+            applyBrevoDestinoDefaults_(root);
+            renderBrevoDestinoDetalle_(root);
+            renderCampaignBuilderSummary_(root);
             return;
           }
     
@@ -2529,94 +2533,267 @@ No conecta todavía con Supabase, Make ni Brevo.
       ].join("");
     }
 
-    /* INICIO · Constructor campaña · Resumen operativo */
-    function renderCampaignBuilderSummary_(root) {
-      if (!root) return;
-
-      const node = root.querySelector("[data-pi-campaign-builder-summary]");
-      if (!node) return;
-
-      const nameInput = root.querySelector("[data-pi-campaign-name]");
-      const objectiveSelect = root.querySelector("[data-pi-campaign-objective]");
-      const channelSelect = root.querySelector("[data-pi-campaign-channel]");
-
-      const campaignName = String(nameInput && nameInput.value ? nameInput.value : "").trim();
-      const objective = String(objectiveSelect && objectiveSelect.value ? objectiveSelect.value : "recompra").trim();
-      const channel = String(channelSelect && channelSelect.value ? channelSelect.value : "email").trim();
-
-      const selectedAudiences = getSelectedAudienceSets_();
-      const selectedMembers = selectedAudiences.reduce(function (acc, item) {
-        return acc + toNumber_(item.miembros || item.miembrosActivos || item.cantidadMiembros);
-      }, 0);
-
-      const destino = getSelectedBrevoDestino_();
-
-      const hasName = !!campaignName;
-      const hasAudience = selectedAudiences.length > 0;
-      const hasDestination = !!destino;
-      const hasBrevoList = !!(destino && destino.brevoListaId);
-      const canSave = hasName && hasAudience && hasDestination && hasBrevoList;
-
-      node.innerHTML = [
-        '<div class="piBuilderPanel__head">',
-          '<span class="piMiniIcon" aria-hidden="true">', icon_("check"), '</span>',
-          '<div>',
-            '<h3>Resumen operativo</h3>',
-            '<p>', canSave ? 'La campaña está lista para guardarse como borrador.' : 'Completá los requisitos mínimos para guardar el borrador.', '</p>',
+       /* INICIO · Constructor campaña · Resumen operativo */
+       function getCampaignBuilderSnapshot_(root) {
+        const nameInput = root.querySelector("[data-pi-campaign-name]");
+        const descriptionInput = root.querySelector("[data-pi-campaign-description]");
+        const objectiveSelect = root.querySelector("[data-pi-campaign-objective]");
+        const channelSelect = root.querySelector("[data-pi-campaign-channel]");
+  
+        const campaignName = String(nameInput && nameInput.value ? nameInput.value : "").trim();
+        const description = String(descriptionInput && descriptionInput.value ? descriptionInput.value : "").trim();
+        const objective = String(objectiveSelect && objectiveSelect.value ? objectiveSelect.value : "recompra").trim();
+        const channel = String(channelSelect && channelSelect.value ? channelSelect.value : "email").trim();
+  
+        const selectedAudiences = getSelectedAudienceSets_();
+        const selectedMembers = selectedAudiences.reduce(function (acc, item) {
+          return acc + toNumber_(item.miembros || item.miembrosActivos || item.cantidadMiembros);
+        }, 0);
+  
+        const destino = getSelectedBrevoDestino_();
+  
+        const audienceKinds = selectedAudiences.map(function (item) {
+          return normalizeCommercialKind_(item.clasificacion);
+        });
+  
+        const uniqueAudienceKinds = audienceKinds.filter(function (kind, index) {
+          return audienceKinds.indexOf(kind) === index;
+        });
+  
+        const normalizedObjective = normalizeCommercialKind_(objective);
+        const normalizedDestinationObjective = normalizeCommercialKind_(destino ? destino.objetivoComercial : "");
+  
+        return {
+          campaignName: campaignName,
+          description: description,
+          objective: objective,
+          normalizedObjective: normalizedObjective,
+          channel: channel,
+  
+          selectedAudiences: selectedAudiences,
+          selectedMembers: selectedMembers,
+          uniqueAudienceKinds: uniqueAudienceKinds,
+  
+          destino: destino,
+          normalizedDestinationObjective: normalizedDestinationObjective
+        };
+      }
+  
+      function getCampaignBuilderValidation_(root) {
+        const snapshot = getCampaignBuilderSnapshot_(root);
+  
+        const hasName = snapshot.campaignName.length >= 4;
+        const hasAudience = snapshot.selectedAudiences.length > 0;
+        const hasMembers = snapshot.selectedMembers > 0;
+        const hasDestination = !!snapshot.destino;
+        const hasBrevoList = !!(snapshot.destino && snapshot.destino.brevoListaId);
+        const destinationIsActive = !!(snapshot.destino && String(snapshot.destino.estado || "").toLowerCase() === "activo");
+        const channelMatchesDestination = !snapshot.destino || !snapshot.destino.canal || snapshot.channel === snapshot.destino.canal;
+        const objectiveMatchesDestination =
+          !snapshot.destino ||
+          !snapshot.normalizedDestinationObjective ||
+          snapshot.normalizedDestinationObjective === "publicidad_interna" ||
+          snapshot.normalizedObjective === snapshot.normalizedDestinationObjective;
+  
+        const critical = [
+          {
+            key: "name",
+            label: "Nombre de campaña válido",
+            ok: hasName,
+            hint: "Usá un nombre claro para identificar la campaña en la tabla."
+          },
+          {
+            key: "audiences",
+            label: "Al menos 1 conjunto seleccionado",
+            ok: hasAudience,
+            hint: "La campaña necesita un público operativo."
+          },
+          {
+            key: "destination",
+            label: "Destino Brevo seleccionado",
+            ok: hasDestination,
+            hint: "Seleccioná la lista/ruta donde Make enviará contactos."
+          },
+          {
+            key: "brevo_list",
+            label: "Lista Brevo válida",
+            ok: hasBrevoList,
+            hint: "El destino debe tener un ID de lista Brevo."
+          },
+          {
+            key: "destination_active",
+            label: "Destino Brevo activo",
+            ok: destinationIsActive,
+            hint: "El destino debe estar activo para evitar campañas muertas."
+          }
+        ];
+  
+        const warnings = [
+          {
+            key: "members",
+            label: "Conjuntos con contactos estimados",
+            ok: hasMembers,
+            hint: "La campaña puede guardarse, pero podría no sincronizar contactos."
+          },
+          {
+            key: "channel_match",
+            label: "Canal alineado con destino",
+            ok: channelMatchesDestination,
+            hint: "El canal elegido no coincide con el canal del destino Brevo."
+          },
+          {
+            key: "objective_match",
+            label: "Objetivo alineado con ruta Brevo",
+            ok: objectiveMatchesDestination,
+            hint: "El objetivo comercial no coincide con la ruta Brevo seleccionada."
+          }
+        ];
+  
+        const canSave = critical.every(function (item) {
+          return item.ok;
+        });
+  
+        return {
+          snapshot: snapshot,
+          critical: critical,
+          warnings: warnings,
+          canSave: canSave,
+          pendingCritical: critical.filter(function (item) { return !item.ok; }),
+          pendingWarnings: warnings.filter(function (item) { return !item.ok; })
+        };
+      }
+  
+      function renderCampaignBuilderSummary_(root) {
+        if (!root) return;
+  
+        const node = root.querySelector("[data-pi-campaign-builder-summary]");
+        if (!node) return;
+  
+        const validation = getCampaignBuilderValidation_(root);
+        const snapshot = validation.snapshot;
+        const destino = snapshot.destino;
+  
+        syncCampaignBuilderSubmit_(root, validation);
+  
+        node.innerHTML = [
+          '<div class="piBuilderPanel__head">',
+            '<span class="piMiniIcon" aria-hidden="true">', icon_("check"), '</span>',
+            '<div>',
+              '<h3>Resumen operativo</h3>',
+              '<p>', validation.canSave ? 'La campaña está lista para guardarse como borrador.' : 'Completá los requisitos críticos para guardar el borrador.', '</p>',
+            '</div>',
           '</div>',
-        '</div>',
-
-        '<div class="piBuilderSummaryHero ', canSave ? 'is-ready' : 'is-draft', '">',
-          '<strong>', escapeHtml_(campaignName || "Campaña sin nombre"), '</strong>',
-          '<span>', escapeHtml_(labelObjetivo_(objective)), ' · ', escapeHtml_(channel.toUpperCase()), '</span>',
-        '</div>',
-
-        '<div class="piBuilderSummaryGrid">',
-          '<div>',
-            '<span>Conjuntos</span>',
-            '<strong>', formatNumber_(selectedAudiences.length), '</strong>',
+  
+          '<div class="piBuilderSummaryHero ', validation.canSave ? 'is-ready' : 'is-draft', '">',
+            '<strong>', escapeHtml_(snapshot.campaignName || "Campaña sin nombre"), '</strong>',
+            '<span>', escapeHtml_(labelObjetivo_(snapshot.objective)), ' · ', escapeHtml_(snapshot.channel.toUpperCase()), '</span>',
           '</div>',
-          '<div>',
-            '<span>Contactos estimados</span>',
-            '<strong>', formatNumber_(selectedMembers), '</strong>',
+  
+          '<div class="piBuilderSummaryGrid">',
+            '<div>',
+              '<span>Conjuntos</span>',
+              '<strong>', formatNumber_(snapshot.selectedAudiences.length), '</strong>',
+            '</div>',
+            '<div>',
+              '<span>Contactos estimados</span>',
+              '<strong>', formatNumber_(snapshot.selectedMembers), '</strong>',
+            '</div>',
+            '<div>',
+              '<span>Lista Brevo</span>',
+              '<strong>', destino && destino.brevoListaId ? '#' + escapeHtml_(destino.brevoListaId) : 'Pendiente', '</strong>',
+            '</div>',
+            '<div>',
+              '<span>Trigger</span>',
+              '<strong>', destino ? escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)) : 'Pendiente', '</strong>',
+            '</div>',
           '</div>',
-          '<div>',
-            '<span>Lista Brevo</span>',
-            '<strong>', destino && destino.brevoListaId ? '#' + escapeHtml_(destino.brevoListaId) : 'Pendiente', '</strong>',
+  
+          '<div class="piBuilderValidationBlock">',
+            '<div class="piBuilderValidationBlock__title">',
+              '<strong>Validaciones críticas</strong>',
+              '<span>', formatNumber_(validation.critical.length - validation.pendingCritical.length), '/', formatNumber_(validation.critical.length), '</span>',
+            '</div>',
+            '<div class="piBuilderValidation">',
+              validation.critical.map(renderBuilderValidationItem_).join(""),
+            '</div>',
           '</div>',
-          '<div>',
-            '<span>Trigger</span>',
-            '<strong>', destino ? escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)) : 'Pendiente', '</strong>',
+  
+          '<div class="piBuilderValidationBlock">',
+            '<div class="piBuilderValidationBlock__title">',
+              '<strong>Alertas operativas</strong>',
+              '<span>', validation.pendingWarnings.length ? formatNumber_(validation.pendingWarnings.length) + ' alerta' + (validation.pendingWarnings.length === 1 ? '' : 's') : 'Sin alertas', '</span>',
+            '</div>',
+            '<div class="piBuilderValidation piBuilderValidation--warnings">',
+              validation.warnings.map(renderBuilderValidationItem_).join(""),
+            '</div>',
           '</div>',
-        '</div>',
-
-        '<div class="piBuilderValidation">',
-          renderBuilderValidationItem_("Nombre de campaña", hasName),
-          renderBuilderValidationItem_("Al menos 1 conjunto seleccionado", hasAudience),
-          renderBuilderValidationItem_("Destino Brevo seleccionado", hasDestination),
-          renderBuilderValidationItem_("Lista Brevo válida", hasBrevoList),
-        '</div>',
-
-        '<div class="piBuilderTechSnapshot">',
-          '<strong>Snapshot técnico</strong>',
-          '<code>',
-            'audiencias=', escapeHtml_(String(selectedAudiences.length)),
-            ' · destino=', escapeHtml_(destino ? destino.codigoDestino || destino.id : 'pendiente'),
-            ' · modo=borrador',
-          '</code>',
-        '</div>'
-      ].join("");
-    }
-
-    function renderBuilderValidationItem_(label, ok) {
-      return [
-        '<div class="piBuilderValidation__item ', ok ? 'is-ok' : 'is-pending', '">',
-          '<span>', ok ? '✓' : '•', '</span>',
-          '<strong>', escapeHtml_(label), '</strong>',
-        '</div>'
-      ].join("");
-    }
-    /* FIN · Constructor campaña · Resumen operativo */
+  
+          '<div class="piBuilderTechSnapshot">',
+            '<strong>Snapshot técnico</strong>',
+            '<code>',
+              'audiencias=', escapeHtml_(String(snapshot.selectedAudiences.length)),
+              ' · miembros=', escapeHtml_(String(snapshot.selectedMembers)),
+              ' · destino=', escapeHtml_(destino ? destino.codigoDestino || destino.id : 'pendiente'),
+              ' · lista=', escapeHtml_(destino && destino.brevoListaId ? destino.brevoListaId : 'pendiente'),
+              ' · modo=borrador',
+            '</code>',
+          '</div>'
+        ].join("");
+      }
+  
+      function renderBuilderValidationItem_(item) {
+        return [
+          '<div class="piBuilderValidation__item ', item.ok ? 'is-ok' : 'is-pending', '" title="', escapeHtml_(item.hint || ""), '">',
+            '<span>', item.ok ? '✓' : '•', '</span>',
+            '<strong>', escapeHtml_(item.label), '</strong>',
+            item.ok ? '' : '<small>' + escapeHtml_(item.hint || '') + '</small>',
+          '</div>'
+        ].join("");
+      }
+  
+      function syncCampaignBuilderSubmit_(root, validation) {
+        const submitBtn = root.querySelector("[data-pi-builder-save-draft]");
+        const label = root.querySelector("[data-pi-builder-save-label]");
+  
+        if (!submitBtn) return;
+  
+        submitBtn.disabled = !validation.canSave;
+        submitBtn.classList.toggle("is-disabled", !validation.canSave);
+  
+        if (label) {
+          label.textContent = validation.canSave ? "Guardar borrador" : "Completar requisitos";
+        }
+  
+        submitBtn.title = validation.canSave
+          ? "Guardar campaña como borrador."
+          : "Faltan requisitos críticos para guardar el borrador.";
+      }
+  
+      function focusCampaignBuilderFirstError_(root, validation) {
+        if (!root || !validation || validation.canSave) return;
+  
+        const first = validation.pendingCritical[0];
+  
+        if (!first) return;
+  
+        if (first.key === "name") {
+          const input = root.querySelector("[data-pi-campaign-name]");
+          if (input) input.focus();
+          return;
+        }
+  
+        if (first.key === "audiences") {
+          const trigger = root.querySelector("[data-pi-audience-trigger]");
+          if (trigger) trigger.focus();
+          return;
+        }
+  
+        if (first.key === "destination" || first.key === "brevo_list" || first.key === "destination_active") {
+          const trigger = root.querySelector("[data-pi-brevo-destination-trigger]");
+          if (trigger) trigger.focus();
+        }
+      }
+      /* FIN · Constructor campaña · Resumen operativo */
 
     function renderSelectedAudienceSummary_(selected, totalMembers) {
       if (!selected.length) {
@@ -3244,15 +3421,20 @@ No conecta todavía con Supabase, Make ni Brevo.
     async function guardarCampaniaInternaBorrador_(root, form) {
       if (!root || !form) return;
 
-      const totalSeleccionados = STATE.selectedAudienceSetIds.length;
+      const validation = getCampaignBuilderValidation_(root);
+      renderCampaignBuilderSummary_(root);
 
-      if (!totalSeleccionados) {
-        showToast_(root, "Seleccioná al menos un conjunto de audiencia para crear la campaña.");
-        return;
-      }
+      if (!validation.canSave) {
+        const firstError = validation.pendingCritical[0];
 
-      if (!STATE.selectedBrevoDestinationId) {
-        showToast_(root, "Seleccioná un destino Brevo para definir dónde se ejecutará la campaña.");
+        showToast_(
+          root,
+          firstError && firstError.hint
+            ? firstError.hint
+            : "Completá los requisitos críticos antes de guardar el borrador."
+        );
+
+        focusCampaignBuilderFirstError_(root, validation);
         return;
       }
 
@@ -3276,11 +3458,8 @@ No conecta todavía con Supabase, Make ni Brevo.
       const mensaje = String(messageInput ? messageInput.value : "").trim();
       const urlCta = String(ctaInput ? ctaInput.value : "").trim();
 
-      if (!nombre) {
-        showToast_(root, "Escribí un nombre para la campaña.");
-        if (nombreInput) nombreInput.focus();
-        return;
-      }
+      const destino = getSelectedBrevoDestino_();
+      const selectedAudiences = getSelectedAudienceSets_();
 
       const payload = {
         nombre: nombre,
@@ -3294,10 +3473,28 @@ No conecta todavía con Supabase, Make ni Brevo.
         asunto_email: asunto,
         preheader_email: preheader,
         mensaje_base: mensaje,
-        url_cta: urlCta
+        url_cta: urlCta,
+
+        metadata_constructor: {
+          origen: "constructor_publicidad_interna",
+          validacion_frontend: {
+            can_save: validation.canSave,
+            warnings_count: validation.pendingWarnings.length,
+            warnings: validation.pendingWarnings.map(function (item) {
+              return item.key;
+            })
+          },
+          snapshot: {
+            conjuntos_count: selectedAudiences.length,
+            contactos_estimados_frontend: validation.snapshot.selectedMembers,
+            brevo_lista_id: destino ? destino.brevoListaId : null,
+            brevo_destino_codigo: destino ? destino.codigoDestino : null,
+            operador_visual: STATE.selectedOperatorCode || null
+          }
+        }
       };
 
-      const submitBtn = form.querySelector('button[type="submit"]');
+      const submitBtn = form.querySelector("[data-pi-builder-save-draft]") || form.querySelector('button[type="submit"]');
       const previousHtml = submitBtn ? submitBtn.innerHTML : "";
 
       if (submitBtn) {
@@ -3329,7 +3526,13 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         closeSlides_(root);
 
+        STATE.selectedAudienceSetIds = [];
+        STATE.selectedBrevoDestinationId = "";
+        STATE.brevoDestinationDropdownOpen = false;
+        STATE.audienceDropdownOpen = false;
+
         await loadCampaniasDesdeSupabase_(root);
+        loadPublicidadInternaAdminContext_(root);
       } catch (error) {
         console.error("[publicidadinterna] Error creando campaña borrador:", error);
         showToast_(
@@ -3341,6 +3544,7 @@ No conecta todavía con Supabase, Make ni Brevo.
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = previousHtml;
+          renderCampaignBuilderSummary_(root);
         }
       }
     }
