@@ -4164,3 +4164,222 @@ body[data-page="publicidadinterna"] .piCampaignTableScroll::-webkit-scrollbar-th
 /* ============================================================
 FIN · Publicidad Interna · Fix final scroll tabla + borde izquierdo
 ============================================================ */
+
+/* ============================================================
+INICIO · Publicidad Interna · Tabla inteligente
+============================================================ */
+
+/* Cursor global durante resize */
+body.piIsResizingColumn,
+body.piIsResizingColumn * {
+  cursor: ew-resize !important;
+  user-select: none !important;
+}
+
+body.piIsResizingRow,
+body.piIsResizingRow * {
+  cursor: ns-resize !important;
+  user-select: none !important;
+}
+
+/* La tabla no puede empujar el panel completo */
+body[data-page="publicidadinterna"] .piCampaignTableScroll {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  max-width: 100% !important;
+}
+
+/* Encabezados inteligentes */
+body[data-page="publicidadinterna"] .piTableHeadCell {
+  position: relative;
+  vertical-align: middle;
+  background: #F8FAFC !important;
+  user-select: none;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadCell[draggable="true"] {
+  cursor: grab;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadCell[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadInner {
+  min-width: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadInner strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadIcon {
+  width: 16px;
+  height: 16px;
+  color: #2479FF;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadIcon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Handle resize columnas */
+body[data-page="publicidadinterna"] .piColumnResizeHandle {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  width: 8px;
+  height: 100%;
+  z-index: 8;
+  cursor: ew-resize;
+}
+
+body[data-page="publicidadinterna"] .piColumnResizeHandle::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 3px;
+  width: 2px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadCell:hover .piColumnResizeHandle::after {
+  background: #2479FF;
+}
+
+/* Botón congelar */
+body[data-page="publicidadinterna"] .piFreezeColumnBtn {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #D8E2F3;
+  background: #FFFFFF;
+  border-radius: 4px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+body[data-page="publicidadinterna"] .piFreezeColumnBtn span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #CBD5E1;
+}
+
+body[data-page="publicidadinterna"] .piFreezeColumnBtn.is-active {
+  border-color: #2479FF;
+  background: #EAF2FF;
+}
+
+body[data-page="publicidadinterna"] .piFreezeColumnBtn.is-active span {
+  background: #2479FF;
+}
+
+/* Drag visual */
+body[data-page="publicidadinterna"] .piTableHeadCell.is-dragging {
+  opacity: .55;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadCell.is-drag-over {
+  box-shadow: inset 3px 0 0 #2479FF;
+}
+
+/* Celdas congeladas */
+body[data-page="publicidadinterna"] .piTableHeadCell.is-frozen,
+body[data-page="publicidadinterna"] .piTableCell.is-frozen {
+  position: sticky !important;
+  z-index: 5;
+  background: inherit;
+}
+
+body[data-page="publicidadinterna"] thead .piTableHeadCell.is-frozen {
+  z-index: 9;
+  background: #F8FAFC !important;
+}
+
+body[data-page="publicidadinterna"] .piTableCell.is-frozen {
+  background: inherit !important;
+}
+
+body[data-page="publicidadinterna"] .piTableHeadCell.is-frozen-edge,
+body[data-page="publicidadinterna"] .piTableCell.is-frozen-edge {
+  box-shadow: 4px 0 0 rgba(148, 163, 184, .32);
+}
+
+/* El color alterno debe persistir también en celdas congeladas */
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(odd) .piTableCell.is-frozen {
+  background: #FFFFFF !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignTable tbody tr:nth-child(even) .piTableCell.is-frozen {
+  background: #EFFBFD !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignRow.has-error .piTableCell.is-frozen {
+  background: #FFF1F1 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignRow.is-selected .piTableCell.is-frozen {
+  background: #EAF2FF !important;
+}
+
+/* Handle altura de filas */
+body[data-page="publicidadinterna"] .piColSelect,
+body[data-page="publicidadinterna"] .piTableCell[data-pi-col="select"] {
+  position: relative;
+}
+
+body[data-page="publicidadinterna"] .piRowResizeHandle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 7px;
+  z-index: 6;
+  cursor: ns-resize;
+}
+
+body[data-page="publicidadinterna"] .piRowResizeHandle::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 3px;
+  height: 2px;
+  background: transparent;
+  border-radius: 999px;
+}
+
+body[data-page="publicidadinterna"] .piTableCell:hover .piRowResizeHandle::after {
+  background: #2479FF;
+}
+
+/* La altura de fila no debe romper contenido */
+body[data-page="publicidadinterna"] .piCampaignRow td {
+  overflow: hidden;
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Tabla inteligente
+============================================================ */

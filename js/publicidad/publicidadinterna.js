@@ -79,6 +79,145 @@ No conecta todavía con Supabase, Make ni Brevo.
     }
   ];
 
+  /* INICIO · Configuración tabla inteligente · Publicidad Interna */
+  const PI_TABLE_STORAGE_KEY = "sazzu.publicidadInterna.tableConfig.v1";
+
+  const PI_TABLE_COLUMNS = [
+    {
+      id: "select",
+      label: "",
+      width: 46,
+      minWidth: 42,
+      maxWidth: 70,
+      locked: true,
+      draggable: false,
+      resizable: false,
+      freezeable: false
+    },
+    {
+      id: "entrega",
+      label: "Entrega",
+      icon: "sync",
+      width: 82,
+      minWidth: 68,
+      maxWidth: 120,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "campania",
+      label: "Campaña",
+      icon: "campaign",
+      width: 360,
+      minWidth: 220,
+      maxWidth: 620,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "objetivo",
+      label: "Objetivo",
+      icon: "list",
+      width: 140,
+      minWidth: 100,
+      maxWidth: 240,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "estado",
+      label: "Estado",
+      icon: "check",
+      width: 150,
+      minWidth: 110,
+      maxWidth: 260,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "destino",
+      label: "Destino Brevo",
+      icon: "send",
+      width: 240,
+      minWidth: 160,
+      maxWidth: 420,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "sincronizados",
+      label: "Sincronizados",
+      icon: "users",
+      width: 140,
+      minWidth: 110,
+      maxWidth: 220,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "errores",
+      label: "Errores",
+      icon: "sync",
+      width: 110,
+      minWidth: 90,
+      maxWidth: 180,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "progreso",
+      label: "Progreso",
+      icon: "sequence",
+      width: 160,
+      minWidth: 120,
+      maxWidth: 260,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "trabajo",
+      label: "Trabajo",
+      icon: "check",
+      width: 140,
+      minWidth: 110,
+      maxWidth: 220,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "ultima",
+      label: "Última ejecución",
+      icon: "open",
+      width: 170,
+      minWidth: 130,
+      maxWidth: 260,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    },
+    {
+      id: "accion",
+      label: "Acción",
+      icon: "open",
+      width: 130,
+      minWidth: 110,
+      maxWidth: 180,
+      draggable: true,
+      resizable: true,
+      freezeable: true
+    }
+  ];
+  /* FIN · Configuración tabla inteligente · Publicidad Interna */
+
   const STATE = {
     filter: "todas",
     search: "",
@@ -116,7 +255,11 @@ No conecta todavía con Supabase, Make ni Brevo.
     selectedCampaignIds: [],
     dateRange: "todo",
     loadingAdminContext: false,
-    adminContextError: ""
+    adminContextError: "",
+
+    tableConfig: null,
+    tableDragColumnId: "",
+    tableResize: null
   };
 
   window.__PUB_INTERNA_STATE__ = STATE;
@@ -565,6 +708,8 @@ No conecta todavía con Supabase, Make ni Brevo.
 
     STATE.root = root;
 
+    initCampaignTableConfig_();
+
     document.body.setAttribute("data-page", "publicidadinterna");
 
     ensurePublicidadInternaShell_(root);
@@ -661,6 +806,21 @@ No conecta todavía con Supabase, Make ni Brevo.
         showToast_(root, "Operador visual actualizado.");
         return;
       }
+
+
+      const freezeColumnBtn = event.target.closest("[data-pi-freeze-column]");
+      if (freezeColumnBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const columnId = String(freezeColumnBtn.dataset.piFreezeColumn || "").trim();
+        toggleFrozenColumn_(columnId);
+
+        renderCampaigns_(root);
+        showToast_(root, "Columnas fijas actualizadas.");
+        return;
+      }
+
 
       const disabledAdminBtn = event.target.closest("[data-pi-admin-disabled]");
       if (disabledAdminBtn) {
@@ -803,6 +963,99 @@ No conecta todavía con Supabase, Make ni Brevo.
         showToast_(root, "Acción visual preparada. Todavía no conecta con Supabase.");
       }
     });
+
+
+
+    /* INICIO · Eventos tabla inteligente · Publicidad Interna */
+    root.addEventListener("mousedown", function (event) {
+      const columnResize = event.target.closest("[data-pi-resize-column]");
+      if (columnResize) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        startColumnResize_(root, columnResize.dataset.piResizeColumn, event);
+        return;
+      }
+
+      const rowResize = event.target.closest("[data-pi-resize-rows]");
+      if (rowResize) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        startRowResize_(root, event);
+      }
+    });
+
+    root.addEventListener("dragstart", function (event) {
+      const header = event.target.closest("[data-pi-column-drag]");
+      if (!header) return;
+
+      const columnId = String(header.dataset.piColumnDrag || "").trim();
+      const column = getTableColumnById_(columnId);
+
+      if (!column || column.draggable === false) {
+        event.preventDefault();
+        return;
+      }
+
+      STATE.tableDragColumnId = columnId;
+      header.classList.add("is-dragging");
+
+      if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", columnId);
+      }
+    });
+
+    root.addEventListener("dragover", function (event) {
+      const header = event.target.closest("[data-pi-column-drag]");
+      if (!header || !STATE.tableDragColumnId) return;
+
+      event.preventDefault();
+
+      root.querySelectorAll(".piTableHeadCell.is-drag-over").forEach(function (node) {
+        node.classList.remove("is-drag-over");
+      });
+
+      header.classList.add("is-drag-over");
+    });
+
+    root.addEventListener("dragleave", function (event) {
+      const header = event.target.closest("[data-pi-column-drag]");
+      if (!header) return;
+
+      header.classList.remove("is-drag-over");
+    });
+
+    root.addEventListener("drop", function (event) {
+      const header = event.target.closest("[data-pi-column-drag]");
+      if (!header || !STATE.tableDragColumnId) return;
+
+      event.preventDefault();
+
+      const targetColumnId = String(header.dataset.piColumnDrag || "").trim();
+
+      moveTableColumn_(STATE.tableDragColumnId, targetColumnId);
+
+      STATE.tableDragColumnId = "";
+
+      root.querySelectorAll(".piTableHeadCell.is-dragging, .piTableHeadCell.is-drag-over").forEach(function (node) {
+        node.classList.remove("is-dragging", "is-drag-over");
+      });
+
+      renderCampaigns_(root);
+      showToast_(root, "Columna reordenada.");
+    });
+
+    root.addEventListener("dragend", function () {
+      STATE.tableDragColumnId = "";
+
+      root.querySelectorAll(".piTableHeadCell.is-dragging, .piTableHeadCell.is-drag-over").forEach(function (node) {
+        node.classList.remove("is-dragging", "is-drag-over");
+      });
+    });
+    /* FIN · Eventos tabla inteligente · Publicidad Interna */
+
 
                 /* INICIO · Selectores con búsqueda · Publicidad Interna */
                 root.addEventListener("input", function (event) {
@@ -1504,6 +1757,296 @@ No conecta todavía con Supabase, Make ni Brevo.
 
       return "Sin lista Brevo";
     }
+
+    /* INICIO · Motor tabla inteligente · Publicidad Interna */
+    function initCampaignTableConfig_() {
+      if (STATE.tableConfig) return;
+
+      STATE.tableConfig = loadCampaignTableConfig_();
+    }
+
+    function getDefaultCampaignTableConfig_() {
+      const widths = {};
+
+      PI_TABLE_COLUMNS.forEach(function (column) {
+        widths[column.id] = column.width;
+      });
+
+      return {
+        columnOrder: PI_TABLE_COLUMNS.map(function (column) {
+          return column.id;
+        }),
+        columnWidths: widths,
+        frozenUntilColumnId: "",
+        rowHeight: 48
+      };
+    }
+
+    function loadCampaignTableConfig_() {
+      const fallback = getDefaultCampaignTableConfig_();
+
+      try {
+        const raw = window.localStorage ? window.localStorage.getItem(PI_TABLE_STORAGE_KEY) : "";
+        if (!raw) return fallback;
+
+        const parsed = JSON.parse(raw);
+
+        const next = {
+          columnOrder: Array.isArray(parsed.columnOrder) ? parsed.columnOrder : fallback.columnOrder,
+          columnWidths: parsed.columnWidths && typeof parsed.columnWidths === "object" ? parsed.columnWidths : fallback.columnWidths,
+          frozenUntilColumnId: String(parsed.frozenUntilColumnId || ""),
+          rowHeight: toNumber_(parsed.rowHeight) || fallback.rowHeight
+        };
+
+        PI_TABLE_COLUMNS.forEach(function (column) {
+          if (!next.columnOrder.includes(column.id)) {
+            next.columnOrder.push(column.id);
+          }
+
+          next.columnWidths[column.id] = clampNumber_(
+            toNumber_(next.columnWidths[column.id]) || column.width,
+            column.minWidth || 60,
+            column.maxWidth || 700
+          );
+        });
+
+        next.columnOrder = next.columnOrder.filter(function (columnId) {
+          return !!getTableColumnById_(columnId);
+        });
+
+        next.rowHeight = clampNumber_(next.rowHeight, 38, 120);
+
+        return next;
+      } catch (error) {
+        console.warn("[publicidadinterna] No se pudo leer configuración de tabla:", error);
+        return fallback;
+      }
+    }
+
+    function saveCampaignTableConfig_() {
+      if (!STATE.tableConfig) return;
+
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(PI_TABLE_STORAGE_KEY, JSON.stringify(STATE.tableConfig));
+        }
+      } catch (error) {
+        console.warn("[publicidadinterna] No se pudo guardar configuración de tabla:", error);
+      }
+    }
+
+    function getTableColumnById_(columnId) {
+      const id = String(columnId || "");
+      return PI_TABLE_COLUMNS.find(function (column) {
+        return column.id === id;
+      }) || null;
+    }
+
+    function getOrderedTableColumns_() {
+      initCampaignTableConfig_();
+
+      return STATE.tableConfig.columnOrder
+        .map(getTableColumnById_)
+        .filter(Boolean);
+    }
+
+    function getTableColumnWidth_(columnId) {
+      initCampaignTableConfig_();
+
+      const column = getTableColumnById_(columnId);
+      const width = toNumber_(STATE.tableConfig.columnWidths[columnId]);
+
+      if (!column) return 120;
+
+      return clampNumber_(width || column.width, column.minWidth || 60, column.maxWidth || 700);
+    }
+
+    function getTableRowHeight_() {
+      initCampaignTableConfig_();
+      return clampNumber_(toNumber_(STATE.tableConfig.rowHeight) || 48, 38, 120);
+    }
+
+    function getTableTotalWidth_(columns) {
+      return columns.reduce(function (acc, column) {
+        return acc + getTableColumnWidth_(column.id);
+      }, 0);
+    }
+
+    function getFrozenColumnIds_() {
+      initCampaignTableConfig_();
+
+      const frozenUntil = String(STATE.tableConfig.frozenUntilColumnId || "");
+      if (!frozenUntil) return [];
+
+      const columns = getOrderedTableColumns_();
+      const index = columns.findIndex(function (column) {
+        return column.id === frozenUntil;
+      });
+
+      if (index < 0) return [];
+
+      return columns.slice(0, index + 1).map(function (column) {
+        return column.id;
+      });
+    }
+
+    function getColumnFrozenInfo_(columnId) {
+      const frozenIds = getFrozenColumnIds_();
+      const id = String(columnId || "");
+      const index = frozenIds.indexOf(id);
+
+      if (index < 0) {
+        return {
+          frozen: false,
+          edge: false,
+          left: 0
+        };
+      }
+
+      let left = 0;
+
+      for (let i = 0; i < index; i += 1) {
+        left += getTableColumnWidth_(frozenIds[i]);
+      }
+
+      return {
+        frozen: true,
+        edge: index === frozenIds.length - 1,
+        left: left
+      };
+    }
+
+    function buildTableCellStyle_(columnId) {
+      const width = getTableColumnWidth_(columnId);
+      const frozenInfo = getColumnFrozenInfo_(columnId);
+
+      const parts = [
+        "width:" + width + "px",
+        "min-width:" + width + "px",
+        "max-width:" + width + "px"
+      ];
+
+      if (frozenInfo.frozen) {
+        parts.push("left:" + frozenInfo.left + "px");
+      }
+
+      return parts.join(";");
+    }
+
+    function toggleFrozenColumn_(columnId) {
+      initCampaignTableConfig_();
+
+      const id = String(columnId || "").trim();
+      const column = getTableColumnById_(id);
+
+      if (!column || column.freezeable === false) return;
+
+      STATE.tableConfig.frozenUntilColumnId =
+        STATE.tableConfig.frozenUntilColumnId === id ? "" : id;
+
+      saveCampaignTableConfig_();
+    }
+
+    function moveTableColumn_(fromColumnId, toColumnId) {
+      initCampaignTableConfig_();
+
+      const fromId = String(fromColumnId || "").trim();
+      const toId = String(toColumnId || "").trim();
+
+      if (!fromId || !toId || fromId === toId) return;
+
+      const fromColumn = getTableColumnById_(fromId);
+      const toColumn = getTableColumnById_(toId);
+
+      if (!fromColumn || !toColumn) return;
+      if (fromColumn.draggable === false || toColumn.draggable === false) return;
+
+      const order = STATE.tableConfig.columnOrder.slice();
+      const fromIndex = order.indexOf(fromId);
+      const toIndex = order.indexOf(toId);
+
+      if (fromIndex < 0 || toIndex < 0) return;
+
+      order.splice(fromIndex, 1);
+
+      const nextTargetIndex = order.indexOf(toId);
+      order.splice(nextTargetIndex, 0, fromId);
+
+      STATE.tableConfig.columnOrder = order;
+
+      saveCampaignTableConfig_();
+    }
+
+    function startColumnResize_(root, columnId, event) {
+      initCampaignTableConfig_();
+
+      const id = String(columnId || "").trim();
+      const column = getTableColumnById_(id);
+
+      if (!column || column.resizable === false) return;
+
+      const startX = event.clientX;
+      const startWidth = getTableColumnWidth_(id);
+
+      document.body.classList.add("piIsResizingColumn");
+
+      function onMove(moveEvent) {
+        const delta = moveEvent.clientX - startX;
+        const nextWidth = clampNumber_(
+          startWidth + delta,
+          column.minWidth || 60,
+          column.maxWidth || 700
+        );
+
+        STATE.tableConfig.columnWidths[id] = nextWidth;
+        saveCampaignTableConfig_();
+        renderCampaigns_(root);
+      }
+
+      function onUp() {
+        document.body.classList.remove("piIsResizingColumn");
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    }
+
+    function startRowResize_(root, event) {
+      initCampaignTableConfig_();
+
+      const startY = event.clientY;
+      const startHeight = getTableRowHeight_();
+
+      document.body.classList.add("piIsResizingRow");
+
+      function onMove(moveEvent) {
+        const delta = moveEvent.clientY - startY;
+        const nextHeight = clampNumber_(startHeight + delta, 38, 120);
+
+        STATE.tableConfig.rowHeight = nextHeight;
+        saveCampaignTableConfig_();
+        renderCampaigns_(root);
+      }
+
+      function onUp() {
+        document.body.classList.remove("piIsResizingRow");
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    }
+
+    function clampNumber_(value, min, max) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return min;
+      return Math.max(min, Math.min(max, number));
+    }
+    /* FIN · Motor tabla inteligente · Publicidad Interna */
+
 
     function buildPasosResumen_(row) {
       const total = Math.max(toNumber_(row.pasos_totales), 0);
@@ -2928,155 +3471,238 @@ No conecta todavía con Supabase, Make ni Brevo.
     node.innerHTML = renderCampaignsTable_(campaigns);
   }
   
-    /* INICIO · Tabla de campañas · Publicidad Interna */
-    function renderCampaignsTable_(campaigns) {
-      const selectedCount = STATE.selectedCampaignIds.length;
-      const allVisibleSelected = campaigns.length > 0 && campaigns.every(function (campaign) {
-        return STATE.selectedCampaignIds.includes(campaign.id);
-      });
-  
-      return [
-        '<div class="piCampaignTableShell">',
-          '<div class="piCampaignTableTop">',
-            '<div>',
-              '<strong>Campañas internas</strong>',
-              '<p>', formatNumber_(campaigns.length), ' campaña', campaigns.length === 1 ? '' : 's', ' visibles · ', formatNumber_(selectedCount), ' seleccionada', selectedCount === 1 ? '' : 's', '</p>',
-            '</div>',
-  
-            '<div class="piCampaignTableTop__actions">',
-              '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="columnas">',
-                '<span aria-hidden="true">', icon_("list"), '</span>',
-                '<strong>Columnas: Operativo</strong>',
-              '</button>',
-              '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="desglose">',
-                '<span aria-hidden="true">', icon_("sequence"), '</span>',
-                '<strong>Desglose</strong>',
-              '</button>',
-            '</div>',
-          '</div>',
-  
-          '<div class="piCampaignTableScroll">',
-            '<table class="piCampaignTable">',
-              '<thead>',
-                '<tr>',
-                  '<th class="piColSelect">',
-                    '<label class="piTableCheck">',
-                      '<input type="checkbox" data-pi-select-all-campaigns ', allVisibleSelected ? 'checked' : '', '>',
-                      '<span></span>',
-                    '</label>',
-                  '</th>',
-                  '<th class="piColToggle">Entrega</th>',
-                  '<th class="piColCampaign">Campaña</th>',
-                  '<th>Objetivo</th>',
-                  '<th>Estado</th>',
-                  '<th>Destino Brevo</th>',
-                  '<th>Sincronizados</th>',
-                  '<th>Errores</th>',
-                  '<th>Progreso</th>',
-                  '<th>Trabajo</th>',
-                  '<th>Última ejecución</th>',
-                  '<th class="piColActions">Acción</th>',
-                '</tr>',
-              '</thead>',
-              '<tbody>',
-                campaigns.map(renderCampaignRow_).join(""),
-              '</tbody>',
-            '</table>',
-          '</div>',
-        '</div>'
-      ].join("");
-    }
-  
-    function renderCampaignRow_(campaign) {
-      const selected = STATE.selectedCampaignIds.includes(campaign.id);
-      const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
-      const progress = Math.max(0, Math.min(100, toNumber_(campaign.progreso_sync_pct)));
-      const brevoListLabel = formatBrevoListCardLabel_(campaign);
-      const isActive = String(campaign.estado_campania || "").toLowerCase() === "activa";
-      const isDraft = String(campaign.estado_campania || "").toLowerCase() === "borrador";
-      const hasError = campaign.contactos_error > 0 || String(campaign.estado_operativo_panel || "").includes("error");
-      const lastExecution = campaign.fecha_ultimo_trabajo || campaign.trabajo_fecha_creacion || "";
-  
-      return [
-        '<tr class="piCampaignRow ', selected ? 'is-selected ' : '', hasError ? 'has-error ' : '', '">',
-          '<td class="piColSelect">',
-            '<label class="piTableCheck">',
-              '<input type="checkbox" value="', escapeHtml_(campaign.id), '" data-pi-select-campaign ', selected ? 'checked' : '', '>',
-              '<span></span>',
-            '</label>',
-          '</td>',
-  
-          '<td class="piColToggle">',
-            '<button class="piToggle ', isActive ? 'is-on' : '', '" type="button" data-pi-admin-disabled="toggle" title="Activar/pausar estará disponible en una próxima fase.">',
-              '<span></span>',
-            '</button>',
-          '</td>',
-  
-          '<td class="piColCampaign">',
-            '<div class="piTableCampaign">',
-              '<span class="piTableCampaign__icon" aria-hidden="true">', icon_("campaign"), '</span>',
-              '<div>',
-                '<strong>', escapeHtml_(campaign.campania), '</strong>',
-                '<small>', escapeHtml_(campaign.lectura_rapida || "Campaña interna."), '</small>',
+        /* INICIO · Tabla inteligente de campañas · Publicidad Interna */
+        function renderCampaignsTable_(campaigns) {
+          initCampaignTableConfig_();
+    
+          const selectedCount = STATE.selectedCampaignIds.length;
+          const columns = getOrderedTableColumns_();
+          const tableWidth = getTableTotalWidth_(columns);
+    
+          const allVisibleSelected = campaigns.length > 0 && campaigns.every(function (campaign) {
+            return STATE.selectedCampaignIds.includes(campaign.id);
+          });
+    
+          return [
+            '<div class="piCampaignTableShell">',
+              '<div class="piCampaignTableTop">',
+                '<div>',
+                  '<strong>Campañas internas</strong>',
+                  '<p>', formatNumber_(campaigns.length), ' campaña', campaigns.length === 1 ? '' : 's', ' visibles · ', formatNumber_(selectedCount), ' seleccionada', selectedCount === 1 ? '' : 's', '</p>',
+                '</div>',
+    
+                '<div class="piCampaignTableTop__actions">',
+                  '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="columnas">',
+                    '<span aria-hidden="true">', icon_("list"), '</span>',
+                    '<strong>Columnas: Operativo</strong>',
+                  '</button>',
+                  '<button class="piTableMiniBtn" type="button" data-pi-admin-disabled="desglose">',
+                    '<span aria-hidden="true">', icon_("sequence"), '</span>',
+                    '<strong>Desglose</strong>',
+                  '</button>',
+                '</div>',
               '</div>',
-            '</div>',
-          '</td>',
-  
-          '<td>',
-            '<span class="piTablePill">', escapeHtml_(labelObjetivo_(campaign.objetivo)), '</span>',
-          '</td>',
-  
-          '<td>',
-            '<span class="piStatus ', statusClass_(campaign), '">', escapeHtml_(campaign.estado_visible), '</span>',
-          '</td>',
-  
-          '<td>',
-            '<div class="piTableBrevo">',
-              '<strong>', escapeHtml_(brevoListLabel), '</strong>',
-              '<small>', escapeHtml_(campaign.brevo_automatizacion_nombre_destino || "Automatización no informada"), '</small>',
-            '</div>',
-          '</td>',
-  
-          '<td>',
-            '<strong class="piTableNumber">', escapeHtml_(syncLabel), '</strong>',
-          '</td>',
-  
-          '<td>',
-            '<strong class="piTableNumber ', campaign.contactos_error > 0 ? 'is-danger' : '', '">', formatNumber_(campaign.contactos_error), '</strong>',
-          '</td>',
-  
-          '<td>',
-            '<div class="piTableProgress">',
-              '<div><span style="width:', escapeHtml_(String(progress)), '%"></span></div>',
-              '<strong>', formatNumber_(progress), '%</strong>',
-            '</div>',
-          '</td>',
-  
-          '<td>',
-            '<span class="piTableJob ', hasError ? 'is-error' : '', '">', escapeHtml_(labelTrabajoEstado_(campaign.trabajo_estado)), '</span>',
-          '</td>',
-  
-          '<td>',
-            '<span class="piTableDate">', escapeHtml_(lastExecution ? formatDateTime_(lastExecution) : "Sin ejecución"), '</span>',
-          '</td>',
-  
-          '<td class="piColActions">',
-            isDraft
-              ? [
-                  '<button class="piTableAction piTableAction--primary" type="button" data-pi-publish-campaign="', escapeHtml_(campaign.id), '">',
-                    'Publicar',
-                  '</button>'
-                ].join("")
-              : [
-                  '<button class="piTableAction" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
-                    hasError ? 'Revisar' : 'Detalle',
+    
+              '<div class="piCampaignTableScroll">',
+                '<table class="piCampaignTable" style="width:', tableWidth, 'px; min-width:', tableWidth, 'px;">',
+                  '<colgroup>',
+                    columns.map(function (column) {
+                      const width = getTableColumnWidth_(column.id);
+                      return '<col style="width:' + escapeHtml_(String(width)) + 'px;">';
+                    }).join(""),
+                  '</colgroup>',
+                  '<thead>',
+                    '<tr>',
+                      columns.map(function (column) {
+                        return renderCampaignTableHeaderCell_(column, allVisibleSelected);
+                      }).join(""),
+                    '</tr>',
+                  '</thead>',
+                  '<tbody>',
+                    campaigns.map(function (campaign) {
+                      return renderCampaignRow_(campaign, columns);
+                    }).join(""),
+                  '</tbody>',
+                '</table>',
+              '</div>',
+            '</div>'
+          ].join("");
+        }
+    
+        function renderCampaignTableHeaderCell_(column, allVisibleSelected) {
+          const width = getTableColumnWidth_(column.id);
+          const frozenInfo = getColumnFrozenInfo_(column.id);
+          const classes = [
+            "piTableHeadCell",
+            column.locked ? "is-locked" : "",
+            column.draggable === false ? "is-not-draggable" : "",
+            column.resizable === false ? "is-not-resizable" : "",
+            frozenInfo.frozen ? "is-frozen" : "",
+            frozenInfo.edge ? "is-frozen-edge" : ""
+          ].filter(Boolean).join(" ");
+    
+          const style = buildTableCellStyle_(column.id);
+    
+          if (column.id === "select") {
+            return [
+              '<th class="', classes, '" data-pi-col="', escapeHtml_(column.id), '" style="', style, '">',
+                '<label class="piTableCheck">',
+                  '<input type="checkbox" data-pi-select-all-campaigns ', allVisibleSelected ? 'checked' : '', '>',
+                  '<span></span>',
+                '</label>',
+                column.resizable !== false ? '<span class="piColumnResizeHandle" data-pi-resize-column="' + escapeHtml_(column.id) + '"></span>' : '',
+              '</th>'
+            ].join("");
+          }
+    
+          return [
+            '<th class="', classes, '" data-pi-col="', escapeHtml_(column.id), '" style="', style, '" draggable="', column.draggable === false ? 'false' : 'true', '" data-pi-column-drag="', escapeHtml_(column.id), '">',
+              '<div class="piTableHeadInner">',
+                '<span class="piTableHeadIcon" aria-hidden="true">', icon_(column.icon || "list"), '</span>',
+                '<strong>', escapeHtml_(column.label), '</strong>',
+                column.freezeable === false ? '' : [
+                  '<button class="piFreezeColumnBtn ', frozenInfo.frozen ? 'is-active' : '', '" type="button" draggable="false" data-pi-freeze-column="', escapeHtml_(column.id), '" title="Congelar hasta esta columna">',
+                    '<span></span>',
                   '</button>'
                 ].join(""),
-          '</td>',
-        '</tr>'
-      ].join("");
-    }
-    /* FIN · Tabla de campañas · Publicidad Interna */
+              '</div>',
+              column.resizable === false ? '' : '<span class="piColumnResizeHandle" data-pi-resize-column="' + escapeHtml_(column.id) + '"></span>',
+            '</th>'
+          ].join("");
+        }
+    
+        function renderCampaignRow_(campaign, columns) {
+          const selected = STATE.selectedCampaignIds.includes(campaign.id);
+          const hasError = campaign.contactos_error > 0 || String(campaign.estado_operativo_panel || "").includes("error");
+          const rowHeight = getTableRowHeight_();
+    
+          return [
+            '<tr class="piCampaignRow ', selected ? 'is-selected ' : '', hasError ? 'has-error ' : '', '" style="height:', rowHeight, 'px;">',
+              columns.map(function (column) {
+                return renderCampaignTableCell_(campaign, column);
+              }).join(""),
+            '</tr>'
+          ].join("");
+        }
+    
+        function renderCampaignTableCell_(campaign, column) {
+          const frozenInfo = getColumnFrozenInfo_(column.id);
+          const classes = [
+            "piTableCell",
+            frozenInfo.frozen ? "is-frozen" : "",
+            frozenInfo.edge ? "is-frozen-edge" : "",
+            column.id === "accion" ? "piColActions" : "",
+            column.id === "select" ? "piColSelect" : ""
+          ].filter(Boolean).join(" ");
+    
+          return [
+            '<td class="', classes, '" data-pi-col="', escapeHtml_(column.id), '" style="', buildTableCellStyle_(column.id), '">',
+              renderCampaignTableCellContent_(campaign, column.id),
+            '</td>'
+          ].join("");
+        }
+    
+        function renderCampaignTableCellContent_(campaign, columnId) {
+          const selected = STATE.selectedCampaignIds.includes(campaign.id);
+          const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
+          const progress = Math.max(0, Math.min(100, toNumber_(campaign.progreso_sync_pct)));
+          const brevoListLabel = formatBrevoListCardLabel_(campaign);
+          const isActive = String(campaign.estado_campania || "").toLowerCase() === "activa";
+          const isDraft = String(campaign.estado_campania || "").toLowerCase() === "borrador";
+          const hasError = campaign.contactos_error > 0 || String(campaign.estado_operativo_panel || "").includes("error");
+          const lastExecution = campaign.fecha_ultimo_trabajo || campaign.trabajo_fecha_creacion || "";
+    
+          if (columnId === "select") {
+            return [
+              '<label class="piTableCheck">',
+                '<input type="checkbox" value="', escapeHtml_(campaign.id), '" data-pi-select-campaign ', selected ? 'checked' : '', '>',
+                '<span></span>',
+              '</label>',
+              '<span class="piRowResizeHandle" data-pi-resize-rows title="Ajustar altura de filas"></span>'
+            ].join("");
+          }
+    
+          if (columnId === "entrega") {
+            return [
+              '<button class="piToggle ', isActive ? 'is-on' : '', '" type="button" data-pi-admin-disabled="toggle" title="Activar/pausar estará disponible en una próxima fase.">',
+                '<span></span>',
+              '</button>'
+            ].join("");
+          }
+    
+          if (columnId === "campania") {
+            return [
+              '<div class="piTableCampaign">',
+                '<span class="piTableCampaign__icon" aria-hidden="true">', icon_("campaign"), '</span>',
+                '<div>',
+                  '<strong>', escapeHtml_(campaign.campania), '</strong>',
+                  '<small>', escapeHtml_(campaign.lectura_rapida || "Campaña interna."), '</small>',
+                '</div>',
+              '</div>'
+            ].join("");
+          }
+    
+          if (columnId === "objetivo") {
+            return '<span class="piTablePill">' + escapeHtml_(labelObjetivo_(campaign.objetivo)) + '</span>';
+          }
+    
+          if (columnId === "estado") {
+            return '<span class="piStatus ' + statusClass_(campaign) + '">' + escapeHtml_(campaign.estado_visible) + '</span>';
+          }
+    
+          if (columnId === "destino") {
+            return [
+              '<div class="piTableBrevo">',
+                '<strong>', escapeHtml_(brevoListLabel), '</strong>',
+                '<small>', escapeHtml_(campaign.brevo_automatizacion_nombre_destino || "Automatización no informada"), '</small>',
+              '</div>'
+            ].join("");
+          }
+    
+          if (columnId === "sincronizados") {
+            return '<strong class="piTableNumber">' + escapeHtml_(syncLabel) + '</strong>';
+          }
+    
+          if (columnId === "errores") {
+            return '<strong class="piTableNumber ' + (campaign.contactos_error > 0 ? 'is-danger' : '') + '">' + formatNumber_(campaign.contactos_error) + '</strong>';
+          }
+    
+          if (columnId === "progreso") {
+            return [
+              '<div class="piTableProgress">',
+                '<div><span style="width:', escapeHtml_(String(progress)), '%"></span></div>',
+                '<strong>', formatNumber_(progress), '%</strong>',
+              '</div>'
+            ].join("");
+          }
+    
+          if (columnId === "trabajo") {
+            return '<span class="piTableJob ' + (hasError ? 'is-error' : '') + '">' + escapeHtml_(labelTrabajoEstado_(campaign.trabajo_estado)) + '</span>';
+          }
+    
+          if (columnId === "ultima") {
+            return '<span class="piTableDate">' + escapeHtml_(lastExecution ? formatDateTime_(lastExecution) : "Sin ejecución") + '</span>';
+          }
+    
+          if (columnId === "accion") {
+            if (isDraft) {
+              return [
+                '<button class="piTableAction piTableAction--primary" type="button" data-pi-publish-campaign="', escapeHtml_(campaign.id), '">',
+                  'Publicar',
+                '</button>'
+              ].join("");
+            }
+    
+            return [
+              '<button class="piTableAction" type="button" data-pi-open-detail="', escapeHtml_(campaign.id), '">',
+                hasError ? 'Revisar' : 'Detalle',
+              '</button>'
+            ].join("");
+          }
+    
+          return "—";
+        }
+        /* FIN · Tabla inteligente de campañas · Publicidad Interna */
   
   function renderCampaignCard_(campaign) {
     const syncLabel = formatNumber_(campaign.contactos_sincronizados) + " / " + formatNumber_(campaign.contactos_estimados);
