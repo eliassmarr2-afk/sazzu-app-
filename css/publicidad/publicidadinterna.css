@@ -4383,3 +4383,573 @@ body[data-page="publicidadinterna"] .piCampaignRow td {
 /* ============================================================
 FIN · Publicidad Interna · Tabla inteligente
 ============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Constructor de campaña 90%
+============================================================ */
+
+/* Slide principal de creación: mesa de trabajo */
+body[data-page="publicidadinterna"] .piSlide[data-pi-slide="new"],
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide {
+  width: 90vw !important;
+  max-width: 90vw !important;
+  min-width: min(90vw, 980px);
+  background: #FFFFFF;
+}
+
+/* Header serio, compacto, con separación fina */
+body[data-page="publicidadinterna"] .piCampaignBuilderHeader {
+  min-height: 72px;
+  border-bottom: 1px solid #E5EAF2;
+  background: #FFFFFF;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderHeader__sub {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #667085;
+  line-height: 1.4;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderHeader__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderStatus {
+  height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+body[data-page="publicidadinterna"] .piBuilderStatus--draft {
+  background: #F1F5F9;
+  color: #475467;
+}
+
+/* Cuerpo sin tarjeta: fondo blanco absoluto */
+body[data-page="publicidadinterna"] .piCampaignBuilderBody {
+  padding: 0 !important;
+  background: #FFFFFF;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderForm {
+  min-height: calc(100vh - 74px);
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+
+/* Dos columnas */
+body[data-page="publicidadinterna"] .piCampaignBuilderGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 58%) minmax(360px, 42%);
+  min-height: 0;
+  flex: 1;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderMain {
+  min-width: 0;
+  padding: 18px 22px 24px;
+  border-right: 1px solid #E5EAF2;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderSide {
+  min-width: 0;
+  background: #FFFFFF;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderSide__sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  gap: 0;
+}
+
+/* Secciones sin tarjetas decorativas */
+body[data-page="publicidadinterna"] .piBuilderSection {
+  padding: 0 0 22px;
+  margin: 0 0 22px;
+  border-bottom: 1px solid #E5EAF2;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSection:last-child {
+  margin-bottom: 0;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSection__head,
+body[data-page="publicidadinterna"] .piBuilderPanel__head {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSection__head--withHelp {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSection__head h3,
+body[data-page="publicidadinterna"] .piBuilderPanel__head h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 950;
+  color: #111827;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSection__head p,
+body[data-page="publicidadinterna"] .piBuilderPanel__head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderFields {
+  display: grid;
+  gap: 13px;
+}
+
+/* Panel derecho: consola, no tarjeta */
+body[data-page="publicidadinterna"] .piBuilderPanel {
+  padding: 18px 20px;
+  border-bottom: 1px solid #E5EAF2;
+  background: #FFFFFF;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummarySkeleton {
+  border: 1px dashed #CBD5E1;
+  border-radius: 5px;
+  padding: 14px;
+  background: #F8FAFC;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummarySkeleton strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  color: #111827;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummarySkeleton p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryHero {
+  border-radius: 5px;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryHero.is-draft {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryHero.is-ready {
+  background: #ECFDF3;
+  border: 1px solid #ABEFC6;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryHero strong {
+  font-size: 14px;
+  font-weight: 950;
+  color: #111827;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryHero span {
+  font-size: 12px;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid #E5EAF2;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid div {
+  padding: 10px;
+  border-right: 1px solid #E5EAF2;
+  border-bottom: 1px solid #E5EAF2;
+  display: grid;
+  gap: 3px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid div:nth-child(2n) {
+  border-right: 0;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid div:nth-last-child(-n+2) {
+  border-bottom: 0;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid span {
+  font-size: 10px;
+  font-weight: 800;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+body[data-page="publicidadinterna"] .piBuilderSummaryGrid strong {
+  font-size: 12px;
+  font-weight: 950;
+  color: #111827;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item {
+  height: 30px;
+  border-radius: 5px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item strong {
+  font-size: 12px;
+  font-weight: 850;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item.is-ok {
+  background: #ECFDF3;
+  color: #067647;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item.is-ok span {
+  background: #12B76A;
+  color: #FFFFFF;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item.is-pending {
+  background: #F8FAFC;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderValidation__item.is-pending span {
+  background: #E2E8F0;
+  color: #475467;
+}
+
+body[data-page="publicidadinterna"] .piBuilderTechSnapshot {
+  border-top: 1px solid #E5EAF2;
+  padding-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderTechSnapshot strong {
+  font-size: 11px;
+  font-weight: 900;
+  color: #475467;
+}
+
+body[data-page="publicidadinterna"] .piBuilderTechSnapshot code {
+  display: block;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #334155;
+  background: #F8FAFC;
+  border: 1px solid #E5EAF2;
+  border-radius: 5px;
+  padding: 9px;
+  white-space: normal;
+}
+
+/* Reglas futuras */
+body[data-page="publicidadinterna"] .piBuilderRuleList,
+body[data-page="publicidadinterna"] .piBuilderOwnership {
+  display: grid;
+  gap: 8px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderRule,
+body[data-page="publicidadinterna"] .piBuilderOwnership div {
+  border: 1px solid #E5EAF2;
+  border-radius: 5px;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+body[data-page="publicidadinterna"] .piBuilderRule strong,
+body[data-page="publicidadinterna"] .piBuilderOwnership strong {
+  font-size: 12px;
+  font-weight: 950;
+  color: #111827;
+}
+
+body[data-page="publicidadinterna"] .piBuilderRule span,
+body[data-page="publicidadinterna"] .piBuilderOwnership span {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #667085;
+}
+
+body[data-page="publicidadinterna"] .piBuilderRule.is-pending {
+  background: #F8FAFC;
+}
+
+/* Footer sticky */
+body[data-page="publicidadinterna"] .piCampaignBuilderFooter {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  background: #FFFFFF;
+  border-top: 1px solid #E5EAF2;
+  padding: 12px 18px;
+}
+
+/* Mantener desplegables existentes intactos: solo les damos ancho natural */
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide .piAudiencePicker,
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide .piBrevoDestinationPicker {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1080px) {
+  body[data-page="publicidadinterna"] .piSlide[data-pi-slide="new"],
+  body[data-page="publicidadinterna"] .piCampaignBuilderSlide {
+    width: 96vw !important;
+    max-width: 96vw !important;
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignBuilderGrid {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignBuilderMain {
+    border-right: 0;
+    border-bottom: 1px solid #E5EAF2;
+  }
+
+  body[data-page="publicidadinterna"] .piCampaignBuilderSide__sticky {
+    position: static;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Constructor de campaña 90%
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Animación de aparición de slides
+Objetivo:
+- Evitar apertura brusca del constructor.
+- Animar backdrop y entrada del slide.
+- Mantener intacta la lógica JS existente.
+============================================================ */
+
+/* Capa general */
+body[data-page="publicidadinterna"] .piSlideLayer {
+  transition:
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+/* Backdrop: aparece suave */
+body[data-page="publicidadinterna"] .piSlideBackdrop {
+  opacity: 0;
+  transition:
+    opacity .24s ease,
+    backdrop-filter .24s ease;
+}
+
+body[data-page="publicidadinterna"] .piSlideLayer.is-open .piSlideBackdrop,
+body[data-page="publicidadinterna"] .piSlideLayer[data-state="open"] .piSlideBackdrop,
+body[data-page="publicidadinterna"] .piSlideLayer:not([aria-hidden="true"]) .piSlideBackdrop {
+  opacity: 1;
+}
+
+/* Slide base: entra desde la derecha con leve escala */
+body[data-page="publicidadinterna"] .piSlide {
+  transform: translateX(34px) scale(.985);
+  opacity: 0;
+  transition:
+    transform .28s cubic-bezier(.2, .8, .2, 1),
+    opacity .22s ease,
+    box-shadow .28s ease;
+  will-change: transform, opacity;
+}
+
+/* Slide abierto */
+body[data-page="publicidadinterna"] .piSlide.is-open,
+body[data-page="publicidadinterna"] .piSlide[aria-hidden="false"],
+body[data-page="publicidadinterna"] .piSlideLayer.is-open .piSlide.is-active,
+body[data-page="publicidadinterna"] .piSlideLayer[data-state="open"] .piSlide.is-active,
+body[data-page="publicidadinterna"] .piSlideLayer:not([aria-hidden="true"]) .piSlide.is-active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+/* Constructor 90%: entrada un poco más elegante */
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide {
+  transform: translateX(42px) scale(.982);
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide.is-open,
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide[aria-hidden="false"],
+body[data-page="publicidadinterna"] .piSlideLayer.is-open .piCampaignBuilderSlide.is-active,
+body[data-page="publicidadinterna"] .piSlideLayer[data-state="open"] .piCampaignBuilderSlide.is-active,
+body[data-page="publicidadinterna"] .piSlideLayer:not([aria-hidden="true"]) .piCampaignBuilderSlide.is-active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+/* Respeto a usuarios con reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="publicidadinterna"] .piSlideLayer,
+  body[data-page="publicidadinterna"] .piSlideBackdrop,
+  body[data-page="publicidadinterna"] .piSlide,
+  body[data-page="publicidadinterna"] .piCampaignBuilderSlide {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Animación de aparición de slides
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Animación real de slide
+============================================================ */
+
+body[data-page="publicidadinterna"] .piSlide {
+  opacity: 0;
+  transform: translateX(100%);
+  transition:
+    transform .32s cubic-bezier(.2, .8, .2, 1),
+    opacity .22s ease;
+  will-change: transform, opacity;
+}
+
+body[data-page="publicidadinterna"] .piSlideLayer.is-open .piSlide.is-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+body[data-page="publicidadinterna"] .piSlideBackdrop {
+  transition: opacity .24s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="publicidadinterna"] .piSlide,
+  body[data-page="publicidadinterna"] .piSlideBackdrop {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Animación real de slide
+============================================================ */
+/* ============================================================
+INICIO · Publicidad Interna · Animación forzada slide Crear campaña
+Objetivo:
+- Animar correctamente el slide que abre “Crear campaña”.
+- Evitar que display:none mate la transición.
+- No tocar lógica funcional.
+============================================================ */
+
+/* Estado base: fuera de pantalla */
+body[data-page="publicidadinterna"] .piSlide {
+  transform: translate3d(110%, 0, 0) !important;
+  opacity: 0 !important;
+  transition:
+    transform .34s cubic-bezier(.18, .82, .22, 1),
+    opacity .22s ease !important;
+  will-change: transform, opacity;
+}
+
+/* Cuando está activo, existe en pantalla pero todavía está afuera */
+body[data-page="publicidadinterna"] .piSlide.is-active {
+  display: flex !important;
+  transform: translate3d(110%, 0, 0) !important;
+  opacity: 0 !important;
+}
+
+/* Entrada real */
+body[data-page="publicidadinterna"] .piSlide.is-active.piSlide--entered {
+  transform: translate3d(0, 0, 0) !important;
+  opacity: 1 !important;
+}
+
+/* Salida suave */
+body[data-page="publicidadinterna"] .piSlide.is-active.piSlide--leaving {
+  transform: translate3d(110%, 0, 0) !important;
+  opacity: 0 !important;
+}
+
+/* Constructor grande: misma animación, un poco más premium */
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide.is-active {
+  transform: translate3d(110%, 0, 0) scale(.985) !important;
+  opacity: 0 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide.is-active.piSlide--entered {
+  transform: translate3d(0, 0, 0) scale(1) !important;
+  opacity: 1 !important;
+}
+
+body[data-page="publicidadinterna"] .piCampaignBuilderSlide.is-active.piSlide--leaving {
+  transform: translate3d(110%, 0, 0) scale(.985) !important;
+  opacity: 0 !important;
+}
+
+/* Backdrop suave */
+body[data-page="publicidadinterna"] .piSlideBackdrop {
+  opacity: 0;
+  transition: opacity .24s ease !important;
+}
+
+body[data-page="publicidadinterna"] .piSlideLayer.is-open .piSlideBackdrop {
+  opacity: 1;
+}
+
+/* Cierre limpio: mientras el slide sale, no se desmonta visualmente */
+body[data-page="publicidadinterna"] .piSlideLayer {
+  transition: none !important;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="publicidadinterna"] .piSlide,
+  body[data-page="publicidadinterna"] .piCampaignBuilderSlide,
+  body[data-page="publicidadinterna"] .piSlideBackdrop {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ============================================================
+FIN · Publicidad Interna · Animación forzada slide Crear campaña
+============================================================ */

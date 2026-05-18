@@ -477,191 +477,249 @@ No conecta todavía con Supabase, Make ni Brevo.
         <button class="piSlideBackdrop" type="button" data-pi-close-slide aria-label="Cerrar panel lateral"></button>
 
         <!-- INICIO · Slide Nueva campaña -->
-        <aside class="piSlide" data-pi-slide="new" aria-label="Nueva campaña interna">
-          <div class="piSlide__header">
+        <aside class="piSlide piCampaignBuilderSlide" data-pi-slide="new" aria-label="Nueva campaña interna">
+          <div class="piSlide__header piCampaignBuilderHeader">
             <div>
-              <div class="piSlide__eyebrow">Nueva campaña</div>
+              <div class="piSlide__eyebrow">Constructor operativo</div>
               <h2 class="piSlide__title">Crear campaña interna</h2>
+              <p class="piCampaignBuilderHeader__sub">
+                Configurá públicos, destino Brevo y reglas operativas antes de guardar el borrador.
+              </p>
             </div>
 
-            <button class="piSlide__close" type="button" data-pi-close-slide aria-label="Cerrar">
-              ${icon_("close")}
-            </button>
+            <div class="piCampaignBuilderHeader__right">
+              <span class="piBuilderStatus piBuilderStatus--draft">Borrador</span>
+              <button class="piSlide__close" type="button" data-pi-close-slide aria-label="Cerrar">
+                ${icon_("close")}
+              </button>
+            </div>
           </div>
 
-          <div class="piSlide__body">
-            <form class="piForm" data-pi-new-form>
-              <div class="piFormBlock">
-                <div class="piFormBlock__head">
-                  <span class="piMiniIcon" aria-hidden="true">
-                    ${icon_("list")}
-                  </span>
-                  <div>
-                    <h3>Datos principales</h3>
-                    <p>Definí el nombre, objetivo y canal principal de la campaña.</p>
-                  </div>
-                </div>
+          <div class="piSlide__body piCampaignBuilderBody">
+            <form class="piForm piCampaignBuilderForm" data-pi-new-form>
+              <div class="piCampaignBuilderGrid">
 
-                <label class="piField">
-                <span>Nombre de campaña</span>
-                <input
-                  type="text"
-                  value="Recompra Pack Camping"
-                  placeholder="Ej: Recompra Pack Camping"
-                  data-pi-campaign-name
-                >
-              </label>
+                <!-- INICIO · Columna izquierda configuración -->
+                <div class="piCampaignBuilderMain">
 
-              <label class="piField">
-                <span>Descripción interna</span>
-                <textarea
-                  rows="3"
-                  placeholder="Describe brevemente para qué sirve esta campaña."
-                  data-pi-campaign-description
-                >Campaña interna creada desde Protocol Data.</textarea>
-              </label>
-
-              <div class="piFieldGrid">
-                <label class="piField">
-                  <span>Objetivo</span>
-                  <select data-pi-campaign-objective>
-                    <option value="recompra">Recompra</option>
-                    <option value="cross_sell">Venta cruzada</option>
-                    <option value="reactivacion">Reactivación</option>
-                    <option value="postventa">Postventa</option>
-                    <option value="publicidad_interna">Publicidad interna</option>
-                  </select>
-                </label>
-
-                <label class="piField">
-                  <span>Canal</span>
-                  <select data-pi-campaign-channel>
-                    <option value="email">Email</option>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="sms">SMS</option>
-                  </select>
-                </label>
-              </div>
-              </div>
-
-              <div class="piFormBlock">
-                <div class="piFormBlock__head piFormBlock__head--withHelp">
-                  <span class="piMiniIcon" aria-hidden="true">
-                    ${icon_("users")}
-                  </span>
-
-                  <div>
-                    <h3>Conjuntos de audiencia</h3>
-                    <p>Seleccioná los públicos que participarán en la campaña.</p>
-                  </div>
-
-                  <div class="piAudienceHelp">
-                    <button type="button" class="piAudienceHelp__btn" aria-label="Ayuda sobre selección de conjuntos">
-                      ?
-                    </button>
-
-                    <div class="piAudienceHelp__tooltip" role="tooltip">
-                      <strong>Selección de conjuntos</strong>
-                      <p>
-                        Para seleccionar un conjunto de audiencias, primero debe existir al menos uno creado y disponible desde Publicidad UTM.
-                        Podés combinar varios conjuntos en una misma campaña; luego Make/Brevo usará esa selección para sincronizar los contactos del flujo.
-                      </p>
+                  <section class="piBuilderSection">
+                    <div class="piBuilderSection__head">
+                      <span class="piMiniIcon" aria-hidden="true">
+                        ${icon_("list")}
+                      </span>
+                      <div>
+                        <h3>Identidad de campaña</h3>
+                        <p>Definí cómo se identifica la campaña dentro de Protocol Data.</p>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <div class="piAudienceMockList" data-pi-audiences-list>
-                <div class="piEmpty">
-                  <strong>Cargando conjuntos disponibles...</strong>
-                  <p>Supabase está preparando los conjuntos creados desde Publicidad UTM.</p>
-                </div>
-              </div>
-              </div>
+                    <div class="piBuilderFields">
+                      <label class="piField">
+                        <span>Nombre de campaña</span>
+                        <input
+                          type="text"
+                          value="Recompra Pack Camping"
+                          placeholder="Ej: Recompra Pack Camping"
+                          data-pi-campaign-name
+                        >
+                      </label>
 
-              <!-- INICIO · Destino Brevo -->
-              <div class="piFormBlock">
-                <div class="piFormBlock__head">
-                  <span class="piMiniIcon" aria-hidden="true">
-                    ${icon_("send")}
-                  </span>
-                  <div>
-                    <h3>Destino Brevo</h3>
-                    <p>Seleccioná la lista, automatización o ruta de envío que ejecutará esta campaña.</p>
-                  </div>
-                </div>
+                      <label class="piField">
+                        <span>Descripción interna</span>
+                        <textarea
+                          rows="3"
+                          placeholder="Describe brevemente para qué sirve esta campaña."
+                          data-pi-campaign-description
+                        >Campaña interna creada desde Protocol Data.</textarea>
+                      </label>
 
-                <div class="piField">
-                <span>Ruta de envío</span>
-                <div data-pi-brevo-destination-picker-shell>
-                  <div class="piEmpty">
-                    <strong>Cargando destinos Brevo...</strong>
-                    <p>Consultando rutas disponibles desde Supabase.</p>
-                  </div>
-                </div>
-              </div>
+                      <div class="piFieldGrid">
+                        <label class="piField">
+                          <span>Objetivo</span>
+                          <select data-pi-campaign-objective>
+                            <option value="recompra">Recompra</option>
+                            <option value="cross_sell">Venta cruzada</option>
+                            <option value="reactivacion">Reactivación</option>
+                            <option value="postventa">Postventa</option>
+                            <option value="publicidad_interna">Publicidad interna</option>
+                          </select>
+                        </label>
 
-                <div data-pi-brevo-destination-detail>
-                <div class="piEmpty">
-                  <strong>Seleccioná un destino Brevo.</strong>
-                  <p>Protocol Data usará este destino para indicar a Make/Brevo dónde sincronizar los contactos.</p>
-                </div>
-              </div>
-
-              <div class="piBrevoManagedNotice">
-                <span class="piBrevoManagedNotice__icon" aria-hidden="true">
-                  ${icon_("send")}
-                </span>
-
-                <div>
-                  <strong>Contenido gestionado desde Brevo</strong>
-                  <p>
-                    Protocol Data selecciona públicos y rutas de ejecución. El asunto, plantilla, contenido,
-                    demoras y automatización final se editan directamente dentro de Brevo.
-                  </p>
-                </div>
-              </div>
-              </div>
-              <!-- FIN · Destino Brevo -->
-
-              <div class="piFormBlock">
-                <div class="piFormBlock__head">
-                  <span class="piMiniIcon" aria-hidden="true">
-                    ${icon_("sequence")}
-                  </span>
-                  <div>
-                    <h3>Secuencia inicial</h3>
-                    <p>Esta versión visual simula una secuencia de 3 pasos.</p>
-                  </div>
-                </div>
-
-                <div class="piSequencePreview">
-                  <div class="piStep">
-                    <span>1</span>
-                    <div>
-                      <strong>Email inicial</strong>
-                      <small>Día 0 · Presenta la oferta principal</small>
+                        <label class="piField">
+                          <span>Canal</span>
+                          <select data-pi-campaign-channel>
+                            <option value="email">Email</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="sms">SMS</option>
+                          </select>
+                        </label>
+                      </div>
                     </div>
-                  </div>
+                  </section>
 
-                  <div class="piStep">
-                    <span>2</span>
-                    <div>
-                      <strong>Recordatorio</strong>
-                      <small>Día 2 · Si el contacto no compró</small>
-                    </div>
-                  </div>
+                  <section class="piBuilderSection">
+                    <div class="piBuilderSection__head piBuilderSection__head--withHelp">
+                      <span class="piMiniIcon" aria-hidden="true">
+                        ${icon_("users")}
+                      </span>
 
-                  <div class="piStep">
-                    <span>3</span>
-                    <div>
-                      <strong>Último aviso</strong>
-                      <small>Día 5 · Cierra el flujo</small>
+                      <div>
+                        <h3>Conjuntos de audiencia</h3>
+                        <p>Seleccioná los públicos que participarán en la campaña.</p>
+                      </div>
+
+                      <div class="piAudienceHelp">
+                        <button type="button" class="piAudienceHelp__btn" aria-label="Ayuda sobre selección de conjuntos">
+                          ?
+                        </button>
+
+                        <div class="piAudienceHelp__tooltip" role="tooltip">
+                          <strong>Selección de conjuntos</strong>
+                          <p>
+                            Para seleccionar un conjunto de audiencias, primero debe existir al menos uno creado y disponible desde Publicidad UTM.
+                            Podés combinar varios conjuntos en una misma campaña; luego Make/Brevo usará esa selección para sincronizar los contactos del flujo.
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+
+                    <div class="piAudienceMockList" data-pi-audiences-list>
+                      <div class="piEmpty">
+                        <strong>Cargando conjuntos disponibles...</strong>
+                        <p>Supabase está preparando los conjuntos creados desde Publicidad UTM.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- INICIO · Destino Brevo -->
+                  <section class="piBuilderSection">
+                    <div class="piBuilderSection__head">
+                      <span class="piMiniIcon" aria-hidden="true">
+                        ${icon_("send")}
+                      </span>
+                      <div>
+                        <h3>Destino Brevo</h3>
+                        <p>Seleccioná la lista, automatización o ruta de envío que ejecutará esta campaña.</p>
+                      </div>
+                    </div>
+
+                    <div class="piField">
+                      <span>Ruta de envío</span>
+                      <div data-pi-brevo-destination-picker-shell>
+                        <div class="piEmpty">
+                          <strong>Cargando destinos Brevo...</strong>
+                          <p>Consultando rutas disponibles desde Supabase.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div data-pi-brevo-destination-detail>
+                      <div class="piEmpty">
+                        <strong>Seleccioná un destino Brevo.</strong>
+                        <p>Protocol Data usará este destino para indicar a Make/Brevo dónde sincronizar los contactos.</p>
+                      </div>
+                    </div>
+
+                    <div class="piBrevoManagedNotice">
+                      <span class="piBrevoManagedNotice__icon" aria-hidden="true">
+                        ${icon_("send")}
+                      </span>
+
+                      <div>
+                        <strong>Contenido gestionado desde Brevo</strong>
+                        <p>
+                          Protocol Data selecciona públicos y rutas de ejecución. El asunto, plantilla, contenido,
+                          demoras y automatización final se editan directamente dentro de Brevo.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                  <!-- FIN · Destino Brevo -->
+
                 </div>
+                <!-- FIN · Columna izquierda configuración -->
+
+                <!-- INICIO · Columna derecha control operativo -->
+                <aside class="piCampaignBuilderSide">
+                  <div class="piCampaignBuilderSide__sticky">
+
+                    <section class="piBuilderPanel" data-pi-campaign-builder-summary>
+                      <div class="piBuilderPanel__head">
+                        <span class="piMiniIcon" aria-hidden="true">
+                          ${icon_("check")}
+                        </span>
+                        <div>
+                          <h3>Resumen operativo</h3>
+                          <p>Seleccioná públicos y destino para construir la lectura previa.</p>
+                        </div>
+                      </div>
+
+                      <div class="piBuilderSummarySkeleton">
+                        <strong>Campaña en preparación</strong>
+                        <p>El resumen se actualizará cuando selecciones conjuntos y destino Brevo.</p>
+                      </div>
+                    </section>
+
+                    <section class="piBuilderPanel">
+                      <div class="piBuilderPanel__head">
+                        <span class="piMiniIcon" aria-hidden="true">
+                          ${icon_("sequence")}
+                        </span>
+                        <div>
+                          <h3>Reglas de presión comercial</h3>
+                          <p>Preparado para la siguiente fase de idempotencia y control de repetición.</p>
+                        </div>
+                      </div>
+
+                      <div class="piBuilderRuleList">
+                        <div class="piBuilderRule is-pending">
+                          <strong>No duplicar contactos</strong>
+                          <span>Próxima fase</span>
+                        </div>
+
+                        <div class="piBuilderRule is-pending">
+                          <strong>Prioridad entre conjuntos</strong>
+                          <span>Próxima fase</span>
+                        </div>
+
+                        <div class="piBuilderRule is-pending">
+                          <strong>Ventana de no repetición</strong>
+                          <span>Próxima fase</span>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section class="piBuilderPanel">
+                      <div class="piBuilderPanel__head">
+                        <span class="piMiniIcon" aria-hidden="true">
+                          ${icon_("open")}
+                        </span>
+                        <div>
+                          <h3>Responsabilidad del contenido</h3>
+                          <p>Protocol Data gobierna públicos y rutas; Brevo gobierna correo y automatización.</p>
+                        </div>
+                      </div>
+
+                      <div class="piBuilderOwnership">
+                        <div>
+                          <strong>Protocol Data</strong>
+                          <span>Audiencias, conjuntos, destino, publicación y sincronización.</span>
+                        </div>
+
+                        <div>
+                          <strong>Brevo</strong>
+                          <span>Plantilla, asunto, contenido, delays y automatización.</span>
+                        </div>
+                      </div>
+                    </section>
+
+                  </div>
+                </aside>
+                <!-- FIN · Columna derecha control operativo -->
+
               </div>
 
-              <div class="piSlide__footer">
+              <div class="piSlide__footer piCampaignBuilderFooter">
                 <button class="piBtn piBtn--ghost" type="button" data-pi-close-slide>Cancelar</button>
                 <button class="piBtn piBtn--primary" type="submit">
                   <span class="piBtn__icon" aria-hidden="true">
@@ -875,6 +933,7 @@ No conecta todavía con Supabase, Make ni Brevo.
         STATE.audienceSort = audienceSortBtn.dataset.piAudienceSort || "recent";
         STATE.audienceDropdownOpen = true;
         renderConjuntosDisponibles_(root);
+        renderCampaignBuilderSummary_(root);
         return;
       }
 
@@ -895,6 +954,7 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         STATE.audienceDropdownOpen = true;
         renderConjuntosDisponibles_(root);
+        renderCampaignBuilderSummary_(root);
         return;
       }
 
@@ -938,6 +998,7 @@ No conecta todavía con Supabase, Make ni Brevo.
         applyBrevoDestinoDefaults_(root);
         renderBrevoDestinos_(root);
         renderBrevoDestinoDetalle_(root);
+        renderCampaignBuilderSummary_(root);
         return;
       }
 
@@ -1059,6 +1120,10 @@ No conecta todavía con Supabase, Make ni Brevo.
 
                 /* INICIO · Selectores con búsqueda · Publicidad Interna */
                 root.addEventListener("input", function (event) {
+                  const builderInput = event.target.closest("[data-pi-campaign-name], [data-pi-campaign-description]");
+                  if (builderInput) {
+                    renderCampaignBuilderSummary_(root);
+                  }
                   const audienceSearchInput = event.target.closest("[data-pi-audience-search]");
                   if (audienceSearchInput) {
                     STATE.audienceSearch = String(audienceSearchInput.value || "");
@@ -1099,6 +1164,12 @@ No conecta todavía con Supabase, Make ni Brevo.
 
         /* INICIO · Selección de conjuntos y destino Brevo · Publicidad Interna */
         root.addEventListener("change", function (event) {
+          const builderSelect = event.target.closest("[data-pi-campaign-objective], [data-pi-campaign-channel]");
+          if (builderSelect) {
+            renderCampaignBuilderSummary_(root);
+            return;
+          }
+
           const selectAllCampaigns = event.target.closest("[data-pi-select-all-campaigns]");
           if (selectAllCampaigns) {
             const visibleCampaigns = getFilteredCampaigns_();
@@ -1193,6 +1264,7 @@ No conecta todavía con Supabase, Make ni Brevo.
     renderAdminTabs_(root);
     renderKpis_(root);
     renderCampaigns_(root);
+    renderCampaignBuilderSummary_(root);
   }
 
 
@@ -2456,6 +2528,95 @@ No conecta todavía con Supabase, Make ni Brevo.
         '</button>'
       ].join("");
     }
+
+    /* INICIO · Constructor campaña · Resumen operativo */
+    function renderCampaignBuilderSummary_(root) {
+      if (!root) return;
+
+      const node = root.querySelector("[data-pi-campaign-builder-summary]");
+      if (!node) return;
+
+      const nameInput = root.querySelector("[data-pi-campaign-name]");
+      const objectiveSelect = root.querySelector("[data-pi-campaign-objective]");
+      const channelSelect = root.querySelector("[data-pi-campaign-channel]");
+
+      const campaignName = String(nameInput && nameInput.value ? nameInput.value : "").trim();
+      const objective = String(objectiveSelect && objectiveSelect.value ? objectiveSelect.value : "recompra").trim();
+      const channel = String(channelSelect && channelSelect.value ? channelSelect.value : "email").trim();
+
+      const selectedAudiences = getSelectedAudienceSets_();
+      const selectedMembers = selectedAudiences.reduce(function (acc, item) {
+        return acc + toNumber_(item.miembros || item.miembrosActivos || item.cantidadMiembros);
+      }, 0);
+
+      const destino = getSelectedBrevoDestino_();
+
+      const hasName = !!campaignName;
+      const hasAudience = selectedAudiences.length > 0;
+      const hasDestination = !!destino;
+      const hasBrevoList = !!(destino && destino.brevoListaId);
+      const canSave = hasName && hasAudience && hasDestination && hasBrevoList;
+
+      node.innerHTML = [
+        '<div class="piBuilderPanel__head">',
+          '<span class="piMiniIcon" aria-hidden="true">', icon_("check"), '</span>',
+          '<div>',
+            '<h3>Resumen operativo</h3>',
+            '<p>', canSave ? 'La campaña está lista para guardarse como borrador.' : 'Completá los requisitos mínimos para guardar el borrador.', '</p>',
+          '</div>',
+        '</div>',
+
+        '<div class="piBuilderSummaryHero ', canSave ? 'is-ready' : 'is-draft', '">',
+          '<strong>', escapeHtml_(campaignName || "Campaña sin nombre"), '</strong>',
+          '<span>', escapeHtml_(labelObjetivo_(objective)), ' · ', escapeHtml_(channel.toUpperCase()), '</span>',
+        '</div>',
+
+        '<div class="piBuilderSummaryGrid">',
+          '<div>',
+            '<span>Conjuntos</span>',
+            '<strong>', formatNumber_(selectedAudiences.length), '</strong>',
+          '</div>',
+          '<div>',
+            '<span>Contactos estimados</span>',
+            '<strong>', formatNumber_(selectedMembers), '</strong>',
+          '</div>',
+          '<div>',
+            '<span>Lista Brevo</span>',
+            '<strong>', destino && destino.brevoListaId ? '#' + escapeHtml_(destino.brevoListaId) : 'Pendiente', '</strong>',
+          '</div>',
+          '<div>',
+            '<span>Trigger</span>',
+            '<strong>', destino ? escapeHtml_(formatBrevoTrigger_(destino.triggerBrevo)) : 'Pendiente', '</strong>',
+          '</div>',
+        '</div>',
+
+        '<div class="piBuilderValidation">',
+          renderBuilderValidationItem_("Nombre de campaña", hasName),
+          renderBuilderValidationItem_("Al menos 1 conjunto seleccionado", hasAudience),
+          renderBuilderValidationItem_("Destino Brevo seleccionado", hasDestination),
+          renderBuilderValidationItem_("Lista Brevo válida", hasBrevoList),
+        '</div>',
+
+        '<div class="piBuilderTechSnapshot">',
+          '<strong>Snapshot técnico</strong>',
+          '<code>',
+            'audiencias=', escapeHtml_(String(selectedAudiences.length)),
+            ' · destino=', escapeHtml_(destino ? destino.codigoDestino || destino.id : 'pendiente'),
+            ' · modo=borrador',
+          '</code>',
+        '</div>'
+      ].join("");
+    }
+
+    function renderBuilderValidationItem_(label, ok) {
+      return [
+        '<div class="piBuilderValidation__item ', ok ? 'is-ok' : 'is-pending', '">',
+          '<span>', ok ? '✓' : '•', '</span>',
+          '<strong>', escapeHtml_(label), '</strong>',
+        '</div>'
+      ].join("");
+    }
+    /* FIN · Constructor campaña · Resumen operativo */
 
     function renderSelectedAudienceSummary_(selected, totalMembers) {
       if (!selected.length) {
@@ -4221,26 +4382,54 @@ No conecta todavía con Supabase, Make ni Brevo.
     const layer = root.querySelector("[data-pi-slide-layer]");
     if (!layer) return;
 
+    const targetSlide = root.querySelector('[data-pi-slide="' + slideName + '"]');
+    if (!targetSlide) return;
+
+    window.clearTimeout(closeSlides_._timer);
+
     root.querySelectorAll("[data-pi-slide]").forEach(function (slide) {
-      slide.classList.toggle("is-active", slide.dataset.piSlide === slideName);
+      slide.classList.remove("is-active", "piSlide--entered", "piSlide--leaving");
     });
 
     layer.classList.add("is-open");
     layer.setAttribute("aria-hidden", "false");
+
+    targetSlide.classList.add("is-active");
+
+    /*
+      Forzamos un reflow para que el navegador pinte primero:
+      is-active + translateX(110%).
+      Luego agregamos piSlide--entered y recién ahí anima hacia translateX(0).
+    */
+    void targetSlide.offsetWidth;
+
+    window.requestAnimationFrame(function () {
+      targetSlide.classList.add("piSlide--entered");
+    });
   }
 
   function closeSlides_(root) {
     const layer = root.querySelector("[data-pi-slide-layer]");
     if (!layer) return;
 
+    const activeSlide = root.querySelector("[data-pi-slide].is-active");
+
+    if (activeSlide) {
+      activeSlide.classList.remove("piSlide--entered");
+      activeSlide.classList.add("piSlide--leaving");
+    }
+
     layer.classList.remove("is-open");
     layer.setAttribute("aria-hidden", "true");
 
-    root.querySelectorAll("[data-pi-slide]").forEach(function (slide) {
-      slide.classList.remove("is-active");
-    });
-  }
+    window.clearTimeout(closeSlides_._timer);
 
+    closeSlides_._timer = window.setTimeout(function () {
+      root.querySelectorAll("[data-pi-slide]").forEach(function (slide) {
+        slide.classList.remove("is-active", "piSlide--entered", "piSlide--leaving");
+      });
+    }, 360);
+  }
   function getFilteredCampaigns_() {
     return getCampaignSource_().filter(function (campaign) {
       const searchHaystack = [
