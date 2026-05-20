@@ -1,3 +1,5 @@
+@import url("./tienda-editor-internal.css");
+
 :root {
   --builder-bg: #ededed;
   --builder-card: #ffffff;
