@@ -18,6 +18,13 @@
 .builderFieldHint { margin: 0; color: var(--builder-muted); font-size: 13px; line-height: 1.45; }
 .builderFieldHint--warn { padding: 12px 13px; border: 1px solid #d8e5ff; border-radius: 10px; color: #2459a8; background: #f2f7ff; font-weight: 650; }
 
+.builderValidation { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 9px; align-items: center; padding: 11px 13px; border-radius: 10px; font-size: 13px; font-weight: 800; }
+.builderValidation > span { width: 10px; height: 10px; border-radius: 999px; }
+.builderValidation.is-unverified { border: 1px solid #ffd1d1; color: #b42318; background: #fff4f4; }
+.builderValidation.is-unverified > span { background: #e5484d; }
+.builderValidation.is-verified { border: 1px solid #bdeed4; color: #126533; background: #effff5; }
+.builderValidation.is-verified > span { background: #21a65b; }
+
 .builderUploadBox { min-height: 126px; display: grid; place-items: center; gap: 6px; padding: 18px; border: 1.5px dashed #9fbfff; border-radius: 14px; color: #2479ff; background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%); text-align: center; cursor: pointer; }
 .builderUploadBox::before { content: "↑"; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 999px; color: #ffffff; background: #2479ff; font-size: 22px; font-weight: 900; box-shadow: 0 12px 24px rgba(36, 121, 255, 0.22); }
 .builderUploadBox strong { display: block; color: #2479ff; font-size: 15px; font-weight: 900; }
