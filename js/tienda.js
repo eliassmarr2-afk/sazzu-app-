@@ -41,6 +41,43 @@
       return wrap;
     }
 
+    function colorControl_(label, value, description) {
+      const wrap = document.createElement("label");
+      const copy = document.createElement("div");
+      const title = document.createElement("strong");
+      const desc = document.createElement("small");
+      const swatch = document.createElement("span");
+      const input = document.createElement("input");
+      const code = document.createElement("em");
+
+      wrap.style.cssText = "position:relative;display:grid;grid-template-columns:minmax(0,1fr)46px;gap:14px;align-items:center;padding:14px;border-radius:13px;background:#fff;border:1px solid #d7d7d7;cursor:pointer;";
+      copy.style.cssText = "display:grid;gap:4px;";
+      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
+      desc.style.cssText = "color:#667085;font-size:12px;line-height:1.35;";
+      swatch.style.cssText = "width:42px;height:42px;border-radius:999px;border:3px solid #fff;box-shadow:0 0 0 1px #d7d7d7,0 10px 18px rgba(15,23,42,.10);background:" + value + ";";
+      input.type = "color";
+      input.value = value;
+      input.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;";
+      code.style.cssText = "display:inline-block;margin-top:2px;color:#2479ff;font-size:11px;font-style:normal;font-weight:800;";
+      code.textContent = value;
+
+      title.textContent = label;
+      desc.textContent = description;
+      copy.appendChild(title);
+      copy.appendChild(desc);
+      copy.appendChild(code);
+      wrap.appendChild(copy);
+      wrap.appendChild(swatch);
+      wrap.appendChild(input);
+
+      input.addEventListener("input", () => {
+        swatch.style.background = input.value;
+        code.textContent = input.value;
+      });
+
+      return wrap;
+    }
+
     function hint_(text, isWarn) {
       const p = document.createElement("p");
       p.className = isWarn ? "builderFieldHint builderFieldHint--warn" : "builderFieldHint";
@@ -114,12 +151,27 @@
         btn.type = "button";
         btn.className = index === 0 ? "builderPaletteItem is-selected" : "builderPaletteItem";
         btn.textContent = item;
+        btn.style.cssText = "border:1px solid #d7d7d7;border-radius:999px;padding:10px 12px;background:#fff;color:#2f3742;font-size:12px;font-weight:800;cursor:pointer;";
         btn.addEventListener("click", () => {
-          grid.querySelectorAll(".builderPaletteItem").forEach((el) => el.classList.remove("is-selected"));
+          grid.querySelectorAll(".builderPaletteItem").forEach((el) => {
+            el.classList.remove("is-selected");
+            el.style.background = "#fff";
+            el.style.color = "#2f3742";
+            el.style.borderColor = "#d7d7d7";
+          });
           btn.classList.add("is-selected");
+          btn.style.background = "#2479ff";
+          btn.style.color = "#fff";
+          btn.style.borderColor = "#2479ff";
         });
+        if (index === 0) {
+          btn.style.background = "#2479ff";
+          btn.style.color = "#fff";
+          btn.style.borderColor = "#2479ff";
+        }
         grid.appendChild(btn);
       });
+      grid.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;";
       return grid;
     }
 
@@ -169,10 +221,14 @@
 
       if (name === "Paleta") {
         editorBody.appendChild(paletteGrid_());
-        editorBody.appendChild(field_("Color principal", "text", "#b80f4d"));
-        editorBody.appendChild(field_("Color secundario", "text", "#f5dfbd"));
-        editorBody.appendChild(field_("Color de acento", "text", "#2479ff"));
-        editorBody.appendChild(hint_("Estos colores se aplican a botones, badges, tabs y elementos activos."));
+        editorBody.appendChild(colorControl_("Color principal", "#fff7ea", "Este color afectara al fondo de todas las paginas del sitio."));
+        editorBody.appendChild(colorControl_("Color de tarjetas", "#ffffff", "Esto afectara a colores de tarjetas de productos."));
+        editorBody.appendChild(toggle_("Utilizar este color tambien para tarjetas de combos u ofertas especiales", "Permite mantener una experiencia visual consistente entre productos y ofertas."));
+        editorBody.appendChild(colorControl_("Color de botones primarios", "#b80f4d", "Afecta a botones de Anadir, Continuar al pago, botones de +, -, Sumar y acciones principales."));
+        editorBody.appendChild(colorControl_("Color de botones secundarios", "#f5dfbd", "Afecta a botones como Seguir comprando y acciones de menor prioridad."));
+        editorBody.appendChild(colorControl_("Color de tabs", "#2479ff", "Afecta a seleccionadores de pestanas en la Home y en las paginas de productos."));
+        editorBody.appendChild(colorControl_("Color de textos primarios", "#111827", "Afecta a titulos y leyendas principales."));
+        editorBody.appendChild(colorControl_("Color de textos secundarios", "#667085", "Afecta a textos de caracteristicas, descripciones y ayudas visuales."));
       }
 
       const nameInput = root.querySelector("[data-store-name-input]");
