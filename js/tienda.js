@@ -2,42 +2,14 @@
 (function () {
   const PAGE_EVENT = "sazzu:page:load";
 
-  const SLIDE_META = {
-    identity: {
-      kicker: "store_config",
-      title: "Identidad",
-      description: "Editá nombre, rubro, portada, logo y descripción visible de la tienda."
-    },
-    theme: {
-      kicker: "theme_tokens",
-      title: "Diseño",
-      description: "Elegí presets visuales controlados para mantener una tienda prolija y vendible."
-    },
-    sections: {
-      kicker: "store_sections",
-      title: "Secciones",
-      description: "Activá, ocultá y ordená secciones predeterminadas sin romper la estructura."
-    },
-    products: {
-      kicker: "products",
-      title: "Productos",
-      description: "Catálogo, imágenes, stock, precios, badges y upsells asociados."
-    },
-    offers: {
-      kicker: "offers",
-      title: "Combos",
-      description: "Ofertas, componentes incluidos, agregados opcionales y estructuras de ticket promedio."
-    },
-    checkout: {
-      kicker: "checkout_settings",
-      title: "Checkout",
-      description: "Pago, pedido mínimo, campos requeridos y futuras zonas de envío."
-    },
-    publish: {
-      kicker: "stores",
-      title: "Publicación",
-      description: "Estado de tienda, URL pública, UTM, login comprador e integraciones."
-    }
+  const TAB_META = {
+    identity: "Identidad",
+    theme: "Diseño",
+    sections: "Secciones",
+    products: "Productos",
+    offers: "Combos",
+    checkout: "Checkout",
+    publish: "Publicación"
   };
 
   function initTiendaBuilder_() {
@@ -46,21 +18,19 @@
 
     root.dataset.ready = "1";
 
-    const railItems = Array.from(root.querySelectorAll("[data-store-builder-tab]"));
+    const tabTriggers = Array.from(root.querySelectorAll("[data-store-builder-tab]"));
     const panels = Array.from(root.querySelectorAll("[data-store-builder-panel]"));
-    const slide = root.querySelector("[data-store-builder-slide]");
+    const inspector = root.querySelector(".storeBuilderInspector");
+    const editorTitle = root.querySelector("[data-editor-title]");
+    const tabsTrack = root.querySelector("[data-store-builder-tabs-track]");
     const storeNameInput = root.querySelector("[data-preview-store-name]");
     const storeDescriptionInput = root.querySelector("[data-preview-store-description]");
     const previewName = root.querySelector("[data-store-preview-name]");
     const previewDescription = root.querySelector("[data-store-preview-description]");
-    const slideKicker = root.querySelector("[data-slide-kicker]");
-    const slideTitle = root.querySelector("[data-slide-title]");
-    const slideDescription = root.querySelector("[data-slide-description]");
+    let tabsPage = 0;
 
-    function activateTab_(tabName, shouldOpenSlide) {
-      const meta = SLIDE_META[tabName] || SLIDE_META.identity;
-
-      railItems.forEach((item) => {
+    function activateTab_(tabName) {
+      tabTriggers.forEach((item) => {
         item.classList.toggle("is-active", item.dataset.storeBuilderTab === tabName);
       });
 
@@ -68,41 +38,33 @@
         panel.classList.toggle("is-active", panel.dataset.storeBuilderPanel === tabName);
       });
 
-      if (slideKicker) slideKicker.textContent = meta.kicker;
-      if (slideTitle) slideTitle.textContent = meta.title;
-      if (slideDescription) slideDescription.textContent = meta.description;
-
-      if (shouldOpenSlide) openSlide_();
+      if (editorTitle) editorTitle.textContent = TAB_META[tabName] || "Editor";
+      if (inspector) inspector.classList.add("is-mobile-open");
     }
 
-    function openSlide_() {
-      if (!slide) return;
-      slide.classList.add("is-open");
-      slide.setAttribute("aria-hidden", "false");
-      document.body.classList.add("store-builder-slide-open");
+    function shiftTabs_(direction) {
+      if (!tabsTrack) return;
+      const maxPage = 2;
+      tabsPage = Math.max(0, Math.min(maxPage, tabsPage + direction));
+      tabsTrack.style.transform = `translateX(-${tabsPage * 100}%)`;
     }
 
-    function closeSlide_() {
-      if (!slide) return;
-      slide.classList.remove("is-open");
-      slide.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("store-builder-slide-open");
-    }
-
-    railItems.forEach((item) => {
-      item.addEventListener("click", () => activateTab_(item.dataset.storeBuilderTab, true));
+    tabTriggers.forEach((item) => {
+      item.addEventListener("click", () => activateTab_(item.dataset.storeBuilderTab));
     });
 
-    root.querySelectorAll("[data-open-store-panel]").forEach((button) => {
-      button.addEventListener("click", () => activateTab_(button.dataset.openStorePanel, true));
+    root.querySelectorAll("[data-tabs-shift]").forEach((button) => {
+      button.addEventListener("click", () => {
+        shiftTabs_(button.dataset.tabsShift === "right" ? 1 : -1);
+      });
     });
 
-    root.querySelectorAll("[data-close-store-slide]").forEach((button) => {
-      button.addEventListener("click", closeSlide_);
-    });
-
-    root.querySelectorAll("[data-save-store-slide]").forEach((button) => {
-      button.addEventListener("click", closeSlide_);
+    root.querySelectorAll("[data-toggle-tool-card]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const card = button.closest("[data-tool-card]");
+        if (!card) return;
+        card.classList.toggle("is-open");
+      });
     });
 
     if (storeNameInput && previewName) {
@@ -117,7 +79,7 @@
       });
     }
 
-    activateTab_("identity", false);
+    activateTab_("identity");
   }
 
   document.addEventListener("DOMContentLoaded", initTiendaBuilder_);
