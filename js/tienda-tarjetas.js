@@ -184,7 +184,6 @@
 
     function cardPreview_() {
       const box = document.createElement("div");
-      const title = document.createElement("strong");
       const card = document.createElement("article");
       const image = document.createElement("div");
       const content = document.createElement("div");
@@ -195,12 +194,10 @@
       const price = document.createElement("b");
       const action = document.createElement("button");
 
-      box.style.cssText = "position:sticky;top:0;z-index:5;display:grid;gap:12px;padding:14px;border-radius:5px;background:#fff;border:1px dashed #cfd4dc;box-shadow:0 10px 24px rgba(15,23,42,.08);";
-      title.textContent = "Preview en tiempo real";
-      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:900;";
+      box.style.cssText = "display:block;padding:0;margin:0;background:transparent;border:0;";
 
       card.setAttribute("data-tarjeta-preview-card", "");
-      card.style.cssText = "display:grid;gap:12px;padding:14px;border-radius:5px;background:#ffffff;border:1px solid #e5e7eb;box-shadow:0 8px 18px rgba(15,23,42,.12);";
+      card.style.cssText = "position:sticky;top:0;z-index:5;display:grid;gap:12px;padding:14px;border-radius:5px;background:#ffffff;border:1px solid #e5e7eb;box-shadow:0 8px 18px rgba(15,23,42,.12);";
       image.style.cssText = "height:92px;border-radius:4px;background:linear-gradient(135deg,#b80f4d,#f5dfbd);";
       content.style.cssText = "display:grid;gap:8px;";
       badge.textContent = "MAS PEDIDA";
@@ -224,7 +221,6 @@
       content.appendChild(row);
       card.appendChild(image);
       card.appendChild(content);
-      box.appendChild(title);
       box.appendChild(card);
 
       return { box, card, image, content, fullBleedImage: false, cardPadding: 14 };
