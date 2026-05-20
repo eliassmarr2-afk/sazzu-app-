@@ -124,23 +124,39 @@
     }
 
     function toggle_(title, text, checked) {
-      const label = document.createElement("label");
+      const row = document.createElement("div");
       const input = document.createElement("input");
       const visual = document.createElement("span");
       const copy = document.createElement("div");
       const strong = document.createElement("strong");
       const small = document.createElement("small");
-      label.className = "builderToggleRow";
+
+      row.className = "builderToggleRow";
+      row.style.position = "relative";
+      row.style.borderRadius = "5px";
+      row.style.userSelect = "none";
+
       input.type = "checkbox";
       input.checked = checked !== false;
+      input.style.position = "absolute";
+      input.style.opacity = "0";
+      input.style.pointerEvents = "none";
+
       strong.textContent = title;
       small.textContent = text;
       copy.appendChild(strong);
       copy.appendChild(small);
-      label.appendChild(input);
-      label.appendChild(visual);
-      label.appendChild(copy);
-      return label;
+      row.appendChild(input);
+      row.appendChild(visual);
+      row.appendChild(copy);
+
+      row.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        input.checked = !input.checked;
+      });
+
+      return row;
     }
 
     function cardPreview_() {
