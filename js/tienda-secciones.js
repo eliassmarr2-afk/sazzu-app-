@@ -148,6 +148,32 @@
       return box;
     }
 
+    function makeSumarPedidoPreview() {
+      const box = document.createElement('section');
+      const eyebrow = document.createElement('span');
+      const head = document.createElement('div');
+      const h = document.createElement('strong');
+      const all = document.createElement('b');
+      const list = document.createElement('div');
+      box.style.cssText = 'display:grid;gap:10px;padding:0;background:transparent;';
+      eyebrow.textContent = 'MENÚ COMPLETO';
+      eyebrow.style.cssText = 'color:#9c2448;font-size:11px;font-weight:900;letter-spacing:.08em;';
+      head.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;';
+      h.textContent = '🍰 Para sumar al pedido';
+      h.style.cssText = 'color:#111827;font-size:18px;font-weight:950;letter-spacing:-.03em;';
+      all.textContent = 'Ver todo';
+      all.style.cssText = 'color:#9c2448;font-size:12px;font-weight:900;';
+      list.style.cssText = 'display:grid;gap:10px;';
+      list.appendChild(upsellCard('Box Dulce Nube', '$ 9.800', 'Mini torta, dos muffins, porción de brownie y salsa de chocolate.', '#f5dfbd'));
+      list.appendChild(upsellCard('Torta Choco Cream', '$ 12.500', 'Bizcochuelo húmedo de chocolate, crema suave y cobertura artesanal.', '#e9c7aa'));
+      head.appendChild(h);
+      head.appendChild(all);
+      box.appendChild(eyebrow);
+      box.appendChild(head);
+      box.appendChild(list);
+      return box;
+    }
+
     function card(badgeText, name, price, color) {
       const item = document.createElement('article');
       const img = document.createElement('div');
@@ -224,6 +250,40 @@
       return item;
     }
 
+    function upsellCard(name, price, description, color) {
+      const item = document.createElement('article');
+      const img = document.createElement('div');
+      const itemBody = document.createElement('div');
+      const itemTitle = document.createElement('strong');
+      const desc = document.createElement('small');
+      const priceEl = document.createElement('b');
+      const detail = document.createElement('button');
+      const add = document.createElement('button');
+      item.style.cssText = 'display:grid;grid-template-columns:86px minmax(0,1fr)42px;gap:12px;align-items:center;padding:10px;border-radius:5px;background:#fff;border:1px solid #ead7c7;';
+      img.style.cssText = 'width:86px;height:86px;border-radius:5px;background:linear-gradient(135deg,' + color + ',#b80f4d);';
+      itemBody.style.cssText = 'display:grid;gap:5px;min-width:0;';
+      itemTitle.textContent = name;
+      itemTitle.style.cssText = 'color:#1f1f28;font-size:13px;font-weight:900;';
+      desc.textContent = description;
+      desc.style.cssText = 'color:#667085;font-size:11px;line-height:1.25;';
+      priceEl.textContent = price;
+      priceEl.style.cssText = 'color:#111827;font-size:13px;font-weight:950;';
+      detail.type = 'button';
+      detail.textContent = 'Ver detalle';
+      detail.style.cssText = 'width:max-content;border:0;border-radius:5px;padding:6px 8px;background:#fbe1eb;color:#9c2448;font-size:11px;font-weight:900;';
+      add.type = 'button';
+      add.textContent = '+';
+      add.style.cssText = 'width:34px;height:34px;border:0;border-radius:5px;background:#9c2448;color:#fff;font-size:17px;font-weight:900;';
+      itemBody.appendChild(itemTitle);
+      itemBody.appendChild(desc);
+      itemBody.appendChild(priceEl);
+      itemBody.appendChild(detail);
+      item.appendChild(img);
+      item.appendChild(itemBody);
+      item.appendChild(add);
+      return item;
+    }
+
     function openMasElegidos() {
       if (!sidePanel || !editor || !body) return;
       body.innerHTML = '';
@@ -259,12 +319,32 @@
       editor.setAttribute('aria-hidden', 'false');
     }
 
+    function openSumarPedido() {
+      if (!sidePanel || !editor || !body) return;
+      body.innerHTML = '';
+      if (section) section.textContent = 'Secciones';
+      if (title) title.textContent = 'Sumar pedido';
+      body.appendChild(makeSumarPedidoPreview());
+      body.appendChild(makeText('Leyenda superior', 'MENÚ COMPLETO', 'Texto pequeño sobre el título de la sección.'));
+      body.appendChild(makeText('Título visible', '🍰 Para sumar al pedido', 'Nombre visible de la sección de upsells o adicionales.'));
+      body.appendChild(makeToggle('Mostrar botón Ver todo', 'Permite abrir una vista completa de adicionales disponibles.', true));
+      body.appendChild(makeToggle('La imagen puede abarcar todo el alto y el limite lateral izquierdo de la tarjeta', 'La imagen 4x4 ocupa todo el alto disponible de la tarjeta de upsell.', false));
+      body.appendChild(makeSelect('Fuente de elementos', ['Seleccionar conjunto de productos', 'Seleccionar producto particular', 'Conjunto etiquetado como Upsells', 'Supabase futuro'], 'TODO: leerá conjuntos de productos del panel Productos y luego desde Supabase por workspace.'));
+      body.appendChild(makeSelect('Conjuntos disponibles', ['Upsells principales', 'Bebidas y cafés', 'Cumpleaños y velas', 'Productos individuales'], 'Preparado para conectar con Conjuntos de productos creados en Protocol Data.'));
+      body.appendChild(makeSelect('Estructura de card', ['Lista vertical compacta', 'Card alargada con imagen izquierda', 'Carrusel horizontal'], 'Define cómo se presentan los adicionales en móvil.'));
+      body.appendChild(makeToggle('Mostrar botón Ver detalle', 'Permite abrir modal o página lateral antes de añadir el producto.', true));
+      body.appendChild(makeToggle('Permitir botón + en card', 'Activa compra rápida de upsells desde la card.', true));
+      sidePanel.classList.add('is-editing');
+      editor.setAttribute('aria-hidden', 'false');
+    }
+
     root.querySelectorAll('.builderToolCard').forEach(function (button) {
       button.addEventListener('click', function () {
         const strong = button.querySelector('strong');
         const label = strong ? strong.textContent.trim() : button.textContent.trim();
         if (label === 'Más elegidos') openMasElegidos();
         if (label === 'Combos') openCombos();
+        if (label === 'Sumar pedido') openSumarPedido();
       });
     });
   }
