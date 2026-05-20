@@ -18,15 +18,15 @@
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
-  padding: 44px 0 44px 52px;
+  padding: 18px 0 24px 22px;
   background: var(--builder-bg);
 }
 
 .builderSidePanel {
   width: 520px;
-  max-width: calc(100vw - 84px);
+  max-width: calc(100vw - 54px);
   min-height: 760px;
-  max-height: calc(100vh - 88px);
+  max-height: calc(100vh - 36px);
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr);
   overflow: hidden;
@@ -230,13 +230,13 @@
 
 @media (max-width: 900px) {
   .tiendaBuilderSandbox {
-    padding: 20px 12px;
+    padding: 12px;
   }
 
   .builderSidePanel {
     width: 100%;
     max-width: none;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - 24px);
   }
 
   .builderSidePanel__top {
