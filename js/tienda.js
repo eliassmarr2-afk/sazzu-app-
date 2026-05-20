@@ -106,10 +106,27 @@
       return wrap;
     }
 
+    function paletteGrid_() {
+      const grid = document.createElement("div");
+      grid.className = "builderPaletteList";
+      ["Frambuesa + Beige", "Cafe + Crema", "Rotiseria Calida", "Oliva + Arena", "Negro Premium"].forEach((item, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = index === 0 ? "builderPaletteItem is-selected" : "builderPaletteItem";
+        btn.textContent = item;
+        btn.addEventListener("click", () => {
+          grid.querySelectorAll(".builderPaletteItem").forEach((el) => el.classList.remove("is-selected"));
+          btn.classList.add("is-selected");
+        });
+        grid.appendChild(btn);
+      });
+      return grid;
+    }
+
     function buildEditor_(name) {
       if (!editorBody) return;
       editorBody.innerHTML = "";
-      if (editorSection) editorSection.textContent = "Identidad";
+      if (editorSection) editorSection.textContent = name === "Paleta" ? "Diseno" : "Identidad";
       if (editorTitle) editorTitle.textContent = name;
 
       if (name === "Nombre") {
@@ -150,6 +167,14 @@
         editorBody.appendChild(toggle_("Utilizar este correo para recompra y acciones comerciales", "Es recomendable activar este flujo para una mejor tasa de conversion y reconversion dentro de Publicidad UTM y Publicidad Interna."));
       }
 
+      if (name === "Paleta") {
+        editorBody.appendChild(paletteGrid_());
+        editorBody.appendChild(field_("Color principal", "text", "#b80f4d"));
+        editorBody.appendChild(field_("Color secundario", "text", "#f5dfbd"));
+        editorBody.appendChild(field_("Color de acento", "text", "#2479ff"));
+        editorBody.appendChild(hint_("Estos colores se aplican a botones, badges, tabs y elementos activos."));
+      }
+
       const nameInput = root.querySelector("[data-store-name-input]");
       if (nameInput) nameInput.addEventListener("input", syncStoreName_);
     }
@@ -173,7 +198,7 @@
       button.addEventListener("click", () => {
         const strong = button.querySelector("strong");
         const label = strong ? strong.textContent.trim() : button.textContent.trim();
-        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email"].indexOf(label) >= 0) openEditor_(label);
+        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email", "Paleta"].indexOf(label) >= 0) openEditor_(label);
       });
     });
 
