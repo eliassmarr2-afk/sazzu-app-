@@ -50,7 +50,7 @@
       const input = document.createElement("input");
       const code = document.createElement("em");
 
-      wrap.style.cssText = "position:relative;display:grid;grid-template-columns:minmax(0,1fr)46px;gap:14px;align-items:center;padding:14px;border-radius:13px;background:#fff;border:1px solid #d7d7d7;cursor:pointer;";
+      wrap.style.cssText = "position:relative;display:grid;grid-template-columns:minmax(0,1fr)46px;gap:14px;align-items:center;padding:14px;border-radius:5px;background:#fff;border:1px solid #d7d7d7;cursor:pointer;";
       copy.style.cssText = "display:grid;gap:4px;";
       title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
       desc.style.cssText = "color:#667085;font-size:12px;line-height:1.35;";
@@ -175,71 +175,81 @@
       return grid;
     }
 
-    function optionGrid_(label, description, items) {
+    function sliderControl_(label, description, min, max, value, suffix, onInput) {
       const block = document.createElement("div");
+      const head = document.createElement("div");
       const title = document.createElement("strong");
+      const valueText = document.createElement("em");
       const desc = document.createElement("small");
-      const grid = document.createElement("div");
+      const range = document.createElement("input");
 
-      block.style.cssText = "display:grid;gap:8px;padding:14px;border-radius:13px;background:#fff;border:1px solid #d7d7d7;";
-      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
+      block.style.cssText = "display:grid;gap:10px;padding:14px;border-radius:5px;background:#fff;border:1px solid #d7d7d7;";
+      head.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:12px;";
+      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:900;";
+      valueText.style.cssText = "color:#2479ff;font-size:12px;font-style:normal;font-weight:900;";
       desc.style.cssText = "color:#667085;font-size:12px;line-height:1.35;";
-      grid.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;";
+      range.type = "range";
+      range.min = String(min);
+      range.max = String(max);
+      range.value = String(value);
+      range.style.cssText = "width:100%;accent-color:#2479ff;cursor:pointer;";
+
+      function paint_() {
+        valueText.textContent = range.value + suffix;
+        if (onInput) onInput(Number(range.value));
+      }
+
       title.textContent = label;
       desc.textContent = description;
+      range.addEventListener("input", paint_);
+      paint_();
 
-      items.forEach((item, index) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = item;
-        btn.style.cssText = "border:1px solid #d7d7d7;border-radius:999px;padding:9px 12px;background:#fff;color:#2f3742;font-size:12px;font-weight:800;cursor:pointer;";
-        if (index === 0) {
-          btn.style.background = "#2479ff";
-          btn.style.color = "#fff";
-          btn.style.borderColor = "#2479ff";
-        }
-        btn.addEventListener("click", () => {
-          grid.querySelectorAll("button").forEach((el) => {
-            el.style.background = "#fff";
-            el.style.color = "#2f3742";
-            el.style.borderColor = "#d7d7d7";
-          });
-          btn.style.background = "#2479ff";
-          btn.style.color = "#fff";
-          btn.style.borderColor = "#2479ff";
-        });
-        grid.appendChild(btn);
-      });
-
-      block.appendChild(title);
+      head.appendChild(title);
+      head.appendChild(valueText);
+      block.appendChild(head);
       block.appendChild(desc);
-      block.appendChild(grid);
+      block.appendChild(range);
       return block;
     }
 
-    function previewButtons_() {
+    function buttonPreviewLive_() {
       const box = document.createElement("div");
-      box.style.cssText = "display:grid;gap:10px;padding:14px;border-radius:13px;background:#fff;border:1px dashed #cfd4dc;";
       const title = document.createElement("strong");
-      const main = document.createElement("button");
+      const primary = document.createElement("button");
       const secondary = document.createElement("button");
-      const small = document.createElement("button");
-      title.textContent = "Vista de referencia";
-      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
-      main.type = "button";
+      const qty = document.createElement("div");
+      const minus = document.createElement("button");
+      const plus = document.createElement("button");
+
+      box.style.cssText = "display:grid;gap:12px;padding:14px;border-radius:5px;background:#fff;border:1px dashed #cfd4dc;";
+      title.textContent = "Preview en tiempo real";
+      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:900;";
+
+      primary.type = "button";
+      primary.innerHTML = "<span>Añadir al pedido</span><small>Entrega estimada hoy</small>";
+      primary.style.cssText = "display:grid;place-items:center;gap:2px;height:48px;border:0;border-radius:16px;background:#b80f4d;color:#fff;font-weight:900;box-shadow:0 12px 24px rgba(184,15,77,.22);cursor:pointer;";
+      primary.querySelector("small").style.cssText = "font-size:11px;font-weight:650;opacity:.82;";
+
       secondary.type = "button";
-      small.type = "button";
-      main.textContent = "Añadir al pedido";
       secondary.textContent = "Seguir comprando";
-      small.textContent = "+";
-      main.style.cssText = "height:44px;border:0;border-radius:12px;background:#b80f4d;color:#fff;font-size:14px;font-weight:900;box-shadow:0 10px 22px rgba(184,15,77,.20);";
-      secondary.style.cssText = "height:42px;border:1px solid #d7d7d7;border-radius:12px;background:#fff;color:#2f3742;font-size:13px;font-weight:850;";
-      small.style.cssText = "width:44px;height:36px;border:0;border-radius:10px;background:#2479ff;color:#fff;font-size:18px;font-weight:900;";
+      secondary.style.cssText = "height:42px;border:1px solid #d7d7d7;border-radius:16px;background:#fff;color:#2f3742;font-size:13px;font-weight:850;cursor:pointer;";
+
+      qty.style.cssText = "display:flex;gap:8px;align-items:center;";
+      minus.type = "button";
+      plus.type = "button";
+      minus.textContent = "-";
+      plus.textContent = "+";
+      [minus, plus].forEach((btn) => {
+        btn.style.cssText = "width:42px;height:36px;border:0;border-radius:12px;background:#2479ff;color:#fff;font-size:18px;font-weight:900;cursor:pointer;";
+      });
+
+      qty.appendChild(minus);
+      qty.appendChild(plus);
       box.appendChild(title);
-      box.appendChild(main);
+      box.appendChild(primary);
       box.appendChild(secondary);
-      box.appendChild(small);
-      return box;
+      box.appendChild(qty);
+      return { box, primary, secondary, minus, plus };
     }
 
     function buildEditor_(name) {
@@ -299,14 +309,27 @@
       }
 
       if (name === "Botones") {
-        editorBody.appendChild(optionGrid_("Radio de borde", "Define que tan rectos o redondeados seran los botones principales y secundarios.", ["Suave", "Recto", "Redondo"]));
-        editorBody.appendChild(optionGrid_("Tamano de botones", "Controla el peso visual de acciones como Anadir, Continuar al pago y Seguir comprando.", ["Normal", "Compacto", "Grande"]));
-        editorBody.appendChild(optionGrid_("Estilo visual", "Determina si el boton aparece solido, con borde o con fondo suave.", ["Solido", "Contorno", "Suave"]));
+        const preview = buttonPreviewLive_();
+        editorBody.appendChild(preview.box);
+        editorBody.appendChild(sliderControl_("Tamaño", "Controla el peso visual de Añadir, Continuar al pago y botones de carrito.", 60, 120, 80, "%", (value) => {
+          const h = Math.round(34 + value * 0.18);
+          const fs = Math.round(10 + value * 0.055);
+          preview.primary.style.height = h + "px";
+          preview.primary.style.fontSize = fs + "px";
+          preview.secondary.style.height = Math.max(36, h - 6) + "px";
+          preview.plus.style.width = Math.max(34, Math.round(28 + value * 0.18)) + "px";
+          preview.minus.style.width = preview.plus.style.width;
+        }));
+        editorBody.appendChild(sliderControl_("Border-radius", "Define si los botones se sienten rectos, suaves o redondeados.", 0, 28, 16, "px", (value) => {
+          [preview.primary, preview.secondary, preview.plus, preview.minus].forEach((btn) => { btn.style.borderRadius = value + "px"; });
+        }));
+        editorBody.appendChild(sliderControl_("Intensidad de sombra", "Regula cuanto se despegan visualmente los botones principales.", 0, 100, 45, "%", (value) => {
+          preview.primary.style.boxShadow = value === 0 ? "none" : "0 " + Math.round(6 + value * 0.10) + "px " + Math.round(10 + value * 0.22) + "px rgba(184,15,77," + (0.08 + value * 0.0026).toFixed(2) + ")";
+        }));
         editorBody.appendChild(toggle_("Usar sombra en botones principales", "Ayuda a que las acciones de compra se destaquen sin ensuciar la interfaz."));
+        editorBody.appendChild(toggle_("Permitir subtitulo en botones principales", "Ideal para microcopy como Entrega estimada hoy, Cupos limitados o Llega gratis."));
         editorBody.appendChild(toggle_("Activar animacion rapida al tocar botones", "Permite una respuesta visual inmediata antes de ejecutar la accion."));
         editorBody.appendChild(toggle_("Mostrar iconos en botones clave", "Aplica iconos en Anadir, Pagar, Seguir comprando y acciones de carrito."));
-        editorBody.appendChild(optionGrid_("Botones de cantidad", "Define como se ven los controles de + y - dentro de productos, upsells y carrito.", ["Compactos", "Cuadrados", "Texto + icono"]));
-        editorBody.appendChild(previewButtons_());
       }
 
       const nameInput = root.querySelector("[data-store-name-input]");
