@@ -18,8 +18,17 @@
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
-  padding: 18px 0 24px 22px;
+  gap: 28px;
+  padding: 18px 24px 24px 22px;
   background: var(--builder-bg);
+}
+
+.builderSidePanel,
+.builderPreviewPanel {
+  border-radius: 18px 18px 0 0;
+  background: #eeeeee;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
 }
 
 .builderSidePanel {
@@ -29,10 +38,6 @@
   max-height: calc(100vh - 36px);
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr);
-  overflow: hidden;
-  border-radius: 18px 18px 0 0;
-  background: #eeeeee;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
 }
 
 .builderSidePanel__top {
@@ -228,15 +233,194 @@
   white-space: nowrap;
 }
 
+.builderPreviewPanel {
+  width: 470px;
+  min-height: 760px;
+  max-height: calc(100vh - 36px);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  padding: 0 22px 22px;
+  background: #ffffff;
+}
+
+.builderPreviewPanel__top {
+  height: 70px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: center;
+  border-bottom: 1px solid #ececec;
+}
+
+.builderPreviewPanel__status {
+  display: grid;
+  gap: 3px;
+}
+
+.builderPreviewPanel__status + .builderPreviewPanel__status {
+  padding-left: 18px;
+  border-left: 1px solid #ececec;
+}
+
+.builderPreviewPanel__status span {
+  color: #b44343;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.builderPreviewPanel__status strong {
+  color: #59616b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.builderStoreCard {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 28px 4px 22px;
+}
+
+.builderStoreCard__avatar {
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #c23867;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.builderStoreCard h2 {
+  margin: 0;
+  color: var(--builder-text);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.builderStoreCard p {
+  margin: 5px 0 0;
+  color: #5fb08e;
+  font-size: 13px;
+}
+
+.builderStorePreviewBlock {
+  display: grid;
+  gap: 0;
+  padding: 16px 18px;
+  border-top: 1px dashed #d7d7d7;
+  border-bottom: 1px dashed #d7d7d7;
+}
+
+.builderStorePreviewBlock + .builderStorePreviewBlock {
+  margin-top: 18px;
+}
+
+.builderStorePreviewBlock--dashed {
+  gap: 12px;
+  border: 1px dashed #d7d7d7;
+  min-height: 300px;
+}
+
+.builderStorePreviewBlock h3 {
+  margin: 0;
+  color: var(--builder-text);
+  font-size: 15px;
+}
+
+.builderStorePreviewBlock__row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 14px;
+  min-height: 30px;
+  align-items: center;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.builderStorePreviewBlock__row:last-child {
+  border-bottom: 0;
+}
+
+.builderStorePreviewBlock__row span {
+  color: #404854;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.builderStorePreviewBlock__row strong {
+  color: #59616b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.builderStoreSkeleton {
+  border-radius: 12px;
+  background: #eeeeee;
+}
+
+.builderStoreSkeleton--hero {
+  height: 95px;
+  background: linear-gradient(135deg, #c23867, #f1d1b5);
+}
+
+.builderStoreSkeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.builderStoreSkeletonGrid span {
+  height: 86px;
+  border-radius: 12px;
+  background: #f3f3f3;
+}
+
+.builderStoreSkeleton--line {
+  height: 52px;
+}
+
+.builderStoreTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: end;
+  padding-top: 18px;
+}
+
+.builderStoreTags span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #5b4a75;
+  background: #eee5ff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 1180px) {
+  .tiendaBuilderSandbox {
+    overflow-x: auto;
+  }
+
+  .builderPreviewPanel {
+    flex: 0 0 430px;
+  }
+}
+
 @media (max-width: 900px) {
   .tiendaBuilderSandbox {
     padding: 12px;
+    flex-direction: column;
   }
 
-  .builderSidePanel {
+  .builderSidePanel,
+  .builderPreviewPanel {
     width: 100%;
     max-width: none;
-    max-height: calc(100vh - 24px);
+    max-height: none;
   }
 
   .builderSidePanel__top {
@@ -245,7 +429,8 @@
     padding: 14px;
   }
 
-  .builderToolGrid {
+  .builderToolGrid,
+  .builderStoreSkeletonGrid {
     grid-template-columns: 1fr;
   }
 }
