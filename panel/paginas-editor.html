@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="view-transition" content="same-origin">
+  <title>Protocol Data · Tienda</title>
+
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
+  <link rel="stylesheet" href="../css/tienda.css">
+</head>
+
+<body data-page="tienda">
+  <div class="appShell">
+    <div class="bodyGrid">
+      <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
+
+      <main class="main" aria-label="Constructor de tienda">
+        <section class="storeBuilderShell">
+          <header class="storeBuilderHero">
+            <div>
+              <div class="storeBuilderHero__eyebrow">Protocol Data · Tiendas rápidas</div>
+              <h1>Constructor de tienda</h1>
+              <p>Creá una tienda mobile-first para recibir pedidos, medir campañas y alimentar el ecosistema comercial del workspace.</p>
+            </div>
+
+            <div class="storeBuilderHero__actions">
+              <button type="button" class="storeBuilderBtn storeBuilderBtn--ghost">Vista previa</button>
+              <button type="button" class="storeBuilderBtn storeBuilderBtn--primary">Publicar cambios</button>
+            </div>
+          </header>
+
+          <section class="storeBuilderStatusGrid" aria-label="Estado de configuración">
+            <article>
+              <span>Workspace</span>
+              <strong>DAX DAWER</strong>
+              <p>Todos los datos se guardarán bajo la cuenta del usuario.</p>
+            </article>
+            <article>
+              <span>Tienda</span>
+              <strong>Dulce Nube</strong>
+              <p>Borrador operativo preparado para Supabase multi-tenant.</p>
+            </article>
+            <article>
+              <span>Tracking</span>
+              <strong>UTM listo</strong>
+              <p>client_id, session_id y eventos comerciales quedan previstos.</p>
+            </article>
+          </section>
+
+          <section class="storeBuilderLayout">
+            <aside class="storeBuilderRail" aria-label="Secciones del constructor">
+              <button class="storeBuilderRail__item is-active" type="button" data-store-builder-tab="identity">
+                <span>01</span>
+                <strong>Identidad</strong>
+                <small>Nombre, rubro, portada y logo</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="theme">
+                <span>02</span>
+                <strong>Diseño</strong>
+                <small>Colores, botones y estética</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="sections">
+                <span>03</span>
+                <strong>Secciones</strong>
+                <small>Home predeterminada y orden</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="products">
+                <span>04</span>
+                <strong>Productos</strong>
+                <small>Catálogo, stock, imágenes</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="offers">
+                <span>05</span>
+                <strong>Combos</strong>
+                <small>Ofertas, upsells y packs</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="checkout">
+                <span>06</span>
+                <strong>Checkout</strong>
+                <small>Pago, datos y zonas</small>
+              </button>
+              <button class="storeBuilderRail__item" type="button" data-store-builder-tab="publish">
+                <span>07</span>
+                <strong>Publicación</strong>
+                <small>URL, estado e integraciones</small>
+              </button>
+            </aside>
+
+            <section class="storeBuilderEditor" aria-label="Editor de configuración">
+              <article class="storeBuilderPanel is-active" data-store-builder-panel="identity">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Identidad</span>
+                    <h2>Datos principales de la tienda</h2>
+                    <p>Esta información alimenta la portada, perfil y contexto visible para compradores.</p>
+                  </div>
+                  <b>store_config</b>
+                </div>
+
+                <div class="storeBuilderFormGrid">
+                  <label>
+                    <span>Nombre de la tienda</span>
+                    <input type="text" value="Dulce Nube" data-preview-store-name>
+                  </label>
+                  <label>
+                    <span>Rubro</span>
+                    <select>
+                      <option>Pastelería</option>
+                      <option>Cafetería</option>
+                      <option>Rotisería</option>
+                      <option>Comida rápida</option>
+                    </select>
+                  </label>
+                  <label class="storeBuilderFieldWide">
+                    <span>Descripción corta</span>
+                    <textarea data-preview-store-description>Tortas, muffins y postres listos para pedir.</textarea>
+                  </label>
+                  <label>
+                    <span>Imagen de portada</span>
+                    <input type="text" value="cover-image-url" readonly>
+                  </label>
+                  <label>
+                    <span>Logo / perfil</span>
+                    <input type="text" value="profile-image-url" readonly>
+                  </label>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="theme">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Diseño</span>
+                    <h2>Personalización controlada</h2>
+                    <p>Presets visuales para evitar tiendas rotas y mantener velocidad comercial.</p>
+                  </div>
+                  <b>theme_tokens</b>
+                </div>
+
+                <div class="storeThemePresets">
+                  <button class="storeThemePreset is-selected" type="button"><span style="--a:#b80f4d;--b:#f5dfbd"></span>Frambuesa + Beige</button>
+                  <button class="storeThemePreset" type="button"><span style="--a:#6b3f25;--b:#f3dfc5"></span>Café + Crema</button>
+                  <button class="storeThemePreset" type="button"><span style="--a:#6f1d1b;--b:#fff1e6"></span>Rotisería cálida</button>
+                  <button class="storeThemePreset" type="button"><span style="--a:#1f2d1f;--b:#ece5d8"></span>Oliva + Arena</button>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="sections">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Secciones</span>
+                    <h2>Home predeterminada, editable sin romper estructura</h2>
+                    <p>El comercio puede activar, ocultar y ordenar bloques permitidos.</p>
+                  </div>
+                  <b>store_sections</b>
+                </div>
+
+                <div class="storeSectionList">
+                  <article><strong>Más elegidos</strong><span>Activa · Orden 1</span></article>
+                  <article><strong>Combos rápidos</strong><span>Activa · Orden 2</span></article>
+                  <article><strong>Para sumar al pedido</strong><span>Activa · Orden 3</span></article>
+                  <article><strong>Repetir pedido</strong><span>Preparada · requiere login comprador</span></article>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="products">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Productos</span>
+                    <h2>Catálogo operativo</h2>
+                    <p>Productos con imágenes, precios, stock, badges, variantes, extras y promesas de entrega.</p>
+                  </div>
+                  <b>products</b>
+                </div>
+
+                <div class="storeBuilderEmptyState">
+                  <strong>Constructor de productos pendiente</strong>
+                  <p>Próxima fase: listado, alta rápida, stock, imágenes y upsells asociados.</p>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="offers">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Combos</span>
+                    <h2>Ofertas y estructuras de ticket promedio</h2>
+                    <p>Combos cerrados, combos editables, packs, upsells y componentes opcionales.</p>
+                  </div>
+                  <b>offers</b>
+                </div>
+
+                <div class="storeBuilderEmptyState">
+                  <strong>Editor de combos pendiente</strong>
+                  <p>Acá se configurarán componentes incluidos, agregados opcionales y reglas de margen.</p>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="checkout">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Checkout</span>
+                    <h2>Pago, datos y zonas de envío</h2>
+                    <p>Campos requeridos, pedido mínimo, Mercado Pago y disponibilizador de zonas.</p>
+                  </div>
+                  <b>checkout_settings</b>
+                </div>
+
+                <div class="storeBuilderFormGrid">
+                  <label>
+                    <span>Pedido mínimo</span>
+                    <input type="text" value="$7.500">
+                  </label>
+                  <label>
+                    <span>Método principal</span>
+                    <select>
+                      <option>Mercado Pago</option>
+                      <option>Contraentrega</option>
+                    </select>
+                  </label>
+                </div>
+              </article>
+
+              <article class="storeBuilderPanel" data-store-builder-panel="publish">
+                <div class="storeBuilderPanel__head">
+                  <div>
+                    <span>Publicación</span>
+                    <h2>Estado público e integraciones</h2>
+                    <p>URL pública, estado de tienda, UTM, eventos y conexión con pedidos.</p>
+                  </div>
+                  <b>stores</b>
+                </div>
+
+                <div class="storePublishGrid">
+                  <article><span>URL pública</span><strong>/tienda/dulce-nube</strong></article>
+                  <article><span>Estado</span><strong>Borrador</strong></article>
+                  <article><span>UTM</span><strong>Preparado</strong></article>
+                  <article><span>Login comprador</span><strong>Futuro</strong></article>
+                </div>
+              </article>
+            </section>
+
+            <aside class="storeBuilderPreview" aria-label="Vista previa móvil">
+              <div class="storePreviewPhone">
+                <div class="storePreviewHero"></div>
+                <div class="storePreviewProfile">
+                  <div class="storePreviewLogo">DN</div>
+                  <strong data-store-preview-name>Dulce Nube</strong>
+                  <p data-store-preview-description>Tortas, muffins y postres listos para pedir.</p>
+                </div>
+                <div class="storePreviewPromo">Box dulce con 15% OFF</div>
+                <div class="storePreviewCards">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="storePreviewNav"><span></span><span></span><span></span></div>
+              </div>
+            </aside>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/app.js" defer></script>
+  <script src="../js/tienda.js" defer></script>
+</body>
+</html>
