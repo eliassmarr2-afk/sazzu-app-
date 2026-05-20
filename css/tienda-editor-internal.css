@@ -1,0 +1,18 @@
+.builderSidePanel { position: relative; grid-template-rows: minmax(0, 1fr); }
+.builderSidePanel__main { min-height: 0; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease; }
+.builderSidePanel.is-editing .builderSidePanel__main { opacity: 0; transform: translateX(-28px); }
+.builderInnerEditor { position: absolute; inset: 0; z-index: 4; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: #eeeeee; opacity: 0; visibility: hidden; transform: translateX(100%); transition: transform 280ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease, visibility 0ms linear 280ms; }
+.builderSidePanel.is-editing .builderInnerEditor { opacity: 1; visibility: visible; transform: translateX(0); transition-delay: 0ms; }
+.builderInnerEditor__header { height: 72px; display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--builder-line); background: #eeeeee; }
+.builderInnerEditor__header button { width: 36px; height: 36px; border: 0; border-radius: 999px; color: #374151; background: #ffffff; font-size: 24px; line-height: 1; cursor: pointer; }
+.builderInnerEditor__header span { display: block; color: #6d7580; font-size: 12px; font-weight: 700; }
+.builderInnerEditor__header strong { display: block; margin-top: 2px; color: var(--builder-text); font-size: 20px; font-weight: 750; letter-spacing: -0.03em; }
+.builderInnerEditor__body { min-height: 0; display: grid; align-content: start; gap: 14px; padding: 24px; overflow-y: auto; }
+.builderFormField { display: grid; gap: 8px; }
+.builderFormField span { color: var(--builder-text); font-size: 14px; font-weight: 700; }
+.builderFormField input { width: 100%; border: 1px solid #d7d7d7; border-radius: 9px; padding: 13px 14px; color: var(--builder-text); background: #ffffff; font: inherit; font-size: 15px; outline: none; }
+.builderFieldHint { margin: 0; color: var(--builder-muted); font-size: 13px; line-height: 1.45; }
+.builderInnerEditor__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--builder-line); background: #e6e6e6; }
+.builderInnerEditor__footer button { min-height: 36px; border-radius: 10px; padding: 0 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.builderInnerEditor__ghost { border: 1px solid #cfd4dc; color: #4b5563; background: #ffffff; }
+.builderInnerEditor__save { border: 1px solid var(--builder-green); color: #ffffff; background: var(--builder-green); }
