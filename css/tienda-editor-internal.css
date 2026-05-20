@@ -10,9 +10,39 @@
 .builderInnerEditor__body { min-height: 0; display: grid; align-content: start; gap: 14px; padding: 24px; overflow-y: auto; }
 .builderFormField { display: grid; gap: 8px; }
 .builderFormField span { color: var(--builder-text); font-size: 14px; font-weight: 700; }
-.builderFormField input { width: 100%; border: 1px solid #d7d7d7; border-radius: 9px; padding: 13px 14px; color: var(--builder-text); background: #ffffff; font: inherit; font-size: 15px; outline: none; }
+.builderFormField input,
+.builderFormField textarea { width: 100%; border: 1px solid #d7d7d7; border-radius: 9px; padding: 13px 14px; color: var(--builder-text); background: #ffffff; font: inherit; font-size: 15px; outline: none; }
+.builderFormField textarea { min-height: 92px; resize: vertical; }
+.builderFormField input:focus,
+.builderFormField textarea:focus { border-color: #2479ff; box-shadow: 0 0 0 3px rgba(36, 121, 255, 0.12); }
 .builderFieldHint { margin: 0; color: var(--builder-muted); font-size: 13px; line-height: 1.45; }
+.builderFieldHint--warn { padding: 12px 13px; border: 1px solid #d8e5ff; border-radius: 10px; color: #2459a8; background: #f2f7ff; font-weight: 650; }
+
+.builderUploadBox { min-height: 126px; display: grid; place-items: center; gap: 6px; padding: 18px; border: 1.5px dashed #9fbfff; border-radius: 14px; color: #2479ff; background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%); text-align: center; cursor: pointer; }
+.builderUploadBox::before { content: "↑"; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 999px; color: #ffffff; background: #2479ff; font-size: 22px; font-weight: 900; box-shadow: 0 12px 24px rgba(36, 121, 255, 0.22); }
+.builderUploadBox strong { display: block; color: #2479ff; font-size: 15px; font-weight: 900; }
+.builderUploadBox span { max-width: 280px; color: #667085; font-size: 12px; line-height: 1.35; }
+
+.builderInlineFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.builderDaysPicker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; padding: 10px; border-radius: 13px; background: #ffffff; }
+.builderDaysPicker button { height: 38px; border: 1px solid #d7d7d7; border-radius: 10px; color: #667085; background: #f7f7f7; font-size: 13px; font-weight: 900; cursor: pointer; transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.builderDaysPicker button.is-selected { border-color: #2479ff; color: #ffffff; background: #2479ff; box-shadow: 0 10px 18px rgba(36, 121, 255, 0.18); }
+
+.builderToggleRow { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; align-items: center; padding: 14px; border-radius: 13px; background: #ffffff; cursor: pointer; }
+.builderToggleRow input { position: absolute; opacity: 0; pointer-events: none; }
+.builderToggleRow > span { position: relative; width: 50px; height: 28px; border-radius: 999px; background: #cfd4dc; transition: background 180ms ease, box-shadow 180ms ease; }
+.builderToggleRow > span::after { content: ""; position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 999px; background: #ffffff; box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18); transition: transform 180ms ease; }
+.builderToggleRow input:checked + span { background: #2479ff; box-shadow: 0 8px 18px rgba(36, 121, 255, 0.18); }
+.builderToggleRow input:checked + span::after { transform: translateX(22px); }
+.builderToggleRow strong { display: block; color: var(--builder-text); font-size: 13px; line-height: 1.2; }
+.builderToggleRow small { display: block; margin-top: 4px; color: var(--builder-muted); font-size: 12px; line-height: 1.35; }
+
 .builderInnerEditor__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--builder-line); background: #e6e6e6; }
 .builderInnerEditor__footer button { min-height: 36px; border-radius: 10px; padding: 0 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
 .builderInnerEditor__ghost { border: 1px solid #cfd4dc; color: #4b5563; background: #ffffff; }
-.builderInnerEditor__save { border: 1px solid var(--builder-green); color: #ffffff; background: var(--builder-green); }
+.builderInnerEditor__save { border: 1px solid #2479ff; color: #ffffff; background: #2479ff; }
+
+@media (max-width: 900px) {
+  .builderInlineFields { grid-template-columns: 1fr; }
+  .builderDaysPicker { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
