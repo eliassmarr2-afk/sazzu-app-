@@ -28,15 +28,20 @@
     }
 
     function makeToggle(label, note, checked) {
-      const row = document.createElement('label');
+      const row = document.createElement('div');
       const input = document.createElement('input');
       const visual = document.createElement('span');
       const copy = document.createElement('div');
       const strong = document.createElement('strong');
       const small = document.createElement('small');
       row.className = 'builderToggleRow';
+      row.style.position = 'relative';
+      row.style.userSelect = 'none';
       input.type = 'checkbox';
       input.checked = checked !== false;
+      input.style.position = 'absolute';
+      input.style.opacity = '0';
+      input.style.pointerEvents = 'none';
       strong.textContent = label;
       small.textContent = note;
       copy.appendChild(strong);
@@ -44,6 +49,11 @@
       row.appendChild(input);
       row.appendChild(visual);
       row.appendChild(copy);
+      row.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        input.checked = !input.checked;
+      });
       return row;
     }
 
@@ -97,8 +107,8 @@
       const item = document.createElement('article');
       const img = document.createElement('div');
       const badge = document.createElement('span');
-      const body = document.createElement('div');
-      const title = document.createElement('strong');
+      const itemBody = document.createElement('div');
+      const itemTitle = document.createElement('strong');
       const desc = document.createElement('small');
       const row = document.createElement('div');
       const value = document.createElement('b');
@@ -107,9 +117,9 @@
       img.style.cssText = 'position:relative;height:92px;background:linear-gradient(135deg,' + color + ',#b80f4d);';
       badge.textContent = badgeText;
       badge.style.cssText = 'position:absolute;left:10px;top:10px;padding:6px 8px;border-radius:4px;background:#b80f4d;color:#fff;font-size:10px;font-weight:900;';
-      body.style.cssText = 'display:grid;gap:6px;padding:12px;';
-      title.textContent = name;
-      title.style.cssText = 'color:#1f1f28;font-size:14px;font-weight:900;';
+      itemBody.style.cssText = 'display:grid;gap:6px;padding:12px;';
+      itemTitle.textContent = name;
+      itemTitle.style.cssText = 'color:#1f1f28;font-size:14px;font-weight:900;';
       desc.textContent = 'Producto visible en carrusel de compra rápida.';
       desc.style.cssText = 'color:#667085;font-size:11px;line-height:1.3;';
       row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;';
@@ -121,11 +131,11 @@
       img.appendChild(badge);
       row.appendChild(value);
       row.appendChild(add);
-      body.appendChild(title);
-      body.appendChild(desc);
-      body.appendChild(row);
+      itemBody.appendChild(itemTitle);
+      itemBody.appendChild(desc);
+      itemBody.appendChild(row);
       item.appendChild(img);
-      item.appendChild(body);
+      item.appendChild(itemBody);
       return item;
     }
 
