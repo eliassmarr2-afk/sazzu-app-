@@ -51,16 +51,32 @@
     function uploadBox_() {
       const box = document.createElement("div");
       box.className = "builderUploadBox";
-      box.innerHTML = "<strong>Subir archivo</strong><span>Modulo inactivo por ahora. Luego se conectara a Storage/Supabase.</span>";
+      const title = document.createElement("strong");
+      const text = document.createElement("span");
+      title.textContent = "Subir archivo";
+      text.textContent = "Modulo inactivo por ahora. Luego se conectara a Storage/Supabase.";
+      box.appendChild(title);
+      box.appendChild(text);
       return box;
     }
 
     function toggle_(title, text) {
       const label = document.createElement("label");
+      const input = document.createElement("input");
+      const visual = document.createElement("span");
+      const copy = document.createElement("div");
+      const strong = document.createElement("strong");
+      const small = document.createElement("small");
       label.className = "builderToggleRow";
-      label.innerHTML = "<input type='checkbox' checked><span></span><div><strong></strong><small></small></div>";
-      label.querySelector("strong").textContent = title;
-      label.querySelector("small").textContent = text;
+      input.type = "checkbox";
+      input.checked = true;
+      strong.textContent = title;
+      small.textContent = text;
+      copy.appendChild(strong);
+      copy.appendChild(small);
+      label.appendChild(input);
+      label.appendChild(visual);
+      label.appendChild(copy);
       return label;
     }
 
@@ -130,7 +146,8 @@
 
     root.querySelectorAll(".builderToolCard").forEach((button) => {
       button.addEventListener("click", () => {
-        const label = button.textContent.trim();
+        const strong = button.querySelector("strong");
+        const label = strong ? strong.textContent.trim() : button.textContent.trim();
         if (["Nombre", "Portada", "Logo", "Estado"].indexOf(label) >= 0) openEditor_(label);
       });
     });
