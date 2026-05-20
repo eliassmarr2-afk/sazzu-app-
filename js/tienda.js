@@ -48,6 +48,18 @@
       return p;
     }
 
+    function validation_(label, status) {
+      const box = document.createElement("div");
+      box.className = status === "verified" ? "builderValidation is-verified" : "builderValidation is-unverified";
+      const dot = document.createElement("span");
+      const text = document.createElement("strong");
+      dot.setAttribute("aria-hidden", "true");
+      text.textContent = label;
+      box.appendChild(dot);
+      box.appendChild(text);
+      return box;
+    }
+
     function uploadBox_() {
       const box = document.createElement("div");
       box.className = "builderUploadBox";
@@ -60,7 +72,7 @@
       return box;
     }
 
-    function toggle_(title, text) {
+    function toggle_(title, text, checked) {
       const label = document.createElement("label");
       const input = document.createElement("input");
       const visual = document.createElement("span");
@@ -69,7 +81,7 @@
       const small = document.createElement("small");
       label.className = "builderToggleRow";
       input.type = "checkbox";
-      input.checked = true;
+      input.checked = checked !== false;
       strong.textContent = title;
       small.textContent = text;
       copy.appendChild(strong);
@@ -125,6 +137,19 @@
         editorBody.appendChild(toggle_("Mostrar estado Abierto/Cerrado en la Home", "Mostrara un relojito con Abierto o Cerrado y el proximo horario disponible."));
       }
 
+      if (name === "WhatsApp") {
+        editorBody.appendChild(field_("Numero de WhatsApp", "tel", "+54 9 11 1234 5678", "data-store-whatsapp-input"));
+        editorBody.appendChild(validation_("El numero NO esta verificado", "unverified"));
+        editorBody.appendChild(toggle_("Mostrar globo de WhatsApp en la web", "El usuario podra clickear en el globo de WhatsApp y sera redirigido. Esto puede generar rebote en el sitio."));
+        editorBody.appendChild(toggle_("Permitir solo usuarios registrados para enviar mensajes de WhatsApp", "Los usuarios deberan crear una cuenta para enviar mensajes.", false));
+      }
+
+      if (name === "Email") {
+        editorBody.appendChild(field_("Correo electronico", "email", "contacto@dulcenube.com", "data-store-email-input"));
+        editorBody.appendChild(validation_("Correo NO validado", "unverified"));
+        editorBody.appendChild(toggle_("Utilizar este correo para recompra y acciones comerciales", "Es recomendable activar este flujo para una mejor tasa de conversion y reconversion dentro de Publicidad UTM y Publicidad Interna."));
+      }
+
       const nameInput = root.querySelector("[data-store-name-input]");
       if (nameInput) nameInput.addEventListener("input", syncStoreName_);
     }
@@ -148,7 +173,7 @@
       button.addEventListener("click", () => {
         const strong = button.querySelector("strong");
         const label = strong ? strong.textContent.trim() : button.textContent.trim();
-        if (["Nombre", "Portada", "Logo", "Estado"].indexOf(label) >= 0) openEditor_(label);
+        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email"].indexOf(label) >= 0) openEditor_(label);
       });
     });
 
