@@ -175,10 +175,77 @@
       return grid;
     }
 
+    function optionGrid_(label, description, items) {
+      const block = document.createElement("div");
+      const title = document.createElement("strong");
+      const desc = document.createElement("small");
+      const grid = document.createElement("div");
+
+      block.style.cssText = "display:grid;gap:8px;padding:14px;border-radius:13px;background:#fff;border:1px solid #d7d7d7;";
+      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
+      desc.style.cssText = "color:#667085;font-size:12px;line-height:1.35;";
+      grid.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;";
+      title.textContent = label;
+      desc.textContent = description;
+
+      items.forEach((item, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = item;
+        btn.style.cssText = "border:1px solid #d7d7d7;border-radius:999px;padding:9px 12px;background:#fff;color:#2f3742;font-size:12px;font-weight:800;cursor:pointer;";
+        if (index === 0) {
+          btn.style.background = "#2479ff";
+          btn.style.color = "#fff";
+          btn.style.borderColor = "#2479ff";
+        }
+        btn.addEventListener("click", () => {
+          grid.querySelectorAll("button").forEach((el) => {
+            el.style.background = "#fff";
+            el.style.color = "#2f3742";
+            el.style.borderColor = "#d7d7d7";
+          });
+          btn.style.background = "#2479ff";
+          btn.style.color = "#fff";
+          btn.style.borderColor = "#2479ff";
+        });
+        grid.appendChild(btn);
+      });
+
+      block.appendChild(title);
+      block.appendChild(desc);
+      block.appendChild(grid);
+      return block;
+    }
+
+    function previewButtons_() {
+      const box = document.createElement("div");
+      box.style.cssText = "display:grid;gap:10px;padding:14px;border-radius:13px;background:#fff;border:1px dashed #cfd4dc;";
+      const title = document.createElement("strong");
+      const main = document.createElement("button");
+      const secondary = document.createElement("button");
+      const small = document.createElement("button");
+      title.textContent = "Vista de referencia";
+      title.style.cssText = "color:#2f3742;font-size:14px;font-weight:800;";
+      main.type = "button";
+      secondary.type = "button";
+      small.type = "button";
+      main.textContent = "Añadir al pedido";
+      secondary.textContent = "Seguir comprando";
+      small.textContent = "+";
+      main.style.cssText = "height:44px;border:0;border-radius:12px;background:#b80f4d;color:#fff;font-size:14px;font-weight:900;box-shadow:0 10px 22px rgba(184,15,77,.20);";
+      secondary.style.cssText = "height:42px;border:1px solid #d7d7d7;border-radius:12px;background:#fff;color:#2f3742;font-size:13px;font-weight:850;";
+      small.style.cssText = "width:44px;height:36px;border:0;border-radius:10px;background:#2479ff;color:#fff;font-size:18px;font-weight:900;";
+      box.appendChild(title);
+      box.appendChild(main);
+      box.appendChild(secondary);
+      box.appendChild(small);
+      return box;
+    }
+
     function buildEditor_(name) {
       if (!editorBody) return;
       editorBody.innerHTML = "";
-      if (editorSection) editorSection.textContent = name === "Paleta" ? "Diseno" : "Identidad";
+      if (editorSection) editorSection.textContent = ["Paleta", "Botones"].indexOf(name) >= 0 ? "Diseno" : "Identidad";
       if (editorTitle) editorTitle.textContent = name;
 
       if (name === "Nombre") {
@@ -231,6 +298,17 @@
         editorBody.appendChild(colorControl_("Color de textos secundarios", "#667085", "Afecta a textos de caracteristicas, descripciones y ayudas visuales."));
       }
 
+      if (name === "Botones") {
+        editorBody.appendChild(optionGrid_("Radio de borde", "Define que tan rectos o redondeados seran los botones principales y secundarios.", ["Suave", "Recto", "Redondo"]));
+        editorBody.appendChild(optionGrid_("Tamano de botones", "Controla el peso visual de acciones como Anadir, Continuar al pago y Seguir comprando.", ["Normal", "Compacto", "Grande"]));
+        editorBody.appendChild(optionGrid_("Estilo visual", "Determina si el boton aparece solido, con borde o con fondo suave.", ["Solido", "Contorno", "Suave"]));
+        editorBody.appendChild(toggle_("Usar sombra en botones principales", "Ayuda a que las acciones de compra se destaquen sin ensuciar la interfaz."));
+        editorBody.appendChild(toggle_("Activar animacion rapida al tocar botones", "Permite una respuesta visual inmediata antes de ejecutar la accion."));
+        editorBody.appendChild(toggle_("Mostrar iconos en botones clave", "Aplica iconos en Anadir, Pagar, Seguir comprando y acciones de carrito."));
+        editorBody.appendChild(optionGrid_("Botones de cantidad", "Define como se ven los controles de + y - dentro de productos, upsells y carrito.", ["Compactos", "Cuadrados", "Texto + icono"]));
+        editorBody.appendChild(previewButtons_());
+      }
+
       const nameInput = root.querySelector("[data-store-name-input]");
       if (nameInput) nameInput.addEventListener("input", syncStoreName_);
     }
@@ -254,7 +332,7 @@
       button.addEventListener("click", () => {
         const strong = button.querySelector("strong");
         const label = strong ? strong.textContent.trim() : button.textContent.trim();
-        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email", "Paleta"].indexOf(label) >= 0) openEditor_(label);
+        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email", "Paleta", "Botones"].indexOf(label) >= 0) openEditor_(label);
       });
     });
 
