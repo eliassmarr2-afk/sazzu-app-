@@ -25,7 +25,7 @@
 
       editorBody.appendChild(sliderControl_("Border-radius", "Define que tan rectas o redondeadas seran las tarjetas de productos, combos y upsells.", 0, 28, 5, "px", function (value) {
         preview.card.style.borderRadius = value + "px";
-        preview.image.style.borderRadius = Math.max(0, value - 1) + "px";
+        preview.image.style.borderRadius = preview.fullBleedImage ? value + "px " + value + "px 0 0" : Math.max(0, value - 1) + "px";
       }));
 
       editorBody.appendChild(colorControl_("Color de tarjeta", "#ffffff", "Este color tambien existe en Paleta, pero puede ajustarse individualmente desde Tarjetas."));
@@ -35,16 +35,38 @@
       }));
 
       editorBody.appendChild(sliderControl_("Espaciado interno", "Define que tan pegado queda el contenido al borde de la tarjeta.", 6, 26, 14, "px", function (value) {
-        preview.card.style.padding = value + "px";
-        preview.content.style.gap = Math.max(5, Math.round(value * 0.55)) + "px";
+        preview.cardPadding = value;
+        applyPreviewSpacing_(preview);
       }));
 
+      editorBody.appendChild(toggle_("Permitir que la imagen ocupe todo el ancho superior", "La imagen toca el limite superior y los laterales de la tarjeta. Ideal para productos visuales.", false, function (checked) {
+        preview.fullBleedImage = checked;
+        applyPreviewSpacing_(preview);
+      }));
       editorBody.appendChild(toggle_("Aplicar tambien a tarjetas de combos y ofertas especiales", "Mantiene consistencia visual entre productos, packs, combos y ofertas.", true));
       editorBody.appendChild(toggle_("Mostrar borde fino", "Ayuda a separar tarjetas cuando el fondo de la tienda es claro.", true));
       editorBody.appendChild(toggle_("Usar sombra solo al tocar o pasar por encima", "Reduce ruido visual en pantallas chicas y mantiene feedback de accion.", false));
 
       sidePanel.classList.add("is-editing");
       editor.setAttribute("aria-hidden", "false");
+    }
+
+    function applyPreviewSpacing_(preview) {
+      const value = preview.cardPadding || 14;
+      const radius = parseInt(preview.card.style.borderRadius, 10) || 5;
+      preview.content.style.gap = Math.max(5, Math.round(value * 0.55)) + "px";
+
+      if (preview.fullBleedImage) {
+        preview.card.style.padding = "0";
+        preview.card.style.overflow = "hidden";
+        preview.image.style.borderRadius = radius + "px " + radius + "px 0 0";
+        preview.content.style.padding = value + "px";
+      } else {
+        preview.card.style.padding = value + "px";
+        preview.card.style.overflow = "visible";
+        preview.image.style.borderRadius = Math.max(0, radius - 1) + "px";
+        preview.content.style.padding = "0";
+      }
     }
 
     function colorControl_(label, value, description) {
@@ -123,7 +145,7 @@
       return block;
     }
 
-    function toggle_(title, text, checked) {
+    function toggle_(title, text, checked, onChange) {
       const row = document.createElement("div");
       const input = document.createElement("input");
       const visual = document.createElement("span");
@@ -154,6 +176,7 @@
         event.preventDefault();
         event.stopPropagation();
         input.checked = !input.checked;
+        if (onChange) onChange(input.checked);
       });
 
       return row;
@@ -172,7 +195,7 @@
       const price = document.createElement("b");
       const action = document.createElement("button");
 
-      box.style.cssText = "display:grid;gap:12px;padding:14px;border-radius:5px;background:#fff;border:1px dashed #cfd4dc;";
+      box.style.cssText = "position:sticky;top:0;z-index:5;display:grid;gap:12px;padding:14px;border-radius:5px;background:#fff;border:1px dashed #cfd4dc;box-shadow:0 10px 24px rgba(15,23,42,.08);";
       title.textContent = "Preview en tiempo real";
       title.style.cssText = "color:#2f3742;font-size:14px;font-weight:900;";
 
@@ -204,7 +227,7 @@
       box.appendChild(title);
       box.appendChild(card);
 
-      return { box, card, image, content };
+      return { box, card, image, content, fullBleedImage: false, cardPadding: 14 };
     }
 
     root.querySelectorAll(".builderToolCard").forEach(function (button) {
