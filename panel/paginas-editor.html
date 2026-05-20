@@ -22,124 +22,150 @@
       <main class="main tiendaBuilderMain" aria-label="Constructor de tienda">
         <section class="tiendaBuilderSandbox" aria-label="Constructor visual de tienda">
           <aside class="builderSidePanel" aria-label="Herramientas del constructor">
-            <header class="builderSidePanel__top">
-              <div class="builderSidePanel__brand">
-                <button type="button" aria-label="Menú">☰</button>
-                <strong>App Builder</strong>
-              </div>
-              <div class="builderSidePanel__actions">
-                <button type="button">Edit menu</button>
-                <button type="button">New modal</button>
-              </div>
-            </header>
+            <div class="builderSidePanel__main" data-builder-main-view>
+              <header class="builderSidePanel__top">
+                <div class="builderSidePanel__brand">
+                  <button type="button" aria-label="Menú">☰</button>
+                  <strong>App Builder</strong>
+                </div>
+                <div class="builderSidePanel__actions">
+                  <button type="button">Edit menu</button>
+                  <button type="button">New modal</button>
+                </div>
+              </header>
 
-            <div class="builderSidePanel__quickbar">
-              <button type="button">↶ Undo</button>
-              <button type="button">↷ Redo</button>
+              <div class="builderSidePanel__quickbar">
+                <button type="button">↶ Undo</button>
+                <button type="button">↷ Redo</button>
+              </div>
+
+              <nav class="builderTabs" aria-label="Secciones del constructor">
+                <div class="builderTabs__track" data-builder-tabs-track>
+                  <button class="builderTab is-active" type="button" data-builder-tab="identity">Identidad</button>
+                  <button class="builderTab" type="button" data-builder-tab="theme">Diseño</button>
+                  <button class="builderTab" type="button" data-builder-tab="sections">Secciones</button>
+                  <button class="builderTab" type="button" data-builder-tab="products">Productos</button>
+                  <button class="builderTab" type="button" data-builder-tab="offers">Combos</button>
+                  <button class="builderTab" type="button" data-builder-tab="checkout">Checkout</button>
+                  <button class="builderTab" type="button" data-builder-tab="publish">Publicación</button>
+                </div>
+              </nav>
+
+              <section class="builderTabContent is-active" data-builder-panel="identity">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Identidad <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button" data-builder-open-editor="store-name"><span>◎</span><strong>Nombre</strong></button>
+                    <button class="builderToolCard" type="button"><span>▧</span><strong>Portada</strong></button>
+                    <button class="builderToolCard" type="button"><span>●</span><strong>Logo</strong></button>
+                    <button class="builderToolCard" type="button"><span>◷</span><strong>Estado</strong></button>
+                  </div>
+                </div>
+
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Contacto <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>☏</span><strong>WhatsApp</strong></button>
+                    <button class="builderToolCard" type="button"><span>✉</span><strong>Email</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="theme">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Diseño <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>◐</span><strong>Paleta</strong></button>
+                    <button class="builderToolCard" type="button"><span>▣</span><strong>Botones</strong></button>
+                    <button class="builderToolCard" type="button"><span>□</span><strong>Tarjetas</strong></button>
+                    <button class="builderToolCard" type="button"><span>≋</span><strong>Fondo</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="sections">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Secciones <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>▤</span><strong>Más elegidos</strong></button>
+                    <button class="builderToolCard" type="button"><span>◇</span><strong>Combos</strong></button>
+                    <button class="builderToolCard" type="button"><span>＋</span><strong>Sumar pedido</strong></button>
+                    <button class="builderToolCard" type="button"><span>▰</span><strong>Banner</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="products">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Productos <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>＋</span><strong>Nuevo</strong></button>
+                    <button class="builderToolCard" type="button"><span>◫</span><strong>Catálogo</strong></button>
+                    <button class="builderToolCard" type="button"><span>Nº</span><strong>Stock</strong></button>
+                    <button class="builderToolCard" type="button"><span>$</span><strong>Precio</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="offers">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Combos <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>◇</span><strong>Nuevo combo</strong></button>
+                    <button class="builderToolCard" type="button"><span>▥</span><strong>Componentes</strong></button>
+                    <button class="builderToolCard" type="button"><span>⇧</span><strong>Upsells</strong></button>
+                    <button class="builderToolCard" type="button"><span>%</span><strong>Regla</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="checkout">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Checkout <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>$</span><strong>Pago</strong></button>
+                    <button class="builderToolCard" type="button"><span>⌖</span><strong>Zonas</strong></button>
+                    <button class="builderToolCard" type="button"><span>☑</span><strong>Campos</strong></button>
+                    <button class="builderToolCard" type="button"><span>Min</span><strong>Mínimo</strong></button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="builderTabContent" data-builder-panel="publish">
+                <div class="builderToolGroup">
+                  <button class="builderToolGroup__title" type="button">Publicación <span>⌃</span></button>
+                  <div class="builderToolGrid">
+                    <button class="builderToolCard" type="button"><span>↗</span><strong>URL</strong></button>
+                    <button class="builderToolCard" type="button"><span>●</span><strong>Estado</strong></button>
+                    <button class="builderToolCard" type="button"><span>UTM</span><strong>Tracking</strong></button>
+                    <button class="builderToolCard" type="button"><span>⌁</span><strong>Login</strong></button>
+                  </div>
+                </div>
+              </section>
             </div>
 
-            <nav class="builderTabs" aria-label="Secciones del constructor">
-              <div class="builderTabs__track" data-builder-tabs-track>
-                <button class="builderTab is-active" type="button" data-builder-tab="identity">Identidad</button>
-                <button class="builderTab" type="button" data-builder-tab="theme">Diseño</button>
-                <button class="builderTab" type="button" data-builder-tab="sections">Secciones</button>
-                <button class="builderTab" type="button" data-builder-tab="products">Productos</button>
-                <button class="builderTab" type="button" data-builder-tab="offers">Combos</button>
-                <button class="builderTab" type="button" data-builder-tab="checkout">Checkout</button>
-                <button class="builderTab" type="button" data-builder-tab="publish">Publicación</button>
-              </div>
-            </nav>
-
-            <section class="builderTabContent is-active" data-builder-panel="identity">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Identidad <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>◎</span><strong>Nombre</strong></button>
-                  <button class="builderToolCard" type="button"><span>▧</span><strong>Portada</strong></button>
-                  <button class="builderToolCard" type="button"><span>●</span><strong>Logo</strong></button>
-                  <button class="builderToolCard" type="button"><span>◷</span><strong>Estado</strong></button>
+            <section class="builderInnerEditor" aria-hidden="true" data-builder-inner-editor>
+              <header class="builderInnerEditor__header">
+                <button type="button" data-builder-editor-back aria-label="Volver">‹</button>
+                <div>
+                  <span>Identidad</span>
+                  <strong>Editar nombre</strong>
                 </div>
+              </header>
+
+              <div class="builderInnerEditor__body">
+                <label class="builderFormField">
+                  <span>Nombre de la tienda</span>
+                  <input type="text" value="Dulce Nube" data-store-name-input>
+                </label>
+
+                <p class="builderFieldHint">Este nombre aparece en el perfil superior de la tienda y en el resumen público del constructor.</p>
               </div>
 
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Contacto <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>☏</span><strong>WhatsApp</strong></button>
-                  <button class="builderToolCard" type="button"><span>✉</span><strong>Email</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="theme">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Diseño <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>◐</span><strong>Paleta</strong></button>
-                  <button class="builderToolCard" type="button"><span>▣</span><strong>Botones</strong></button>
-                  <button class="builderToolCard" type="button"><span>□</span><strong>Tarjetas</strong></button>
-                  <button class="builderToolCard" type="button"><span>≋</span><strong>Fondo</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="sections">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Secciones <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>▤</span><strong>Más elegidos</strong></button>
-                  <button class="builderToolCard" type="button"><span>◇</span><strong>Combos</strong></button>
-                  <button class="builderToolCard" type="button"><span>＋</span><strong>Sumar pedido</strong></button>
-                  <button class="builderToolCard" type="button"><span>▰</span><strong>Banner</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="products">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Productos <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>＋</span><strong>Nuevo</strong></button>
-                  <button class="builderToolCard" type="button"><span>◫</span><strong>Catálogo</strong></button>
-                  <button class="builderToolCard" type="button"><span>Nº</span><strong>Stock</strong></button>
-                  <button class="builderToolCard" type="button"><span>$</span><strong>Precio</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="offers">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Combos <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>◇</span><strong>Nuevo combo</strong></button>
-                  <button class="builderToolCard" type="button"><span>▥</span><strong>Componentes</strong></button>
-                  <button class="builderToolCard" type="button"><span>⇧</span><strong>Upsells</strong></button>
-                  <button class="builderToolCard" type="button"><span>%</span><strong>Regla</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="checkout">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Checkout <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>$</span><strong>Pago</strong></button>
-                  <button class="builderToolCard" type="button"><span>⌖</span><strong>Zonas</strong></button>
-                  <button class="builderToolCard" type="button"><span>☑</span><strong>Campos</strong></button>
-                  <button class="builderToolCard" type="button"><span>Min</span><strong>Mínimo</strong></button>
-                </div>
-              </div>
-            </section>
-
-            <section class="builderTabContent" data-builder-panel="publish">
-              <div class="builderToolGroup">
-                <button class="builderToolGroup__title" type="button">Publicación <span>⌃</span></button>
-                <div class="builderToolGrid">
-                  <button class="builderToolCard" type="button"><span>↗</span><strong>URL</strong></button>
-                  <button class="builderToolCard" type="button"><span>●</span><strong>Estado</strong></button>
-                  <button class="builderToolCard" type="button"><span>UTM</span><strong>Tracking</strong></button>
-                  <button class="builderToolCard" type="button"><span>⌁</span><strong>Login</strong></button>
-                </div>
-              </div>
+              <footer class="builderInnerEditor__footer">
+                <button type="button" class="builderInnerEditor__ghost" data-builder-editor-back>Cancelar</button>
+                <button type="button" class="builderInnerEditor__save" data-builder-editor-save>Guardar cambios</button>
+              </footer>
             </section>
           </aside>
 
@@ -151,14 +177,14 @@
               </div>
               <div class="builderPreviewPanel__status">
                 <span>Store</span>
-                <strong>Dulce Nube</strong>
+                <strong data-store-name-preview-small>Dulce Nube</strong>
               </div>
             </header>
 
             <section class="builderStoreCard">
               <div class="builderStoreCard__avatar">DN</div>
               <div>
-                <h2>Dulce Nube</h2>
+                <h2 data-store-name-preview-title>Dulce Nube</h2>
                 <p>Pastelería artesanal</p>
               </div>
             </section>
@@ -166,7 +192,7 @@
             <section class="builderStorePreviewBlock">
               <div class="builderStorePreviewBlock__row">
                 <span>Nombre visible</span>
-                <strong>Dulce Nube</strong>
+                <strong data-store-name-preview-row>Dulce Nube</strong>
               </div>
               <div class="builderStorePreviewBlock__row">
                 <span>Rubro</span>
