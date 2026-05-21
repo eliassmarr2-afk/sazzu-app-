@@ -20,6 +20,13 @@
       activateTab('home');
     }
 
+    function closeInnerEditor() {
+      const sidePanel = root.querySelector('.builderSidePanel');
+      const editor = root.querySelector('[data-builder-inner-editor]');
+      if (sidePanel) sidePanel.classList.remove('is-editing');
+      if (editor) editor.setAttribute('aria-hidden', 'true');
+    }
+
     function renameEditorSection() {
       const sectionLabel = root.querySelector('.builderInnerEditor__header span');
       if (sectionLabel && sectionLabel.textContent.trim() === 'Identidad') {
@@ -100,7 +107,7 @@
 
       if (kind === 'home') {
         activateTab('home');
-        setTimeout(function () { clickToolCard('Nombre'); }, 40);
+        closeInnerEditor();
         return;
       }
 
