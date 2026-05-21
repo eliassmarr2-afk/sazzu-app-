@@ -27,11 +27,6 @@
       }
     }
 
-    function getActiveTabName() {
-      const activeTab = root.querySelector('[data-builder-tab].is-active');
-      return activeTab ? activeTab.dataset.builderTab : 'home';
-    }
-
     function getHomeBottom(phone) {
       const cover = phone.querySelector('[data-live-cover]');
       const whiteBlock = cover ? cover.nextElementSibling : null;
@@ -126,18 +121,8 @@
       phone.dataset.homeHoverReady = '1';
 
       phone.addEventListener('mousemove', function (event) {
-        const activeTab = getActiveTabName();
         const targetZone = event.target.closest ? event.target.closest('[data-live-edit-zone]') : null;
-        if ((activeTab === 'sections' || activeTab === 'tabs') && targetZone && phone.contains(targetZone)) {
-          const targetKind = targetZone.getAttribute('data-live-edit-zone');
-          if (activeTab === 'tabs' && targetKind !== 'pestanas') {
-            hideOutline(phone);
-            return;
-          }
-          if (activeTab === 'sections' && targetKind === 'pestanas') {
-            hideOutline(phone);
-            return;
-          }
+        if (targetZone && phone.contains(targetZone)) {
           showZoneOutline(phone, targetZone);
           return;
         }
@@ -145,7 +130,7 @@
         const rect = phone.getBoundingClientRect();
         const y = event.clientY - rect.top + phone.scrollTop;
         const bottom = getHomeBottom(phone);
-        if (activeTab === 'home' && y >= 0 && y <= bottom) {
+        if (y >= 0 && y <= bottom) {
           showHomeOutline(phone);
           return;
         }
@@ -154,35 +139,22 @@
       });
 
       phone.addEventListener('click', function (event) {
-        const activeTab = getActiveTabName();
         const targetZone = event.target.closest ? event.target.closest('[data-live-edit-zone]') : null;
 
-        if (activeTab === 'sections' && targetZone && phone.contains(targetZone)) {
-          const targetKind = targetZone.getAttribute('data-live-edit-zone');
-          if (targetKind !== 'pestanas') {
-            event.preventDefault();
-            event.stopPropagation();
-            openFromPreview(targetKind);
-          }
-          return;
-        }
-
-        if (activeTab === 'tabs' && targetZone && phone.contains(targetZone) && targetZone.getAttribute('data-live-edit-zone') === 'pestanas') {
+        if (targetZone && phone.contains(targetZone)) {
           event.preventDefault();
           event.stopPropagation();
-          openFromPreview('pestanas');
+          openFromPreview(targetZone.getAttribute('data-live-edit-zone'));
           return;
         }
 
-        if (activeTab === 'home') {
-          const rect = phone.getBoundingClientRect();
-          const y = event.clientY - rect.top + phone.scrollTop;
-          const bottom = getHomeBottom(phone);
-          if (y >= 0 && y <= bottom) {
-            event.preventDefault();
-            event.stopPropagation();
-            openFromPreview('home');
-          }
+        const rect = phone.getBoundingClientRect();
+        const y = event.clientY - rect.top + phone.scrollTop;
+        const bottom = getHomeBottom(phone);
+        if (y >= 0 && y <= bottom) {
+          event.preventDefault();
+          event.stopPropagation();
+          openFromPreview('home');
         }
       });
 
