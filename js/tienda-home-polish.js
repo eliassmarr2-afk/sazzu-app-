@@ -89,7 +89,16 @@
       phone.addEventListener('mousemove', function (event) {
         const activeTab = getActiveTabName();
         const targetZone = event.target.closest ? event.target.closest('[data-live-edit-zone]') : null;
-        if (activeTab === 'sections' && targetZone && phone.contains(targetZone)) {
+        if ((activeTab === 'sections' || activeTab === 'tabs') && targetZone && phone.contains(targetZone)) {
+          const targetKind = targetZone.getAttribute('data-live-edit-zone');
+          if (activeTab === 'tabs' && targetKind !== 'pestanas') {
+            hideOutline(phone);
+            return;
+          }
+          if (activeTab === 'sections' && targetKind === 'pestanas') {
+            hideOutline(phone);
+            return;
+          }
           showZoneOutline(phone, targetZone);
           return;
         }
