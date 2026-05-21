@@ -16,6 +16,10 @@
     const editorBody = editor ? editor.querySelector(".builderInnerEditor__body") : null;
     const nameTargets = Array.from(root.querySelectorAll("[data-store-name-preview-small], [data-store-name-preview-title], [data-store-name-preview-row]"));
 
+    function emitBuilderChange_() {
+      root.dispatchEvent(new CustomEvent("sazzu:builder:change", { bubbles: true }));
+    }
+
     function activateTab_(tabName) {
       tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === tabName));
       panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.builderPanel === tabName));
@@ -25,6 +29,7 @@
       const input = root.querySelector("[data-store-name-input]");
       const value = input && input.value.trim() ? input.value.trim() : "Nombre de tienda";
       nameTargets.forEach((target) => { target.textContent = value; });
+      emitBuilderChange_();
     }
 
     function field_(label, type, value, attr) {
@@ -36,6 +41,8 @@
       if (type !== "textarea") input.type = type || "text";
       input.value = value || "";
       if (attr) input.setAttribute(attr, "");
+      input.addEventListener("input", emitBuilderChange_);
+      input.addEventListener("change", emitBuilderChange_);
       wrap.appendChild(span);
       wrap.appendChild(input);
       return wrap;
@@ -73,6 +80,7 @@
       input.addEventListener("input", () => {
         swatch.style.background = input.value;
         code.textContent = input.value;
+        emitBuilderChange_();
       });
 
       return wrap;
@@ -109,7 +117,7 @@
       return box;
     }
 
-    function toggle_(title, text, checked) {
+    function toggle_(title, text, checked, attr) {
       const label = document.createElement("label");
       const input = document.createElement("input");
       const visual = document.createElement("span");
@@ -119,6 +127,8 @@
       label.className = "builderToggleRow";
       input.type = "checkbox";
       input.checked = checked !== false;
+      if (attr) input.setAttribute(attr, "");
+      input.addEventListener("change", emitBuilderChange_);
       strong.textContent = title;
       small.textContent = text;
       copy.appendChild(strong);
@@ -136,8 +146,12 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.textContent = day;
+        btn.setAttribute("data-store-day", String(index));
         if (index < 6) btn.classList.add("is-selected");
-        btn.addEventListener("click", () => btn.classList.toggle("is-selected"));
+        btn.addEventListener("click", () => {
+          btn.classList.toggle("is-selected");
+          emitBuilderChange_();
+        });
         wrap.appendChild(btn);
       });
       return wrap;
@@ -163,6 +177,7 @@
           btn.style.background = "#2479ff";
           btn.style.color = "#fff";
           btn.style.borderColor = "#2479ff";
+          emitBuilderChange_();
         });
         if (index === 0) {
           btn.style.background = "#2479ff";
@@ -197,6 +212,7 @@
       function paint_() {
         valueText.textContent = range.value + suffix;
         if (onInput) onInput(Number(range.value));
+        emitBuilderChange_();
       }
 
       title.textContent = label;
@@ -224,16 +240,13 @@
       box.style.cssText = "display:grid;gap:12px;padding:14px;border-radius:5px;background:#fff;border:1px dashed #cfd4dc;";
       title.textContent = "Preview en tiempo real";
       title.style.cssText = "color:#2f3742;font-size:14px;font-weight:900;";
-
       primary.type = "button";
       primary.innerHTML = "<span>Añadir al pedido</span><small>Entrega estimada hoy</small>";
       primary.style.cssText = "display:grid;place-items:center;gap:2px;height:48px;border:0;border-radius:16px;background:#b80f4d;color:#fff;font-weight:900;box-shadow:0 12px 24px rgba(184,15,77,.22);cursor:pointer;";
       primary.querySelector("small").style.cssText = "font-size:11px;font-weight:650;opacity:.82;";
-
       secondary.type = "button";
       secondary.textContent = "Seguir comprando";
       secondary.style.cssText = "height:42px;border:1px solid #d7d7d7;border-radius:16px;background:#fff;color:#2f3742;font-size:13px;font-weight:850;cursor:pointer;";
-
       qty.style.cssText = "display:flex;gap:8px;align-items:center;";
       minus.type = "button";
       plus.type = "button";
@@ -242,7 +255,6 @@
       [minus, plus].forEach((btn) => {
         btn.style.cssText = "width:42px;height:36px;border:0;border-radius:12px;background:#2479ff;color:#fff;font-size:18px;font-weight:900;cursor:pointer;";
       });
-
       qty.appendChild(minus);
       qty.appendChild(plus);
       box.appendChild(title);
@@ -274,13 +286,13 @@
       if (name === "Estado") {
         const row = document.createElement("div");
         row.className = "builderInlineFields";
-        row.appendChild(field_("Horario de apertura", "time", "10:00"));
-        row.appendChild(field_("Horario de cierre", "time", "20:00"));
+        row.appendChild(field_("Horario de apertura", "time", "10:00", "data-store-open-time"));
+        row.appendChild(field_("Horario de cierre", "time", "20:00", "data-store-close-time"));
         editorBody.appendChild(row);
         editorBody.appendChild(days_());
-        editorBody.appendChild(toggle_("Permitir compras aunque este cerrado", "El pedido se procesara al momento de apertura."));
+        editorBody.appendChild(toggle_("Permitir compras aunque este cerrado", "El pedido se procesara al momento de apertura.", true, "data-store-allow-closed"));
         editorBody.appendChild(hint_("Si desactivas esta opcion, la compra se bloquea fuera de los dias u horarios operativos. Se recomienda dejar encendido.", true));
-        editorBody.appendChild(toggle_("Mostrar estado Abierto/Cerrado en la Home", "Mostrara un relojito con Abierto o Cerrado y el proximo horario disponible."));
+        editorBody.appendChild(toggle_("Mostrar estado Abierto/Cerrado en la Home", "Mostrara un relojito con Abierto o Cerrado y el proximo horario disponible.", true, "data-store-show-status"));
       }
 
       if (name === "WhatsApp") {
@@ -334,6 +346,7 @@
 
       const nameInput = root.querySelector("[data-store-name-input]");
       if (nameInput) nameInput.addEventListener("input", syncStoreName_);
+      emitBuilderChange_();
     }
 
     function openEditor_(name) {
