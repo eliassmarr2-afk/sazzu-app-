@@ -1,4 +1,37 @@
 (function () {
+  const PRODUCTOS_COMESTIBLES_REFERENCIA = [
+    {
+      id: 'box-dulce-nube',
+      nombre: 'Box Dulce Nube',
+      precio: 9800,
+      imagen: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      id: 'torta-choco-cream',
+      nombre: 'Torta Choco Cream',
+      precio: 16500,
+      imagen: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      id: 'muffins-mix',
+      nombre: 'Muffins Mix',
+      precio: 7200,
+      imagen: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      id: 'cookies-con-chips',
+      nombre: 'Cookies con chips',
+      precio: 2200,
+      imagen: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80'
+    },
+    {
+      id: 'mini-alfajores',
+      nombre: 'Mini alfajores',
+      precio: 2600,
+      imagen: 'https://images.unsplash.com/photo-1618923850107-d1a234d7a73a?auto=format&fit=crop&w=900&q=80'
+    }
+  ];
+
   const COMBO_MOCK = {
     id: 'combo-merienda-duo',
     nombre: 'Merienda Dúo',
@@ -18,9 +51,10 @@
       { nombre: 'Café frío', cantidad: '2 unidades', descripcion: 'Componente del pack base.', incluido: true, imagen: '' }
     ],
     opcionales: [
-      { nombre: 'Cookies con chips', cantidad: '2 unidades', precio: 2200, agregado: false, imagen: '' },
-      { nombre: 'Mini alfajores', cantidad: '3 unidades', precio: 2600, agregado: true, imagen: '' }
-    ]
+      { productId: 'cookies-con-chips', cantidad: '2 unidades', agregado: false },
+      { productId: 'mini-alfajores', cantidad: '3 unidades', agregado: true }
+    ],
+    extrasCombo: []
   };
 
   function initProductosCombos() {
@@ -49,6 +83,10 @@
 
   function money(value) {
     return '$ ' + Number(value || 0).toLocaleString('es-AR');
+  }
+
+  function getProductoComestible(productId) {
+    return PRODUCTOS_COMESTIBLES_REFERENCIA.find((product) => product.id === productId) || PRODUCTOS_COMESTIBLES_REFERENCIA[0];
   }
 
   function mountComboLauncher(panel) {
@@ -149,37 +187,17 @@
 
   function renderComboBuilder(combo) {
     return `
-      <div class="prodComboBuilder">
-        <aside class="prodComboMap">
-          <div class="prodComboMap__sticky">
-            <span class="prodComboEyebrow">Mapa fácil</span>
-            <h3>Qué estás editando</h3>
-            ${mapStep('1', 'Identidad', 'Nombre, precio y descripción del combo.')}
-            ${mapStep('2', 'Imágenes', 'Hasta 6 imágenes para la galería.')}
-            ${mapStep('3', 'Valor incluido', 'Componentes que forman el combo base.')}
-            ${mapStep('4', 'Podés sumar', 'Agregados opcionales con precio.')}
-            ${mapStep('5', 'Preview', 'Vista compacta de la estructura.')}
-            <div class="prodComboMap__note">No se editan títulos estructurales ni tabs. Solo contenido del combo.</div>
-          </div>
-        </aside>
-
-        <section class="prodComboEditor">
+      <div class="prodComboBuilder prodComboBuilder--full">
+        <section class="prodComboEditor prodComboEditor--full">
           ${identitySection(combo)}
           ${imagesSection(combo)}
           ${includedSection(combo)}
           ${optionalSection(combo)}
+          ${comboExtrasSection(combo)}
           ${payloadSection(combo)}
         </section>
-
-        <aside class="prodComboPreviewRail">
-          ${previewCard(combo)}
-        </aside>
       </div>
     `;
-  }
-
-  function mapStep(num, title, text) {
-    return `<div class="prodComboMapStep"><b>${escapeHtml(num)}</b><div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span></div></div>`;
   }
 
   function identitySection(combo) {
@@ -256,10 +274,29 @@
             <span class="prodComboEyebrow">Podés sumar</span>
             <h3>Agregados opcionales</h3>
           </div>
-          <span class="prodComboBadge prodComboBadge--blue">Sube ticket</span>
+          <span class="prodComboBadge prodComboBadge--blue">Trae productos comestibles</span>
         </div>
         <div class="prodComboItems">
           ${combo.opcionales.map((item, index) => optionalItem(item, index)).join('')}
+        </div>
+      </section>
+    `;
+  }
+
+  function comboExtrasSection(combo) {
+    return `
+      <section class="prodComboSection prodComboSection--empty">
+        <div class="prodComboSection__head">
+          <div>
+            <span class="prodComboEyebrow">Sumá extras al combo</span>
+            <h3>Extras del combo</h3>
+            <p>Esta estructura queda fija. Más adelante va a traer productos configurados como extras desde su propio origen.</p>
+          </div>
+          <span class="prodComboBadge prodComboBadge--gray">Vacío por ahora</span>
+        </div>
+        <div class="prodComboEmptyBox">
+          <strong>Sin extras cargados todavía</strong>
+          <span>Cuando exista el catálogo de productos para extras, esta sección va a permitir asociarlos al combo sin cambiar la estructura visual.</span>
         </div>
       </section>
     `;
@@ -283,38 +320,22 @@
   }
 
   function optionalItem(item, index) {
+    const product = getProductoComestible(item.productId);
     return `
-      <article class="prodComboItem ${item.agregado ? 'is-added' : 'is-optional'}">
+      <article class="prodComboItem prodComboItem--product ${item.agregado ? 'is-added' : 'is-optional'}">
         <button type="button" class="prodComboToggle" aria-label="Estado agregado">${item.agregado ? '●' : '○'}</button>
-        <div class="prodComboItem__image"><span>4×4</span></div>
+        <div class="prodComboItem__image prodComboItem__image--product">
+          ${product.imagen ? `<img src="${escapeHtml(product.imagen)}" alt="">` : '<span>4×4</span>'}
+        </div>
         <div class="prodComboGrid prodComboGrid--item">
-          ${field('Nombre', `combo_opcional_${index}_nombre`, item.nombre)}
+          ${productSelect('Producto comestible', `combo_opcional_${index}_product`, item.productId)}
+          <label class="prodComboField"><span>Nombre tomado del producto</span><input value="${escapeHtml(product.nombre)}" readonly></label>
           ${field('Cantidad', `combo_opcional_${index}_cantidad`, item.cantidad)}
-          ${field('Precio adicional', `combo_opcional_${index}_precio`, item.precio, 'number')}
+          <label class="prodComboField"><span>Precio tomado del producto</span><input value="${escapeHtml(money(product.precio))}" readonly></label>
           ${select('Estado visual', `combo_opcional_${index}_estado`, item.agregado ? 'Agregado' : 'Disponible', ['Disponible', 'Agregado', 'Oculto'])}
-          ${field('Imagen 4x4', `combo_opcional_${index}_img`, item.imagen || '', 'url')}
           <label class="prodComboField"><span>Texto estático</span><input value="${item.agregado ? 'Agregado al pedido' : 'Disponible para sumar'}" readonly></label>
         </div>
       </article>
-    `;
-  }
-
-  function previewCard(combo) {
-    return `
-      <section class="prodComboPreview">
-        <span class="prodComboEyebrow">Preview estructural</span>
-        <h3>${escapeHtml(combo.nombre)}</h3>
-        <p>${escapeHtml(combo.descripcion)}</p>
-        <div class="prodComboPreview__price"><span>Total</span><strong>${money(combo.precio)}</strong></div>
-        <div class="prodComboPreview__block">
-          <strong>Incluye este combo</strong>
-          ${combo.incluidos.map(item => `<div class="prodComboPreview__line ${item.incluido ? '' : 'is-muted'}"><span>${item.incluido ? '●' : '○'} ${escapeHtml(item.nombre)}</span><small>${escapeHtml(item.cantidad)} · ${item.incluido ? 'Incluido' : 'Quitado'}</small></div>`).join('')}
-        </div>
-        <div class="prodComboPreview__block">
-          <strong>Podés sumar</strong>
-          ${combo.opcionales.map(item => `<div class="prodComboPreview__line"><span>${item.agregado ? '●' : '○'} ${escapeHtml(item.nombre)}</span><small>${item.agregado ? 'Agregado al pedido' : 'Disponible para sumar'} · ${money(item.precio)}</small></div>`).join('')}
-        </div>
-      </section>
     `;
   }
 
@@ -325,7 +346,9 @@
       combo: true,
       structure_locked: true,
       no_component_prorated_price: true,
-      sections: ['identity', 'images', 'included_value', 'optional_addons'],
+      optional_addons_source: 'productos_comestibles',
+      combo_extras_source: 'productos_para_extras_future',
+      sections: ['identity', 'images', 'included_value', 'optional_addons', 'combo_extras'],
       future_keys: ['user_id', 'workspace_id', 'store_id', 'draft_version', 'published_version']
     };
     return `
@@ -351,6 +374,10 @@
     return `<label class="prodComboField"><span>${escapeHtml(label)}</span><select id="${escapeHtml(id)}">${options.map(opt => `<option value="${escapeHtml(opt)}" ${String(opt) === String(value) ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join('')}</select></label>`;
   }
 
+  function productSelect(label, id, value) {
+    return `<label class="prodComboField"><span>${escapeHtml(label)}</span><select id="${escapeHtml(id)}">${PRODUCTOS_COMESTIBLES_REFERENCIA.map(product => `<option value="${escapeHtml(product.id)}" ${String(product.id) === String(value) ? 'selected' : ''}>${escapeHtml(product.nombre)}</option>`).join('')}</select></label>`;
+  }
+
   function imageField(index, value) {
     return `<label class="prodComboImageField"><span>Imagen ${index + 1}${index === 0 ? ' · Principal' : ''}</span><div class="prodComboImagePreview">${value ? `<img src="${escapeHtml(value)}" alt="">` : `<b>IMG ${index + 1}</b>`}</div><input id="combo_img_${index + 1}" type="url" value="${escapeHtml(value)}" placeholder="URL de imagen"></label>`;
   }
@@ -371,7 +398,9 @@
         estado: valueOf('combo_estado'),
         descripcion: valueOf('combo_descripcion')
       },
-      imagenes: Array.from({ length: 6 }).map((_, i) => valueOf(`combo_img_${i + 1}`)).filter(Boolean)
+      imagenes: Array.from({ length: 6 }).map((_, i) => valueOf(`combo_img_${i + 1}`)).filter(Boolean),
+      opcionales_source: 'productos_comestibles',
+      extras_combo_source: 'productos_para_extras_future'
     };
     console.log('[productos-combos.js] Borrador de combo preparado:', payload);
     if (!btn) return;
