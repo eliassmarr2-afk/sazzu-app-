@@ -3,73 +3,65 @@
    Módulo independiente del panel Productos
    ========================================================= */
 
+/* FIX VISIBILIDAD TAB: la barra compacta original quedaba sin ancho */
+body[data-page="productos"] .main .prodTabsSection{
+  pointer-events:auto !important;
+  overflow:visible !important;
+}
+body[data-page="productos"] .main .prodTabsBar{
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+  pointer-events:auto !important;
+}
+body[data-page="productos"] .main .prodTabs{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:wrap !important;
+  max-width:100% !important;
+  overflow:visible !important;
+  gap:6px !important;
+  pointer-events:auto !important;
+}
+body[data-page="productos"] .main .prodTab{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
 body[data-page="productos"] .main .prodTab--comestibles{
+  display:inline-flex !important;
+  align-items:center !important;
   background:#fff !important;
   color:#2479FF !important;
-  border:1px solid rgba(36,121,255,.18) !important;
+  border:1px solid rgba(36,121,255,.22) !important;
+  box-shadow:0 1px 2px rgba(36,121,255,.10) !important;
 }
 body[data-page="productos"] .main .prodTab--comestibles.is-active{
   background:#2479FF !important;
   color:#fff !important;
 }
+
 body[data-page="productos"] .main .prodComShell{display:grid;gap:16px;}
 body[data-page="productos"] .main .prodComHero,
 body[data-page="productos"] .main .prodComTableCard,
 body[data-page="productos"] .main .prodComGuide article,
 body[data-page="productos"] .main .prodComSection,
-body[data-page="productos"] .main .prodComMap__sticky{
-  background:#fff;
-  border:none;
-  border-radius:5px;
-  box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);
-}
-body[data-page="productos"] .main .prodComHero{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto auto;
-  align-items:center;
-  gap:18px;
-  padding:18px;
-}
-body[data-page="productos"] .main .prodComEyebrow{
-  display:block;
-  margin:0 0 7px;
-  color:#8A94A6;
-  font-size:11px;
-  font-weight:950;
-  letter-spacing:.09em;
-  text-transform:uppercase;
-}
+body[data-page="productos"] .main .prodComMap__sticky{background:#fff;border:none;border-radius:5px;box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);}
+body[data-page="productos"] .main .prodComHero{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px;padding:18px;}
+body[data-page="productos"] .main .prodComEyebrow{display:block;margin:0 0 7px;color:#8A94A6;font-size:11px;font-weight:950;letter-spacing:.09em;text-transform:uppercase;}
 body[data-page="productos"] .main .prodComHero h2,
 body[data-page="productos"] .main .prodComTableCard h3,
 body[data-page="productos"] .main .prodComSection h3,
-body[data-page="productos"] .main .prodComMap h3{
-  margin:0;
-  color:#0F172A;
-  font-size:22px;
-  font-weight:850;
-  letter-spacing:-.03em;
-}
+body[data-page="productos"] .main .prodComMap h3{margin:0;color:#0F172A;font-size:22px;font-weight:850;letter-spacing:-.03em;}
 body[data-page="productos"] .main .prodComHero p,
 body[data-page="productos"] .main .prodComTableCard p,
-body[data-page="productos"] .main .prodComSection p{
-  margin:6px 0 0;
-  color:#64748B;
-  font-size:13px;
-  font-weight:550;
-  line-height:1.45;
-}
+body[data-page="productos"] .main .prodComSection p{margin:6px 0 0;color:#64748B;font-size:13px;font-weight:550;line-height:1.45;}
 body[data-page="productos"] .main .prodComHero__badges{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;}
 body[data-page="productos"] .main .prodComHero__badges span,
-body[data-page="productos"] .main .prodComBadge{
-  display:inline-flex;
-  align-items:center;
-  min-height:24px;
-  border-radius:999px;
-  padding:0 9px;
-  font-size:11px;
-  font-weight:850;
-  white-space:nowrap;
-}
+body[data-page="productos"] .main .prodComBadge{display:inline-flex;align-items:center;min-height:24px;border-radius:999px;padding:0 9px;font-size:11px;font-weight:850;white-space:nowrap;}
 body[data-page="productos"] .main .prodComHero__badges span,
 body[data-page="productos"] .main .prodComBadge--blue{color:#1D4ED8;background:#EFF6FF;}
 body[data-page="productos"] .main .prodComBadge--green{color:#027A48;background:#ECFDF3;}
@@ -77,14 +69,7 @@ body[data-page="productos"] .main .prodComBadge--gray{color:#667085;background:#
 body[data-page="productos"] .main .prodComPrimary,
 body[data-page="productos"] .main .prodComGhost,
 body[data-page="productos"] .main .prodComEdit,
-body[data-page="productos"] .main .prodComAdd{
-  appearance:none;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  font-family:inherit;
-  font-weight:850;
-}
+body[data-page="productos"] .main .prodComAdd{appearance:none;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:850;}
 body[data-page="productos"] .main .prodComPrimary{min-height:42px;padding:0 16px;color:#fff;background:#2479FF;box-shadow:0 10px 20px rgba(36,121,255,.18);}
 body[data-page="productos"] .main .prodComGhost{min-height:38px;padding:0 14px;color:#2479FF;background:#EFF6FF;}
 body[data-page="productos"] .main .prodComGhost.is-success{color:#027A48;background:#ECFDF3;}
@@ -104,9 +89,7 @@ body[data-page="productos"] .main .prodComTools select,
 body[data-page="productos"] .main .prodComField input,
 body[data-page="productos"] .main .prodComField textarea,
 body[data-page="productos"] .main .prodComField select,
-body[data-page="productos"] .main .prodComImageField input{
-  width:100%;min-height:40px;border:1px solid #E5E7EB;border-radius:5px;padding:0 11px;color:#111827;background:#fff;font-family:inherit;font-size:13px;font-weight:650;box-sizing:border-box;
-}
+body[data-page="productos"] .main .prodComImageField input{width:100%;min-height:40px;border:1px solid #E5E7EB;border-radius:5px;padding:0 11px;color:#111827;background:#fff;font-family:inherit;font-size:13px;font-weight:650;box-sizing:border-box;}
 body[data-page="productos"] .main .prodComField textarea{min-height:84px;padding:10px 11px;resize:vertical;}
 body[data-page="productos"] .main .prodComTableWrap{overflow:auto;}
 body[data-page="productos"] .main .prodComTable{width:100%;border-collapse:collapse;min-width:1080px;}
