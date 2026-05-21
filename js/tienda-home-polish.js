@@ -7,13 +7,17 @@
     const panel = root.querySelector('.builderPreviewPanel');
     let lastPhone = null;
 
-    function activateInicio() {
+    function activateTab(tabName) {
       root.querySelectorAll('[data-builder-tab]').forEach(function (tab) {
-        tab.classList.toggle('is-active', tab.dataset.builderTab === 'home');
+        tab.classList.toggle('is-active', tab.dataset.builderTab === tabName);
       });
       root.querySelectorAll('[data-builder-panel]').forEach(function (section) {
-        section.classList.toggle('is-active', section.dataset.builderPanel === 'home');
+        section.classList.toggle('is-active', section.dataset.builderPanel === tabName);
       });
+    }
+
+    function activateInicio() {
+      activateTab('home');
     }
 
     function renameEditorSection() {
@@ -82,6 +86,41 @@
       phone.style.cursor = 'pointer';
     }
 
+    function clickToolCard(label) {
+      const cards = Array.from(root.querySelectorAll('.builderToolCard'));
+      const card = cards.find(function (button) {
+        const strong = button.querySelector('strong');
+        return strong && strong.textContent.trim() === label;
+      });
+      if (card) card.click();
+    }
+
+    function openFromPreview(kind) {
+      const sectionMap = {
+        banner: 'Banner',
+        'mas-elegidos': 'Más elegidos',
+        combos: 'Combos',
+        'sumar-pedido': 'Sumar pedido'
+      };
+
+      if (kind === 'home') {
+        activateTab('home');
+        setTimeout(function () { clickToolCard('Nombre'); }, 40);
+        return;
+      }
+
+      if (kind === 'pestanas') {
+        activateTab('tabs');
+        setTimeout(function () { clickToolCard('Editar pestañas'); }, 40);
+        return;
+      }
+
+      if (sectionMap[kind]) {
+        activateTab('sections');
+        setTimeout(function () { clickToolCard(sectionMap[kind]); }, 40);
+      }
+    }
+
     function bindHoverCursor(phone) {
       if (!phone || phone.dataset.homeHoverReady === '1') return;
       phone.dataset.homeHoverReady = '1';
@@ -112,6 +151,39 @@
         }
 
         hideOutline(phone);
+      });
+
+      phone.addEventListener('click', function (event) {
+        const activeTab = getActiveTabName();
+        const targetZone = event.target.closest ? event.target.closest('[data-live-edit-zone]') : null;
+
+        if (activeTab === 'sections' && targetZone && phone.contains(targetZone)) {
+          const targetKind = targetZone.getAttribute('data-live-edit-zone');
+          if (targetKind !== 'pestanas') {
+            event.preventDefault();
+            event.stopPropagation();
+            openFromPreview(targetKind);
+          }
+          return;
+        }
+
+        if (activeTab === 'tabs' && targetZone && phone.contains(targetZone) && targetZone.getAttribute('data-live-edit-zone') === 'pestanas') {
+          event.preventDefault();
+          event.stopPropagation();
+          openFromPreview('pestanas');
+          return;
+        }
+
+        if (activeTab === 'home') {
+          const rect = phone.getBoundingClientRect();
+          const y = event.clientY - rect.top + phone.scrollTop;
+          const bottom = getHomeBottom(phone);
+          if (y >= 0 && y <= bottom) {
+            event.preventDefault();
+            event.stopPropagation();
+            openFromPreview('home');
+          }
+        }
       });
 
       phone.addEventListener('mouseleave', function () {
