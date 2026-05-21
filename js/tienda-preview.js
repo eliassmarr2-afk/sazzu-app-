@@ -15,7 +15,12 @@
       logoText: 'DN',
       delivery: '35-50 min',
       shipping: '$1.000',
-      minimum: '$7.500'
+      minimum: '$7.500',
+      openTime: '10:00',
+      closeTime: '20:00',
+      operativeDays: [0, 1, 2, 3, 4, 5],
+      showStatus: true,
+      allowClosedOrders: true
     };
 
     function renderHomePreview() {
@@ -36,6 +41,7 @@
         '</div>' +
         '<section style="position:relative;background:#fff;padding:52px 20px 16px;">' +
           '<div data-live-logo style="position:absolute;left:20px;top:-36px;width:74px;height:74px;border-radius:999px;background:linear-gradient(135deg,#9c2448,#f5dfbd);border:4px solid #fff;box-shadow:0 8px 20px rgba(15,23,42,.16);display:grid;place-items:center;color:#fff;font-size:18px;font-weight:950;">DN</div>' +
+          '<div data-live-status style="display:none;position:absolute;right:18px;top:14px;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:#ecfdf3;color:#027a48;font-size:11px;font-weight:950;box-shadow:0 8px 18px rgba(15,23,42,.08);"><span>◷</span><strong data-live-status-text>Abierto</strong></div>' +
           '<span data-live-legend style="display:block;color:#9c2448;font-size:12px;font-weight:950;letter-spacing:.11em;text-transform:uppercase;margin-bottom:4px;">PASTELERÍA ARTESANAL</span>' +
           '<h2 data-live-name style="margin:0;color:#211f27;font-size:29px;font-weight:950;letter-spacing:-.05em;line-height:1.05;">Dulce Nube</h2>' +
           '<p data-live-description style="margin:10px 0 0;color:#667085;font-size:15px;line-height:1.35;">Tortas, piononos, muffins y postres listos para pedir.</p>' +
@@ -88,14 +94,80 @@
       return '<button type="button" style="border:0;background:' + (active ? '#9c2448' : '#fff') + ';color:' + (active ? '#fff' : '#9c2448') + ';font-size:11px;font-weight:950;">' + text + '</button>';
     }
 
+    function toMinutes(value) {
+      if (!value || value.indexOf(':') < 0) return 0;
+      const parts = value.split(':').map(Number);
+      return (parts[0] || 0) * 60 + (parts[1] || 0);
+    }
+
+    function formatTime(value) {
+      return value || '10:00';
+    }
+
+    function nextOperativeDayText(todayIndex, days) {
+      const labels = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+      for (let offset = 1; offset <= 7; offset += 1) {
+        const idx = (todayIndex + offset) % 7;
+        if (days.indexOf(idx) >= 0) return labels[idx];
+      }
+      return 'próximo día operativo';
+    }
+
+    function computeStatusText() {
+      if (!state.showStatus) return null;
+      const now = new Date();
+      const todayIndex = (now.getDay() + 6) % 7;
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      const openMinutes = toMinutes(state.openTime);
+      const closeMinutes = toMinutes(state.closeTime);
+      const isOperativeDay = state.operativeDays.indexOf(todayIndex) >= 0;
+      const isOpen = isOperativeDay && nowMinutes >= openMinutes && nowMinutes < closeMinutes;
+
+      if (isOpen) {
+        return { open: true, text: 'Abierto hasta las ' + formatTime(state.closeTime) };
+      }
+
+      if (isOperativeDay && nowMinutes < openMinutes) {
+        return { open: false, text: 'Cerrado · Abre a las ' + formatTime(state.openTime) };
+      }
+
+      const nextDay = nextOperativeDayText(todayIndex, state.operativeDays);
+      return { open: false, text: 'Cerrado · Abre ' + nextDay + ' ' + formatTime(state.openTime) };
+    }
+
+    function syncStatusPreview() {
+      const badge = panel.querySelector('[data-live-status]');
+      const text = panel.querySelector('[data-live-status-text]');
+      if (!badge || !text) return;
+      const status = computeStatusText();
+      if (!status) {
+        badge.style.display = 'none';
+        return;
+      }
+      badge.style.display = 'flex';
+      text.textContent = status.text;
+      badge.style.background = status.open ? '#ecfdf3' : '#fff1f3';
+      badge.style.color = status.open ? '#027a48' : '#b42318';
+    }
+
     function syncPreviewFromOpenFields() {
       const nameInput = root.querySelector('[data-store-name-input]');
       const legendInput = root.querySelector('[data-store-legend-input]');
       const descriptionInput = root.querySelector('[data-store-description-input]');
+      const openInput = root.querySelector('[data-store-open-time]');
+      const closeInput = root.querySelector('[data-store-close-time]');
+      const showStatusInput = root.querySelector('[data-store-show-status]');
+      const allowClosedInput = root.querySelector('[data-store-allow-closed]');
+      const selectedDays = Array.from(root.querySelectorAll('[data-store-day].is-selected')).map(function (btn) { return Number(btn.dataset.storeDay); });
 
       state.name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : state.name;
       state.legend = legendInput && legendInput.value.trim() ? legendInput.value.trim() : state.legend;
       state.description = descriptionInput && descriptionInput.value.trim() ? descriptionInput.value.trim() : state.description;
+      state.openTime = openInput && openInput.value ? openInput.value : state.openTime;
+      state.closeTime = closeInput && closeInput.value ? closeInput.value : state.closeTime;
+      state.showStatus = showStatusInput ? showStatusInput.checked : state.showStatus;
+      state.allowClosedOrders = allowClosedInput ? allowClosedInput.checked : state.allowClosedOrders;
+      if (selectedDays.length) state.operativeDays = selectedDays;
 
       const liveName = panel.querySelector('[data-live-name]');
       const liveLegend = panel.querySelector('[data-live-legend]');
@@ -106,23 +178,30 @@
       if (liveLegend) liveLegend.textContent = state.legend;
       if (liveDescription) liveDescription.textContent = state.description;
       if (liveLogo) liveLogo.textContent = state.name.split(/\s+/).filter(Boolean).slice(0, 2).map(function (word) { return word[0]; }).join('').toUpperCase() || 'DN';
+      syncStatusPreview();
     }
 
     function bindLiveFieldSync() {
       document.addEventListener('input', function (event) {
         if (!root.contains(event.target)) return;
-        if (event.target.matches('[data-store-name-input], [data-store-legend-input], [data-store-description-input]')) {
+        if (event.target.matches('[data-store-name-input], [data-store-legend-input], [data-store-description-input], [data-store-open-time], [data-store-close-time]')) {
           syncPreviewFromOpenFields();
         }
       });
+      document.addEventListener('change', function (event) {
+        if (!root.contains(event.target)) return;
+        if (event.target.matches('[data-store-show-status], [data-store-allow-closed], [data-store-open-time], [data-store-close-time]')) {
+          syncPreviewFromOpenFields();
+        }
+      });
+      root.addEventListener('sazzu:builder:change', syncPreviewFromOpenFields);
     }
 
     function bindTabPreview() {
       root.querySelectorAll('[data-builder-tab]').forEach(function (tab) {
         tab.addEventListener('click', function () {
           state.activeTab = tab.dataset.builderTab || 'identity';
-          if (state.activeTab === 'identity') renderHomePreview();
-          if (state.activeTab !== 'identity') renderHomePreview();
+          renderHomePreview();
         });
       });
     }
