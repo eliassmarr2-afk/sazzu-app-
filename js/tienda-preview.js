@@ -8,7 +8,7 @@
     if (!panel) return;
 
     const state = {
-      activeTab: 'identity',
+      activeTab: 'home',
       name: 'Dulce Nube',
       legend: 'PASTELERÍA ARTESANAL',
       description: 'Tortas, piononos, muffins y postres listos para pedir.',
@@ -32,7 +32,7 @@
 
       const phone = document.createElement('section');
       phone.setAttribute('data-live-store-phone', '');
-      phone.style.cssText = 'width:min(430px,100%);min-height:760px;margin:0 auto;background:#fff7ea;border-radius:5px;overflow:hidden;box-shadow:0 24px 60px rgba(15,23,42,.14);border:1px solid rgba(15,23,42,.08);font-family:inherit;position:relative;';
+      phone.style.cssText = 'width:min(430px,100%);height:760px;margin:0 auto;background:#fff7ea;border-radius:5px;overflow:auto;box-shadow:0 24px 60px rgba(15,23,42,.14);border:1px solid rgba(15,23,42,.08);font-family:inherit;position:relative;scrollbar-width:none;';
 
       phone.innerHTML = '' +
         '<div data-live-cover style="height:165px;background:linear-gradient(135deg,#6b3a31 0%,#9c5a4a 45%,#f5dfbd 100%);position:relative;">' +
@@ -52,7 +52,7 @@
             metricCard('Entrega', state.delivery) + metricCard('Envío', state.shipping) + metricCard('Mínimo', state.minimum) +
           '</div>' +
         '</section>' +
-        '<section style="padding:14px 18px;background:#fff1df;">' +
+        '<section data-live-edit-zone="banner" data-live-zone-label="Banner" style="position:relative;padding:14px 18px;background:#fff1df;">' +
           '<article style="display:grid;grid-template-columns:minmax(0,1fr)62px;gap:12px;align-items:center;padding:14px;border-radius:5px;background:linear-gradient(135deg,#9c2448,#d99837);color:#fff;">' +
             '<div><span style="display:block;font-size:11px;font-weight:950;letter-spacing:.12em;">OFERTA ACTIVA</span><strong style="display:block;font-size:15px;line-height:1.2;margin-top:4px;">Box dulce con muffins + mini torta con 15% OFF</strong></div>' +
             '<button type="button" style="height:38px;border:0;border-radius:5px;background:#fff;color:#9c2448;font-weight:950;">Ver</button>' +
@@ -61,7 +61,7 @@
         '<nav style="display:flex;gap:10px;overflow:hidden;padding:0 18px 12px;background:#fff7ea;">' +
           tabPill('Destacados', true) + tabPill('Tortas') + tabPill('Piononos') + tabPill('Muffins') +
         '</nav>' +
-        '<section style="padding:0 18px 90px;background:#fff7ea;">' +
+        '<section data-live-edit-zone="mas-elegidos" data-live-zone-label="Más elegidos" style="position:relative;padding:0 18px 20px;background:#fff7ea;">' +
           '<div style="display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px;">' +
             '<div><span style="display:block;color:#9c2448;font-size:11px;font-weight:950;letter-spacing:.11em;">PEDIDO RÁPIDO</span><strong style="display:block;color:#211f27;font-size:21px;font-weight:950;letter-spacing:-.04em;">Más elegidos hoy</strong></div>' +
             '<b style="color:#9c2448;font-size:13px;">Ver todo</b>' +
@@ -70,12 +70,31 @@
             productCard('15% OFF','Box Dulce Nube','$ 9.800','#f5dfbd') + productCard('Más pedida','Torta Choco Cream','$ 12.500','#d7a98f') +
           '</div>' +
         '</section>' +
+        '<section data-live-edit-zone="combos" data-live-zone-label="Combos" style="position:relative;padding:18px;background:#fff1df;">' +
+          '<div style="display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px;">' +
+            '<div><span style="display:block;color:#9c2448;font-size:11px;font-weight:950;letter-spacing:.11em;">COMBOS LISTOS</span><strong style="display:block;color:#211f27;font-size:21px;font-weight:950;letter-spacing:-.04em;">Combos rápidos</strong></div>' +
+            '<b style="color:#9c2448;font-size:13px;">Ver todos</b>' +
+          '</div>' +
+          '<div style="display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:12px;overflow:hidden;">' +
+            comboCard('Combo rápido','Merienda Dúo','$ 12.900','#f5dfbd') + comboCard('Más regalado','Cumple Express','$ 18.500','#d7a98f') +
+          '</div>' +
+        '</section>' +
+        '<section data-live-edit-zone="sumar-pedido" data-live-zone-label="Sumar pedido" style="position:relative;padding:18px 18px 94px;background:#fff7ea;">' +
+          '<div style="display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px;">' +
+            '<div><span style="display:block;color:#9c2448;font-size:11px;font-weight:950;letter-spacing:.11em;">MENÚ COMPLETO</span><strong style="display:block;color:#211f27;font-size:21px;font-weight:950;letter-spacing:-.04em;">🍰 Para sumar al pedido</strong></div>' +
+            '<b style="color:#9c2448;font-size:13px;">Ver todo</b>' +
+          '</div>' +
+          '<div style="display:grid;gap:10px;">' +
+            upsellRow('Box Dulce Nube','$ 9.800','#f5dfbd') + upsellRow('Torta Choco Cream','$ 12.500','#d7a98f') + upsellRow('Muffins Mix x6','$ 6.900','#e8c8af') +
+          '</div>' +
+        '</section>' +
         '<footer style="position:absolute;left:0;right:0;bottom:0;height:64px;background:#fff;display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(15,23,42,.10);">' +
           navItem('Envios') + navItem('Inicio', true) + navItem('Carrito') +
         '</footer>';
 
       panel.appendChild(phone);
       syncPreviewFromOpenFields();
+      root.dispatchEvent(new CustomEvent('sazzu:builder:change', { bubbles: true }));
     }
 
     function metricCard(label, value) {
@@ -88,6 +107,14 @@
 
     function productCard(badge, name, price, color) {
       return '<article style="overflow:hidden;border-radius:5px;background:#fff;border:1px solid #efcdb9;"><div style="position:relative;height:112px;background:linear-gradient(135deg,' + color + ',#9c2448);"><span style="position:absolute;left:10px;top:10px;padding:6px 9px;border-radius:4px;background:#9c2448;color:#fff;font-size:11px;font-weight:950;">' + badge + '</span></div><div style="display:grid;gap:6px;padding:12px;"><strong style="font-size:15px;color:#211f27;">' + name + '</strong><small style="font-size:12px;line-height:1.35;color:#667085;">Producto destacado listo para compra rápida.</small><div style="display:flex;align-items:center;justify-content:space-between;"><b style="font-size:16px;color:#211f27;">' + price + '</b><button type="button" style="width:38px;height:34px;border:0;border-radius:5px;background:#9c2448;color:#fff;font-size:18px;font-weight:950;">+</button></div></div></article>';
+    }
+
+    function comboCard(badge, name, price, color) {
+      return '<article style="overflow:hidden;border-radius:5px;background:#fff;border:1px solid #efcdb9;"><div style="position:relative;height:104px;background:linear-gradient(135deg,' + color + ',#9c2448);"><span style="position:absolute;left:10px;top:10px;padding:6px 9px;border-radius:4px;background:#9c2448;color:#fff;font-size:11px;font-weight:950;">' + badge + '</span></div><div style="display:grid;gap:7px;padding:12px;"><div style="display:flex;justify-content:space-between;gap:8px;"><strong style="font-size:15px;color:#211f27;">' + name + '</strong><b style="color:#9c2448;font-size:13px;white-space:nowrap;">' + price + '</b></div><span style="color:#35a465;font-size:11px;">★★★★★</span><small style="font-size:12px;line-height:1.35;color:#667085;">Combo listo para resolver una merienda completa.</small><button type="button" style="height:34px;border:0;border-radius:5px;background:#9c2448;color:#fff;font-weight:950;">+ Añadir</button></div></article>';
+    }
+
+    function upsellRow(name, price, color) {
+      return '<article style="display:grid;grid-template-columns:84px minmax(0,1fr)38px;gap:12px;align-items:center;padding:10px;border-radius:5px;background:#fff;border:1px solid #efcdb9;"><div style="width:84px;height:84px;border-radius:5px;background:linear-gradient(135deg,' + color + ',#9c2448);"></div><div style="display:grid;gap:5px;"><strong style="font-size:14px;color:#211f27;">' + name + '</strong><small style="font-size:12px;line-height:1.3;color:#667085;">Producto adicional para aumentar el pedido.</small><b style="font-size:14px;color:#111827;">' + price + '</b><span style="width:max-content;padding:6px 8px;border-radius:5px;background:#fbe1eb;color:#9c2448;font-size:11px;font-weight:950;">Ver detalle</span></div><button type="button" style="width:36px;height:36px;border:0;border-radius:5px;background:#9c2448;color:#fff;font-size:18px;font-weight:950;">+</button></article>';
     }
 
     function navItem(text, active) {
@@ -200,7 +227,7 @@
     function bindTabPreview() {
       root.querySelectorAll('[data-builder-tab]').forEach(function (tab) {
         tab.addEventListener('click', function () {
-          state.activeTab = tab.dataset.builderTab || 'identity';
+          state.activeTab = tab.dataset.builderTab || 'home';
           renderHomePreview();
         });
       });
