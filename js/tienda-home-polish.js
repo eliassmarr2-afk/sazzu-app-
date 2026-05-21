@@ -35,6 +35,7 @@
     }
 
     function getHomeBottom(phone) {
+      if (phone && phone.getAttribute('data-live-preview-mode') === 'checkout') return 0;
       const cover = phone.querySelector('[data-live-cover]');
       const whiteBlock = cover ? cover.nextElementSibling : null;
       if (!cover || !whiteBlock) return 420;
@@ -73,6 +74,7 @@
     function showHomeOutline(phone) {
       const outline = getOutline(phone);
       const bottom = getHomeBottom(phone);
+      if (!bottom) return;
       outline.style.cssText = 'position:absolute;left:0;right:0;top:0;height:' + bottom + 'px;';
       paintOutline(outline, 'Inicio');
       phone.style.cursor = 'pointer';
@@ -105,6 +107,19 @@
         'sumar-pedido': 'Sumar pedido'
       };
 
+      const checkoutMap = {
+        'checkout-structure': 'Estructura',
+        'checkout-banner': 'Banner checkout',
+        'checkout-postal': 'Validación postal',
+        'checkout-summary': 'Resumen pedido',
+        'checkout-buyer': 'Datos comprador',
+        'checkout-address': 'Dirección',
+        'checkout-delivery': 'Método de entrega',
+        'checkout-payment': 'Método de pago',
+        'checkout-contra': 'Contra-entrega',
+        'checkout-confirm': 'Confirmación'
+      };
+
       if (kind === 'home') {
         activateTab('home');
         closeInnerEditor();
@@ -120,6 +135,12 @@
       if (sectionMap[kind]) {
         activateTab('sections');
         setTimeout(function () { clickToolCard(sectionMap[kind]); }, 40);
+        return;
+      }
+
+      if (checkoutMap[kind]) {
+        activateTab('checkout');
+        setTimeout(function () { clickToolCard(checkoutMap[kind]); }, 40);
       }
     }
 
@@ -137,7 +158,7 @@
         const rect = phone.getBoundingClientRect();
         const y = event.clientY - rect.top + phone.scrollTop;
         const bottom = getHomeBottom(phone);
-        if (y >= 0 && y <= bottom) {
+        if (bottom && y >= 0 && y <= bottom) {
           showHomeOutline(phone);
           return;
         }
@@ -158,7 +179,7 @@
         const rect = phone.getBoundingClientRect();
         const y = event.clientY - rect.top + phone.scrollTop;
         const bottom = getHomeBottom(phone);
-        if (y >= 0 && y <= bottom) {
+        if (bottom && y >= 0 && y <= bottom) {
           event.preventDefault();
           event.stopPropagation();
           openFromPreview('home');
