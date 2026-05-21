@@ -58,7 +58,7 @@
             '<button type="button" style="height:38px;border:0;border-radius:5px;background:#fff;color:#9c2448;font-weight:950;">Ver</button>' +
           '</article>' +
         '</section>' +
-        '<nav style="display:flex;gap:10px;overflow:hidden;padding:0 18px 12px;background:#fff7ea;">' +
+        '<nav data-live-edit-zone="pestanas" data-live-zone-label="Pestañas" style="position:relative;display:flex;gap:10px;overflow:hidden;padding:0 18px 12px;background:#fff7ea;">' +
           tabPill('Destacados', true) + tabPill('Tortas') + tabPill('Piononos') + tabPill('Muffins') +
         '</nav>' +
         '<section data-live-edit-zone="mas-elegidos" data-live-zone-label="Más elegidos" style="position:relative;padding:0 18px 20px;background:#fff7ea;">' +
@@ -79,7 +79,7 @@
             comboCard('Combo rápido','Merienda Dúo','$ 12.900','#f5dfbd') + comboCard('Más regalado','Cumple Express','$ 18.500','#d7a98f') +
           '</div>' +
         '</section>' +
-        '<section data-live-edit-zone="sumar-pedido" data-live-zone-label="Sumar pedido" style="position:relative;padding:18px 18px 94px;background:#fff7ea;">' +
+        '<section data-live-edit-zone="sumar-pedido" data-live-zone-label="Sumar pedido" style="position:relative;padding:18px 18px 30px;background:#fff7ea;">' +
           '<div style="display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px;">' +
             '<div><span style="display:block;color:#9c2448;font-size:11px;font-weight:950;letter-spacing:.11em;">MENÚ COMPLETO</span><strong style="display:block;color:#211f27;font-size:21px;font-weight:950;letter-spacing:-.04em;">🍰 Para sumar al pedido</strong></div>' +
             '<b style="color:#9c2448;font-size:13px;">Ver todo</b>' +
@@ -87,10 +87,7 @@
           '<div style="display:grid;gap:10px;">' +
             upsellRow('Box Dulce Nube','$ 9.800','#f5dfbd') + upsellRow('Torta Choco Cream','$ 12.500','#d7a98f') + upsellRow('Muffins Mix x6','$ 6.900','#e8c8af') +
           '</div>' +
-        '</section>' +
-        '<footer style="position:absolute;left:0;right:0;bottom:0;height:64px;background:#fff;display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(15,23,42,.10);">' +
-          navItem('Envios') + navItem('Inicio', true) + navItem('Carrito') +
-        '</footer>';
+        '</section>';
 
       panel.appendChild(phone);
       syncPreviewFromOpenFields();
@@ -115,10 +112,6 @@
 
     function upsellRow(name, price, color) {
       return '<article style="display:grid;grid-template-columns:84px minmax(0,1fr)38px;gap:12px;align-items:center;padding:10px;border-radius:5px;background:#fff;border:1px solid #efcdb9;"><div style="width:84px;height:84px;border-radius:5px;background:linear-gradient(135deg,' + color + ',#9c2448);"></div><div style="display:grid;gap:5px;"><strong style="font-size:14px;color:#211f27;">' + name + '</strong><small style="font-size:12px;line-height:1.3;color:#667085;">Producto adicional para aumentar el pedido.</small><b style="font-size:14px;color:#111827;">' + price + '</b><span style="width:max-content;padding:6px 8px;border-radius:5px;background:#fbe1eb;color:#9c2448;font-size:11px;font-weight:950;">Ver detalle</span></div><button type="button" style="width:36px;height:36px;border:0;border-radius:5px;background:#9c2448;color:#fff;font-size:18px;font-weight:950;">+</button></article>';
-    }
-
-    function navItem(text, active) {
-      return '<button type="button" style="border:0;background:' + (active ? '#9c2448' : '#fff') + ';color:' + (active ? '#fff' : '#9c2448') + ';font-size:11px;font-weight:950;">' + text + '</button>';
     }
 
     function toMinutes(value) {
