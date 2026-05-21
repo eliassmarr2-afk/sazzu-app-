@@ -3,6 +3,21 @@
    Módulo independiente del panel Productos
    ========================================================= */
 
+/* FIX VISIBILIDAD PANEL: solo debe verse en su propio tab */
+body[data-page="productos"] .main #prodPanelComestibles{
+  display:none !important;
+}
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelComestibles{
+  display:block !important;
+}
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelResumen,
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelSkus,
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelOfertas,
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelConjuntos,
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelRentabilidad{
+  display:none !important;
+}
+
 /* FIX VISIBILIDAD TAB: la barra compacta original quedaba sin ancho */
 body[data-page="productos"] .main .prodTabsSection{
   pointer-events:auto !important;
