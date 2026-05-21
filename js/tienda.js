@@ -21,8 +21,9 @@
     }
 
     function activateTab_(tabName) {
-      tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === tabName));
-      panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.builderPanel === tabName));
+      const safeTab = tabName === "identity" ? "home" : tabName;
+      tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === safeTab));
+      panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.builderPanel === safeTab));
     }
 
     function syncStoreName_() {
@@ -46,6 +47,27 @@
       wrap.appendChild(span);
       wrap.appendChild(input);
       return wrap;
+    }
+
+    function quickInfoCard_(index, titleValue, detailValue) {
+      const card = document.createElement("section");
+      const head = document.createElement("div");
+      const title = document.createElement("strong");
+      const icon = document.createElement("span");
+      const titleField = field_("Titulo de tarjeta", "text", titleValue, "data-store-info-title-" + index);
+      const detailField = field_("Valor visible", "text", detailValue, "data-store-info-value-" + index);
+      card.style.cssText = "display:grid;gap:12px;padding:14px 0;border-top:1px solid #d7d7d7;";
+      head.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:12px;";
+      title.style.cssText = "color:#2f3742;font-size:13px;font-weight:950;";
+      icon.textContent = "✎";
+      icon.style.cssText = "display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:#eaf2ff;color:#2479ff;font-size:13px;font-weight:950;";
+      title.textContent = "Tarjeta " + index;
+      head.appendChild(title);
+      head.appendChild(icon);
+      card.appendChild(head);
+      card.appendChild(titleField);
+      card.appendChild(detailField);
+      return card;
     }
 
     function colorControl_(label, value, description) {
@@ -267,7 +289,7 @@
     function buildEditor_(name) {
       if (!editorBody) return;
       editorBody.innerHTML = "";
-      if (editorSection) editorSection.textContent = ["Paleta", "Botones"].indexOf(name) >= 0 ? "Diseno" : "Identidad";
+      if (editorSection) editorSection.textContent = ["Paleta", "Botones"].indexOf(name) >= 0 ? "Diseno" : "Inicio";
       if (editorTitle) editorTitle.textContent = name;
 
       if (name === "Nombre") {
@@ -293,6 +315,23 @@
         editorBody.appendChild(toggle_("Permitir compras aunque este cerrado", "El pedido se procesara al momento de apertura.", true, "data-store-allow-closed"));
         editorBody.appendChild(hint_("Si desactivas esta opcion, la compra se bloquea fuera de los dias u horarios operativos. Se recomienda dejar encendido.", true));
         editorBody.appendChild(toggle_("Mostrar estado Abierto/Cerrado en la Home", "Mostrara un relojito con Abierto o Cerrado y el proximo horario disponible.", true, "data-store-show-status"));
+      }
+
+      if (name === "Información rápida") {
+        const heading = document.createElement("div");
+        const title = document.createElement("strong");
+        const desc = document.createElement("small");
+        heading.style.cssText = "display:grid;gap:5px;padding-bottom:4px;";
+        title.textContent = "Información rápida";
+        title.style.cssText = "color:#2f3742;font-size:15px;font-weight:950;";
+        desc.textContent = "Edita el título y el valor de las tres tarjetas visibles en la Home.";
+        desc.style.cssText = "color:#667085;font-size:12px;line-height:1.35;";
+        heading.appendChild(title);
+        heading.appendChild(desc);
+        editorBody.appendChild(heading);
+        editorBody.appendChild(quickInfoCard_(1, "Entrega", "35-50 min"));
+        editorBody.appendChild(quickInfoCard_(2, "Envío", "$1.000"));
+        editorBody.appendChild(quickInfoCard_(3, "Mínimo", "$7.500"));
       }
 
       if (name === "WhatsApp") {
@@ -368,14 +407,14 @@
       button.addEventListener("click", () => {
         const strong = button.querySelector("strong");
         const label = strong ? strong.textContent.trim() : button.textContent.trim();
-        if (["Nombre", "Portada", "Logo", "Estado", "WhatsApp", "Email", "Paleta", "Botones"].indexOf(label) >= 0) openEditor_(label);
+        if (["Nombre", "Portada", "Logo", "Estado", "Información rápida", "WhatsApp", "Email", "Paleta", "Botones"].indexOf(label) >= 0) openEditor_(label);
       });
     });
 
     root.querySelectorAll("[data-builder-editor-back]").forEach((button) => button.addEventListener("click", closeEditor_));
     root.querySelectorAll("[data-builder-editor-save]").forEach((button) => button.addEventListener("click", () => { syncStoreName_(); closeEditor_(); }));
 
-    activateTab_("identity");
+    activateTab_("home");
   }
 
   document.addEventListener("DOMContentLoaded", initTiendaBuilder_);
