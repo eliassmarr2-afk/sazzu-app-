@@ -249,7 +249,9 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
   function loadProductosComestibles_() {
     if (!shouldLoadProductosComestibles_()) return;
     ensureCss_('../css/productos-comestibles.css', 'productos-comestibles-css');
+    ensureCss_('../css/productos-combos.css', 'productos-combos-css');
     ensureScript_('../js/productos-comestibles.js', 'productos-comestibles-js');
+    ensureScript_('../js/productos-combos.js', 'productos-combos-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
