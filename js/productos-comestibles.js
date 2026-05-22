@@ -19,8 +19,8 @@
         { nombre: 'Premium', descripcion: 'No disponible por stock.', precio: 0, estado: 'Agotado', badge: '' }
       ],
       extras: [
-        { nombre: 'Salsa extra de chocolate', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 900, estado: 'Activo', badge: '' },
-        { nombre: 'Caja regalo', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 1800, estado: 'Activo', badge: '' }
+        { nombre: 'Salsa extra de chocolate', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 900, estado: 'Activo', badge: 'Banco de extras' },
+        { nombre: 'Caja regalo', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 1800, estado: 'Activo', badge: 'Banco de extras' }
       ],
       sinCosto: [
         { nombre: 'Sin nueces', descripcion: 'Personalizá el producto.', estado: 'Incluido' },
@@ -50,7 +50,7 @@
         { nombre: 'Grande', descripcion: 'Rinde 12 porciones.', precio: 8900, estado: 'Activo', badge: '' }
       ],
       extras: [
-        { nombre: 'Mensaje en chocolate', descripcion: 'Agregá una frase breve.', precio: 1200, estado: 'Activo', badge: '' }
+        { nombre: 'Mensaje en chocolate', descripcion: 'Agregá una frase breve.', precio: 1200, estado: 'Activo', badge: 'Banco de extras' }
       ],
       sinCosto: [
         { nombre: 'Sin decoración crocante', descripcion: 'Personalizá el producto.', estado: 'Incluido' }
@@ -78,7 +78,7 @@
         { nombre: 'x12', descripcion: 'Caja para compartir.', precio: 7200, estado: 'Activo', badge: '' }
       ],
       extras: [
-        { nombre: 'Dip de chocolate', descripcion: 'Acompañamiento para muffins.', precio: 900, estado: 'Activo', badge: '' }
+        { nombre: 'Dip de chocolate', descripcion: 'Acompañamiento para muffins.', precio: 900, estado: 'Activo', badge: 'Banco de extras' }
       ],
       sinCosto: [
         { nombre: 'Sin chips', descripcion: 'Personalizá el producto.', estado: 'Incluido' }
@@ -88,6 +88,13 @@
       ]
     }
   ];
+
+  const OPTION_PRESETS = {
+    versiones: { nombre: 'Nueva versión', descripcion: 'Ej: 6 porciones, 12 porciones, individual o familiar.', precio: 0, estado: 'Activo', badge: '', imagen: '' },
+    extras: { nombre: 'Seleccionar extra del banco', descripcion: 'Extra global pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Banco de extras', imagen: '' },
+    sinCosto: { nombre: 'Nueva opción sin costo', descripcion: 'Ej: sin nueces, sin coco, sin azúcar agregada.', estado: 'Incluido', imagen: '' },
+    recomendados: { nombre: 'Seleccionar producto recomendado', descripcion: 'Producto existente pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Recomendado', imagen: '' }
+  };
 
   function initProductosComestibles() {
     const shell = document.querySelector('body[data-page="productos"] .prodShell');
@@ -155,14 +162,14 @@
         <section class="prodComGuide">
           <article><b>1</b><strong>Identidad</strong><span>Nombre, precio, descripción y promesa.</span></article>
           <article><b>2</b><strong>Imágenes</strong><span>Hasta 6 imágenes para la galería.</span></article>
-          <article><b>3</b><strong>Opciones</strong><span>Versiones, extras, sin costo y recomendados.</span></article>
+          <article><b>3</b><strong>Opciones</strong><span>Tamaño, extras, sin costo y recomendados.</span></article>
         </section>
         <section class="prodComTableCard">
           <div class="prodComTableCard__head">
             <div><span class="prodComEyebrow">Base editable</span><h3>Tabla de productos</h3><p>Solo productos comestibles simples. Los combos tendrán otro constructor.</p></div>
             <div class="prodComTools"><input id="prodComSearch" type="text" placeholder="Buscar producto..."><select id="prodComEstado"><option value="todos">Todos</option><option value="activo">Activos</option><option value="borrador">Borradores</option></select></div>
           </div>
-          <div class="prodComTableWrap"><table class="prodComTable"><thead><tr><th>Producto</th><th>Tipo</th><th>Precio base</th><th>Versiones</th><th>Extras</th><th>Sin costo</th><th>Recomendados</th><th>Imágenes</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="prodComTableBody"></tbody></table></div>
+          <div class="prodComTableWrap"><table class="prodComTable"><thead><tr><th>Producto</th><th>Tipo</th><th>Precio base</th><th>Tamaños</th><th>Extras</th><th>Sin costo</th><th>Recomendados</th><th>Imágenes</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="prodComTableBody"></tbody></table></div>
         </section>
       </div>`;
     if (rentabilidad) rentabilidad.insertAdjacentElement('beforebegin', panel);
@@ -187,21 +194,32 @@
 
   function bindUi() {
     const tab = document.getElementById('prodTabComestibles');
-    const body = document.getElementById('prodComTableBody');
+    const tableBody = document.getElementById('prodComTableBody');
     const search = document.getElementById('prodComSearch');
     const estado = document.getElementById('prodComEstado');
     const nuevo = document.getElementById('prodComNuevoBtn');
     const overlay = document.getElementById('prodComOverlay');
     const close = document.getElementById('prodComCloseBtn');
     const save = document.getElementById('prodComSaveBtn');
+    const slideBody = document.getElementById('prodComSlideBody');
+
     if (tab && tab.dataset.bound !== '1') { tab.dataset.bound = '1'; tab.addEventListener('click', activateTab); }
-    if (body && body.dataset.bound !== '1') { body.dataset.bound = '1'; body.addEventListener('click', function (event) { const btn = event.target.closest('[data-edit-com]'); if (!btn) return; const product = PRODUCTOS_COMESTIBLES.find(p => p.id === btn.dataset.editCom); if (product) openSlide(product); }); }
+    if (tableBody && tableBody.dataset.bound !== '1') { tableBody.dataset.bound = '1'; tableBody.addEventListener('click', function (event) { const btn = event.target.closest('[data-edit-com]'); if (!btn) return; const product = PRODUCTOS_COMESTIBLES.find(p => p.id === btn.dataset.editCom); if (product) openSlide(product); }); }
     if (search && search.dataset.bound !== '1') { search.dataset.bound = '1'; search.addEventListener('input', renderTable); }
     if (estado && estado.dataset.bound !== '1') { estado.dataset.bound = '1'; estado.addEventListener('change', renderTable); }
     if (nuevo && nuevo.dataset.bound !== '1') { nuevo.dataset.bound = '1'; nuevo.addEventListener('click', () => openSlide(blankProduct())); }
     if (overlay && overlay.dataset.bound !== '1') { overlay.dataset.bound = '1'; overlay.addEventListener('click', closeSlide); }
     if (close && close.dataset.bound !== '1') { close.dataset.bound = '1'; close.addEventListener('click', closeSlide); }
     if (save && save.dataset.bound !== '1') { save.dataset.bound = '1'; save.addEventListener('click', saveLocal); }
+    if (slideBody && slideBody.dataset.bound !== '1') {
+      slideBody.dataset.bound = '1';
+      slideBody.addEventListener('click', function (event) {
+        const addButton = event.target.closest('[data-add-com-option]');
+        if (!addButton) return;
+        event.preventDefault();
+        addOptionCard(addButton.dataset.addComOption);
+      });
+    }
   }
 
   function activateTab() {
@@ -229,7 +247,7 @@
   }
 
   function blankProduct() {
-    return { id: 'nuevo-producto-comestible', nombre: 'Nuevo producto comestible', categoria: 'Categoría', estado: 'Borrador', precio: 0, badge: 'Nuevo', descripcion: '', promesa: '', imagenes: ['', '', '', '', '', ''], versiones: [{ nombre: 'Mini', descripcion: 'Opción base.', precio: 0, estado: 'Incluido', badge: '' }], extras: [{ nombre: 'Extra', descripcion: 'Extra recomendado.', precio: 0, estado: 'Activo', badge: '' }], sinCosto: [{ nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido' }], recomendados: [{ nombre: 'Recomendado', descripcion: 'Sumalo al pedido.', precio: 0, estado: 'Activo', badge: 'Recomendado' }] };
+    return { id: 'nuevo-producto-comestible', nombre: 'Nuevo producto comestible', categoria: 'Categoría', estado: 'Borrador', precio: 0, badge: 'Nuevo', descripcion: '', promesa: '', imagenes: ['', '', '', '', '', ''], versiones: [{ nombre: 'Mini', descripcion: 'Opción base.', precio: 0, estado: 'Incluido', badge: '' }], extras: [{ nombre: 'Seleccionar extra del banco', descripcion: 'Extra global pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Banco de extras' }], sinCosto: [{ nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido' }], recomendados: [{ nombre: 'Seleccionar producto recomendado', descripcion: 'Sumalo al pedido.', precio: 0, estado: 'Activo', badge: 'Recomendado' }] };
   }
 
   function openSlide(product) {
@@ -256,10 +274,9 @@
   }
 
   function renderEditor(product) {
-    return `<div class="prodComBuilder"><aside class="prodComMap"><div class="prodComMap__sticky"><span class="prodComEyebrow">Mapa fácil</span><h3>Qué estás editando</h3>${mapStep('1', 'Identidad', 'Lo que ve el comprador primero.')}${mapStep('2', 'Imágenes', 'Hasta 6 fotos del producto.')}${mapStep('3', 'Personalización', 'Mini, Mediano o Premium.')}${mapStep('4', 'Extras', 'Cosas que suman precio.')}${mapStep('5', 'Sin costo', 'Ingredientes que se pueden sacar.')}${mapStep('6', 'Recomendados', 'Upsells para subir ticket.')}<div class="prodComMap__note">Los títulos grandes de la tienda son fijos. Solo cambia la información.</div></div></aside><section class="prodComEditor">${identitySection(product)}${imagesSection(product)}${optionsSection('Personalización', 'Elegí tu versión', 'versiones', product.versiones, true)}${optionsSection('Extras', 'Agregá algo más', 'extras', product.extras, true)}${optionsSection('Sin costo', 'Sacá ingredientes', 'sinCosto', product.sinCosto, false)}${optionsSection('Recomendados', 'Sumá al pedido', 'recomendados', product.recomendados, true)}${payloadSection(product)}</section></div>`;
+    return `<div class="prodComBuilder prodComBuilder--full"><section class="prodComEditor prodComEditor--full">${identitySection(product)}${imagesSection(product)}${optionsSection('Tamaño', 'Elegí tu versión', 'versiones', product.versiones, true, 'Agregá tamaños o presentaciones: Mini, Mediano, 6 porciones, 12 porciones, familiar, etc.')}${optionsSection('Extras', 'Agregá algo más', 'extras', product.extras, true, 'Estos extras deberían venir del Banco de extras. Por ahora quedan como asociaciones editables hasta crear el sub-slide del banco.', 'Banco de extras')}${optionsSection('Sin costo', 'Sacá ingredientes', 'sinCosto', product.sinCosto, false, 'Opciones para que el comprador quite ingredientes sin modificar el precio.')}${optionsSection('Recomendados', 'Sumá al pedido', 'recomendados', product.recomendados, true, 'Luego esta sección va a seleccionar productos o combos existentes. Por ahora queda preparada como asociación editable.', 'Selector de productos')}${payloadSection(product)}</section></div>`;
   }
 
-  function mapStep(n, title, text) { return `<div class="prodComMapStep"><b>${n}</b><div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span></div></div>`; }
   function field(label, id, value, type = 'text') { return `<label class="prodComField"><span>${escapeHtml(label)}</span><input id="${escapeHtml(id)}" type="${escapeHtml(type)}" value="${escapeHtml(value)}"></label>`; }
   function select(label, id, value, options) { return `<label class="prodComField"><span>${escapeHtml(label)}</span><select id="${escapeHtml(id)}">${options.map(opt => `<option value="${escapeHtml(opt)}" ${String(opt) === String(value) ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join('')}</select></label>`; }
 
@@ -273,16 +290,29 @@
 
   function imageField(index, value) { return `<label class="prodComImageField"><span>Imagen ${index + 1}${index === 0 ? ' · Principal' : ''}</span><div class="prodComImagePreview">${value ? `<img src="${escapeHtml(value)}" alt="">` : `<b>IMG ${index + 1}</b>`}</div><input type="url" id="com_img_${index + 1}" value="${escapeHtml(value)}" placeholder="URL de imagen"></label>`; }
 
-  function optionsSection(kicker, title, key, items, hasPrice) {
-    return `<section class="prodComSection"><div class="prodComSection__head"><div><span class="prodComEyebrow">${escapeHtml(kicker)}</span><h3>${escapeHtml(title)}</h3><p>Estructura fija orientada a conversión. Solo editás las tarjetas.</p></div><span class="prodComBadge prodComBadge--gray">Estructura fija</span></div><div class="prodComOptions">${items.map((item, index) => optionEditor(key, item, index, hasPrice)).join('')}</div><button type="button" class="prodComAdd" disabled>+ Agregar opción en Fase 2</button></section>`;
+  function optionsSection(kicker, title, key, items, hasPrice, helper, sourceBadge) {
+    const sectionBadge = sourceBadge || 'Estructura fija';
+    return `<section class="prodComSection" data-prod-com-section="${escapeHtml(key)}"><div class="prodComSection__head"><div><span class="prodComEyebrow">${escapeHtml(kicker)}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(helper || 'Estructura fija orientada a conversión. Solo editás las tarjetas.')}</p></div><span class="prodComBadge prodComBadge--gray">${escapeHtml(sectionBadge)}</span></div><div class="prodComOptions" data-options-key="${escapeHtml(key)}">${items.map((item, index) => optionEditor(key, item, index, hasPrice)).join('')}</div><div class="prodComSectionActions"><button type="button" class="prodComAdd" data-add-com-option="${escapeHtml(key)}">+ Agregar opción</button>${key === 'extras' ? '<button type="button" class="prodComSecondaryAction" disabled>Abrir banco de extras · Fase siguiente</button>' : ''}${key === 'recomendados' ? '<button type="button" class="prodComSecondaryAction" disabled>Seleccionar productos · Fase siguiente</button>' : ''}</div></section>`;
   }
 
   function optionEditor(key, item, index, hasPrice) {
-    return `<article class="prodComOption"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual"><span>4×4</span></div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre)}${field('Descripción', `${key}_${index}_desc`, item.descripcion)}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio, 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || '', 'url')}</div></article>`;
+    const visualImage = item.imagen ? `<img src="${escapeHtml(item.imagen)}" alt="">` : '<span>4×4</span>';
+    return `<article class="prodComOption" data-option-key="${escapeHtml(key)}"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual">${visualImage}</div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre)}${field('Descripción', `${key}_${index}_desc`, item.descripcion)}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio, 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || '', 'url')}</div></article>`;
+  }
+
+  function addOptionCard(key) {
+    const list = document.querySelector(`.prodComOptions[data-options-key="${key}"]`);
+    if (!list) return;
+    const index = list.querySelectorAll('.prodComOption').length;
+    const hasPrice = key !== 'sinCosto';
+    const preset = Object.assign({}, OPTION_PRESETS[key] || OPTION_PRESETS.versiones);
+    list.insertAdjacentHTML('beforeend', optionEditor(key, preset, index, hasPrice));
+    const added = list.querySelector('.prodComOption:last-child');
+    if (added) added.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function payloadSection(product) {
-    const payload = { product_id: product.id, product_type: 'food_simple_product', combo: false, structure_locked: true, sections: ['identity', 'images', 'versions', 'extras', 'removables', 'recommended'], future_keys: ['user_id', 'workspace_id', 'store_id', 'draft_version', 'published_version'] };
+    const payload = { product_id: product.id, product_type: 'producto_simple', combo: false, structure_locked: true, sections: ['identity', 'images', 'size', 'extras_bank_links', 'removables', 'recommended_product_links'], future_keys: ['user_id', 'workspace_id', 'store_id', 'draft_version', 'published_version'] };
     return `<section class="prodComSection prodComSection--payload"><div class="prodComSection__head"><div><span class="prodComEyebrow">Salida futura</span><h3>Payload que irá a Supabase</h3><p>En esta fase no se guarda real. Dejamos la estructura lista para cuenta, tienda y versión.</p></div><span class="prodComBadge prodComBadge--blue">Mock local</span></div><pre class="prodComPayload">${escapeHtml(JSON.stringify(payload, null, 2))}</pre></section>`;
   }
 
