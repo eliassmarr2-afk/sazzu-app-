@@ -8,3 +8,10 @@
 .env
 .env.local
 .env.production
+# Local/editor
+.vscode/
+.DS_Store
+**/.DS_Store
+
+# Diagnosticos locales
+diagnostico_*.txt
