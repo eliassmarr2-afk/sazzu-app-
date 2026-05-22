@@ -17,8 +17,7 @@ body[data-page="productos"] .prodExtrasLauncherBtn{
   white-space:nowrap;
 }
 
-body[data-page="productos"] .prodExtrasOverlay,
-body[data-page="productos"] .prodExtraConfigOverlay{
+body[data-page="productos"] .prodExtrasOverlay{
   position:fixed;
   inset:0;
   z-index:140;
@@ -28,7 +27,21 @@ body[data-page="productos"] .prodExtraConfigOverlay{
   transition:opacity .18s ease;
 }
 
-body[data-page="productos"] .prodExtrasOverlay.is-active,
+body[data-page="productos"] .prodExtrasOverlay.is-active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+body[data-page="productos"] .prodExtraConfigOverlay{
+  position:fixed;
+  inset:0;
+  z-index:142;
+  background:rgba(15,23,42,.34);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+
 body[data-page="productos"] .prodExtraConfigOverlay.is-active{
   opacity:1;
   pointer-events:auto;
@@ -55,7 +68,8 @@ body[data-page="productos"] .prodExtrasSlide{
 
 body[data-page="productos"] .prodExtraConfigSlide{
   z-index:143;
-  width:min(520px,92vw);
+  width:min(60vw,960px);
+  box-shadow:-24px 0 64px rgba(15,23,42,.24);
 }
 
 body[data-page="productos"] .prodExtrasSlide.is-active,
@@ -74,6 +88,11 @@ body[data-page="productos"] .prodExtraConfigHeader{
   background:#fff;
   border-bottom:1px solid #EAECF0;
   box-sizing:border-box;
+}
+
+body[data-page="productos"] .prodExtraConfigHeader{
+  min-height:76px;
+  padding:18px 22px;
 }
 
 body[data-page="productos"] .prodExtrasEyebrow{
@@ -124,6 +143,11 @@ body[data-page="productos"] .prodExtraConfigSave{
   cursor:pointer;
 }
 
+body[data-page="productos"] .prodExtraConfigSave{
+  background:#2479FF;
+  color:#fff;
+}
+
 body[data-page="productos"] .prodExtrasClose,
 body[data-page="productos"] .prodExtraConfigClose{
   width:38px;
@@ -170,6 +194,7 @@ body[data-page="productos"] .prodExtraCard:hover{
 }
 
 body[data-page="productos"] .prodExtraCard__image{
+  position:relative;
   width:100%;
   height:100%;
   overflow:hidden;
@@ -181,6 +206,35 @@ body[data-page="productos"] .prodExtraCard__image img{
   height:100%;
   object-fit:cover;
   display:block;
+}
+
+body[data-page="productos"] .prodExtraCard__badge,
+body[data-page="productos"] .prodExtraConfigPreview__badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:2;
+  max-width:70%;
+  padding:6px 9px;
+  border-radius:5px;
+  background:#fff;
+  color:#9F2444;
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.02em;
+  text-transform:lowercase;
+  box-shadow:0 8px 22px rgba(15,23,42,.14);
+}
+
+body[data-page="productos"] .prodExtraCard__empty,
+body[data-page="productos"] .prodExtraConfigPreview__empty{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  color:#98A2B3;
+  font-size:12px;
+  font-weight:900;
 }
 
 body[data-page="productos"] .prodExtraCard__info{
@@ -209,6 +263,17 @@ body[data-page="productos"] .prodExtraCard__info span{
   line-height:1.25;
 }
 
+body[data-page="productos"] .prodExtraCard__info em{
+  display:inline-block;
+  margin-top:6px;
+  color:#2479FF;
+  font-size:10px;
+  font-style:normal;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
 body[data-page="productos"] .prodExtraCard__price{
   color:#2479FF;
   font-size:13px;
@@ -231,7 +296,8 @@ body[data-page="productos"] .prodExtraConfigCard{
 }
 
 body[data-page="productos"] .prodExtraConfigPreview{
-  height:220px;
+  position:relative;
+  height:260px;
   overflow:hidden;
   border-radius:5px;
   background:#F2F4F7;
@@ -242,6 +308,12 @@ body[data-page="productos"] .prodExtraConfigPreview img{
   height:100%;
   object-fit:cover;
   display:block;
+}
+
+body[data-page="productos"] .prodExtraConfigGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
 body[data-page="productos"] .prodExtraField{
@@ -281,5 +353,7 @@ body[data-page="productos"] .prodExtraField textarea{
 
 @media(max-width:900px){
   body[data-page="productos"] .prodExtrasSlide{width:94vw;}
+  body[data-page="productos"] .prodExtraConfigSlide{width:82vw;}
   body[data-page="productos"] .prodExtrasGrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));}
+  body[data-page="productos"] .prodExtraConfigGrid{grid-template-columns:1fr;}
 }
