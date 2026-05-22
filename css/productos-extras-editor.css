@@ -1,0 +1,111 @@
+/* =========================================================
+   PRODUCTOS · EDITOR AISLADO BANCO DE EXTRAS
+   No modifica montaje de combos ni botón principal.
+   ========================================================= */
+
+body[data-page="productos"] .prodExtraConfigOverlay.is-active{
+  z-index:142;
+  background:rgba(15,23,42,.38);
+}
+
+body[data-page="productos"] .prodExtraConfigSlide{
+  z-index:143;
+  width:min(60vw,960px);
+  box-shadow:-24px 0 64px rgba(15,23,42,.24);
+}
+
+body[data-page="productos"] .prodExtraConfigHeader{
+  min-height:76px;
+  padding:18px 22px;
+  align-items:flex-start;
+}
+
+body[data-page="productos"] .prodExtraConfigHeader h2{
+  font-size:24px;
+  line-height:1.05;
+}
+
+body[data-page="productos"] .prodExtraConfigHeader p{
+  max-width:620px;
+}
+
+body[data-page="productos"] .prodExtraConfigSave{
+  background:#2479FF;
+  color:#fff;
+}
+
+body[data-page="productos"] .prodExtraConfigSave:disabled{
+  opacity:1;
+  cursor:pointer;
+}
+
+body[data-page="productos"] .prodExtraCard__image{
+  position:relative;
+}
+
+body[data-page="productos"] .prodExtraCard__badge,
+body[data-page="productos"] .prodExtraPreviewBadge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:2;
+  max-width:70%;
+  padding:6px 9px;
+  border-radius:5px;
+  background:#fff;
+  color:#9F2444;
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.02em;
+  text-transform:lowercase;
+  box-shadow:0 8px 22px rgba(15,23,42,.14);
+}
+
+body[data-page="productos"] .prodExtraCard__empty,
+body[data-page="productos"] .prodExtraPreviewEmpty{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  color:#98A2B3;
+  font-size:12px;
+  font-weight:900;
+}
+
+body[data-page="productos"] .prodExtraCard__info em{
+  display:inline-block;
+  margin-top:6px;
+  color:#2479FF;
+  font-size:10px;
+  font-style:normal;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+body[data-page="productos"] .prodExtraEditorGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+body[data-page="productos"] .prodExtraConfigPreview{
+  position:relative;
+  height:260px;
+}
+
+body[data-page="productos"] .prodExtraEditorNotice{
+  margin:0;
+  padding:11px 12px;
+  border-radius:5px;
+  background:#F0F7FF;
+  color:#1D5FD1;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+@media(max-width:900px){
+  body[data-page="productos"] .prodExtraConfigSlide{width:82vw;}
+  body[data-page="productos"] .prodExtraEditorGrid{grid-template-columns:1fr;}
+}
