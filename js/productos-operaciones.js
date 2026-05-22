@@ -155,6 +155,8 @@
       if (!payload) return;
       const lastCell = row.querySelector('td:last-child');
       if (!lastCell) return;
+      const currentBtn = lastCell.querySelector('[data-edit-local-product="' + CSS.escape(productId) + '"]');
+      if (currentBtn) return;
       lastCell.innerHTML = '<button type="button" class="prodComEdit" data-edit-local-product="' + escapeHtml(productId) + '">Editar</button>';
     });
   }
@@ -380,16 +382,17 @@
       if (type === 'incluido') list.insertAdjacentHTML('beforeend', renderIncludedItem(nextIndexByPrefix('combo_incluido_', '_nombre')));
       if (type === 'opcional') list.insertAdjacentHTML('beforeend', renderOptionalItem(nextIndexByPrefix('combo_opcional_', '_product')));
       enhanceOptionDeletes(list);
+      return;
+    }
+
+    if (event.target.closest('#prodComNuevoBtn, #prodComboNewBtn, [data-add-com-option], .prodTab--comestibles')) {
+      scheduleEnhance();
     }
   }
 
-  function observeUi() {
-    const observer = new MutationObserver(() => {
-      enhanceLocalRows();
-      enhanceOptionDeletes();
-      enhanceComboAddButtons();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+  function scheduleEnhance() {
+    setTimeout(() => { enhanceLocalRows(); enhanceOptionDeletes(); enhanceComboAddButtons(); }, 80);
+    setTimeout(() => { enhanceLocalRows(); enhanceOptionDeletes(); enhanceComboAddButtons(); }, 280);
   }
 
   function initProductosOperaciones() {
@@ -400,15 +403,14 @@
     document.addEventListener('click', handleDocumentClick, true);
     window.addEventListener('productos:payload-ready', (event) => {
       showSavePopup(event.detail && event.detail.payload ? event.detail.payload : {});
-      setTimeout(enhanceLocalRows, 40);
+      scheduleEnhance();
     });
-    observeUi();
-    setTimeout(() => { enhanceLocalRows(); enhanceOptionDeletes(); enhanceComboAddButtons(); }, 300);
+    scheduleEnhance();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosOperaciones);
   document.addEventListener('sazzu:page:load', function () {
     setTimeout(initProductosOperaciones, 120);
-    setTimeout(initProductosOperaciones, 420);
+    setTimeout(scheduleEnhance, 420);
   });
 })();
