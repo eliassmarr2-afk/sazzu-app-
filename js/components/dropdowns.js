@@ -255,6 +255,7 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     ensureScript_('../js/productos-comestibles.js', 'productos-comestibles-js');
     ensureScript_('../js/productos-combos.js', 'productos-combos-js');
     ensureScript_('../js/productos-operaciones.js', 'productos-operaciones-js');
+    ensureScript_('../js/productos-rehidratacion.js', 'productos-rehidratacion-js');
     ensureScript_('../js/productos-supabase.js', 'productos-supabase-js');
   }
 
