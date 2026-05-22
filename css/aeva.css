@@ -1,0 +1,978 @@
+/* =========================================================
+   INICIO · AEVA · Panel minimal estilo 21ST corregido
+   Archivo: /css/aeva.css
+   ========================================================= */
+
+   :root {
+    --aeva-blue: #2479FF;
+    --aeva-blue-dark: #163B70;
+    --aeva-dark: #1F2023;
+    --aeva-bg:
+      radial-gradient(circle at 18% 12%, rgba(205, 226, 255, .95) 0%, rgba(205, 226, 255, 0) 34%),
+      radial-gradient(circle at 84% 90%, rgba(255, 239, 199, .96) 0%, rgba(255, 239, 199, 0) 38%),
+      linear-gradient(180deg, #eef5ff 0%, #dfeaf9 44%, #f8f2e2 100%);
+  }
+  
+  .aevaMain {
+    min-height: 100vh !important;
+    padding: 0 !important;
+    background: var(--aeva-bg) !important;
+    overflow: hidden !important;
+  }
+  
+  .aevaStage {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background: var(--aeva-bg) !important;
+    overflow: hidden !important;
+  }
+  
+  /* =========================================================
+     Mensajes por fuera del prompt
+     ========================================================= */
+  
+  .aevaConversationStage {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 54px !important;
+    bottom: 235px !important;
+    display: flex !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+  }
+  
+  .aevaConversationRail {
+    width: min(720px, calc(100vw - 180px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+    padding: 28px 8px 0 !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    pointer-events: auto !important;
+  }
+  
+  .aevaConversationRail[hidden] {
+    display: none !important;
+  }
+  
+  .aevaConversationRail::-webkit-scrollbar {
+    width: 6px !important;
+  }
+  
+  .aevaConversationRail::-webkit-scrollbar-thumb {
+    background: rgba(36, 121, 255, .20) !important;
+    border-radius: 999px !important;
+  }
+  
+  /* Mensajes */
+  .aevaMiniMsg {
+    max-width: min(560px, 84%) !important;
+    padding: 14px 16px !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    font-weight: 650 !important;
+    line-height: 1.5 !important;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .08) !important;
+    word-break: break-word !important;
+  }
+  
+  .aevaMiniMsg--user {
+    align-self: flex-end !important;
+    background: rgba(36, 121, 255, .16) !important;
+    color: #0F2F57 !important;
+    border: 1px solid rgba(36, 121, 255, .18) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  
+  .aevaMiniMsg--aeva {
+    align-self: flex-start !important;
+    background: rgba(255, 255, 255, .72) !important;
+    color: #16324D !important;
+    border: 1px solid rgba(22, 59, 112, .08) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  .aevaMiniMsg--thinking {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    width: fit-content !important;
+  }
+  
+  .aevaMiniMsg--thinking i {
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 999px !important;
+    background: #2479FF !important;
+    animation: aevaMiniThinking 0.8s ease-in-out infinite !important;
+  }
+  
+  .aevaMiniMsg--thinking i:nth-child(2) {
+    animation-delay: .12s !important;
+  }
+  
+  .aevaMiniMsg--thinking i:nth-child(3) {
+    animation-delay: .24s !important;
+  }
+  
+  @keyframes aevaMiniThinking {
+    0%, 100% {
+      opacity: .35;
+      transform: translateY(0);
+    }
+  
+    50% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+  
+  /* =========================================================
+     Prompt inferior
+     ========================================================= */
+  
+  .aevaPromptDock {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 110px !important; /* aprox 3 cm */
+    display: flex !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+  }
+  
+  .aevaPromptWrap {
+    width: min(500px, calc(100vw - 130px)) !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Tarjeta igual al recurso */
+  .aevaBox {
+    width: 100% !important;
+    display: grid !important;
+    gap: 10px !important;
+  
+    padding: 16px 18px 14px !important;
+    border-radius: 24px !important;
+  
+    background: #1F2023 !important;
+    border: 1px solid rgba(255, 255, 255, .05) !important;
+  
+    box-shadow:
+      0 22px 42px rgba(0, 0, 0, .22),
+      0 10px 24px rgba(255, 122, 0, .08) !important;
+  
+    transition:
+      box-shadow .18s ease,
+      border-color .18s ease,
+      transform .18s ease !important;
+  }
+  
+  .aevaBox:focus-within {
+    border-color: rgba(255, 255, 255, .10) !important;
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, .26),
+      0 14px 32px rgba(255, 122, 0, .10) !important;
+  }
+  
+  /* textarea */
+  .aevaBox__textarea {
+    width: 100% !important;
+    min-height: 58px !important;
+    max-height: 150px !important;
+    padding: 2px 0 0 !important;
+    box-sizing: border-box !important;
+  
+    resize: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+  
+    color: #F3F4F6 !important;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+    overflow: auto !important;
+  }
+  
+  .aevaBox__textarea::placeholder {
+    color: #AEB6C2 !important;
+    opacity: 1 !important;
+  }
+  
+  .aevaBox__textarea::-webkit-scrollbar {
+    width: 5px !important;
+  }
+  
+  .aevaBox__textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .14) !important;
+    border-radius: 999px !important;
+  }
+  
+  /* acciones */
+  .aevaBox__actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+  }
+  
+  .aevaBox__left {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+  }
+  
+  .aevaBox__iconBtn,
+  .aevaBox__mainAction {
+    border: 0 !important;
+    outline: 0 !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
+  }
+  
+  .aevaBox__iconBtn {
+    width: 26px !important;
+    height: 26px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    color: #B7BEC8 !important;
+    transition: color .16s ease, transform .16s ease, background .16s ease !important;
+  }
+  
+  .aevaBox__iconBtn:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, .06) !important;
+  }
+  
+  .aevaBox__iconBtn svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+  
+  .aevaBox__mode.is-active {
+    color: #C084FC !important;
+  }
+  
+  .aevaBox__divider {
+    width: 1px !important;
+    height: 22px !important;
+    display: block !important;
+    border-radius: 999px !important;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(168, 85, 247, .85) 50%,
+      transparent 100%
+    ) !important;
+  }
+  
+  .aevaBox__mainAction {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #1F2023 !important;
+    transition: background .16s ease, transform .16s ease !important;
+  }
+  
+  .aevaBox__mainAction:hover {
+    background: rgba(255, 255, 255, .90) !important;
+  }
+  
+  .aevaBox__mainIcon {
+    width: 19px !important;
+    height: 19px !important;
+    display: none !important;
+  }
+  
+  .aevaBox[data-has-text="false"] .aevaBox__mainIcon--mic {
+    display: block !important;
+  }
+  
+  .aevaBox[data-has-text="true"] .aevaBox__mainIcon--send {
+    display: block !important;
+  }
+  
+  .aevaBox.is-recording .aevaBox__mainAction {
+    background: #FEE2E2 !important;
+    color: #DC2626 !important;
+    animation: aevaRecordingPulse .9s ease-in-out infinite !important;
+  }
+  
+  @keyframes aevaRecordingPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(220, 38, 38, .18);
+    }
+  
+    50% {
+      box-shadow: 0 0 0 8px rgba(220, 38, 38, .08);
+    }
+  }
+  
+  /* Cursor de tipeo */
+  .aevaTypeCursor {
+    display: inline-block !important;
+    width: 2px !important;
+    height: 14px !important;
+    margin-left: 3px !important;
+    background: #2479FF !important;
+    vertical-align: -2px !important;
+    animation: aevaTypeCursorBlink .55s step-end infinite !important;
+  }
+  
+  @keyframes aevaTypeCursorBlink {
+    0%, 100% {
+      opacity: 0;
+    }
+  
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .aevaConversationRail {
+      width: min(640px, calc(100vw - 120px)) !important;
+    }
+  
+    .aevaPromptWrap {
+      width: min(500px, calc(100vw - 110px)) !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .aevaConversationStage {
+      top: 28px !important;
+      bottom: 210px !important;
+    }
+  
+    .aevaConversationRail {
+      width: calc(100vw - 36px) !important;
+      padding: 20px 2px 0 !important;
+    }
+  
+    .aevaPromptDock {
+      bottom: 32px !important;
+    }
+  
+    .aevaPromptWrap {
+      width: calc(100vw - 32px) !important;
+    }
+  
+    .aevaBox {
+      border-radius: 22px !important;
+      padding: 15px 16px 13px !important;
+    }
+  
+    .aevaMiniMsg {
+      max-width: 92% !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Panel minimal estilo 21ST corregido
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Chat nunca detrás del prompt
+   ========================================================= */
+
+/* El prompt queda como capa superior */
+.aevaPromptDock {
+    z-index: 20 !important;
+  }
+  
+  /* El área de conversación reserva espacio dinámico arriba del prompt */
+  .aevaConversationStage {
+    top: 42px !important;
+    bottom: var(--aeva-conversation-bottom-safe, 330px) !important;
+    z-index: 10 !important;
+  
+    display: flex !important;
+    justify-content: center !important;
+  
+    pointer-events: none !important;
+  }
+  
+  /* El rail de mensajes scrollea sin meterse detrás del prompt */
+  .aevaConversationRail {
+    height: 100% !important;
+    max-height: 100% !important;
+  
+    justify-content: flex-end !important;
+  
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  
+    padding-top: 24px !important;
+    padding-bottom: 10px !important;
+  
+    scroll-behavior: smooth !important;
+    overscroll-behavior: contain !important;
+  
+    pointer-events: auto !important;
+  }
+  
+  /* Cuando hay muchos mensajes, se pierden hacia arriba y el rail permite scroll */
+  .aevaConversationRail:not([hidden]) {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Los globos jamás deben ocupar ancho completo ni tapar el prompt */
+  .aevaMiniMsg {
+    position: relative !important;
+    z-index: 11 !important;
+    flex: 0 0 auto !important;
+  }
+  
+  /* Un poco más de aire visual entre último mensaje y zona de prompt */
+  .aevaMiniMsg:last-child {
+    margin-bottom: 4px !important;
+  }
+  
+  /* Responsive: conserva margen seguro menor en pantallas chicas */
+  @media (max-width: 640px) {
+    .aevaConversationStage {
+      top: 22px !important;
+      bottom: var(--aeva-conversation-bottom-safe, 230px) !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Chat nunca detrás del prompt
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Layout tipo IA cuando hay conversación
+   Prompt abajo, ancho y chat scrolleable.
+   ========================================================= */
+
+/* Cuando todavía no hay chat, se conserva el estado actual.
+   Cuando hay chat, el prompt baja como en ChatGPT. */
+.aevaStage.has-chat .aevaPromptDock {
+    bottom: 34px !important;
+    z-index: 30 !important;
+  }
+  
+  /* Prompt más ancho cuando la conversación ya empezó */
+  .aevaStage.has-chat .aevaPromptWrap {
+    width: min(760px, calc(100vw - 180px)) !important;
+  }
+  
+  /* Caja más horizontal y menos alta al estar en modo conversación */
+  .aevaStage.has-chat .aevaBox {
+    gap: 7px !important;
+    padding: 12px 14px 12px !important;
+    border-radius: 22px !important;
+  }
+  
+  /* Textarea más compacto cuando el chat ya está andando */
+  .aevaStage.has-chat .aevaBox__textarea {
+    min-height: 38px !important;
+    max-height: 118px !important;
+    padding-top: 2px !important;
+  
+    font-size: 15px !important;
+    line-height: 1.42 !important;
+  }
+  
+  /* Acciones más compactas en modo chat */
+  .aevaStage.has-chat .aevaBox__actions {
+    min-height: 34px !important;
+  }
+  
+  .aevaStage.has-chat .aevaBox__mainAction {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+  
+  /* Área de conversación: ocupa todo el espacio superior disponible */
+  .aevaStage.has-chat .aevaConversationStage {
+    top: 26px !important;
+    bottom: var(--aeva-conversation-bottom-safe, 180px) !important;
+    z-index: 10 !important;
+  
+    pointer-events: none !important;
+  }
+  
+  /* Rail de mensajes: debe scrollear normalmente */
+  .aevaStage.has-chat .aevaConversationRail {
+    width: min(800px, calc(100vw - 180px)) !important;
+    height: 100% !important;
+    max-height: 100% !important;
+  
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+  
+    gap: 14px !important;
+  
+    padding: 28px 10px 26px !important;
+    box-sizing: border-box !important;
+  
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  
+    pointer-events: auto !important;
+    overscroll-behavior: contain !important;
+    scroll-behavior: smooth !important;
+  }
+  
+  /* Cuando hay pocos mensajes, empujarlos visualmente hacia abajo sin romper scroll */
+  .aevaStage.has-chat .aevaConversationRail::before {
+    content: "" !important;
+    flex: 1 0 24px !important;
+  }
+  
+  /* Pero cuando hay muchos, el contenido se puede perder arriba y scrollear */
+  .aevaStage.has-chat .aevaConversationRail::-webkit-scrollbar {
+    width: 6px !important;
+  }
+  
+  .aevaStage.has-chat .aevaConversationRail::-webkit-scrollbar-thumb {
+    background: rgba(36, 121, 255, .24) !important;
+    border-radius: 999px !important;
+  }
+  
+  .aevaStage.has-chat .aevaConversationRail::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  
+  /* Globos en modo conversación */
+  .aevaStage.has-chat .aevaMiniMsg {
+    flex: 0 0 auto !important;
+    max-width: min(620px, 82%) !important;
+  }
+  
+  /* Usuario a la derecha, AEVA a la izquierda */
+  .aevaStage.has-chat .aevaMiniMsg--user {
+    align-self: flex-end !important;
+  }
+  
+  .aevaStage.has-chat .aevaMiniMsg--aeva {
+    align-self: flex-start !important;
+  }
+  
+  /* Pantallas medianas */
+  @media (max-width: 900px) {
+    .aevaStage.has-chat .aevaPromptWrap {
+      width: min(680px, calc(100vw - 120px)) !important;
+    }
+  
+    .aevaStage.has-chat .aevaConversationRail {
+      width: min(700px, calc(100vw - 120px)) !important;
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 640px) {
+    .aevaStage.has-chat .aevaPromptDock {
+      bottom: 22px !important;
+    }
+  
+    .aevaStage.has-chat .aevaPromptWrap {
+      width: calc(100vw - 32px) !important;
+    }
+  
+    .aevaStage.has-chat .aevaConversationStage {
+      top: 18px !important;
+      bottom: var(--aeva-conversation-bottom-safe, 170px) !important;
+    }
+  
+    .aevaStage.has-chat .aevaConversationRail {
+      width: calc(100vw - 32px) !important;
+      padding: 20px 2px 22px !important;
+    }
+  
+    .aevaStage.has-chat .aevaMiniMsg {
+      max-width: 92% !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Layout tipo IA cuando hay conversación
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Scroll invisible + botón volver al último mensaje
+   ========================================================= */
+
+/* Oculta la barra lateral del rail, pero mantiene el scroll funcional */
+.aevaConversationRail {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* Edge viejo */
+  }
+  
+  .aevaConversationRail::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+  
+  /* Botón flotante para volver al último mensaje */
+  .aevaScrollToBottom {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: calc(var(--aeva-conversation-bottom-safe, 180px) - 18px) !important;
+    transform: translateX(-50%) translateY(8px) !important;
+  
+    width: 38px !important;
+    height: 38px !important;
+  
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  
+    border: 1px solid rgba(36, 121, 255, .18) !important;
+    border-radius: 999px !important;
+  
+    background: rgba(255, 255, 255, .86) !important;
+    color: #2479FF !important;
+  
+    box-shadow:
+      0 16px 34px rgba(15, 23, 42, .12),
+      inset 0 1px 0 rgba(255, 255, 255, .92) !important;
+  
+    backdrop-filter: blur(10px) !important;
+  
+    cursor: pointer !important;
+  
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  
+    transition:
+      opacity .16s ease,
+      visibility .16s ease,
+      transform .16s ease,
+      background .16s ease,
+      color .16s ease !important;
+  
+    z-index: 35 !important;
+  }
+  
+  .aevaScrollToBottom svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+  }
+  
+  .aevaScrollToBottom:hover {
+    background: #2479FF !important;
+    color: #ffffff !important;
+    transform: translateX(-50%) translateY(4px) !important;
+  }
+  
+  /* Visible cuando el usuario no está en el último mensaje */
+  .aevaScrollToBottom.is-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateX(-50%) translateY(0) !important;
+  }
+  
+  /* En estado inicial sin chat no se muestra nunca */
+  .aevaStage:not(.has-chat) .aevaScrollToBottom {
+    display: none !important;
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Scroll invisible + botón volver al último mensaje
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Entrada inicial ordenada sin superposición
+   ========================================================= */
+
+/* Capa única que agrupa título + preguntas.
+   No se pisa con el prompt porque se posiciona como bloque completo. */
+.aevaEntryLayer {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: 288px !important;
+    transform: translateX(-50%) !important;
+  
+    width: min(920px, calc(100vw - 180px)) !important;
+  
+    display: grid !important;
+    gap: 24px !important;
+    justify-items: center !important;
+  
+    z-index: 12 !important;
+    pointer-events: none !important;
+  
+    transition:
+      opacity .18s ease,
+      visibility .18s ease,
+      transform .18s ease !important;
+  }
+  
+  /* Título inicial */
+  .aevaIntro {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+  }
+  
+  .aevaIntro__title {
+    max-width: 760px !important;
+    margin: 0 !important;
+  
+    color: #173A63 !important;
+    font-size: clamp(34px, 4vw, 54px) !important;
+    font-weight: 950 !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.045em !important;
+    text-align: center !important;
+    text-wrap: balance !important;
+  }
+  
+  /* Preguntas rápidas */
+  .aevaQuickPrompts {
+    width: 100% !important;
+  
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  
+    pointer-events: auto !important;
+  }
+  
+  .aevaQuickPrompts__item {
+    min-height: 58px !important;
+    max-width: min(430px, 100%) !important;
+    padding: 10px 14px !important;
+  
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  
+    border: 1px solid rgba(255, 255, 255, .76) !important;
+    border-radius: 999px !important;
+  
+    background: rgba(255, 255, 255, .68) !important;
+    color: #173A63 !important;
+  
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 16px 30px rgba(15, 23, 42, .08) !important;
+  
+    cursor: pointer !important;
+    text-align: left !important;
+  
+    transition:
+      transform .16s ease,
+      box-shadow .16s ease,
+      background .16s ease,
+      border-color .16s ease !important;
+  }
+  
+  .aevaQuickPrompts__item:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(255, 255, 255, .84) !important;
+    border-color: rgba(36, 121, 255, .24) !important;
+    box-shadow: 0 20px 36px rgba(15, 23, 42, .12) !important;
+  }
+  
+  .aevaQuickPrompts__icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  
+    border-radius: 999px !important;
+  }
+  
+  .aevaQuickPrompts__icon svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+    fill: currentColor !important;
+  }
+  
+  .aevaQuickPrompts__icon--blue {
+    background: rgba(36, 121, 255, .12) !important;
+    color: #2479FF !important;
+  }
+  
+  .aevaQuickPrompts__icon--violet {
+    background: rgba(139, 92, 246, .12) !important;
+    color: #7C5CFA !important;
+  }
+  
+  .aevaQuickPrompts__copy {
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 1px !important;
+  }
+  
+  .aevaQuickPrompts__copy strong {
+    display: block !important;
+  
+    color: #173A63 !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+  
+    white-space: nowrap !important;
+  }
+  
+  .aevaQuickPrompts__copy small {
+    display: block !important;
+  
+    color: rgba(23, 58, 99, .72) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+  
+    white-space: nowrap !important;
+  }
+  
+  /* El prompt debe quedar por encima y separado */
+  .aevaPromptDock {
+    z-index: 20 !important;
+  }
+  
+  /* Cuando empieza la conversación, desaparece toda la entrada inicial */
+  .aevaStage.has-chat .aevaEntryLayer {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateX(-50%) translateY(12px) !important;
+  }
+  
+  /* Cuando hay chat, no debe ocupar ni interferir */
+  .aevaStage.has-chat .aevaIntro,
+  .aevaStage.has-chat .aevaQuickPrompts {
+    pointer-events: none !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .aevaEntryLayer {
+      width: min(760px, calc(100vw - 120px)) !important;
+      bottom: 280px !important;
+      gap: 22px !important;
+    }
+  
+    .aevaIntro__title {
+      font-size: clamp(34px, 5vw, 48px) !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .aevaEntryLayer {
+      width: calc(100vw - 32px) !important;
+      bottom: 218px !important;
+      gap: 18px !important;
+    }
+  
+    .aevaIntro__title {
+      font-size: clamp(28px, 7vw, 38px) !important;
+    }
+  
+    .aevaQuickPrompts {
+      gap: 10px !important;
+    }
+  
+    .aevaQuickPrompts__item {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 22px !important;
+    }
+  
+    .aevaQuickPrompts__copy strong,
+    .aevaQuickPrompts__copy small {
+      white-space: normal !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Entrada inicial ordenada sin superposición
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Ajuste final título inicial
+   ========================================================= */
+
+/* Sube un poco el bloque inicial completo para que respire mejor */
+.aevaEntryLayer {
+    bottom: 318px !important;
+    gap: 20px !important;
+  }
+  
+  /* Título inicial más cómodo, menos protagonista */
+  .aevaIntro__title {
+    max-width: 680px !important;
+    font-size: clamp(28px, 3.1vw, 42px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.035em !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .aevaEntryLayer {
+      bottom: 300px !important;
+    }
+  
+    .aevaIntro__title {
+      font-size: clamp(28px, 4.2vw, 40px) !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .aevaEntryLayer {
+      bottom: 230px !important;
+    }
+  
+    .aevaIntro__title {
+      font-size: clamp(24px, 6.2vw, 34px) !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Ajuste final título inicial
+     ========================================================= */
+     /* =========================================================
+   INICIO · AEVA · Subir bloque inicial al inicio visual
+   ========================================================= */
+
+/* Mueve título + preguntas rápidas más arriba, sin tocar el prompt */
+.aevaEntryLayer {
+    bottom: 390px !important;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .aevaEntryLayer {
+      bottom: 360px !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .aevaEntryLayer {
+      bottom: 275px !important;
+    }
+  }
+  
+  /* =========================================================
+     FIN · AEVA · Subir bloque inicial al inicio visual
+     ========================================================= */

@@ -191,3 +191,88 @@
     firePageLoadEvent_();
   });
 })();
+/* =========================================================
+   INICIO · AEVA · Escritura IA en hover del sidebar
+   ========================================================= */
+
+   (function initAevaSidebarTypewriter_() {
+    const AEVA_TEXT = "Puedo ayudarte a entender cualquier módulo de Protocol Data";
+    const TYPE_SPEED_MS = 14;
+  
+    let activeTimer = null;
+    let activeCard = null;
+  
+    function getAevaTypeTarget_(card) {
+      if (!card) return null;
+      return card.querySelector(".sidebarAevaCard__type");
+    }
+  
+    function clearAevaTyping_() {
+      if (activeTimer) {
+        clearInterval(activeTimer);
+        activeTimer = null;
+      }
+  
+      if (activeCard) {
+        const target = getAevaTypeTarget_(activeCard);
+        if (target) {
+          target.textContent = "";
+          target.classList.remove("is-typing", "is-complete");
+        }
+  
+        activeCard.classList.remove("is-expanded");
+      }
+  
+      activeCard = null;
+    }
+  
+    function startAevaTyping_(card) {
+      if (!card || card === activeCard) return;
+  
+      clearAevaTyping_();
+  
+      const target = getAevaTypeTarget_(card);
+      if (!target) return;
+  
+      activeCard = card;
+      activeCard.classList.add("is-expanded");
+  
+      target.textContent = "";
+      target.classList.add("is-typing");
+      target.classList.remove("is-complete");
+  
+      let index = 0;
+  
+      activeTimer = setInterval(function () {
+        index += 1;
+        target.textContent = AEVA_TEXT.slice(0, index);
+  
+        if (index >= AEVA_TEXT.length) {
+          clearInterval(activeTimer);
+          activeTimer = null;
+          target.classList.remove("is-typing");
+          target.classList.add("is-complete");
+        }
+      }, TYPE_SPEED_MS);
+    }
+  
+    document.addEventListener("mouseover", function (event) {
+      const card = event.target.closest && event.target.closest(".sidebarAevaCard");
+      if (!card) return;
+      if (card.contains(event.relatedTarget)) return;
+  
+      startAevaTyping_(card);
+    });
+  
+    document.addEventListener("mouseout", function (event) {
+      const card = event.target.closest && event.target.closest(".sidebarAevaCard");
+      if (!card) return;
+      if (card.contains(event.relatedTarget)) return;
+  
+      clearAevaTyping_();
+    });
+  })();
+  
+  /* =========================================================
+     FIN · AEVA · Escritura IA en hover del sidebar
+     ========================================================= */
