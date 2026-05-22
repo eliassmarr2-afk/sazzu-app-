@@ -18,6 +18,9 @@
     }
   ];
 
+  let observerStarted = false;
+  let mountIntervalId = null;
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -32,20 +35,24 @@
   }
 
   function mountLauncher() {
-    if (document.getElementById('prodExtrasLauncherBtn')) return;
     const comboLauncher = document.getElementById('prodComboLauncher');
-    if (!comboLauncher) return;
+    if (!comboLauncher) return false;
+    if (document.getElementById('prodExtrasLauncherBtn')) return true;
+
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'prodExtrasLauncherBtn';
     btn.id = 'prodExtrasLauncherBtn';
     btn.textContent = '+ Configurar extras';
     comboLauncher.appendChild(btn);
+    return true;
   }
 
   function mountSlides() {
     const main = document.querySelector('body[data-page="productos"] .main');
-    if (!main || document.getElementById('prodExtrasSlide')) return;
+    if (!main) return false;
+    if (document.getElementById('prodExtrasSlide')) return true;
+
     const wrap = document.createElement('div');
     wrap.innerHTML = `
       <div class="prodExtrasOverlay" id="prodExtrasOverlay"></div>
@@ -83,6 +90,7 @@
       </aside>
     `;
     main.appendChild(wrap);
+    return true;
   }
 
   function renderExtraCard(extra) {
@@ -112,6 +120,7 @@
     const body = document.getElementById('prodExtraConfigBody');
     const title = document.getElementById('prodExtraConfigTitle');
     if (!body) return;
+
     const data = extra || {
       id: 'nuevo-extra',
       title: 'Nuevo extra',
@@ -120,6 +129,7 @@
       status: 'Borrador',
       image: ''
     };
+
     if (title) title.textContent = data.title || 'Configurar extra';
     body.innerHTML = `
       <section class="prodExtraConfigCard">
@@ -203,6 +213,9 @@
   }
 
   function bindUi() {
+    if (document.body.dataset.productosExtrasUiBound === '1') return;
+    document.body.dataset.productosExtrasUiBound = '1';
+
     document.addEventListener('click', function (event) {
       const launcher = event.target.closest('#prodExtrasLauncherBtn');
       if (launcher) {
@@ -241,23 +254,53 @@
     });
   }
 
-  function scheduleMount() {
-    setTimeout(function () { mountLauncher(); mountSlides(); forceEditButtons(); }, 120);
-    setTimeout(function () { mountLauncher(); mountSlides(); forceEditButtons(); }, 420);
+  function mountEverything() {
+    const body = document.querySelector('body[data-page="productos"]');
+    if (!body) return false;
+
+    const launcherReady = mountLauncher();
+    const slidesReady = mountSlides();
+    forceEditButtons();
+    return launcherReady && slidesReady;
+  }
+
+  function startMountLoop() {
+    if (mountIntervalId) return;
+    let attempts = 0;
+    mountIntervalId = window.setInterval(function () {
+      attempts += 1;
+      const ready = mountEverything();
+      if (ready || attempts >= 40) {
+        window.clearInterval(mountIntervalId);
+        mountIntervalId = null;
+      }
+    }, 150);
+  }
+
+  function startObserver() {
+    if (observerStarted) return;
+    observerStarted = true;
+
+    const observer = new MutationObserver(function () {
+      mountEverything();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   function initProductosExtras() {
     const body = document.querySelector('body[data-page="productos"]');
     if (!body) return;
-    if (body.dataset.productosExtrasReady !== '1') {
-      body.dataset.productosExtrasReady = '1';
-      bindUi();
-    }
-    scheduleMount();
+
+    bindUi();
+    mountEverything();
+    startMountLoop();
+    startObserver();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosExtras);
   document.addEventListener('sazzu:page:load', initProductosExtras);
   window.addEventListener('productos:payload-ready', function () { setTimeout(forceEditButtons, 200); });
   window.addEventListener('productos:supabase-saved', function () { setTimeout(forceEditButtons, 200); });
+  window.addEventListener('load', initProductosExtras);
 })();
