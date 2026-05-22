@@ -253,6 +253,7 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     ensureScript_('../js/productos-payloads.js', 'productos-payloads-js');
     ensureScript_('../js/productos-comestibles.js', 'productos-comestibles-js');
     ensureScript_('../js/productos-combos.js', 'productos-combos-js');
+    ensureScript_('../js/productos-operaciones.js', 'productos-operaciones-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
