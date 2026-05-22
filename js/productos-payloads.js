@@ -5,6 +5,11 @@
     created_by: 'user_demo'
   };
 
+  const STORAGE_KEYS = {
+    products: 'sazzu_productos_payloads_local_v1',
+    combos: 'sazzu_combos_payloads_local_v1'
+  };
+
   function valueOf(id) {
     const el = document.getElementById(id);
     return el ? String(el.value || '').trim() : '';
@@ -14,6 +19,28 @@
     const raw = valueOf(id).replace(/[^0-9.,-]/g, '').replace(',', '.');
     const parsed = Number(raw || 0);
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatMoney(value) {
+    return '$ ' + Number(value || 0).toLocaleString('es-AR');
+  }
+
+  function slugify(value) {
+    return String(value || 'producto')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'producto';
   }
 
   function normalizeStatus(value) {
@@ -35,6 +62,14 @@
     if (v === 'marcado' || v === 'selected') return 'marcado';
     if (v === 'desmarcado' || v === 'unselected') return 'desmarcado';
     return v || 'activo';
+  }
+
+  function labelStatus(value) {
+    const v = normalizeStatus(value);
+    if (v === 'activo') return 'Activo';
+    if (v === 'oculto') return 'Oculto';
+    if (v === 'archivado') return 'Archivado';
+    return 'Borrador';
   }
 
   function collectImages(prefix, max) {
@@ -109,9 +144,19 @@
     }).filter(function (item) { return !!item.linked_product_id; });
   }
 
+  function ensureLocalProductId(currentId, name, type) {
+    const normalizedCurrent = String(currentId || '').trim();
+    const isPlaceholder = !normalizedCurrent || normalizedCurrent === 'nuevo' || normalizedCurrent === 'nuevo-producto-comestible' || normalizedCurrent === 'nuevo-combo';
+    if (!isPlaceholder) return normalizedCurrent;
+    return 'local-' + type + '-' + slugify(name) + '-' + Date.now();
+  }
+
   function buildProductoSimplePayload(extraContext) {
     const context = Object.assign({}, PRODUCTOS_CONTEXT, extraContext || {});
-    const productId = document.getElementById('prodComSlide')?.dataset.productId || 'nuevo-producto-comestible';
+    const slide = document.getElementById('prodComSlide');
+    const name = valueOf('com_nombre');
+    const productId = ensureLocalProductId(slide?.dataset.productId, name, 'producto');
+    if (slide) slide.dataset.productId = productId;
 
     return {
       workspace_id: context.workspace_id,
@@ -122,7 +167,7 @@
       structure_locked: true,
       status: normalizeStatus(valueOf('com_estado')),
       identity: {
-        name: valueOf('com_nombre'),
+        name: name,
         category: valueOf('com_categoria'),
         badge: valueOf('com_badge') || null,
         description: valueOf('com_descripcion'),
@@ -146,7 +191,10 @@
 
   function buildComboPayload(extraContext) {
     const context = Object.assign({}, PRODUCTOS_CONTEXT, extraContext || {});
-    const comboId = document.getElementById('prodComboSlide')?.dataset.comboId || 'nuevo-combo';
+    const slide = document.getElementById('prodComboSlide');
+    const name = valueOf('combo_nombre');
+    const comboId = ensureLocalProductId(slide?.dataset.comboId, name, 'combo');
+    if (slide) slide.dataset.comboId = comboId;
 
     return {
       workspace_id: context.workspace_id,
@@ -158,7 +206,7 @@
       no_component_prorated_price: true,
       status: normalizeStatus(valueOf('combo_estado')),
       identity: {
-        name: valueOf('combo_nombre'),
+        name: name,
         category: valueOf('combo_categoria'),
         badge: valueOf('combo_badge') || null,
         description: valueOf('combo_descripcion'),
@@ -177,6 +225,117 @@
     };
   }
 
+  function readStored(key) {
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem(key) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn('[productos-payloads.js] No se pudo leer localStorage:', key, error);
+      return [];
+    }
+  }
+
+  function writeStored(key, items) {
+    window.localStorage.setItem(key, JSON.stringify(items));
+  }
+
+  function upsertStoredPayload(key, payload) {
+    const items = readStored(key);
+    const index = items.findIndex(function (item) { return item.product_id === payload.product_id; });
+    const nextPayload = Object.assign({}, payload, { updated_at: new Date().toISOString() });
+
+    if (index >= 0) items[index] = nextPayload;
+    else items.push(Object.assign({}, nextPayload, { created_at: nextPayload.updated_at }));
+
+    writeStored(key, items);
+    return nextPayload;
+  }
+
+  function payloadToRow(payload) {
+    const identity = payload.identity || {};
+    const options = Array.isArray(payload.options) ? payload.options : [];
+    const images = Array.isArray(payload.images) ? payload.images : [];
+    const isCombo = payload.product_type === 'combo';
+    const typeLabel = isCombo ? 'Combo' : 'Producto simple';
+    const statusLabel = labelStatus(payload.status);
+    const statusClass = statusLabel === 'Activo' ? 'prodComBadge--green' : 'prodComBadge--gray';
+    const versionCount = isCombo ? (payload.combo_components || []).length : options.filter(function (item) { return item.section_type === 'version'; }).length;
+    const extraCount = isCombo ? (payload.optional_products || []).length : options.filter(function (item) { return item.section_type === 'extra'; }).length;
+    const removableCount = isCombo ? 0 : options.filter(function (item) { return item.section_type === 'removable'; }).length;
+    const recommendedCount = isCombo ? (payload.combo_extras || []).length : options.filter(function (item) { return item.section_type === 'recommended'; }).length;
+    const imageUrl = images[0] && images[0].image_url;
+
+    return {
+      id: payload.product_id,
+      type: payload.product_type,
+      name: identity.name || 'Producto sin nombre',
+      category: identity.category || (isCombo ? 'Combo' : 'Producto'),
+      typeLabel: typeLabel,
+      price: identity.base_price || 0,
+      versionCount: versionCount,
+      extraCount: extraCount,
+      removableCount: removableCount,
+      recommendedCount: recommendedCount,
+      imageCount: images.length,
+      imageUrl: imageUrl,
+      statusLabel: statusLabel,
+      statusClass: statusClass
+    };
+  }
+
+  function getStoredRows() {
+    return readStored(STORAGE_KEYS.products).concat(readStored(STORAGE_KEYS.combos)).map(payloadToRow);
+  }
+
+  function currentTableFilters() {
+    return {
+      q: String(document.getElementById('prodComSearch')?.value || '').trim().toLowerCase(),
+      status: String(document.getElementById('prodComEstado')?.value || 'todos').trim().toLowerCase()
+    };
+  }
+
+  function rowMatchesFilters(row, filters) {
+    const haystack = [row.name, row.category, row.typeLabel, row.statusLabel].join(' ').toLowerCase();
+    const matchesSearch = !filters.q || haystack.includes(filters.q);
+    const status = String(row.statusLabel || '').toLowerCase();
+    const matchesStatus = filters.status === 'todos' || status === filters.status;
+    return matchesSearch && matchesStatus;
+  }
+
+  function renderLocalRows() {
+    const tbody = document.getElementById('prodComTableBody');
+    if (!tbody) return;
+
+    tbody.querySelectorAll('[data-local-product-row="1"]').forEach(function (row) { row.remove(); });
+
+    const rows = getStoredRows().filter(function (row) { return rowMatchesFilters(row, currentTableFilters()); });
+
+    rows.forEach(function (row) {
+      const existingStaticButton = tbody.querySelector('[data-edit-com="' + CSS.escape(row.id) + '"]');
+      const existingStaticRow = existingStaticButton && existingStaticButton.closest('tr');
+      if (existingStaticRow) existingStaticRow.remove();
+    });
+
+    if (!rows.length) return;
+
+    const html = rows.map(function (row) {
+      return '<tr data-local-product-row="1" data-local-product-id="' + escapeHtml(row.id) + '">' +
+        '<td><div class="prodComCell"><div class="prodComThumb">' + (row.imageUrl ? '<img src="' + escapeHtml(row.imageUrl) + '" alt="">' : '<span>IMG</span>') + '</div><div><strong>' + escapeHtml(row.name) + '</strong><span>' + escapeHtml(row.category) + ' · Guardado local</span></div></div></td>' +
+        '<td><span class="prodComBadge prodComBadge--blue">' + escapeHtml(row.typeLabel) + '</span></td>' +
+        '<td><strong>' + escapeHtml(formatMoney(row.price)) + '</strong></td>' +
+        '<td>' + escapeHtml(row.versionCount) + '</td>' +
+        '<td>' + escapeHtml(row.extraCount) + '</td>' +
+        '<td>' + escapeHtml(row.removableCount) + '</td>' +
+        '<td>' + escapeHtml(row.recommendedCount) + '</td>' +
+        '<td>' + escapeHtml(row.imageCount) + '/6</td>' +
+        '<td><span class="prodComBadge ' + row.statusClass + '">' + escapeHtml(row.statusLabel) + '</span></td>' +
+        '<td><button type="button" class="prodComEdit" disabled title="La edición desde localStorage se conecta en la siguiente fase">Guardado</button></td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.insertAdjacentHTML('afterbegin', html);
+  }
+
   function flashButton(btn, text) {
     if (!btn) return;
     const original = btn.textContent;
@@ -186,6 +345,12 @@
       btn.textContent = original;
       btn.classList.remove('is-success');
     }, 1500);
+  }
+
+  function emitPayloadReady(payload) {
+    window.dispatchEvent(new CustomEvent('productos:payload-ready', {
+      detail: { payload: payload }
+    }));
   }
 
   function interceptSaveClicks(event) {
@@ -199,33 +364,70 @@
     event.stopImmediatePropagation();
 
     if (productButton) {
-      const payload = buildProductoSimplePayload();
+      const payload = upsertStoredPayload(STORAGE_KEYS.products, buildProductoSimplePayload());
       window.__lastProductoSimplePayload = payload;
       console.log('[productos-payloads.js] Payload normalizado producto_simple:', payload);
-      flashButton(productButton, 'Payload preparado');
+      emitPayloadReady(payload);
+      renderLocalRows();
+      flashButton(productButton, 'Guardado en tabla');
       return;
     }
 
     if (comboButton) {
-      const payload = buildComboPayload();
+      const payload = upsertStoredPayload(STORAGE_KEYS.combos, buildComboPayload());
       window.__lastComboPayload = payload;
       console.log('[productos-payloads.js] Payload normalizado combo:', payload);
-      flashButton(comboButton, 'Payload preparado');
+      emitPayloadReady(payload);
+      renderLocalRows();
+      flashButton(comboButton, 'Guardado en tabla');
+    }
+  }
+
+  function bindTableRefreshHooks() {
+    const tab = document.getElementById('prodTabComestibles');
+    const search = document.getElementById('prodComSearch');
+    const status = document.getElementById('prodComEstado');
+
+    if (tab && tab.dataset.payloadRowsBound !== '1') {
+      tab.dataset.payloadRowsBound = '1';
+      tab.addEventListener('click', function () {
+        window.setTimeout(renderLocalRows, 60);
+        window.setTimeout(renderLocalRows, 240);
+      });
+    }
+
+    if (search && search.dataset.payloadRowsBound !== '1') {
+      search.dataset.payloadRowsBound = '1';
+      search.addEventListener('input', function () { window.setTimeout(renderLocalRows, 0); });
+    }
+
+    if (status && status.dataset.payloadRowsBound !== '1') {
+      status.dataset.payloadRowsBound = '1';
+      status.addEventListener('change', function () { window.setTimeout(renderLocalRows, 0); });
     }
   }
 
   function initProductosPayloads() {
     const body = document.querySelector('body[data-page="productos"]');
-    if (!body || body.dataset.productosPayloadsReady === '1') return;
-    body.dataset.productosPayloadsReady = '1';
-    document.addEventListener('click', interceptSaveClicks, true);
+    if (!body) return;
+
+    if (body.dataset.productosPayloadsReady !== '1') {
+      body.dataset.productosPayloadsReady = '1';
+      document.addEventListener('click', interceptSaveClicks, true);
+    }
+
+    bindTableRefreshHooks();
+    window.setTimeout(renderLocalRows, 120);
+    window.setTimeout(renderLocalRows, 420);
   }
 
   window.ProductosPayloads = {
     context: PRODUCTOS_CONTEXT,
     buildProductoSimplePayload: buildProductoSimplePayload,
     buildComboPayload: buildComboPayload,
-    collectImages: collectImages
+    collectImages: collectImages,
+    renderLocalRows: renderLocalRows,
+    storageKeys: STORAGE_KEYS
   };
 
   document.addEventListener('DOMContentLoaded', initProductosPayloads);
