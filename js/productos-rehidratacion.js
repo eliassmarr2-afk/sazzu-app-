@@ -1,4 +1,29 @@
 (function () {
+  function ensureExtraAsset(src, marker, type) {
+    if (type === 'css') {
+      if (document.querySelector('link[data-loader="' + marker + '"]')) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = src;
+      link.setAttribute('data-loader', marker);
+      document.head.appendChild(link);
+      return;
+    }
+    if (document.querySelector('script[data-loader="' + marker + '"]')) return;
+    const script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    script.setAttribute('data-loader', marker);
+    document.body.appendChild(script);
+  }
+
+  function loadExtrasModule() {
+    const body = document.querySelector('body[data-page="productos"]');
+    if (!body) return;
+    ensureExtraAsset('../css/productos-extras.css', 'productos-extras-css', 'css');
+    ensureExtraAsset('../js/productos-extras.js', 'productos-extras-js', 'js');
+  }
+
   function setValue(id, value) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -201,6 +226,7 @@
     const body = document.querySelector('body[data-page="productos"]');
     if (!body || body.dataset.productosRehidratacionReady === '1') return;
     body.dataset.productosRehidratacionReady = '1';
+    loadExtrasModule();
 
     window.addEventListener('productos:open-local-payload', function (event) {
       setTimeout(function () { fillPayload(event.detail); }, 80);
@@ -211,6 +237,6 @@
   document.addEventListener('DOMContentLoaded', init);
   document.addEventListener('sazzu:page:load', function () {
     setTimeout(init, 120);
-    setTimeout(init, 420);
+    setTimeout(function(){ init(); loadExtrasModule(); }, 420);
   });
 })();
