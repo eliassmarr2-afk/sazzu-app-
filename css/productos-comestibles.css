@@ -1,76 +1,35 @@
 /* =========================================================
-   PRODUCTOS COMESTIBLES · FASE 1
+   PRODUCTOS COMESTIBLES · FASE 1/2
    Módulo independiente del panel Productos
    ========================================================= */
 
 /* FIX VISIBILIDAD PANEL: solo debe verse en su propio tab */
-body[data-page="productos"] .main #prodPanelComestibles{
-  display:none !important;
-}
-body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelComestibles{
-  display:block !important;
-}
+body[data-page="productos"] .main #prodPanelComestibles{display:none !important;}
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelComestibles{display:block !important;}
 body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelResumen,
 body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelSkus,
 body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelOfertas,
 body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelConjuntos,
-body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelRentabilidad{
-  display:none !important;
-}
+body[data-page="productos"] .main .prodShell:has(#prodTabComestibles.is-active) #prodPanelRentabilidad{display:none !important;}
 
 /* FIX VISIBILIDAD TAB: la barra compacta original quedaba sin ancho */
-body[data-page="productos"] .main .prodTabsSection{
-  pointer-events:auto !important;
-  overflow:visible !important;
-}
-body[data-page="productos"] .main .prodTabsBar{
-  width:100% !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  gap:10px !important;
-  flex-wrap:wrap !important;
-  pointer-events:auto !important;
-}
-body[data-page="productos"] .main .prodTabs{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  flex-wrap:wrap !important;
-  max-width:100% !important;
-  overflow:visible !important;
-  gap:6px !important;
-  pointer-events:auto !important;
-}
-body[data-page="productos"] .main .prodTab{
-  flex:0 0 auto !important;
-  white-space:nowrap !important;
-}
-body[data-page="productos"] .main .prodTab--comestibles{
-  display:inline-flex !important;
-  align-items:center !important;
-  background:#fff !important;
-  color:#2479FF !important;
-  border:1px solid rgba(36,121,255,.22) !important;
-  box-shadow:0 1px 2px rgba(36,121,255,.10) !important;
-}
-body[data-page="productos"] .main .prodTab--comestibles.is-active{
-  background:#2479FF !important;
-  color:#fff !important;
-}
+body[data-page="productos"] .main .prodTabsSection{pointer-events:auto !important;overflow:visible !important;}
+body[data-page="productos"] .main .prodTabsBar{width:100% !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;gap:10px !important;flex-wrap:wrap !important;pointer-events:auto !important;}
+body[data-page="productos"] .main .prodTabs{display:inline-flex !important;align-items:center !important;justify-content:flex-end !important;flex-wrap:wrap !important;max-width:100% !important;overflow:visible !important;gap:6px !important;pointer-events:auto !important;}
+body[data-page="productos"] .main .prodTab{flex:0 0 auto !important;white-space:nowrap !important;}
+body[data-page="productos"] .main .prodTab--comestibles{display:inline-flex !important;align-items:center !important;background:#fff !important;color:#2479FF !important;border:1px solid rgba(36,121,255,.22) !important;box-shadow:0 1px 2px rgba(36,121,255,.10) !important;}
+body[data-page="productos"] .main .prodTab--comestibles.is-active{background:#2479FF !important;color:#fff !important;}
 
 body[data-page="productos"] .main .prodComShell{display:grid;gap:16px;}
 body[data-page="productos"] .main .prodComHero,
 body[data-page="productos"] .main .prodComTableCard,
 body[data-page="productos"] .main .prodComGuide article,
-body[data-page="productos"] .main .prodComSection,
-body[data-page="productos"] .main .prodComMap__sticky{background:#fff;border:none;border-radius:5px;box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);}
+body[data-page="productos"] .main .prodComSection{background:#fff;border:none;border-radius:5px;box-shadow:0 1px 3px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);}
 body[data-page="productos"] .main .prodComHero{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px;padding:18px;}
 body[data-page="productos"] .main .prodComEyebrow{display:block;margin:0 0 7px;color:#8A94A6;font-size:11px;font-weight:950;letter-spacing:.09em;text-transform:uppercase;}
 body[data-page="productos"] .main .prodComHero h2,
 body[data-page="productos"] .main .prodComTableCard h3,
-body[data-page="productos"] .main .prodComSection h3,
-body[data-page="productos"] .main .prodComMap h3{margin:0;color:#0F172A;font-size:22px;font-weight:850;letter-spacing:-.03em;}
+body[data-page="productos"] .main .prodComSection h3{margin:0;color:#0F172A;font-size:22px;font-weight:850;letter-spacing:-.03em;}
 body[data-page="productos"] .main .prodComHero p,
 body[data-page="productos"] .main .prodComTableCard p,
 body[data-page="productos"] .main .prodComSection p{margin:6px 0 0;color:#64748B;font-size:13px;font-weight:550;line-height:1.45;}
@@ -84,7 +43,8 @@ body[data-page="productos"] .main .prodComBadge--gray{color:#667085;background:#
 body[data-page="productos"] .main .prodComPrimary,
 body[data-page="productos"] .main .prodComGhost,
 body[data-page="productos"] .main .prodComEdit,
-body[data-page="productos"] .main .prodComAdd{appearance:none;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:850;}
+body[data-page="productos"] .main .prodComAdd,
+body[data-page="productos"] .main .prodComSecondaryAction{appearance:none;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:850;}
 body[data-page="productos"] .main .prodComPrimary{min-height:42px;padding:0 16px;color:#fff;background:#2479FF;box-shadow:0 10px 20px rgba(36,121,255,.18);}
 body[data-page="productos"] .main .prodComGhost{min-height:38px;padding:0 14px;color:#2479FF;background:#EFF6FF;}
 body[data-page="productos"] .main .prodComGhost.is-success{color:#027A48;background:#ECFDF3;}
@@ -92,10 +52,8 @@ body[data-page="productos"] .main .prodComGuide{display:grid;grid-template-colum
 body[data-page="productos"] .main .prodComGuide article{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:14px;}
 body[data-page="productos"] .main .prodComGuide b,
 body[data-page="productos"] .main .prodComMapStep b{display:grid;place-items:center;width:30px;height:30px;border-radius:999px;color:#fff;background:#2479FF;font-size:12px;font-weight:950;}
-body[data-page="productos"] .main .prodComGuide strong,
-body[data-page="productos"] .main .prodComMapStep strong{display:block;color:#0F172A;font-size:13px;font-weight:900;}
-body[data-page="productos"] .main .prodComGuide span,
-body[data-page="productos"] .main .prodComMapStep span{display:block;margin-top:3px;color:#667085;font-size:12px;line-height:1.35;}
+body[data-page="productos"] .main .prodComGuide strong{display:block;color:#0F172A;font-size:13px;font-weight:900;}
+body[data-page="productos"] .main .prodComGuide span{display:block;margin-top:3px;color:#667085;font-size:12px;line-height:1.35;}
 body[data-page="productos"] .main .prodComTableCard{overflow:hidden;}
 body[data-page="productos"] .main .prodComTableCard__head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid #EAECF0;}
 body[data-page="productos"] .main .prodComTools{display:flex;gap:10px;align-items:center;}
@@ -115,7 +73,8 @@ body[data-page="productos"] .main .prodComCell strong{display:block;color:#11182
 body[data-page="productos"] .main .prodComCell span{display:block;margin-top:2px;color:#667085;font-size:12px;}
 body[data-page="productos"] .main .prodComThumb{width:44px;height:44px;overflow:hidden;display:grid;place-items:center;border-radius:5px;background:#F2F4F7;color:#98A2B3;font-size:10px;font-weight:950;}
 body[data-page="productos"] .main .prodComThumb img,
-body[data-page="productos"] .main .prodComImagePreview img{width:100%;height:100%;object-fit:cover;}
+body[data-page="productos"] .main .prodComImagePreview img,
+body[data-page="productos"] .main .prodComOption__visual img{width:100%;height:100%;object-fit:cover;}
 body[data-page="productos"] .main .prodComEdit{min-height:32px;padding:0 11px;color:#2479FF;background:#EFF6FF;}
 body[data-page="productos"] .main .prodComEmpty{text-align:center;color:#667085 !important;padding:22px !important;}
 body[data-page="productos"] .main .prodComOverlay{position:fixed;inset:0;z-index:120;background:rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .18s ease;}
@@ -128,11 +87,10 @@ body[data-page="productos"] .main .prodComSlide__header p{margin:5px 0 0;color:#
 body[data-page="productos"] .main .prodComSlide__actions{display:flex;align-items:center;gap:10px;}
 body[data-page="productos"] .main .prodComClose{width:38px;height:38px;border:none;border-radius:5px;background:#F2F4F7;color:#111827;font-size:22px;font-weight:800;cursor:pointer;}
 body[data-page="productos"] .main .prodComSlide__body{overflow:auto;padding:18px;}
-body[data-page="productos"] .main .prodComBuilder{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;}
-body[data-page="productos"] .main .prodComMap__sticky{position:sticky;top:0;display:grid;gap:10px;padding:14px;}
-body[data-page="productos"] .main .prodComMapStep{display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;padding:10px;border-radius:5px;background:#F9FAFB;}
-body[data-page="productos"] .main .prodComMap__note{margin-top:4px;padding:10px;border-radius:5px;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:750;line-height:1.35;}
-body[data-page="productos"] .main .prodComEditor{display:grid;gap:14px;}
+body[data-page="productos"] .main .prodComBuilder,
+body[data-page="productos"] .main .prodComBuilder--full{display:block;width:100%;}
+body[data-page="productos"] .main .prodComEditor,
+body[data-page="productos"] .main .prodComEditor--full{display:grid;width:100%;gap:14px;}
 body[data-page="productos"] .main .prodComSection{padding:16px;}
 body[data-page="productos"] .main .prodComSection__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #EAECF0;}
 body[data-page="productos"] .main .prodComGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
@@ -148,7 +106,9 @@ body[data-page="productos"] .main .prodComOptions{display:grid;gap:10px;}
 body[data-page="productos"] .main .prodComOption{display:grid;grid-template-columns:32px 74px minmax(0,1fr);gap:12px;align-items:center;padding:12px;border-radius:5px;background:#F9FAFB;border:1px solid #EAECF0;}
 body[data-page="productos"] .main .prodComOption__num{display:grid;place-items:center;width:26px;height:26px;border-radius:999px;color:#2479FF;background:#EFF6FF;font-size:12px;font-weight:950;}
 body[data-page="productos"] .main .prodComOption__visual{width:64px;height:64px;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#FCE7F3;color:#9F1239;font-size:12px;font-weight:950;}
-body[data-page="productos"] .main .prodComAdd{margin-top:12px;min-height:36px;padding:0 12px;color:#98A2B3;background:#F2F4F7;cursor:not-allowed;}
+body[data-page="productos"] .main .prodComSectionActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;}
+body[data-page="productos"] .main .prodComAdd{min-height:36px;padding:0 13px;color:#2479FF;background:#EFF6FF;cursor:pointer;}
+body[data-page="productos"] .main .prodComSecondaryAction{min-height:36px;padding:0 13px;color:#98A2B3;background:#F2F4F7;cursor:not-allowed;}
 body[data-page="productos"] .main .prodComPayload{margin:0;padding:12px;border-radius:5px;background:#0F172A;color:#D1E9FF;font-size:12px;line-height:1.45;white-space:pre-wrap;overflow:auto;}
-@media(max-width:1200px){body[data-page="productos"] .main .prodComHero{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComBuilder{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComMap__sticky{position:static;}body[data-page="productos"] .main .prodComSlide{width:94vw;}}
+@media(max-width:1200px){body[data-page="productos"] .main .prodComHero{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComSlide{width:94vw;}}
 @media(max-width:760px){body[data-page="productos"] .main .prodComGuide,body[data-page="productos"] .main .prodComGrid,body[data-page="productos"] .main .prodComImages,body[data-page="productos"] .main .prodComGrid--option{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComTableCard__head,body[data-page="productos"] .main .prodComSection__head,body[data-page="productos"] .main .prodComSlide__header{flex-direction:column;}body[data-page="productos"] .main .prodComOption{grid-template-columns:1fr;}}
