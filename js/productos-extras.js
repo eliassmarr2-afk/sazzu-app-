@@ -21,6 +21,24 @@
   let observerStarted = false;
   let mountIntervalId = null;
 
+  function ensureEditorAssets() {
+    if (!document.querySelector('link[data-loader="productos-extras-editor-css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '../css/productos-extras-editor.css';
+      link.setAttribute('data-loader', 'productos-extras-editor-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('script[data-loader="productos-extras-editor-js"]')) {
+      const script = document.createElement('script');
+      script.src = '../js/productos-extras-editor.js';
+      script.defer = true;
+      script.setAttribute('data-loader', 'productos-extras-editor-js');
+      document.body.appendChild(script);
+    }
+  }
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -296,6 +314,7 @@
     mountEverything();
     startMountLoop();
     startObserver();
+    ensureEditorAssets();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosExtras);
