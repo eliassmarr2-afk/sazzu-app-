@@ -250,10 +250,12 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     if (!shouldLoadProductosComestibles_()) return;
     ensureCss_('../css/productos-comestibles.css', 'productos-comestibles-css');
     ensureCss_('../css/productos-combos.css', 'productos-combos-css');
+    ensureScript_('../js/supabase-client.js', 'supabase-client-js');
     ensureScript_('../js/productos-payloads.js', 'productos-payloads-js');
     ensureScript_('../js/productos-comestibles.js', 'productos-comestibles-js');
     ensureScript_('../js/productos-combos.js', 'productos-combos-js');
     ensureScript_('../js/productos-operaciones.js', 'productos-operaciones-js');
+    ensureScript_('../js/productos-supabase.js', 'productos-supabase-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
