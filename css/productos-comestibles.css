@@ -20,6 +20,9 @@ body[data-page="productos"] .main .prodTab{flex:0 0 auto !important;white-space:
 body[data-page="productos"] .main .prodTab--comestibles{display:inline-flex !important;align-items:center !important;background:#fff !important;color:#2479FF !important;border:1px solid rgba(36,121,255,.22) !important;box-shadow:0 1px 2px rgba(36,121,255,.10) !important;}
 body[data-page="productos"] .main .prodTab--comestibles.is-active{background:#2479FF !important;color:#fff !important;}
 
+body[data-page="productos"] .main .prodComShell,
+body[data-page="productos"] .main .prodComSlide,
+body[data-page="productos"] .main .prodComSlide *{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
 body[data-page="productos"] .main .prodComShell{display:grid;gap:16px;}
 body[data-page="productos"] .main .prodComHero,
 body[data-page="productos"] .main .prodComTableCard,
@@ -79,7 +82,7 @@ body[data-page="productos"] .main .prodComEdit{min-height:32px;padding:0 11px;co
 body[data-page="productos"] .main .prodComEmpty{text-align:center;color:#667085 !important;padding:22px !important;}
 body[data-page="productos"] .main .prodComOverlay{position:fixed;inset:0;z-index:120;background:rgba(15,23,42,.28);opacity:0;pointer-events:none;transition:opacity .18s ease;}
 body[data-page="productos"] .main .prodComOverlay.is-active{opacity:1;pointer-events:auto;}
-body[data-page="productos"] .main .prodComSlide{position:fixed;top:0;right:0;z-index:121;width:min(80vw,1280px);height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr);background:#F5F6F8;box-shadow:-18px 0 44px rgba(15,23,42,.18);transform:translateX(104%);transition:transform .22s ease;}
+body[data-page="productos"] .main .prodComSlide{position:fixed;top:0;right:0;z-index:121;width:min(80vw,1280px);height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr);background:#EDEDED;box-shadow:-18px 0 44px rgba(15,23,42,.18);transform:translateX(104%);transition:transform .22s ease;}
 body[data-page="productos"] .main .prodComSlide.is-active{transform:translateX(0);}
 body[data-page="productos"] .main .prodComSlide__header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 22px;background:#fff;border-bottom:1px solid #EAECF0;}
 body[data-page="productos"] .main .prodComSlide__header h2{margin:0;color:#0F172A;font-size:24px;font-weight:900;letter-spacing:-.03em;}
@@ -108,7 +111,7 @@ body[data-page="productos"] .main .prodComOption__num{display:grid;place-items:c
 body[data-page="productos"] .main .prodComOption__visual{width:64px;height:64px;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#FCE7F3;color:#9F1239;font-size:12px;font-weight:950;}
 body[data-page="productos"] .main .prodComSectionActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;}
 body[data-page="productos"] .main .prodComAdd{min-height:36px;padding:0 13px;color:#2479FF;background:#EFF6FF;cursor:pointer;}
-body[data-page="productos"] .main .prodComSecondaryAction{min-height:36px;padding:0 13px;color:#98A2B3;background:#F2F4F7;cursor:not-allowed;}
+body[data-page="productos"] .main .prodComSecondaryAction{min-height:36px;padding:0 13px;color:#2479FF;background:#EAF7FF;cursor:pointer;}
 body[data-page="productos"] .main .prodComPayload{margin:0;padding:12px;border-radius:5px;background:#0F172A;color:#D1E9FF;font-size:12px;line-height:1.45;white-space:pre-wrap;overflow:auto;}
 @media(max-width:1200px){body[data-page="productos"] .main .prodComHero{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComSlide{width:94vw;}}
 @media(max-width:760px){body[data-page="productos"] .main .prodComGuide,body[data-page="productos"] .main .prodComGrid,body[data-page="productos"] .main .prodComImages,body[data-page="productos"] .main .prodComGrid--option{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComTableCard__head,body[data-page="productos"] .main .prodComSection__head,body[data-page="productos"] .main .prodComSlide__header{flex-direction:column;}body[data-page="productos"] .main .prodComOption{grid-template-columns:1fr;}}
