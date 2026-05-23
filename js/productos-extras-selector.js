@@ -85,10 +85,15 @@
     return list.querySelector('.prodComOption:last-child');
   }
 
-  function ensurePickButtons() {
-    document.querySelectorAll('.prodComOptions[data-options-key="extras"] [data-open-extra-bank="slot"]').forEach(function (btn) {
-      btn.remove();
+  function removeSlotButtons() {
+    document.querySelectorAll('.prodComOptions[data-options-key="extras"] button').forEach(function (btn) {
+      const text = String(btn.textContent || '').trim().toLowerCase();
+      if (btn.dataset.openExtraBank === 'slot' || text === 'seleccionar del banco de extras') btn.remove();
     });
+  }
+
+  function ensurePickButtons() {
+    removeSlotButtons();
 
     document.querySelectorAll('.prodComSecondaryAction').forEach(function (btn) {
       if (/Abrir banco de extras/i.test(btn.textContent || '')) {
@@ -127,8 +132,9 @@
     selectedIds = new Set();
     const launcher = document.getElementById('prodExtrasLauncherBtn');
     if (launcher) launcher.click();
-    setTimeout(enterSelectionMode, 120);
-    setTimeout(enterSelectionMode, 320);
+    setTimeout(enterSelectionMode, 80);
+    setTimeout(enterSelectionMode, 180);
+    setTimeout(enterSelectionMode, 360);
   }
 
   function enterSelectionMode() {
@@ -191,9 +197,28 @@
     setTimeout(ensurePickButtons, 120);
   }
 
+  function interceptSelectionClicks(event) {
+    const selectCard = event.target && event.target.closest && event.target.closest('#prodExtrasSlide.is-selecting #prodExtrasGrid .prodExtraCard');
+    if (selectCard) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      toggleExtra(selectCard);
+      return;
+    }
+
+    const confirm = event.target && event.target.closest && event.target.closest('#prodExtrasSelectConfirm');
+    if (confirm) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      applySelectedExtras();
+    }
+  }
+
   function bind() {
     if (document.body.dataset.productosExtrasSelectorBound === '1') return;
     document.body.dataset.productosExtrasSelectorBound = '1';
+
+    window.addEventListener('click', interceptSelectionClicks, true);
 
     document.addEventListener('click', function (event) {
       const picker = event.target.closest('[data-open-extra-bank]');
@@ -201,22 +226,6 @@
         event.preventDefault();
         event.stopPropagation();
         openBankAsSelector();
-        return;
-      }
-
-      const card = event.target.closest('#prodExtrasSlide.is-selecting #prodExtrasGrid .prodExtraCard');
-      if (card && selectionMode) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        toggleExtra(card);
-        return;
-      }
-
-      const confirm = event.target.closest('#prodExtrasSelectConfirm');
-      if (confirm && selectionMode) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        applySelectedExtras();
         return;
       }
 
@@ -232,6 +241,7 @@
     const observer = new MutationObserver(function () {
       ensurePickButtons();
       ensureSelectControls();
+      if (selectionMode) enterSelectionMode();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
