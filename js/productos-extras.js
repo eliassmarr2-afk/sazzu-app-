@@ -38,7 +38,7 @@
 
     if (!document.querySelector('script[data-loader="productos-extras-editor-js"]')) {
       const script = document.createElement('script');
-      script.src = '../js/productos-extras-editor.js?v=20260523_1307';
+      script.src = '../js/productos-extras-editor.js';
       script.defer = true;
       script.setAttribute('data-loader', 'productos-extras-editor-js');
       document.body.appendChild(script);
@@ -56,19 +56,9 @@
 
     if (!document.querySelector('script[data-loader="productos-extras-filtros-js"]')) {
       const script = document.createElement('script');
-      script.src = '../js/productos-extras-filtros.js?v=20260523_1307';
+      script.src = '../js/productos-extras-filtros.js';
       script.defer = true;
       script.setAttribute('data-loader', 'productos-extras-filtros-js');
-      document.body.appendChild(script);
-    }
-  }
-
-  function ensureSelectorAssets() {
-    if (!document.querySelector('script[data-loader="productos-extras-selector-js"]')) {
-      const script = document.createElement('script');
-      script.src = '../js/productos-extras-selector.js?v=20260523_1307';
-      script.defer = true;
-      script.setAttribute('data-loader', 'productos-extras-selector-js');
       document.body.appendChild(script);
     }
   }
@@ -78,7 +68,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\"/g, '&quot;')
+      .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
 
@@ -326,11 +316,6 @@
 
       const card = event.target.closest('[data-extra-id]');
       if (card) {
-        const bankSlide = document.getElementById('prodExtrasSlide');
-        if (bankSlide && bankSlide.classList.contains('is-selecting')) {
-          event.preventDefault();
-          return;
-        }
         event.preventDefault();
         const extra = EXTRAS_MOCK.find(function (item) { return item.id === card.dataset.extraId; });
         openConfigSlide(extra);
@@ -389,7 +374,6 @@
     startObserver();
     ensureEditorAssets();
     ensureFilterAssets();
-    ensureSelectorAssets();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosExtras);
