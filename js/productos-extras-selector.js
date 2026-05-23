@@ -4,6 +4,7 @@
   let targetMode = 'append';
   let targetCard = null;
   let selectedIds = new Set();
+  let observerStarted = false;
 
   function readExtras() {
     try {
@@ -244,9 +245,20 @@
     }, true);
   }
 
+  function startObserver() {
+    if (observerStarted) return;
+    observerStarted = true;
+    const observer = new MutationObserver(function () {
+      ensurePickButtons();
+      ensureSelectControls();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   function schedule() {
     ensureSelectorAssets();
-    setTimeout(function () { ensurePickButtons(); ensureSelectControls(); }, 160);
+    setTimeout(function () { ensurePickButtons(); ensureSelectControls(); }, 80);
+    setTimeout(function () { ensurePickButtons(); ensureSelectControls(); }, 240);
     setTimeout(function () { ensurePickButtons(); ensureSelectControls(); }, 520);
   }
 
@@ -254,6 +266,7 @@
     const body = document.querySelector('body[data-page="productos"]');
     if (!body) return;
     bind();
+    startObserver();
     schedule();
   }
 
