@@ -2,104 +2,38 @@
   const PRODUCTOS_COMESTIBLES = [
     {
       id: 'box-dulce-nube',
-      nombre: 'Box Dulce Nube',
+      nombre: 'Box Dulce Nube Test',
       categoria: 'Postre armado',
-      estado: 'Activo',
-      precio: 9800,
-      badge: '15% OFF',
-      descripcion: 'Una caja pensada para resolver antojo, regalo o sobremesa sin pensar demasiado.',
-      promesa: 'Llega HOY a CABA pidiendo en las próximas 2 horas',
-      imagenes: [
-        'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80',
-        '', '', '', '', ''
-      ],
-      versiones: [
-        { nombre: 'Mini', descripcion: 'Tamaño del box · Opción base del box.', precio: 0, estado: 'Incluido', badge: '' },
-        { nombre: 'Mediano', descripcion: 'Mejor equilibrio entre precio y cantidad.', precio: 4200, estado: 'Activo', badge: 'Más elegido' },
-        { nombre: 'Premium', descripcion: 'No disponible por stock.', precio: 0, estado: 'Agotado', badge: '' }
-      ],
-      extras: [
-        { nombre: 'Salsa extra de chocolate', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 900, estado: 'Activo', badge: 'Banco de extras' },
-        { nombre: 'Caja regalo', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 1800, estado: 'Activo', badge: 'Banco de extras' }
-      ],
-      sinCosto: [
-        { nombre: 'Sin nueces', descripcion: 'Personalizá el producto.', estado: 'Incluido' },
-        { nombre: 'Sin coco rallado', descripcion: 'Personalizá el producto.', estado: 'Incluido' }
-      ],
-      recomendados: [
-        { nombre: 'Velita de cumpleaños', descripcion: 'Sumalo al pedido sin fricción.', precio: 700, estado: 'Activo', badge: 'Recomendado' },
-        { nombre: 'Tarjeta con dedicatoria', descripcion: 'Sumalo al pedido sin fricción.', precio: 1200, estado: 'Activo', badge: '' }
-      ]
-    },
-    {
-      id: 'torta-choco-cream',
-      nombre: 'Torta Choco Cream',
-      categoria: 'Torta',
-      estado: 'Activo',
-      precio: 16500,
-      badge: 'Especial',
-      descripcion: 'Torta húmeda con crema suave y terminación lista para regalo.',
-      promesa: 'Entrega coordinada según zona.',
-      imagenes: [
-        'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80',
-        '', '', '', '', ''
-      ],
-      versiones: [
-        { nombre: 'Chica', descripcion: 'Rinde 4 porciones.', precio: 0, estado: 'Incluido', badge: '' },
-        { nombre: 'Mediana', descripcion: 'Rinde 8 porciones.', precio: 5400, estado: 'Activo', badge: 'Más elegido' },
-        { nombre: 'Grande', descripcion: 'Rinde 12 porciones.', precio: 8900, estado: 'Activo', badge: '' }
-      ],
-      extras: [
-        { nombre: 'Mensaje en chocolate', descripcion: 'Agregá una frase breve.', precio: 1200, estado: 'Activo', badge: 'Banco de extras' }
-      ],
-      sinCosto: [
-        { nombre: 'Sin decoración crocante', descripcion: 'Personalizá el producto.', estado: 'Incluido' }
-      ],
-      recomendados: [
-        { nombre: 'Velas numéricas', descripcion: 'Ideal para cumpleaños.', precio: 2500, estado: 'Activo', badge: 'Recomendado' }
-      ]
-    },
-    {
-      id: 'muffins-mix',
-      nombre: 'Muffins Mix',
-      categoria: 'Muffins',
       estado: 'Borrador',
-      precio: 7200,
+      precio: 9800,
       badge: 'Nuevo',
-      descripcion: 'Caja de muffins surtidos para merienda rápida.',
-      promesa: 'Disponible para retiro o envío.',
-      imagenes: [
-        'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=900&q=80',
-        '', '', '', '', ''
-      ],
+      descripcion: 'Producto de prueba creado desde RPC.',
+      promesa: 'Llega hoy según zona.',
+      imagenes: ['https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80'],
       versiones: [
-        { nombre: 'x4', descripcion: 'Caja chica.', precio: 0, estado: 'Incluido', badge: '' },
-        { nombre: 'x6', descripcion: 'Caja recomendada.', precio: 2600, estado: 'Activo', badge: 'Más elegido' },
-        { nombre: 'x12', descripcion: 'Caja para compartir.', precio: 7200, estado: 'Activo', badge: '' }
+        { nombre: 'Mini', descripcion: 'Opción base incluida.', precio: 0, estado: 'Incluido', badge: '' },
+        { nombre: 'Mediano', descripcion: 'Mejor equilibrio entre precio y cantidad.', precio: 4200, estado: 'Activo', badge: 'Más elegido' }
       ],
       extras: [
-        { nombre: 'Dip de chocolate', descripcion: 'Acompañamiento para muffins.', precio: 900, estado: 'Activo', badge: 'Banco de extras' }
+        { nombre: 'Salsa extra de chocolate', descripcion: 'Extra recomendado para mejorar el pedido.', precio: 900, estado: 'Activo', badge: '' }
       ],
       sinCosto: [
-        { nombre: 'Sin chips', descripcion: 'Personalizá el producto.', estado: 'Incluido' }
+        { nombre: 'Sin nueces', descripcion: 'El comprador puede quitar este ingrediente.', estado: 'Incluido' }
       ],
-      recomendados: [
-        { nombre: 'Café frío 350 ml', descripcion: 'Ideal para acompañar algo dulce.', precio: 1900, estado: 'Activo', badge: '' }
-      ]
+      recomendados: []
     }
   ];
 
   const OPTION_PRESETS = {
-    versiones: { nombre: 'Nueva versión', descripcion: 'Ej: 6 porciones, 12 porciones, individual o familiar.', precio: 0, estado: 'Activo', badge: '', imagen: '' },
+    versiones: { nombre: 'Nueva versión', descripcion: 'Presentación del producto.', precio: 0, estado: 'Activo', badge: '', imagen: '' },
     extras: { nombre: 'Seleccionar extra del banco', descripcion: 'Extra global pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Banco de extras', imagen: '' },
-    sinCosto: { nombre: 'Nueva opción sin costo', descripcion: 'Ej: sin nueces, sin coco, sin azúcar agregada.', estado: 'Incluido', imagen: '' },
-    recomendados: { nombre: 'Seleccionar producto recomendado', descripcion: 'Producto existente pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Recomendado', imagen: '' }
+    sinCosto: { nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido', badge: '', imagen: '' },
+    recomendados: { nombre: 'Producto recomendado', descripcion: 'Sumalo al pedido.', precio: 0, estado: 'Activo', badge: 'Recomendado', imagen: '' }
   };
 
   function initProductosComestibles() {
-    const shell = document.querySelector('body[data-page="productos"] .prodShell');
-    if (!shell || shell.dataset.comestiblesReady === '1') return;
-    shell.dataset.comestiblesReady = '1';
+    const body = document.querySelector('body[data-page="productos"]');
+    if (!body) return;
     mountTab();
     mountPanel();
     mountSlide();
@@ -112,7 +46,7 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
 
@@ -214,6 +148,16 @@
     if (slideBody && slideBody.dataset.bound !== '1') {
       slideBody.dataset.bound = '1';
       slideBody.addEventListener('click', function (event) {
+        const selectorButton = event.target.closest('[data-open-extra-bank]');
+        if (selectorButton) {
+          event.preventDefault();
+          const card = selectorButton.closest('.prodComOption');
+          if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.open === 'function') {
+            window.ProductosExtrasSelector.open(selectorButton.dataset.openExtraBank || 'append', card);
+          }
+          return;
+        }
+
         const addButton = event.target.closest('[data-add-com-option]');
         if (!addButton) return;
         event.preventDefault();
@@ -292,12 +236,13 @@
 
   function optionsSection(kicker, title, key, items, hasPrice, helper, sourceBadge) {
     const sectionBadge = sourceBadge || 'Estructura fija';
-    return `<section class="prodComSection" data-prod-com-section="${escapeHtml(key)}"><div class="prodComSection__head"><div><span class="prodComEyebrow">${escapeHtml(kicker)}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(helper || 'Estructura fija orientada a conversión. Solo editás las tarjetas.')}</p></div><span class="prodComBadge prodComBadge--gray">${escapeHtml(sectionBadge)}</span></div><div class="prodComOptions" data-options-key="${escapeHtml(key)}">${items.map((item, index) => optionEditor(key, item, index, hasPrice)).join('')}</div><div class="prodComSectionActions"><button type="button" class="prodComAdd" data-add-com-option="${escapeHtml(key)}">+ Agregar opción</button>${key === 'extras' ? '<button type="button" class="prodComSecondaryAction" disabled>Abrir banco de extras · Fase siguiente</button>' : ''}${key === 'recomendados' ? '<button type="button" class="prodComSecondaryAction" disabled>Seleccionar productos · Fase siguiente</button>' : ''}</div></section>`;
+    return `<section class="prodComSection" data-prod-com-section="${escapeHtml(key)}"><div class="prodComSection__head"><div><span class="prodComEyebrow">${escapeHtml(kicker)}</span><h3>${escapeHtml(title)}</h3><p>${escapeHtml(helper || 'Estructura fija orientada a conversión. Solo editás las tarjetas.')}</p></div><span class="prodComBadge prodComBadge--gray">${escapeHtml(sectionBadge)}</span></div><div class="prodComOptions" data-options-key="${escapeHtml(key)}">${items.map((item, index) => optionEditor(key, item, index, hasPrice)).join('')}</div><div class="prodComSectionActions"><button type="button" class="prodComAdd" data-add-com-option="${escapeHtml(key)}">+ Agregar opción</button>${key === 'extras' ? '<button type="button" class="prodComSecondaryAction prodComBankPick" data-open-extra-bank="append">Abrir Banco de extras</button>' : ''}${key === 'recomendados' ? '<button type="button" class="prodComSecondaryAction" disabled>Seleccionar productos · Fase siguiente</button>' : ''}</div></section>`;
   }
 
   function optionEditor(key, item, index, hasPrice) {
     const visualImage = item.imagen ? `<img src="${escapeHtml(item.imagen)}" alt="">` : '<span>4×4</span>';
-    return `<article class="prodComOption" data-option-key="${escapeHtml(key)}"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual">${visualImage}</div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre)}${field('Descripción', `${key}_${index}_desc`, item.descripcion)}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio, 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || '', 'url')}</div></article>`;
+    const bankButton = key === 'extras' ? '<button type="button" class="prodComBankPick prodComBankPick--slot" data-open-extra-bank="slot">Seleccionar del Banco de extras</button>' : '';
+    return `<article class="prodComOption" data-option-key="${escapeHtml(key)}"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual">${visualImage}</div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre)}${field('Descripción', `${key}_${index}_desc`, item.descripcion)}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio, 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || '', 'url')}${bankButton}</div></article>`;
   }
 
   function addOptionCard(key) {
