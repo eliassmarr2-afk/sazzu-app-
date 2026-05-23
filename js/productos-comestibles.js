@@ -21,39 +21,158 @@
       extras: [],
       extras_ids: [],
       extras_count: 0,
-      sinCosto: [
-        { nombre: 'Sin nueces', descripcion: 'El comprador puede quitar este ingrediente.', estado: 'Incluido' }
-      ],
+      sinCosto: [{ nombre: 'Sin nueces', descripcion: 'El comprador puede quitar este ingrediente.', estado: 'Incluido' }],
+      recomendados: []
+    },
+    {
+      id: 'torta-choco-cream',
+      nombre: 'Torta Choco Cream',
+      categoria: 'Torta artesanal',
+      estado: 'Borrador',
+      precio: 16500,
+      badge: 'Nuevo',
+      descripcion: 'Torta preparada para catálogo comestible.',
+      promesa: 'Disponible según agenda.',
+      imagenes: ['https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80'],
+      versiones: [{ nombre: 'Entera', descripcion: 'Presentación base.', precio: 0, estado: 'Incluido', badge: '' }],
+      extras: [],
+      extras_ids: [],
+      extras_count: 0,
+      sinCosto: [],
+      recomendados: []
+    },
+    {
+      id: 'muffins-mix',
+      nombre: 'Muffins Mix',
+      categoria: 'Pastelería rápida',
+      estado: 'Borrador',
+      precio: 7200,
+      badge: 'Pack',
+      descripcion: 'Mix dulce para pedidos rápidos.',
+      promesa: 'Ideal para sumar al carrito.',
+      imagenes: ['https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=900&q=80'],
+      versiones: [{ nombre: 'Caja x6', descripcion: 'Presentación base.', precio: 0, estado: 'Incluido', badge: '' }],
+      extras: [],
+      extras_ids: [],
+      extras_count: 0,
+      sinCosto: [],
+      recomendados: []
+    },
+    {
+      id: 'cookies-con-chips',
+      nombre: 'Cookies con chips',
+      categoria: 'Cookies',
+      estado: 'Borrador',
+      precio: 2200,
+      badge: 'Extra friendly',
+      descripcion: 'Producto simple para consumo individual o agregado.',
+      promesa: 'Listas para sumar al pedido.',
+      imagenes: ['https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80'],
+      versiones: [{ nombre: 'Unidad', descripcion: 'Presentación base.', precio: 0, estado: 'Incluido', badge: '' }],
+      extras: [],
+      extras_ids: [],
+      extras_count: 0,
+      sinCosto: [],
+      recomendados: []
+    },
+    {
+      id: 'mini-alfajores',
+      nombre: 'Mini alfajores',
+      categoria: 'Alfajores',
+      estado: 'Borrador',
+      precio: 2600,
+      badge: 'Dulce',
+      descripcion: 'Agregado dulce para ampliar el ticket.',
+      promesa: 'Complemento de compra.',
+      imagenes: ['https://images.unsplash.com/photo-1618923850107-d1a234d7a73a?auto=format&fit=crop&w=900&q=80'],
+      versiones: [{ nombre: 'Pack mini', descripcion: 'Presentación base.', precio: 0, estado: 'Incluido', badge: '' }],
+      extras: [],
+      extras_ids: [],
+      extras_count: 0,
+      sinCosto: [],
       recomendados: []
     }
   ];
 
-  const PRODUCTOS_COMESTIBLES = readProducts();
-
   const OPTION_PRESETS = {
     versiones: { nombre: 'Nueva versión', descripcion: 'Presentación del producto.', precio: 0, estado: 'Activo', badge: '', imagen: '' },
-    extras: { nombre: 'Seleccionar extra del banco', descripcion: 'Extra global pendiente de selección.', precio: 0, estado: 'Activo', badge: 'Banco de extras', imagen: '' },
     sinCosto: { nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido', badge: '', imagen: '' },
     recomendados: { nombre: 'Producto recomendado', descripcion: 'Sumalo al pedido.', precio: 0, estado: 'Activo', badge: 'Recomendado', imagen: '' }
   };
+
+  const PRODUCTOS_COMESTIBLES = readProducts();
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
 
+  function normalizeProduct(product) {
+    const data = product || {};
+    const id = String(data.id || data.product_id || ('prod-com-' + slugify(data.nombre || 'producto') + '-' + Date.now())).trim();
+    return {
+      id,
+      product_id: id,
+      product_type: data.product_type || 'food_simple_product',
+      combo: false,
+      structure_locked: true,
+      relation_model: 'entity_extra_links',
+      nombre: String(data.nombre || data.title || 'Producto comestible').trim(),
+      categoria: String(data.categoria || 'Categoría').trim(),
+      estado: String(data.estado || data.status || 'Borrador').trim(),
+      precio: Number(data.precio != null ? data.precio : (data.price || 0)) || 0,
+      badge: String(data.badge || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      promesa: String(data.promesa || '').trim(),
+      imagenes: Array.isArray(data.imagenes) ? data.imagenes.filter(Boolean) : [],
+      versiones: Array.isArray(data.versiones) ? data.versiones : [],
+      extras: Array.isArray(data.extras) ? data.extras : [],
+      extras_ids: Array.isArray(data.extras_ids) ? data.extras_ids : [],
+      extras_count: Number(data.extras_count || 0),
+      sinCosto: Array.isArray(data.sinCosto) ? data.sinCosto : [],
+      recomendados: Array.isArray(data.recomendados) ? data.recomendados : []
+    };
+  }
+
+  function repairProducts(items) {
+    const map = new Map();
+    const incoming = Array.isArray(items) ? items : [];
+
+    DEFAULT_PRODUCTS.forEach(function (product) {
+      const normalized = normalizeProduct(product);
+      map.set(normalized.id, normalized);
+    });
+
+    incoming.forEach(function (product) {
+      const normalized = normalizeProduct(product);
+      const seed = map.get(normalized.id) || {};
+      map.set(normalized.id, Object.assign({}, seed, normalized));
+    });
+
+    const userRows = incoming
+      .map(normalizeProduct)
+      .filter(function (product) { return !DEFAULT_PRODUCTS.some(function (seed) { return seed.id === product.id; }); });
+    const seedRows = DEFAULT_PRODUCTS.map(function (seed) { return map.get(seed.id); }).filter(Boolean);
+
+    return userRows.concat(seedRows);
+  }
+
   function readProducts() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      if (Array.isArray(parsed) && parsed.length) return parsed;
+      const repaired = repairProducts(Array.isArray(parsed) ? parsed : DEFAULT_PRODUCTS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(repaired));
+      return repaired;
     } catch (error) {
       console.warn('[productos-comestibles.js] No se pudo leer storage:', error);
+      const fallback = repairProducts(DEFAULT_PRODUCTS);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback)); } catch (_) {}
+      return fallback;
     }
-    return clone(DEFAULT_PRODUCTS);
   }
 
   function writeProducts() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(PRODUCTOS_COMESTIBLES));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(PRODUCTOS_COMESTIBLES.map(normalizeProduct)));
     } catch (error) {
       console.warn('[productos-comestibles.js] No se pudo guardar storage:', error);
     }
@@ -71,7 +190,6 @@
 
   function getExtraLinksApi() {
     if (window.ProductosExtraLinks) return window.ProductosExtraLinks;
-
     function nowIso() { return new Date().toISOString(); }
     function readLinks() {
       try {
@@ -86,12 +204,9 @@
       try { localStorage.setItem(EXTRA_LINKS_STORAGE_KEY, JSON.stringify(Array.isArray(links) ? links : [])); }
       catch (error) { console.warn('[productos-comestibles.js] No se pudieron guardar links:', error); }
     }
-    function slug(value) {
-      return String(value || 'item').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item';
-    }
     function snapshotExtra(extra) {
       const data = extra || {};
-      const extraId = String(data.extra_id || data.id || ('extra-' + slug(data.title || data.nombre || 'extra'))).trim();
+      const extraId = String(data.extra_id || data.id || ('extra-' + slugify(data.title || data.nombre || 'extra'))).trim();
       return {
         extra_id: extraId,
         id: extraId,
@@ -136,7 +251,7 @@
           const snapshot = snapshotExtra(extra);
           const old = previous.get(String(snapshot.extra_id));
           return {
-            link_id: [ownerType, ownerId, snapshot.extra_id].map(slug).join('__'),
+            link_id: [ownerType, ownerId, snapshot.extra_id].map(slugify).join('__'),
             owner_type: ownerType,
             owner_id: ownerId,
             extra_id: snapshot.extra_id,
@@ -288,9 +403,8 @@
         const selectorButton = event.target.closest('[data-open-extra-bank]');
         if (selectorButton) {
           event.preventDefault();
-          const card = selectorButton.closest('.prodComOption');
           if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.open === 'function') {
-            window.ProductosExtrasSelector.open(selectorButton.dataset.openExtraBank || 'append', card);
+            window.ProductosExtrasSelector.open(selectorButton.dataset.openExtraBank || 'append');
           }
           return;
         }
@@ -326,7 +440,6 @@
       writeProducts();
       return migrated;
     }
-
     return [];
   }
 
@@ -490,7 +603,7 @@
     const links = api.setLinksForOwner(OWNER_TYPE, id, selectedExtras);
     const extrasIds = links.map(link => link.extra_id).filter(Boolean);
 
-    const payload = {
+    const payload = normalizeProduct({
       id,
       product_id: id,
       product_type: 'food_simple_product',
@@ -511,7 +624,7 @@
       extras_count: extrasIds.length,
       sinCosto: collectOptions('sinCosto', false),
       recomendados: collectOptions('recomendados', true)
-    };
+    });
 
     const index = PRODUCTOS_COMESTIBLES.findIndex(item => item.id === id);
     if (index >= 0) PRODUCTOS_COMESTIBLES[index] = payload;
