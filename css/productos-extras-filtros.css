@@ -1,0 +1,167 @@
+/* =========================================================
+   PRODUCTOS · FILTROS BANCO DE EXTRAS
+   Capa aislada: no modifica montaje del banco ni combos.
+   ========================================================= */
+
+body[data-page="productos"] .prodExtrasFilterBtn{
+  min-height:38px;
+  padding:0 13px;
+  border:0;
+  border-radius:5px;
+  background:#F0F7FF;
+  color:#2479FF;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  white-space:nowrap;
+}
+
+body[data-page="productos"] .prodExtrasHeaderActions{
+  position:relative;
+}
+
+body[data-page="productos"] .prodExtrasFilterPanel{
+  position:absolute;
+  top:48px;
+  right:112px;
+  width:330px;
+  z-index:5;
+  display:none;
+  padding:14px;
+  border-radius:5px;
+  background:#fff;
+  box-shadow:0 20px 48px rgba(15,23,42,.18);
+  border:1px solid #EAECF0;
+}
+
+body[data-page="productos"] .prodExtrasFilterPanel.is-active{
+  display:block;
+}
+
+body[data-page="productos"] .prodExtrasFilterPanel h3{
+  margin:0 0 10px;
+  color:#111827;
+  font-size:14px;
+  font-weight:950;
+  letter-spacing:-.01em;
+}
+
+body[data-page="productos"] .prodExtrasFilterGrid{
+  display:grid;
+  gap:10px;
+}
+
+body[data-page="productos"] .prodExtrasFilterField{
+  display:grid;
+  gap:6px;
+}
+
+body[data-page="productos"] .prodExtrasFilterField span{
+  color:#667085;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+body[data-page="productos"] .prodExtrasFilterField input,
+body[data-page="productos"] .prodExtrasFilterField select{
+  width:100%;
+  min-height:38px;
+  border:1px solid #E5E7EB;
+  border-radius:5px;
+  padding:0 10px;
+  background:#fff;
+  color:#111827;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:650;
+  box-sizing:border-box;
+}
+
+body[data-page="productos"] .prodExtrasFilterActions{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:12px;
+}
+
+body[data-page="productos"] .prodExtrasFilterClear,
+body[data-page="productos"] .prodExtrasFilterApply{
+  min-height:34px;
+  padding:0 12px;
+  border:0;
+  border-radius:5px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+body[data-page="productos"] .prodExtrasFilterClear{
+  background:#F2F4F7;
+  color:#344054;
+}
+
+body[data-page="productos"] .prodExtrasFilterApply{
+  background:#2479FF;
+  color:#fff;
+}
+
+body[data-page="productos"] .prodExtrasQuickFilters{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin:0 0 16px;
+  padding:0;
+}
+
+body[data-page="productos"] .prodExtrasQuickChip{
+  min-height:32px;
+  padding:0 12px;
+  border:0;
+  border-radius:5px;
+  background:#fff;
+  color:#475467;
+  box-shadow:0 1px 2px rgba(16,24,40,.08);
+  font-family:inherit;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+body[data-page="productos"] .prodExtrasQuickChip.is-active{
+  background:#2479FF;
+  color:#fff;
+}
+
+body[data-page="productos"] .prodExtrasFilterEmpty{
+  display:none;
+  min-height:160px;
+  place-items:center;
+  padding:22px;
+  border-radius:5px;
+  background:#fff;
+  color:#667085;
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+
+body[data-page="productos"] .prodExtrasFilterEmpty.is-active{
+  display:grid;
+}
+
+@media(max-width:900px){
+  body[data-page="productos"] .prodExtrasFilterPanel{
+    right:0;
+    width:min(330px,calc(100vw - 44px));
+  }
+}
