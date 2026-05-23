@@ -64,8 +64,6 @@
       setTimeout(initProductosCombos, 180);
       return;
     }
-    if (body.dataset.combosReady === '1') return;
-    body.dataset.combosReady = '1';
 
     mountComboLauncher(panel);
     mountComboSlide();
@@ -415,10 +413,18 @@
     return el ? String(el.value || '').trim() : '';
   }
 
-  document.addEventListener('DOMContentLoaded', initProductosCombos);
-  document.addEventListener('sazzu:page:load', function () {
+  function scheduleProductosCombosMount() {
+    setTimeout(initProductosCombos, 0);
     setTimeout(initProductosCombos, 120);
     setTimeout(initProductosCombos, 420);
-  });
-  window.ProductosCombosMount = initProductosCombos;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleProductosCombosMount);
+  } else {
+    scheduleProductosCombosMount();
+  }
+
+  document.addEventListener('sazzu:page:load', scheduleProductosCombosMount);
+  window.ProductosCombosMount = scheduleProductosCombosMount;
 })();
