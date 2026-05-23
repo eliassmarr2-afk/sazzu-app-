@@ -38,7 +38,7 @@
 
     if (!document.querySelector('script[data-loader="productos-extras-editor-js"]')) {
       const script = document.createElement('script');
-      script.src = '../js/productos-extras-editor.js';
+      script.src = '../js/productos-extras-editor.js?v=20260523_1307';
       script.defer = true;
       script.setAttribute('data-loader', 'productos-extras-editor-js');
       document.body.appendChild(script);
@@ -56,7 +56,7 @@
 
     if (!document.querySelector('script[data-loader="productos-extras-filtros-js"]')) {
       const script = document.createElement('script');
-      script.src = '../js/productos-extras-filtros.js';
+      script.src = '../js/productos-extras-filtros.js?v=20260523_1307';
       script.defer = true;
       script.setAttribute('data-loader', 'productos-extras-filtros-js');
       document.body.appendChild(script);
@@ -66,7 +66,7 @@
   function ensureSelectorAssets() {
     if (!document.querySelector('script[data-loader="productos-extras-selector-js"]')) {
       const script = document.createElement('script');
-      script.src = '../js/productos-extras-selector.js';
+      script.src = '../js/productos-extras-selector.js?v=20260523_1307';
       script.defer = true;
       script.setAttribute('data-loader', 'productos-extras-selector-js');
       document.body.appendChild(script);
@@ -326,6 +326,11 @@
 
       const card = event.target.closest('[data-extra-id]');
       if (card) {
+        const bankSlide = document.getElementById('prodExtrasSlide');
+        if (bankSlide && bankSlide.classList.contains('is-selecting')) {
+          event.preventDefault();
+          return;
+        }
         event.preventDefault();
         const extra = EXTRAS_MOCK.find(function (item) { return item.id === card.dataset.extraId; });
         openConfigSlide(extra);
