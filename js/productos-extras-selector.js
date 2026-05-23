@@ -38,6 +38,11 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  function safeExtraSelector(id) {
+    if (window.CSS && typeof window.CSS.escape === 'function') return CSS.escape(id);
+    return String(id || '').replace(/"/g, '\\"');
+  }
+
   function normalizeExtra(extra) {
     const data = extra || {};
     return {
@@ -83,7 +88,7 @@
     const stored = getExtra(id);
     if (stored) return normalizeExtra(stored);
 
-    const card = document.querySelector('#prodExtrasGrid .prodExtraCard[data-extra-id="' + CSS.escape(id) + '"]');
+    const card = document.querySelector('#prodExtrasGrid .prodExtraCard[data-extra-id="' + safeExtraSelector(id) + '"]');
     return getExtraFromCard(card);
   }
 
@@ -138,6 +143,10 @@
     updateSmallPreview(card, data.image || '');
   }
 
+  function trashIcon() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM6 8h12l-1 13H7L6 8Z" fill="currentColor"/></svg>';
+  }
+
   function selectedExtraHiddenFields(extra, index) {
     const data = normalizeExtra(extra);
     return [
@@ -174,8 +183,31 @@
           badgeHtml +
           '<b>' + escapeHtml(money(data.price)) + '</b>' +
         '</div>' +
+        '<button type="button" class="prodComSelectedExtraCard__delete" data-remove-selected-extra="' + escapeHtml(data.id) + '" aria-label="Eliminar extra ' + escapeHtml(data.title) + '">' + trashIcon() + '</button>' +
         selectedExtraHiddenFields(data, index) +
       '</article>';
+  }
+
+  function updateSelectedExtrasCount(list) {
+    if (!list) return;
+    const count = list.querySelectorAll('.prodComSelectedExtraCard').length;
+    list.dataset.selectedExtrasCount = String(count);
+    const extrasSection = list.closest('[data-prod-com-section="extras"]');
+    if (extrasSection) extrasSection.dataset.selectedExtrasCount = String(count);
+
+    if (!count) {
+      list.classList.remove('prodComOptions--selectedExtras');
+      list.innerHTML = '<div class="prodComExtrasEmptyState">Sin extras seleccionados. Usá + Agregar Extra para traerlos desde el Banco.</div>';
+    }
+  }
+
+  function removeSelectedExtra(button) {
+    const card = button && button.closest('.prodComSelectedExtraCard');
+    const list = card && card.closest('.prodComOptions[data-options-key="extras"]');
+    if (!card || !list) return;
+    card.remove();
+    updateSelectedExtrasCount(list);
+    setTimeout(ensurePickButtons, 80);
   }
 
   function renderSelectedExtrasIntoBuilder(extras) {
@@ -221,12 +253,12 @@
     removeSlotButtons();
 
     document.querySelectorAll('.prodComSecondaryAction').forEach(function (btn) {
-      if (/Abrir banco de extras/i.test(btn.textContent || '')) {
+      if (/Abrir banco de extras|Agregar Extra/i.test(btn.textContent || '')) {
         btn.disabled = false;
         btn.removeAttribute('disabled');
         btn.classList.add('prodComBankPick');
         btn.dataset.openExtraBank = 'append';
-        btn.textContent = 'Abrir Banco de extras';
+        btn.textContent = '+ Agregar Extra';
       }
     });
   }
@@ -339,6 +371,14 @@
   }
 
   function interceptSelectionClicks(event) {
+    const removeBtn = event.target && event.target.closest && event.target.closest('[data-remove-selected-extra]');
+    if (removeBtn) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      removeSelectedExtra(removeBtn);
+      return;
+    }
+
     const selectCard = event.target && event.target.closest && event.target.closest('#prodExtrasSlide.is-selecting #prodExtrasGrid .prodExtraCard');
     if (selectCard) {
       event.preventDefault();
