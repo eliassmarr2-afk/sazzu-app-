@@ -1,8 +1,6 @@
 (function () {
   const STORAGE_KEY = 'sazzu_productos_extras_bank_v2';
   let selectionMode = false;
-  let targetMode = 'append';
-  let targetCard = null;
   let selectedIds = new Set();
   let observerStarted = false;
 
@@ -88,16 +86,8 @@
   }
 
   function ensurePickButtons() {
-    document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComOption').forEach(function (card) {
-      if (card.querySelector('[data-open-extra-bank]')) return;
-      const grid = card.querySelector('.prodComGrid--option');
-      if (!grid) return;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'prodComBankPick prodComBankPick--slot';
-      btn.dataset.openExtraBank = 'slot';
-      btn.textContent = 'Seleccionar del Banco de extras';
-      grid.appendChild(btn);
+    document.querySelectorAll('.prodComOptions[data-options-key="extras"] [data-open-extra-bank="slot"]').forEach(function (btn) {
+      btn.remove();
     });
 
     document.querySelectorAll('.prodComSecondaryAction').forEach(function (btn) {
@@ -133,9 +123,7 @@
     }
   }
 
-  function openBankAsSelector(mode, card) {
-    targetMode = mode || 'append';
-    targetCard = card || null;
+  function openBankAsSelector() {
     selectedIds = new Set();
     const launcher = document.getElementById('prodExtrasLauncherBtn');
     if (launcher) launcher.click();
@@ -159,8 +147,6 @@
   function exitSelectionMode() {
     selectionMode = false;
     selectedIds = new Set();
-    targetCard = null;
-    targetMode = 'append';
     const slide = document.getElementById('prodExtrasSlide');
     if (slide) slide.classList.remove('is-selecting');
     document.querySelectorAll('#prodExtrasGrid .prodExtraCard').forEach(function (card) {
@@ -192,15 +178,10 @@
   function applySelectedExtras() {
     const ids = Array.from(selectedIds);
     if (!ids.length) return;
-    ids.forEach(function (id, position) {
+    ids.forEach(function (id) {
       const extra = getExtra(id);
       if (!extra) return;
-      let card = null;
-      if (position === 0 && targetMode === 'slot' && targetCard && document.body.contains(targetCard)) {
-        card = targetCard;
-      } else {
-        card = createEmptyExtraCard();
-      }
+      const card = createEmptyExtraCard();
       fillExtraCard(card, extra);
     });
 
@@ -219,8 +200,7 @@
       if (picker) {
         event.preventDefault();
         event.stopPropagation();
-        const card = picker.closest('.prodComOption');
-        openBankAsSelector(picker.dataset.openExtraBank || 'append', card);
+        openBankAsSelector();
         return;
       }
 
