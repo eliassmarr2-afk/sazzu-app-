@@ -27,6 +27,11 @@ body[data-page="productos"] .prodComOption[data-extra-source-id] .prodComOption_
   color:#2479FF;
 }
 
+body[data-page="productos"] .main [data-prod-com-section="extras"] .prodComAdd,
+body[data-page="productos"] .main [data-prod-com-section="extras"] [data-add-com-option="extras"]{
+  display:none !important;
+}
+
 body[data-page="productos"] .prodExtrasSlide.is-selecting .prodExtrasAddBtn{
   display:none;
 }
@@ -100,8 +105,9 @@ body[data-page="productos"] .main .prodComOptions--selectedExtras{
 }
 
 body[data-page="productos"] .main .prodComSelectedExtraCard{
+  position:relative;
   display:grid;
-  grid-template-columns:64px minmax(0,1fr) auto;
+  grid-template-columns:64px minmax(0,1fr) auto 34px;
   align-items:center;
   gap:12px;
   min-height:88px;
@@ -185,9 +191,43 @@ body[data-page="productos"] .main .prodComSelectedExtraCard__meta b{
   white-space:nowrap;
 }
 
+body[data-page="productos"] .main .prodComSelectedExtraCard__delete{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:5px;
+  background:#FEE2E2;
+  color:#B91C1C;
+  cursor:pointer;
+  transition:background .16s ease, transform .16s ease;
+}
+
+body[data-page="productos"] .main .prodComSelectedExtraCard__delete:hover{
+  background:#FECACA;
+  transform:translateY(-1px);
+}
+
+body[data-page="productos"] .main .prodComSelectedExtraCard__delete svg{
+  width:17px;
+  height:17px;
+  display:block;
+}
+
+body[data-page="productos"] .main .prodComExtrasEmptyState{
+  padding:14px;
+  border:1px dashed rgba(36,121,255,.28);
+  border-radius:5px;
+  background:#F8FBFF;
+  color:#667085;
+  font-size:12px;
+  font-weight:800;
+}
+
 @media(max-width:900px){
   body[data-page="productos"] .prodComBankPick--slot{width:100%;}
-  body[data-page="productos"] .main .prodComSelectedExtraCard{grid-template-columns:54px minmax(0,1fr);}
+  body[data-page="productos"] .main .prodComSelectedExtraCard{grid-template-columns:54px minmax(0,1fr) 34px;}
   body[data-page="productos"] .main .prodComSelectedExtraCard__image{width:54px;height:54px;}
   body[data-page="productos"] .main .prodComSelectedExtraCard__meta{grid-column:1 / -1;justify-content:flex-start;}
 }
