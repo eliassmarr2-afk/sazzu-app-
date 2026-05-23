@@ -112,6 +112,7 @@ body[data-page="productos"] .main .prodComOption__visual{width:64px;height:64px;
 body[data-page="productos"] .main .prodComSectionActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;}
 body[data-page="productos"] .main .prodComAdd{min-height:36px;padding:0 13px;color:#2479FF;background:#EFF6FF;cursor:pointer;}
 body[data-page="productos"] .main .prodComSecondaryAction{min-height:36px;padding:0 13px;color:#2479FF;background:#EAF7FF;cursor:pointer;}
+body[data-page="productos"] .main .prodComOptions[data-options-key="extras"] .prodComBankPick--slot{display:none !important;}
 body[data-page="productos"] .main .prodComPayload{margin:0;padding:12px;border-radius:5px;background:#0F172A;color:#D1E9FF;font-size:12px;line-height:1.45;white-space:pre-wrap;overflow:auto;}
 @media(max-width:1200px){body[data-page="productos"] .main .prodComHero{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComSlide{width:94vw;}}
 @media(max-width:760px){body[data-page="productos"] .main .prodComGuide,body[data-page="productos"] .main .prodComGrid,body[data-page="productos"] .main .prodComImages,body[data-page="productos"] .main .prodComGrid--option{grid-template-columns:1fr;}body[data-page="productos"] .main .prodComTableCard__head,body[data-page="productos"] .main .prodComSection__head,body[data-page="productos"] .main .prodComSlide__header{flex-direction:column;}body[data-page="productos"] .main .prodComOption{grid-template-columns:1fr;}}
