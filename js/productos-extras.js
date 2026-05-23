@@ -63,12 +63,22 @@
     }
   }
 
+  function ensureSelectorAssets() {
+    if (!document.querySelector('script[data-loader="productos-extras-selector-js"]')) {
+      const script = document.createElement('script');
+      script.src = '../js/productos-extras-selector.js';
+      script.defer = true;
+      script.setAttribute('data-loader', 'productos-extras-selector-js');
+      document.body.appendChild(script);
+    }
+  }
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/\"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
 
@@ -374,6 +384,7 @@
     startObserver();
     ensureEditorAssets();
     ensureFilterAssets();
+    ensureSelectorAssets();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosExtras);
