@@ -1,5 +1,7 @@
 (function () {
   const STORAGE_KEY = 'sazzu_productos_comestibles_v1';
+  const EXTRA_LINKS_STORAGE_KEY = 'sazzu_entity_extra_links_v1';
+  const OWNER_TYPE = 'producto_comestible';
 
   const DEFAULT_PRODUCTS = [
     {
@@ -17,6 +19,8 @@
         { nombre: 'Mediano', descripcion: 'Mejor equilibrio entre precio y cantidad.', precio: 4200, estado: 'Activo', badge: 'Más elegido' }
       ],
       extras: [],
+      extras_ids: [],
+      extras_count: 0,
       sinCosto: [
         { nombre: 'Sin nueces', descripcion: 'El comprador puede quitar este ingrediente.', estado: 'Incluido' }
       ],
@@ -55,9 +59,106 @@
     }
   }
 
+  function ensureExtraLinksEngine() {
+    if (window.ProductosExtraLinks) return;
+    if (document.querySelector('script[data-loader="productos-extra-links-js"]')) return;
+    const script = document.createElement('script');
+    script.src = '../js/productos-extra-links.js';
+    script.defer = true;
+    script.setAttribute('data-loader', 'productos-extra-links-js');
+    document.body.appendChild(script);
+  }
+
+  function getExtraLinksApi() {
+    if (window.ProductosExtraLinks) return window.ProductosExtraLinks;
+
+    function nowIso() { return new Date().toISOString(); }
+    function readLinks() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(EXTRA_LINKS_STORAGE_KEY) || 'null');
+        if (Array.isArray(parsed)) return parsed;
+      } catch (error) {
+        console.warn('[productos-comestibles.js] No se pudieron leer links:', error);
+      }
+      return [];
+    }
+    function writeLinks(links) {
+      try { localStorage.setItem(EXTRA_LINKS_STORAGE_KEY, JSON.stringify(Array.isArray(links) ? links : [])); }
+      catch (error) { console.warn('[productos-comestibles.js] No se pudieron guardar links:', error); }
+    }
+    function slug(value) {
+      return String(value || 'item').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item';
+    }
+    function snapshotExtra(extra) {
+      const data = extra || {};
+      const extraId = String(data.extra_id || data.id || ('extra-' + slug(data.title || data.nombre || 'extra'))).trim();
+      return {
+        extra_id: extraId,
+        id: extraId,
+        title: String(data.title || data.nombre || 'Extra').trim(),
+        nombre: String(data.nombre || data.title || 'Extra').trim(),
+        description: String(data.description || data.descripcion || '').trim(),
+        descripcion: String(data.descripcion || data.description || '').trim(),
+        price: Number(data.price != null ? data.price : (data.precio != null ? data.precio : 0)) || 0,
+        precio: Number(data.precio != null ? data.precio : (data.price != null ? data.price : 0)) || 0,
+        status: String(data.status || data.estado || 'Activo').trim(),
+        estado: String(data.estado || data.status || 'Activo').trim(),
+        badge: String(data.badge || '').trim(),
+        image: String(data.image || data.imagen || '').trim(),
+        imagen: String(data.imagen || data.image || '').trim(),
+        folder: String(data.folder || '').trim(),
+        tags: String(data.tags || '').trim()
+      };
+    }
+    function sameOwner(link, ownerType, ownerId) {
+      return link && link.owner_type === ownerType && String(link.owner_id || '') === String(ownerId || '');
+    }
+    return {
+      snapshotExtra,
+      getLinksForOwner(ownerType, ownerId) {
+        return readLinks().filter(link => sameOwner(link, ownerType, ownerId)).sort((a, b) => Number(a.orden || 0) - Number(b.orden || 0));
+      },
+      getExtrasForOwner(ownerType, ownerId) {
+        return this.getLinksForOwner(ownerType, ownerId).map(link => Object.assign({}, link.snapshot_extra || {}, {
+          extra_id: link.extra_id,
+          link_id: link.link_id,
+          link_estado: link.estado,
+          orden: link.orden,
+          precio_override: link.precio_override
+        }));
+      },
+      setLinksForOwner(ownerType, ownerId, extras) {
+        const incoming = Array.isArray(extras) ? extras : [];
+        const all = readLinks();
+        const untouched = all.filter(link => !sameOwner(link, ownerType, ownerId));
+        const previous = new Map(all.filter(link => sameOwner(link, ownerType, ownerId)).map(link => [String(link.extra_id), link]));
+        const nextOwnerLinks = incoming.map((extra, index) => {
+          const snapshot = snapshotExtra(extra);
+          const old = previous.get(String(snapshot.extra_id));
+          return {
+            link_id: [ownerType, ownerId, snapshot.extra_id].map(slug).join('__'),
+            owner_type: ownerType,
+            owner_id: ownerId,
+            extra_id: snapshot.extra_id,
+            orden: index + 1,
+            estado: 'activo',
+            precio_override: extra.precio_override != null ? Number(extra.precio_override) : null,
+            snapshot_extra: snapshot,
+            created_at: old && old.created_at ? old.created_at : nowIso(),
+            updated_at: nowIso()
+          };
+        });
+        writeLinks(untouched.concat(nextOwnerLinks));
+        window.dispatchEvent(new CustomEvent('productos-extra-links:changed', { detail: { owner_type: ownerType, owner_id: ownerId, links: nextOwnerLinks } }));
+        return nextOwnerLinks;
+      }
+    };
+  }
+
   function initProductosComestibles() {
     const body = document.querySelector('body[data-page="productos"]');
     if (!body) return;
+    ensureExtraLinksEngine();
     mountTab();
     mountPanel();
     mountSlide();
@@ -210,6 +311,30 @@
     renderTable();
   }
 
+  function getProductLinkedExtras(product) {
+    if (!product || !product.id) return Array.isArray(product?.extras) ? product.extras : [];
+    const api = getExtraLinksApi();
+    const linked = api.getExtrasForOwner(OWNER_TYPE, product.id);
+    if (linked.length) return linked;
+
+    if (Array.isArray(product.extras) && product.extras.length) {
+      api.setLinksForOwner(OWNER_TYPE, product.id, product.extras);
+      const migrated = api.getExtrasForOwner(OWNER_TYPE, product.id);
+      product.extras = [];
+      product.extras_ids = migrated.map(item => item.extra_id || item.id).filter(Boolean);
+      product.extras_count = migrated.length;
+      writeProducts();
+      return migrated;
+    }
+
+    return [];
+  }
+
+  function getProductExtrasCount(product) {
+    if (!product) return 0;
+    return getProductLinkedExtras(product).length || Number(product.extras_count || 0) || (Array.isArray(product.extras_ids) ? product.extras_ids.length : 0);
+  }
+
   function filteredProducts() {
     const q = String(document.getElementById('prodComSearch')?.value || '').trim().toLowerCase();
     const estado = String(document.getElementById('prodComEstado')?.value || 'todos').trim().toLowerCase();
@@ -225,11 +350,11 @@
     if (!tbody) return;
     const rows = filteredProducts();
     if (!rows.length) { tbody.innerHTML = '<tr><td colspan="10" class="prodComEmpty">No hay productos comestibles con estos filtros.</td></tr>'; return; }
-    tbody.innerHTML = rows.map(p => `<tr><td><div class="prodComCell"><div class="prodComThumb">${p.imagenes && p.imagenes[0] ? `<img src="${escapeHtml(p.imagenes[0])}" alt="">` : '<span>IMG</span>'}</div><div><strong>${escapeHtml(p.nombre)}</strong><span>${escapeHtml(p.categoria)}</span></div></div></td><td><span class="prodComBadge prodComBadge--blue">Producto simple</span></td><td><strong>${money(p.precio)}</strong></td><td>${(p.versiones || []).length}</td><td>${(p.extras || []).length}</td><td>${(p.sinCosto || []).length}</td><td>${(p.recomendados || []).length}</td><td>${(p.imagenes || []).filter(Boolean).length}/6</td><td><span class="prodComBadge ${p.estado === 'Activo' ? 'prodComBadge--green' : 'prodComBadge--gray'}">${escapeHtml(p.estado)}</span></td><td><button type="button" class="prodComEdit" data-edit-com="${escapeHtml(p.id)}">Editar</button></td></tr>`).join('');
+    tbody.innerHTML = rows.map(p => `<tr><td><div class="prodComCell"><div class="prodComThumb">${p.imagenes && p.imagenes[0] ? `<img src="${escapeHtml(p.imagenes[0])}" alt="">` : '<span>IMG</span>'}</div><div><strong>${escapeHtml(p.nombre)}</strong><span>${escapeHtml(p.categoria)}</span></div></div></td><td><span class="prodComBadge prodComBadge--blue">Producto simple</span></td><td><strong>${money(p.precio)}</strong></td><td>${(p.versiones || []).length}</td><td>${getProductExtrasCount(p)}</td><td>${(p.sinCosto || []).length}</td><td>${(p.recomendados || []).length}</td><td>${(p.imagenes || []).filter(Boolean).length}/6</td><td><span class="prodComBadge ${p.estado === 'Activo' ? 'prodComBadge--green' : 'prodComBadge--gray'}">${escapeHtml(p.estado)}</span></td><td><button type="button" class="prodComEdit" data-edit-com="${escapeHtml(p.id)}">Editar</button></td></tr>`).join('');
   }
 
   function blankProduct() {
-    return { id: '', nombre: 'Nuevo producto comestible', categoria: 'Categoría', estado: 'Borrador', precio: 0, badge: 'Nuevo', descripcion: '', promesa: '', imagenes: ['', '', '', '', '', ''], versiones: [{ nombre: 'Mini', descripcion: 'Opción base.', precio: 0, estado: 'Incluido', badge: '' }], extras: [], sinCosto: [{ nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido' }], recomendados: [] };
+    return { id: '', nombre: 'Nuevo producto comestible', categoria: 'Categoría', estado: 'Borrador', precio: 0, badge: 'Nuevo', descripcion: '', promesa: '', imagenes: ['', '', '', '', '', ''], versiones: [{ nombre: 'Mini', descripcion: 'Opción base.', precio: 0, estado: 'Incluido', badge: '' }], extras: [], extras_ids: [], extras_count: 0, sinCosto: [{ nombre: 'Sin ingrediente', descripcion: 'Personalizá el producto.', estado: 'Incluido' }], recomendados: [] };
   }
 
   function openSlide(product) {
@@ -238,15 +363,17 @@
     const title = document.getElementById('prodComSlideTitle');
     const body = document.getElementById('prodComSlideBody');
     if (!slide || !overlay || !body) return;
+    const linkedExtras = getProductLinkedExtras(product);
     slide.dataset.productId = product.id || '';
     if (title) title.textContent = product.nombre;
-    body.innerHTML = renderEditor(product);
+    body.innerHTML = renderEditor(Object.assign({}, product, { extras: linkedExtras }));
     overlay.classList.add('is-active');
     slide.classList.add('is-active');
     slide.setAttribute('aria-hidden', 'false');
-    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder === 'function' && Array.isArray(product.extras) && product.extras.length) {
-      window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder(product.extras.map((item) => ({
-        id: item.id || item.extra_id || item.nombre,
+    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder === 'function' && linkedExtras.length) {
+      window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder(linkedExtras.map((item) => ({
+        id: item.extra_id || item.id || item.nombre,
+        extra_id: item.extra_id || item.id || item.nombre,
         title: item.title || item.nombre,
         description: item.description || item.descripcion,
         price: item.price != null ? item.price : item.precio,
@@ -301,8 +428,7 @@
 
   function optionEditor(key, item, index, hasPrice) {
     const visualImage = item.imagen || item.image ? `<img src="${escapeHtml(item.imagen || item.image)}" alt="">` : '<span>4×4</span>';
-    const bankButton = key === 'extras' ? '' : '';
-    return `<article class="prodComOption" data-option-key="${escapeHtml(key)}"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual">${visualImage}</div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre || item.title || '')}${field('Descripción', `${key}_${index}_desc`, item.descripcion || item.description || '')}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio != null ? item.precio : (item.price || 0), 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || item.status || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || item.image || '', 'url')}${bankButton}</div></article>`;
+    return `<article class="prodComOption" data-option-key="${escapeHtml(key)}"><div class="prodComOption__num">${index + 1}</div><div class="prodComOption__visual">${visualImage}</div><div class="prodComGrid prodComGrid--option">${field('Nombre', `${key}_${index}_nombre`, item.nombre || item.title || '')}${field('Descripción', `${key}_${index}_desc`, item.descripcion || item.description || '')}${hasPrice ? field('Precio adicional', `${key}_${index}_precio`, item.precio != null ? item.precio : (item.price || 0), 'number') : select('Costo', `${key}_${index}_costo`, 'Incluido', ['Incluido'])}${select('Estado', `${key}_${index}_estado`, item.estado || item.status || 'Activo', ['Activo', 'Incluido', 'Agotado', 'Oculto'])}${field('Badge', `${key}_${index}_badge`, item.badge || '')}${field('Imagen 4x4', `${key}_${index}_img`, item.imagen || item.image || '', 'url')}</div></article>`;
   }
 
   function addOptionCard(key) {
@@ -318,7 +444,7 @@
   }
 
   function payloadSection(product) {
-    const payload = { product_id: product.id || 'nuevo', product_type: 'producto_simple', combo: false, structure_locked: true, sections: ['identity', 'images', 'size', 'extras_bank_links', 'removables', 'recommended_product_links'], future_keys: ['user_id', 'workspace_id', 'store_id', 'draft_version', 'published_version'] };
+    const payload = { product_id: product.id || 'nuevo', product_type: 'producto_simple', combo: false, structure_locked: true, relation_model: 'entity_extra_links', sections: ['identity', 'images', 'size', 'extras_bank_links', 'removables', 'recommended_product_links'], future_keys: ['user_id', 'workspace_id', 'store_id', 'draft_version', 'published_version'] };
     return `<section class="prodComSection prodComSection--payload"><div class="prodComSection__head"><div><span class="prodComEyebrow">Salida futura</span><h3>Payload que irá a Supabase</h3><p>En esta fase no se guarda real. Dejamos la estructura lista para cuenta, tienda y versión.</p></div><span class="prodComBadge prodComBadge--blue">Mock local</span></div><pre class="prodComPayload">${escapeHtml(JSON.stringify(payload, null, 2))}</pre></section>`;
   }
 
@@ -359,12 +485,18 @@
     const currentId = slide?.dataset.productId || '';
     const nombre = valueOf('com_nombre') || 'Nuevo producto comestible';
     const id = currentId || 'prod-com-' + slugify(nombre) + '-' + Date.now();
+    const selectedExtras = collectSelectedExtras();
+    const api = getExtraLinksApi();
+    const links = api.setLinksForOwner(OWNER_TYPE, id, selectedExtras);
+    const extrasIds = links.map(link => link.extra_id).filter(Boolean);
+
     const payload = {
       id,
       product_id: id,
       product_type: 'food_simple_product',
       combo: false,
       structure_locked: true,
+      relation_model: 'entity_extra_links',
       nombre,
       categoria: valueOf('com_categoria') || 'Categoría',
       badge: valueOf('com_badge'),
@@ -374,7 +506,9 @@
       descripcion: valueOf('com_descripcion'),
       imagenes: Array.from({ length: 6 }).map((_, i) => valueOf(`com_img_${i + 1}`)).filter(Boolean),
       versiones: collectOptions('versiones', true),
-      extras: collectSelectedExtras(),
+      extras: [],
+      extras_ids: extrasIds,
+      extras_count: extrasIds.length,
       sinCosto: collectOptions('sinCosto', false),
       recomendados: collectOptions('recomendados', true)
     };
@@ -390,8 +524,8 @@
     const title = document.getElementById('prodComSlideTitle');
     if (title) title.textContent = nombre;
 
-    console.log('[productos-comestibles.js] Borrador local preparado:', payload);
-    window.dispatchEvent(new CustomEvent('productos-comestibles:saved', { detail: payload }));
+    console.log('[productos-comestibles.js] Producto guardado con links reutilizables:', { producto: payload, extra_links: links });
+    window.dispatchEvent(new CustomEvent('productos-comestibles:saved', { detail: { producto: payload, extra_links: links } }));
 
     if (!btn) return;
     const original = btn.textContent;
