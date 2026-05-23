@@ -212,7 +212,9 @@
       }
 
       const card = event.target.closest('[data-extra-id]');
-      if (card && document.getElementById('prodExtrasSlide')?.classList.contains('is-active')) {
+      const bankSlide = document.getElementById('prodExtrasSlide');
+      if (card && bankSlide?.classList.contains('is-active')) {
+        if (bankSlide.classList.contains('is-selecting')) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         openEditor(getExtra(card.dataset.extraId));
