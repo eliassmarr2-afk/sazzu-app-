@@ -45,6 +45,24 @@
     }
   }
 
+  function ensureFilterAssets() {
+    if (!document.querySelector('link[data-loader="productos-extras-filtros-css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '../css/productos-extras-filtros.css';
+      link.setAttribute('data-loader', 'productos-extras-filtros-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('script[data-loader="productos-extras-filtros-js"]')) {
+      const script = document.createElement('script');
+      script.src = '../js/productos-extras-filtros.js';
+      script.defer = true;
+      script.setAttribute('data-loader', 'productos-extras-filtros-js');
+      document.body.appendChild(script);
+    }
+  }
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -355,6 +373,7 @@
     startMountLoop();
     startObserver();
     ensureEditorAssets();
+    ensureFilterAssets();
   }
 
   document.addEventListener('DOMContentLoaded', initProductosExtras);
