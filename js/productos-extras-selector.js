@@ -4,6 +4,7 @@
   let selectedIds = new Set();
   let selectedExtras = new Map();
   let observerStarted = false;
+  let activeTarget = 'producto_comestible';
 
   function readExtras() {
     try {
@@ -46,15 +47,21 @@
   function normalizeExtra(extra) {
     const data = extra || {};
     return {
-      id: String(data.id || ('extra-seleccionado-' + Date.now())).trim(),
+      id: String(data.extra_id || data.id || ('extra-seleccionado-' + Date.now())).trim(),
+      extra_id: String(data.extra_id || data.id || '').trim(),
       title: String(data.title || data.nombre || 'Extra').trim(),
+      nombre: String(data.nombre || data.title || 'Extra').trim(),
       description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
       price: Number(data.price != null ? data.price : (data.precio != null ? data.precio : 0)) || 0,
+      precio: Number(data.precio != null ? data.precio : (data.price != null ? data.price : 0)) || 0,
       status: String(data.status || data.estado || 'Activo').trim(),
+      estado: String(data.estado || data.status || 'Activo').trim(),
       badge: String(data.badge || '').trim(),
       folder: String(data.folder || data.carpeta || '').trim(),
       tags: String(data.tags || data.etiquetas || '').trim(),
-      image: String(data.image || data.imagen || '').trim()
+      image: String(data.image || data.imagen || '').trim(),
+      imagen: String(data.imagen || data.image || '').trim()
     };
   }
 
@@ -70,6 +77,7 @@
 
     return normalizeExtra({
       id: card.dataset.extraId || '',
+      extra_id: card.dataset.extraId || '',
       title: title ? title.textContent : '',
       description: description ? description.textContent : '',
       price: price ? parseMoneyText(price.textContent) : 0,
@@ -110,46 +118,15 @@
     el.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
-  function updateSmallPreview(card, image) {
-    if (!card) return;
-    const preview = card.querySelector('.prodComOption__visual');
-    if (!preview) return;
-    preview.innerHTML = image ? '<img src="' + escapeHtml(image) + '" alt="">' : '<span>4×4</span>';
-  }
-
-  function getIndexFromCard(card) {
-    const input = card && card.querySelector('[id^="extras_"][id$="_nombre"]');
-    if (!input) return null;
-    const match = input.id.match(/^extras_(\d+)_nombre$/);
-    return match ? Number(match[1]) : null;
-  }
-
-  function fillExtraCard(card, extra) {
-    if (!card || !extra) return;
-    const data = normalizeExtra(extra);
-    const index = getIndexFromCard(card);
-    if (index == null) return;
-
-    setInput('extras_' + index + '_nombre', data.title || 'Extra');
-    setInput('extras_' + index + '_desc', data.description || '');
-    setInput('extras_' + index + '_precio', data.price || 0);
-    setInput('extras_' + index + '_estado', data.status || 'Activo');
-    setInput('extras_' + index + '_badge', data.badge || 'Banco de extras');
-    setInput('extras_' + index + '_img', data.image || '');
-
-    card.dataset.extraSourceId = data.id || '';
-    card.dataset.extraFolder = data.folder || '';
-    card.dataset.extraTags = data.tags || '';
-    updateSmallPreview(card, data.image || '');
-  }
-
   function trashIcon() {
     return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM6 8h12l-1 13H7L6 8Z" fill="currentColor"/></svg>';
   }
 
-  function selectedExtraHiddenFields(extra, index) {
+  function selectedExtraHiddenFields(extra, index, prefix) {
     const data = normalizeExtra(extra);
     return [
+      ['id', data.id],
+      ['extra_id', data.extra_id || data.id],
       ['nombre', data.title],
       ['desc', data.description],
       ['precio', data.price],
@@ -159,32 +136,41 @@
       ['folder', data.folder],
       ['tags', data.tags]
     ].map(function (pair) {
-      return '<input type="hidden" id="extras_' + index + '_' + escapeHtml(pair[0]) + '" value="' + escapeHtml(pair[1]) + '">';
+      return '<input type="hidden" id="' + prefix + '_' + index + '_' + escapeHtml(pair[0]) + '" value="' + escapeHtml(pair[1]) + '">';
     }).join('');
   }
 
   function selectedExtraCardHtml(extra, index) {
     const data = normalizeExtra(extra);
-    const imageHtml = data.image
-      ? '<img src="' + escapeHtml(data.image) + '" alt="">'
-      : '<span>4×4</span>';
+    const imageHtml = data.image ? '<img src="' + escapeHtml(data.image) + '" alt="">' : '<span>4×4</span>';
     const badgeHtml = data.badge
       ? '<span class="prodComSelectedExtraCard__badge">' + escapeHtml(data.badge) + '</span>'
       : '<span class="prodComSelectedExtraCard__badge prodComSelectedExtraCard__badge--soft">Banco de extras</span>';
 
     return '' +
-      '<article class="prodComOption prodComSelectedExtraCard" data-option-key="extras" data-extra-source-id="' + escapeHtml(data.id) + '" data-extra-folder="' + escapeHtml(data.folder) + '" data-extra-tags="' + escapeHtml(data.tags) + '">' +
+      '<article class="prodComOption prodComSelectedExtraCard" data-option-key="extras" data-extra-source-id="' + escapeHtml(data.extra_id || data.id) + '" data-extra-folder="' + escapeHtml(data.folder) + '" data-extra-tags="' + escapeHtml(data.tags) + '">' +
         '<div class="prodComSelectedExtraCard__image">' + imageHtml + '</div>' +
-        '<div class="prodComSelectedExtraCard__body">' +
-          '<strong>' + escapeHtml(data.title) + '</strong>' +
-          '<span>' + escapeHtml(data.description || 'Extra agregado al producto.') + '</span>' +
-        '</div>' +
-        '<div class="prodComSelectedExtraCard__meta">' +
-          badgeHtml +
-          '<b>' + escapeHtml(money(data.price)) + '</b>' +
-        '</div>' +
-        '<button type="button" class="prodComSelectedExtraCard__delete" data-remove-selected-extra="' + escapeHtml(data.id) + '" aria-label="Eliminar extra ' + escapeHtml(data.title) + '">' + trashIcon() + '</button>' +
-        selectedExtraHiddenFields(data, index) +
+        '<div class="prodComSelectedExtraCard__body"><strong>' + escapeHtml(data.title) + '</strong><span>' + escapeHtml(data.description || 'Extra agregado al producto.') + '</span></div>' +
+        '<div class="prodComSelectedExtraCard__meta">' + badgeHtml + '<b>' + escapeHtml(money(data.price)) + '</b></div>' +
+        '<button type="button" class="prodComSelectedExtraCard__delete" data-remove-selected-extra="' + escapeHtml(data.extra_id || data.id) + '" aria-label="Eliminar extra ' + escapeHtml(data.title) + '">' + trashIcon() + '</button>' +
+        selectedExtraHiddenFields(data, index, 'extras') +
+      '</article>';
+  }
+
+  function comboSelectedExtraCardHtml(extra, index) {
+    const data = normalizeExtra(extra);
+    const imageHtml = data.image ? '<img src="' + escapeHtml(data.image) + '" alt="">' : '<span>4×4</span>';
+    const badgeHtml = data.badge
+      ? '<span class="prodComboSelectedExtraCard__badge">' + escapeHtml(data.badge) + '</span>'
+      : '<span class="prodComboSelectedExtraCard__badge prodComboSelectedExtraCard__badge--soft">Banco de extras</span>';
+
+    return '' +
+      '<article class="prodComboSelectedExtraCard" data-combo-extra-card="1" data-extra-source-id="' + escapeHtml(data.extra_id || data.id) + '" data-extra-folder="' + escapeHtml(data.folder) + '" data-extra-tags="' + escapeHtml(data.tags) + '">' +
+        '<div class="prodComboSelectedExtraCard__image">' + imageHtml + '</div>' +
+        '<div class="prodComboSelectedExtraCard__body"><strong>' + escapeHtml(data.title) + '</strong><span>' + escapeHtml(data.description || 'Extra agregado al combo.') + '</span></div>' +
+        '<div class="prodComboSelectedExtraCard__meta">' + badgeHtml + '<b>' + escapeHtml(money(data.price)) + '</b></div>' +
+        '<button type="button" class="prodComboSelectedExtraCard__delete" data-remove-selected-extra="' + escapeHtml(data.extra_id || data.id) + '" aria-label="Eliminar extra ' + escapeHtml(data.title) + '">' + trashIcon() + '</button>' +
+        selectedExtraHiddenFields(data, index, 'combo_extra') +
       '</article>';
   }
 
@@ -201,45 +187,66 @@
     }
   }
 
+  function updateComboSelectedExtrasCount(list) {
+    if (!list) return;
+    const count = list.querySelectorAll('.prodComboSelectedExtraCard').length;
+    list.dataset.selectedExtrasCount = String(count);
+    const extrasSection = list.closest('[data-prod-combo-extras-section="1"]');
+    if (extrasSection) extrasSection.dataset.selectedExtrasCount = String(count);
+
+    if (!count) {
+      list.classList.remove('prodComboExtrasList--selected');
+      list.innerHTML = '<div class="prodComboEmptyBox"><strong>Sin extras cargados todavía</strong><span>Usá + Agregar Extra para asociar extras reutilizables del banco a este combo.</span></div>';
+    }
+  }
+
   function removeSelectedExtra(button) {
-    const card = button && button.closest('.prodComSelectedExtraCard');
-    const list = card && card.closest('.prodComOptions[data-options-key="extras"]');
-    if (!card || !list) return;
-    card.remove();
-    updateSelectedExtrasCount(list);
-    setTimeout(ensurePickButtons, 80);
+    const productCard = button && button.closest('.prodComSelectedExtraCard');
+    if (productCard) {
+      const list = productCard.closest('.prodComOptions[data-options-key="extras"]');
+      productCard.remove();
+      updateSelectedExtrasCount(list);
+      setTimeout(ensurePickButtons, 80);
+      return;
+    }
+
+    const comboCard = button && button.closest('.prodComboSelectedExtraCard');
+    if (comboCard) {
+      const list = comboCard.closest('.prodComboExtrasList');
+      comboCard.remove();
+      updateComboSelectedExtrasCount(list);
+      setTimeout(ensurePickButtons, 80);
+    }
   }
 
   function renderSelectedExtrasIntoBuilder(extras) {
     const list = document.querySelector('.prodComOptions[data-options-key="extras"]');
     if (!list) return false;
-
-    const normalized = (Array.isArray(extras) ? extras : [])
-      .map(normalizeExtra)
-      .filter(function (item) { return item && item.id && item.title; });
-
+    const normalized = (Array.isArray(extras) ? extras : []).map(normalizeExtra).filter(function (item) { return item && item.id && item.title; });
     if (!normalized.length) return false;
-
     list.classList.add('prodComOptions--selectedExtras');
     list.innerHTML = normalized.map(selectedExtraCardHtml).join('');
     list.dataset.selectedExtrasCount = String(normalized.length);
-
     const extrasSection = list.closest('[data-prod-com-section="extras"]');
-    if (extrasSection) {
-      extrasSection.dataset.selectedExtrasCount = String(normalized.length);
-    }
-
+    if (extrasSection) extrasSection.dataset.selectedExtrasCount = String(normalized.length);
     const first = list.querySelector('.prodComSelectedExtraCard');
     if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
   }
 
-  function createEmptyExtraCard() {
-    const list = document.querySelector('.prodComOptions[data-options-key="extras"]');
-    const add = document.querySelector('[data-add-com-option="extras"]');
-    if (!list || !add) return null;
-    add.click();
-    return list.querySelector('.prodComOption:last-child');
+  function renderSelectedExtrasIntoComboBuilder(extras) {
+    const list = document.querySelector('.prodComboExtrasList[data-combo-extras-list="1"]');
+    if (!list) return false;
+    const normalized = (Array.isArray(extras) ? extras : []).map(normalizeExtra).filter(function (item) { return item && item.id && item.title; });
+    if (!normalized.length) return false;
+    list.classList.add('prodComboExtrasList--selected');
+    list.innerHTML = normalized.map(comboSelectedExtraCardHtml).join('');
+    list.dataset.selectedExtrasCount = String(normalized.length);
+    const extrasSection = list.closest('[data-prod-combo-extras-section="1"]');
+    if (extrasSection) extrasSection.dataset.selectedExtrasCount = String(normalized.length);
+    const first = list.querySelector('.prodComboSelectedExtraCard');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return true;
   }
 
   function removeSlotButtons() {
@@ -251,7 +258,6 @@
 
   function ensurePickButtons() {
     removeSlotButtons();
-
     document.querySelectorAll('.prodComSecondaryAction').forEach(function (btn) {
       if (/Abrir banco de extras|Agregar Extra/i.test(btn.textContent || '')) {
         btn.disabled = false;
@@ -260,6 +266,13 @@
         btn.dataset.openExtraBank = 'append';
         btn.textContent = '+ Agregar Extra';
       }
+    });
+    document.querySelectorAll('.prodComboExtraAdd').forEach(function (btn) {
+      btn.disabled = false;
+      btn.removeAttribute('disabled');
+      btn.dataset.openExtraBank = 'append';
+      btn.dataset.extraTarget = 'combo';
+      btn.textContent = '+ Agregar Extra';
     });
   }
 
@@ -274,18 +287,18 @@
       btn.textContent = 'Agregar seleccionados';
       actions.insertBefore(btn, actions.firstChild);
     }
-
     const headerText = document.querySelector('#prodExtrasSlide .prodExtrasHeader p');
     if (headerText && !document.getElementById('prodExtrasModeLabel')) {
       const label = document.createElement('span');
       label.id = 'prodExtrasModeLabel';
       label.className = 'prodExtrasModeLabel';
-      label.textContent = 'Modo selección activo: marcá extras y confirmá para traerlos al producto.';
+      label.textContent = 'Modo selección activo: marcá extras y confirmá para traerlos al producto o combo.';
       headerText.insertAdjacentElement('afterend', label);
     }
   }
 
-  function openBankAsSelector() {
+  function openBankAsSelector(target) {
+    activeTarget = typeof target === 'string' ? target : (target && target.target) || activeTarget || 'producto_comestible';
     selectedIds = new Set();
     selectedExtras = new Map();
     const launcher = document.getElementById('prodExtrasLauncherBtn');
@@ -301,6 +314,7 @@
     selectionMode = true;
     ensureSelectControls();
     slide.classList.add('is-selecting');
+    slide.dataset.extraTarget = activeTarget;
     document.querySelectorAll('#prodExtrasGrid .prodExtraCard').forEach(function (card) {
       const id = card.dataset.extraId || '';
       card.classList.add('is-selectable');
@@ -313,8 +327,12 @@
     selectionMode = false;
     selectedIds = new Set();
     selectedExtras = new Map();
+    activeTarget = 'producto_comestible';
     const slide = document.getElementById('prodExtrasSlide');
-    if (slide) slide.classList.remove('is-selecting');
+    if (slide) {
+      slide.classList.remove('is-selecting');
+      slide.dataset.extraTarget = '';
+    }
     document.querySelectorAll('#prodExtrasGrid .prodExtraCard').forEach(function (card) {
       card.classList.remove('is-selectable', 'is-selected');
     });
@@ -347,21 +365,15 @@
   function applySelectedExtras() {
     const ids = Array.from(selectedIds);
     if (!ids.length) return;
-
-    const extras = ids
-      .map(getSelectedExtraById)
-      .filter(Boolean)
-      .map(normalizeExtra);
-
+    const extras = ids.map(getSelectedExtraById).filter(Boolean).map(normalizeExtra);
     if (!extras.length) return;
 
-    const rendered = renderSelectedExtrasIntoBuilder(extras);
+    const rendered = activeTarget === 'combo'
+      ? renderSelectedExtrasIntoComboBuilder(extras)
+      : renderSelectedExtrasIntoBuilder(extras);
 
-    if (!rendered) {
-      extras.forEach(function (extra) {
-        const card = createEmptyExtraCard();
-        fillExtraCard(card, extra);
-      });
+    if (!rendered && activeTarget !== 'combo') {
+      renderSelectedExtrasIntoBuilder(extras);
     }
 
     const close = document.getElementById('prodExtrasCloseBtn');
@@ -398,21 +410,16 @@
   function bind() {
     if (document.body.dataset.productosExtrasSelectorBound === '1') return;
     document.body.dataset.productosExtrasSelectorBound = '1';
-
     window.addEventListener('click', interceptSelectionClicks, true);
-
     document.addEventListener('click', function (event) {
       const picker = event.target.closest('[data-open-extra-bank]');
       if (picker) {
         event.preventDefault();
         event.stopPropagation();
-        openBankAsSelector();
+        openBankAsSelector({ target: picker.dataset.extraTarget === 'combo' ? 'combo' : 'producto_comestible' });
         return;
       }
-
-      if (event.target.closest('#prodExtrasCloseBtn, #prodExtrasOverlay')) {
-        exitSelectionMode();
-      }
+      if (event.target.closest('#prodExtrasCloseBtn, #prodExtrasOverlay')) exitSelectionMode();
     }, true);
   }
 
@@ -445,7 +452,8 @@
   window.ProductosExtrasSelector = {
     open: openBankAsSelector,
     ensurePickButtons: ensurePickButtons,
-    renderSelectedExtrasIntoBuilder: renderSelectedExtrasIntoBuilder
+    renderSelectedExtrasIntoBuilder: renderSelectedExtrasIntoBuilder,
+    renderSelectedExtrasIntoComboBuilder: renderSelectedExtrasIntoComboBuilder
   };
 
   document.addEventListener('DOMContentLoaded', init);
