@@ -218,6 +218,7 @@
       const picker = event.target.closest('[data-open-extra-bank]');
       if (picker) {
         event.preventDefault();
+        event.stopPropagation();
         const card = picker.closest('.prodComOption');
         openBankAsSelector(picker.dataset.openExtraBank || 'append', card);
         return;
@@ -269,6 +270,11 @@
     startObserver();
     schedule();
   }
+
+  window.ProductosExtrasSelector = {
+    open: openBankAsSelector,
+    ensurePickButtons: ensurePickButtons
+  };
 
   document.addEventListener('DOMContentLoaded', init);
   document.addEventListener('sazzu:page:load', init);
