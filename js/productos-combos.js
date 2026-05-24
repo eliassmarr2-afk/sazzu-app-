@@ -24,10 +24,7 @@
       { nombre: 'Brownie', cantidad: '1 unidad', descripcion: 'Componente del pack base.', incluido: true, imagen: '' },
       { nombre: 'Café frío', cantidad: '2 unidades', descripcion: 'Componente del pack base.', incluido: true, imagen: '' }
     ],
-    opcionales: [
-      { productId: 'cookies-con-chips', cantidad: '2 unidades', agregado: false },
-      { productId: 'mini-alfajores', cantidad: '3 unidades', agregado: true }
-    ],
+    opcionales: [],
     extrasCombo: [],
     extras_ids: [],
     extras_count: 0
@@ -64,6 +61,140 @@
 
   function money(value) { return '$ ' + Number(value || 0).toLocaleString('es-AR'); }
 
+
+  function readJson(key, fallback) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+      return parsed == null ? fallback : parsed;
+    } catch (error) {
+      console.warn('[productos-combos.js] No se pudo leer storage:', key, error);
+      return fallback;
+    }
+  }
+
+  function normalizeExtraLocal(extra) {
+    const data = extra || {};
+    const id = String(data.extra_id || data.id || data.nombre || data.title || '').trim();
+
+    return {
+      id,
+      extra_id: id,
+      title: String(data.title || data.nombre || 'Extra').trim(),
+      nombre: String(data.nombre || data.title || 'Extra').trim(),
+      description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      price: Number(data.price != null ? data.price : (data.precio != null ? data.precio : 0)) || 0,
+      precio: Number(data.precio != null ? data.precio : (data.price != null ? data.price : 0)) || 0,
+      status: String(data.status || data.estado || 'Activo').trim(),
+      estado: String(data.estado || data.status || 'Activo').trim(),
+      badge: String(data.badge || '').trim(),
+      image: String(data.image || data.imagen || '').trim(),
+      imagen: String(data.imagen || data.image || '').trim(),
+      folder: String(data.folder || '').trim(),
+      tags: String(data.tags || '').trim()
+    };
+  }
+
+  function getSavedCombo(comboId) {
+    const id = String(comboId || '').trim();
+    if (!id) return null;
+
+    const combos = readJson('sazzu_productos_combos_v1', []);
+    if (!Array.isArray(combos)) return null;
+
+    return combos.find(combo =>
+      String(combo.id || combo.combo_id || '') === id
+    ) || null;
+  }
+
+  function getSavedComboExtras(comboId) {
+    const id = String(comboId || '').trim();
+    if (!id) return [];
+
+    const saved = getSavedCombo(id);
+
+    if (saved && Array.isArray(saved.extras_combo) && saved.extras_combo.length) {
+      return saved.extras_combo.map(normalizeExtraLocal).filter(extra => extra.extra_id || extra.id);
+    }
+
+    if (saved && Array.isArray(saved.extrasCombo) && saved.extrasCombo.length) {
+      return saved.extrasCombo.map(normalizeExtraLocal).filter(extra => extra.extra_id || extra.id);
+    }
+
+    const links = readJson('sazzu_entity_extra_links_v1', []);
+    if (!Array.isArray(links)) return [];
+
+    return links
+      .filter(link =>
+        link.owner_type === COMBO_LINK_OWNER_TYPE &&
+        String(link.owner_id || '') === id
+      )
+      .sort((a, b) => Number(a.orden || 0) - Number(b.orden || 0))
+      .map(link => normalizeExtraLocal(Object.assign({}, link.snapshot_extra || {}, {
+        id: link.extra_id,
+        extra_id: link.extra_id
+      })))
+      .filter(extra => extra.extra_id || extra.id);
+  }
+
+  function getComboForOpen(combo) {
+    const base = combo || COMBO_MOCK;
+    const comboId = String(base.id || base.combo_id || '').trim();
+    const saved = getSavedCombo(comboId);
+
+    if (!saved) {
+      return Object.assign({}, base, {
+        opcionales: Array.isArray(base.opcionales) ? base.opcionales : [],
+        extrasCombo: Array.isArray(base.extrasCombo) ? base.extrasCombo : []
+      });
+    }
+
+    const identity = saved.identity || {};
+
+    return Object.assign({}, base, saved, {
+      id: saved.id || saved.combo_id || comboId,
+      combo_id: saved.combo_id || saved.id || comboId,
+
+      nombre: saved.nombre || identity.nombre || base.nombre,
+      categoria: saved.categoria || identity.categoria || base.categoria,
+      badge: saved.badge || identity.badge || base.badge,
+      precio: saved.precio != null ? saved.precio : (identity.precio != null ? identity.precio : base.precio),
+      promesa: saved.promesa || identity.promesa || base.promesa,
+      estado: saved.estado || identity.estado || base.estado,
+      descripcion: saved.descripcion || identity.descripcion || base.descripcion,
+
+      imagenes: Array.isArray(saved.imagenes) && saved.imagenes.length
+        ? saved.imagenes
+        : (Array.isArray(base.imagenes) ? base.imagenes : []),
+
+      incluidos: Array.isArray(saved.incluidos)
+        ? saved.incluidos
+        : (Array.isArray(base.incluidos) ? base.incluidos : []),
+
+      opcionales: Array.isArray(saved.opcionales)
+        ? saved.opcionales
+        : [],
+
+      extrasCombo: getSavedComboExtras(comboId)
+    });
+  }
+
+  function fieldValueFromCard(card, prefix, field) {
+    if (!card) return '';
+
+    const input = Array.from(card.querySelectorAll('input, select, textarea')).find(el => {
+      const id = String(el.id || '');
+      return id.indexOf(prefix + '_') === 0 && id.endsWith('_' + field);
+    });
+
+    return input ? String(input.value || '').trim() : '';
+  }
+
+  function textFromCard(card, selector) {
+    const el = card ? card.querySelector(selector) : null;
+    return el ? String(el.textContent || '').trim() : '';
+  }
+
   function getProductoComestible(productId) {
     return PRODUCTOS_COMESTIBLES_REFERENCIA.find((product) => product.id === productId) || PRODUCTOS_COMESTIBLES_REFERENCIA[0];
   }
@@ -90,36 +221,85 @@
   }
 
   function getComboLinkedExtras(combo) {
-    if (!combo || !combo.id) return Array.isArray(combo?.extrasCombo) ? combo.extrasCombo : [];
-    const api = getExtraLinksApi();
-    if (!api || typeof api.getExtrasForOwner !== 'function') return Array.isArray(combo.extrasCombo) ? combo.extrasCombo : [];
-    const linked = api.getExtrasForOwner(COMBO_LINK_OWNER_TYPE, combo.id);
-    if (linked.length) return linked;
-    if (Array.isArray(combo.extrasCombo) && combo.extrasCombo.length && typeof api.setLinksForOwner === 'function') {
-      api.setLinksForOwner(COMBO_LINK_OWNER_TYPE, combo.id, combo.extrasCombo);
-      return api.getExtrasForOwner(COMBO_LINK_OWNER_TYPE, combo.id);
+    const comboId = String(combo && (combo.id || combo.combo_id) ? (combo.id || combo.combo_id) : '').trim();
+    if (!comboId) return [];
+
+    const savedExtras = getSavedComboExtras(comboId);
+    if (savedExtras.length) return savedExtras;
+
+    if (combo && Array.isArray(combo.extrasCombo) && combo.extrasCombo.length) {
+      return combo.extrasCombo.map(normalizeExtraLocal).filter(extra => extra.extra_id || extra.id);
     }
+
+    if (combo && Array.isArray(combo.extras_combo) && combo.extras_combo.length) {
+      return combo.extras_combo.map(normalizeExtraLocal).filter(extra => extra.extra_id || extra.id);
+    }
+
+    const api = getExtraLinksApi();
+
+    if (api && typeof api.getExtrasForOwner === 'function') {
+      const linked = api.getExtrasForOwner(COMBO_LINK_OWNER_TYPE, comboId);
+      if (linked.length) return linked.map(normalizeExtraLocal).filter(extra => extra.extra_id || extra.id);
+    }
+
     return [];
   }
 
   function collectComboExtras() {
-    return Array.from(document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard')).map((card, index) => ({
-      id: card.dataset.extraSourceId || valueOf(`combo_extra_${index}_nombre`),
-      extra_id: card.dataset.extraSourceId || valueOf(`combo_extra_${index}_extra_id`) || '',
-      nombre: valueOf(`combo_extra_${index}_nombre`),
-      title: valueOf(`combo_extra_${index}_nombre`),
-      descripcion: valueOf(`combo_extra_${index}_desc`),
-      description: valueOf(`combo_extra_${index}_desc`),
-      precio: Number(valueOf(`combo_extra_${index}_precio`) || 0),
-      price: Number(valueOf(`combo_extra_${index}_precio`) || 0),
-      estado: valueOf(`combo_extra_${index}_estado`) || 'Activo',
-      status: valueOf(`combo_extra_${index}_estado`) || 'Activo',
-      badge: valueOf(`combo_extra_${index}_badge`),
-      imagen: valueOf(`combo_extra_${index}_img`),
-      image: valueOf(`combo_extra_${index}_img`),
-      folder: valueOf(`combo_extra_${index}_folder`),
-      tags: valueOf(`combo_extra_${index}_tags`)
-    })).filter(item => item.nombre || item.extra_id);
+    const cards = Array.from(
+      document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard')
+    );
+
+    const used = new Set();
+    const extras = [];
+
+    cards.forEach((card) => {
+      const title =
+        fieldValueFromCard(card, 'combo_extra', 'nombre') ||
+        textFromCard(card, '.prodComboSelectedExtraCard__body strong') ||
+        'Extra';
+
+      const desc =
+        fieldValueFromCard(card, 'combo_extra', 'desc') ||
+        textFromCard(card, '.prodComboSelectedExtraCard__body span') ||
+        '';
+
+      const extra = normalizeExtraLocal({
+        id:
+          card.dataset.extraSourceId ||
+          fieldValueFromCard(card, 'combo_extra', 'extra_id') ||
+          fieldValueFromCard(card, 'combo_extra', 'id') ||
+          title,
+
+        extra_id:
+          card.dataset.extraSourceId ||
+          fieldValueFromCard(card, 'combo_extra', 'extra_id') ||
+          fieldValueFromCard(card, 'combo_extra', 'id') ||
+          title,
+
+        title,
+        nombre: title,
+        description: desc,
+        descripcion: desc,
+        price: fieldValueFromCard(card, 'combo_extra', 'precio'),
+        precio: fieldValueFromCard(card, 'combo_extra', 'precio'),
+        status: fieldValueFromCard(card, 'combo_extra', 'estado') || 'Activo',
+        estado: fieldValueFromCard(card, 'combo_extra', 'estado') || 'Activo',
+        badge: fieldValueFromCard(card, 'combo_extra', 'badge'),
+        image: fieldValueFromCard(card, 'combo_extra', 'img'),
+        imagen: fieldValueFromCard(card, 'combo_extra', 'img'),
+        folder: card.dataset.extraFolder || fieldValueFromCard(card, 'combo_extra', 'folder'),
+        tags: card.dataset.extraTags || fieldValueFromCard(card, 'combo_extra', 'tags')
+      });
+
+      const key = String(extra.extra_id || extra.id || '').trim().toLowerCase();
+      if (!key || used.has(key)) return;
+
+      used.add(key);
+      extras.push(extra);
+    });
+
+    return extras;
   }
 
   function mountComboLauncher(panel) {
@@ -180,17 +360,41 @@
     const slide = document.getElementById('prodComboSlide');
     const overlay = document.getElementById('prodComboOverlay');
     const body = document.getElementById('prodComboSlideBody');
+
     if (!slide || !overlay || !body) return;
-    const linkedExtras = getComboLinkedExtras(combo);
-    slide.dataset.comboId = combo.id;
-    body.innerHTML = renderComboBuilder(Object.assign({}, combo, { extrasCombo: linkedExtras }));
+
+    const comboToOpen = getComboForOpen(combo || COMBO_MOCK);
+    const comboId = comboToOpen.id || comboToOpen.combo_id || 'combo-merienda-duo';
+    const linkedExtras = getComboLinkedExtras(comboToOpen);
+
+    slide.dataset.comboId = comboId;
+
+    body.innerHTML = renderComboBuilder(Object.assign({}, comboToOpen, {
+      id: comboId,
+      combo_id: comboId,
+      extrasCombo: linkedExtras,
+      extras_combo: linkedExtras,
+      opcionales: Array.isArray(comboToOpen.opcionales) ? comboToOpen.opcionales : []
+    }));
+
     overlay.classList.add('is-active');
     slide.classList.add('is-active');
     slide.setAttribute('aria-hidden', 'false');
-    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function' && linkedExtras.length) {
+
+    if (
+      window.ProductosExtrasSelector &&
+      typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function' &&
+      linkedExtras.length
+    ) {
       window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder(linkedExtras.map(normalizeExtraForSelector));
     }
-    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') window.ProductosExtrasSelector.ensurePickButtons();
+
+    if (
+      window.ProductosExtrasSelector &&
+      typeof window.ProductosExtrasSelector.ensurePickButtons === 'function'
+    ) {
+      window.ProductosExtrasSelector.ensurePickButtons();
+    }
   }
 
   function closeComboSlide() {
