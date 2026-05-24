@@ -269,16 +269,182 @@
     const btn = document.getElementById('prodComboSaveBtn');
     const comboId = document.getElementById('prodComboSlide')?.dataset.comboId || 'nuevo-combo';
     const comboExtras = collectComboExtras();
+
     let links = [];
     const api = getExtraLinksApi();
-    if (api && typeof api.setLinksForOwner === 'function') links = api.setLinksForOwner(COMBO_LINK_OWNER_TYPE, comboId, comboExtras);
-    const payload = { combo_id: comboId, product_type: 'food_combo_product', combo: true, structure_locked: true, relation_model: 'entity_extra_links', identity: { nombre: valueOf('combo_nombre'), categoria: valueOf('combo_categoria'), badge: valueOf('combo_badge'), precio: Number(valueOf('combo_precio') || 0), promesa: valueOf('combo_promesa'), estado: valueOf('combo_estado'), descripcion: valueOf('combo_descripcion') }, imagenes: Array.from({ length: 6 }).map((_, i) => valueOf(`combo_img_${i + 1}`)).filter(Boolean), opcionales_source: 'productos_comestibles', extras_combo_source: 'extras_bank', extras_ids: links.map(link => link.extra_id).filter(Boolean), extras_count: links.length };
-    console.log('[productos-combos.js] Borrador de combo preparado con links reutilizables:', { combo: payload, extra_links: links });
+
+    if (api && typeof api.setLinksForOwner === 'function') {
+      links = api.setLinksForOwner(COMBO_LINK_OWNER_TYPE, comboId, comboExtras);
+    }
+
+    const extrasIds = comboExtras
+      .map(extra => extra.extra_id || extra.id)
+      .filter(Boolean);
+
+    const visiblePayload = {
+      combo_id: comboId,
+      id: comboId,
+      product_type: 'food_combo_product',
+      combo: true,
+      structure_locked: true,
+      relation_model: 'combo_commercial_builder',
+
+      identity: {
+        nombre: valueOf('combo_nombre'),
+        categoria: valueOf('combo_categoria'),
+        badge: valueOf('combo_badge'),
+        precio: Number(valueOf('combo_precio') || 0),
+        promesa: valueOf('combo_promesa'),
+        estado: valueOf('combo_estado'),
+        descripcion: valueOf('combo_descripcion')
+      },
+
+      nombre: valueOf('combo_nombre'),
+      categoria: valueOf('combo_categoria'),
+      badge: valueOf('combo_badge'),
+      precio: Number(valueOf('combo_precio') || 0),
+      promesa: valueOf('combo_promesa'),
+      estado: valueOf('combo_estado'),
+      descripcion: valueOf('combo_descripcion'),
+
+      imagenes: Array.from({ length: 6 })
+        .map((_, i) => valueOf(`combo_img_${i + 1}`))
+        .filter(Boolean),
+
+      opcionales_source: 'productos_comestibles',
+
+      extras_combo_source: 'extras_bank',
+      extras_combo: comboExtras,
+      extrasCombo: comboExtras,
+      extras_ids: links.length
+        ? links.map(link => link.extra_id).filter(Boolean)
+        : extrasIds,
+      extras_count: comboExtras.length,
+
+      updated_at: new Date().toISOString()
+    };
+
+    let persistedPayload = null;
+
+    if (
+      window.ProductosCombosPersist &&
+      typeof window.ProductosCombosPersist.persist === 'function'
+    ) {
+      try {
+        persistedPayload = window.ProductosCombosPersist.persist();
+      } catch (error) {
+        console.warn('[productos-combos.js] No se pudo ejecutar ProductosCombosPersist.persist():', error);
+      }
+    }
+
+    const finalPayload = Object.assign({}, persistedPayload || {}, visiblePayload, {
+      extras_combo: comboExtras,
+      extrasCombo: comboExtras,
+      extras_ids: links.length
+        ? links.map(link => link.extra_id).filter(Boolean)
+        : extrasIds,
+      extras_count: comboExtras.length,
+      extras_combo_source: 'extras_bank',
+      updated_at: new Date().toISOString()
+    });
+
+    try {
+      const key = 'sazzu_productos_combos_v1';
+      const current = JSON.parse(localStorage.getItem(key) || '[]');
+      const list = Array.isArray(current) ? current : [];
+
+      const index = list.findIndex(combo =>
+        String(combo.id || combo.combo_id || '') === String(comboId)
+      );
+
+      if (index >= 0) {
+        list[index] = Object.assign({}, list[index], finalPayload);
+      } else {
+        list.unshift(finalPayload);
+      }
+
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch (error) {
+      console.warn('[productos-combos.js] No se pudo guardar el combo en storage local:', error);
+    }
+
+    try {
+      if (!links.length && comboExtras.length) {
+        const key = 'sazzu_entity_extra_links_v1';
+        const current = JSON.parse(localStorage.getItem(key) || '[]');
+        const allLinks = Array.isArray(current) ? current : [];
+
+        const untouched = allLinks.filter(link =>
+          !(link.owner_type === COMBO_LINK_OWNER_TYPE && String(link.owner_id || '') === String(comboId))
+        );
+
+        const now = new Date().toISOString();
+
+        const fallbackLinks = comboExtras.map((extra, index) => {
+          const extraId = extra.extra_id || extra.id || extra.nombre || extra.title || `extra-${index + 1}`;
+
+          return {
+            link_id: [COMBO_LINK_OWNER_TYPE, comboId, extraId]
+              .map(value => String(value || 'item')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'item')
+              .join('__'),
+            owner_type: COMBO_LINK_OWNER_TYPE,
+            owner_id: comboId,
+            extra_id: extraId,
+            orden: index + 1,
+            estado: 'activo',
+            precio_override: null,
+            snapshot_extra: Object.assign({}, extra, {
+              id: extraId,
+              extra_id: extraId
+            }),
+            created_at: now,
+            updated_at: now
+          };
+        });
+
+        localStorage.setItem(key, JSON.stringify(untouched.concat(fallbackLinks)));
+        links = fallbackLinks;
+      }
+    } catch (error) {
+      console.warn('[productos-combos.js] No se pudo guardar fallback de links del combo:', error);
+    }
+
+    window.__PRODUCTOS_COMBO_DRAFT_LAST__ = finalPayload;
+    window.__PRODUCTOS_COMBO_EXTRA_LINKS_LAST__ = {
+      combo_id: comboId,
+      extras: comboExtras,
+      links,
+      updated_at: new Date().toISOString()
+    };
+
+    console.log('[productos-combos.js] Combo guardado con persistencia forzada:', {
+      combo: finalPayload,
+      extra_links: links,
+      extras_visibles_detectados: comboExtras.length
+    });
+
+    if (
+      window.ProductosCombosPersist &&
+      typeof window.ProductosCombosPersist.hydrate === 'function'
+    ) {
+      setTimeout(() => window.ProductosCombosPersist.hydrate(), 180);
+    }
+
     if (!btn) return;
+
     const original = btn.textContent;
     btn.textContent = 'Combo preparado';
     btn.classList.add('is-success');
-    setTimeout(() => { btn.textContent = original; btn.classList.remove('is-success'); }, 1500);
+
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('is-success');
+    }, 1500);
   }
 
   function valueOf(id) { const el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
