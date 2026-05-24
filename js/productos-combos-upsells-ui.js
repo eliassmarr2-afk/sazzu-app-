@@ -80,373 +80,71 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboSection__head{
-        border-bottom:0;
-        margin-bottom:10px;
-      }
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboSection__head{border-bottom:0;margin-bottom:10px;}
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboItems{gap:12px;}
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboIncludedActions,
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 [data-combo-add-included-option],
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 [data-add-com-option],
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboAdd,
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 button[data-combo-optional-legacy-add="1"]{display:none!important;}
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 button[data-combo-optional-legacy-trash="1"],
+      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 img[data-combo-optional-legacy-trash="1"]{display:none!important;}
 
-      body[data-page="productos"] .main .prodComboSection--optionalUpsellsV1 .prodComboItems{
-        gap:12px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellCard{
-        position:relative;
-        display:grid;
-        grid-template-columns:48px 72px minmax(0,1fr) 38px;
-        align-items:start;
-        gap:14px;
-        padding:14px;
-        border:0 !important;
-        border-radius:5px;
-        background:#F8FBFF;
-        box-shadow:0 8px 22px rgba(15,23,42,.07),0 1px 3px rgba(15,23,42,.07);
-        transition:transform .16s ease,box-shadow .16s ease,background .16s ease,opacity .16s ease;
-        cursor:pointer;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellCard:hover{
-        transform:translateY(-1px);
-        background:#F2F8FF;
-        box-shadow:0 12px 28px rgba(15,23,42,.10),0 2px 6px rgba(15,23,42,.07);
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellCard.is-disabled{
-        opacity:.72;
-      }
-
+      body[data-page="productos"] .main .prodComboUpsellCard{position:relative;display:grid;grid-template-columns:48px 72px minmax(0,1fr) 38px;align-items:start;gap:14px;padding:14px;border:0!important;border-radius:5px;background:#F8FBFF;box-shadow:0 8px 22px rgba(15,23,42,.07),0 1px 3px rgba(15,23,42,.07);transition:transform .16s ease,box-shadow .16s ease,background .16s ease,opacity .16s ease;cursor:pointer;}
+      body[data-page="productos"] .main .prodComboUpsellCard:hover{transform:translateY(-1px);background:#F2F8FF;box-shadow:0 12px 28px rgba(15,23,42,.10),0 2px 6px rgba(15,23,42,.07);}
+      body[data-page="productos"] .main .prodComboUpsellCard.is-disabled{opacity:.72;}
       body[data-page="productos"] .main .prodComboUpsellCard .prodComboItem__image,
-      body[data-page="productos"] .main .prodComboUpsellCard .prodComboToggle:not(.prodComboUpsellSwitch){
-        display:none !important;
-      }
+      body[data-page="productos"] .main .prodComboUpsellCard .prodComboToggle:not(.prodComboUpsellSwitch){display:none!important;}
 
-      body[data-page="productos"] .main .prodComboUpsellSwitch{
-        width:48px;
-        height:30px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        padding:0;
-        border:0;
-        border-radius:999px;
-        background:transparent !important;
-        color:inherit;
-        cursor:pointer;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellSwitch__track{
-        position:relative;
-        width:46px;
-        height:26px;
-        display:block;
-        border-radius:999px;
-        background:#CBD5E1;
-        box-shadow:inset 0 1px 2px rgba(15,23,42,.18);
-        transition:background .18s ease,box-shadow .18s ease;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellSwitch__knob{
-        position:absolute;
-        top:3px;
-        left:3px;
-        width:20px;
-        height:20px;
-        display:block;
-        border-radius:999px;
-        background:#fff;
-        box-shadow:0 2px 6px rgba(15,23,42,.22);
-        transition:transform .18s ease;
-      }
-
+      body[data-page="productos"] .main .prodComboUpsellSwitch{width:48px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:999px;background:transparent!important;color:inherit;cursor:pointer;}
+      body[data-page="productos"] .main .prodComboUpsellSwitch__track{position:relative;width:46px;height:26px;display:block;border-radius:999px;background:#CBD5E1;box-shadow:inset 0 1px 2px rgba(15,23,42,.18);transition:background .18s ease,box-shadow .18s ease;}
+      body[data-page="productos"] .main .prodComboUpsellSwitch__knob{position:absolute;top:3px;left:3px;width:20px;height:20px;display:block;border-radius:999px;background:#fff;box-shadow:0 2px 6px rgba(15,23,42,.22);transition:transform .18s ease;}
       body[data-page="productos"] .main .prodComboUpsellCard.is-active .prodComboUpsellSwitch__track,
-      body[data-page="productos"] .main .prodComboUpsellSwitch.is-on .prodComboUpsellSwitch__track{
-        background:#2479FF;
-        box-shadow:0 8px 18px rgba(36,121,255,.22),inset 0 1px 2px rgba(15,23,42,.12);
-      }
-
+      body[data-page="productos"] .main .prodComboUpsellSwitch.is-on .prodComboUpsellSwitch__track{background:#2479FF;box-shadow:0 8px 18px rgba(36,121,255,.22),inset 0 1px 2px rgba(15,23,42,.12);}
       body[data-page="productos"] .main .prodComboUpsellCard.is-active .prodComboUpsellSwitch__knob,
-      body[data-page="productos"] .main .prodComboUpsellSwitch.is-on .prodComboUpsellSwitch__knob{
-        transform:translateX(20px);
-      }
+      body[data-page="productos"] .main .prodComboUpsellSwitch.is-on .prodComboUpsellSwitch__knob{transform:translateX(20px);}
 
-      body[data-page="productos"] .main .prodComboUpsellImage{
-        width:64px;
-        height:64px;
-        display:grid;
-        place-items:center;
-        overflow:hidden;
-        border-radius:5px;
-        background:#EAF2FF;
-        color:#2479FF;
-        font-size:11px;
-        font-weight:950;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellImage img{
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        display:block;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellCard__body{
-        min-width:0;
-        display:grid;
-        gap:10px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellHead{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:12px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellHead strong{
-        color:#0F172A;
-        font-size:14px;
-        font-weight:950;
-        line-height:1.15;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellHead span{
-        display:block;
-        margin-top:3px;
-        color:#64748B;
-        font-size:12px;
-        font-weight:700;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPrice{
-        color:#2479FF;
-        font-size:14px;
-        font-weight:950;
-        white-space:nowrap;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellFields{
-        display:grid;
-        grid-template-columns:.8fr .75fr 1fr;
-        gap:10px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellCard .prodComboField span{
-        color:#64748B;
-      }
-
+      body[data-page="productos"] .main .prodComboUpsellImage{width:64px;height:64px;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#EAF2FF;color:#2479FF;font-size:11px;font-weight:950;}
+      body[data-page="productos"] .main .prodComboUpsellImage img{width:100%;height:100%;object-fit:cover;display:block;}
+      body[data-page="productos"] .main .prodComboUpsellCard__body{min-width:0;display:grid;gap:10px;}
+      body[data-page="productos"] .main .prodComboUpsellHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+      body[data-page="productos"] .main .prodComboUpsellHead strong{color:#0F172A;font-size:14px;font-weight:950;line-height:1.15;}
+      body[data-page="productos"] .main .prodComboUpsellHead span{display:block;margin-top:3px;color:#64748B;font-size:12px;font-weight:700;}
+      body[data-page="productos"] .main .prodComboUpsellPrice{color:#2479FF;font-size:14px;font-weight:950;white-space:nowrap;}
+      body[data-page="productos"] .main .prodComboUpsellFields{display:grid;grid-template-columns:.8fr .75fr 1fr;gap:10px;}
+      body[data-page="productos"] .main .prodComboUpsellCard .prodComboField span{color:#64748B;}
       body[data-page="productos"] .main .prodComboUpsellCard .prodComboField input,
-      body[data-page="productos"] .main .prodComboUpsellCard .prodComboField select{
-        background:#fff;
-        border:1px solid rgba(148,163,184,.28);
-        box-shadow:0 1px 1px rgba(15,23,42,.03);
-      }
+      body[data-page="productos"] .main .prodComboUpsellCard .prodComboField select{background:#fff;border:1px solid rgba(148,163,184,.28);box-shadow:0 1px 1px rgba(15,23,42,.03);}
 
-      body[data-page="productos"] .main .prodComboUpsellDelete{
-        width:34px;
-        height:34px;
-        display:grid;
-        place-items:center;
-        align-self:start;
-        border:0;
-        border-radius:5px;
-        background:#FEE2E2;
-        color:#B91C1C;
-        cursor:pointer;
-        transition:background .16s ease,transform .16s ease;
-      }
+      body[data-page="productos"] .main .prodComboUpsellDelete{width:34px;height:34px;display:grid;place-items:center;align-self:start;border:0;border-radius:5px;background:#FEE2E2;color:#B91C1C;cursor:pointer;transition:background .16s ease,transform .16s ease;}
+      body[data-page="productos"] .main .prodComboUpsellDelete:hover{background:#FECACA;transform:translateY(-1px);}
+      body[data-page="productos"] .main .prodComboUpsellDelete svg{width:17px;height:17px;display:block;}
+      body[data-page="productos"] .main .prodComboUpsellActions{display:flex;justify-content:flex-start;margin-top:12px;}
+      body[data-page="productos"] .main .prodComboUpsellAddBtn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0 14px;border:0;border-radius:5px;background:#EAF2FF;color:#2479FF;font-family:inherit;font-size:13px;font-weight:950;cursor:pointer;transition:background .16s ease,transform .16s ease;}
+      body[data-page="productos"] .main .prodComboUpsellAddBtn:hover{background:#DCEBFF;transform:translateY(-1px);}
+      body[data-page="productos"] .main .prodComboUpsellEmpty{padding:14px;border-radius:5px;background:#F8FAFC;color:#64748B;font-size:13px;font-weight:750;}
+      body[data-page="productos"] .main .prodComboUpsellEmpty strong{display:block;color:#0F172A;font-size:14px;font-weight:950;margin-bottom:4px;}
 
-      body[data-page="productos"] .main .prodComboUpsellDelete:hover{
-        background:#FECACA;
-        transform:translateY(-1px);
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellDelete svg{
-        width:17px;
-        height:17px;
-        display:block;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellActions{
-        display:flex;
-        justify-content:flex-start;
-        margin-top:12px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellAddBtn{
-        min-height:38px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        padding:0 14px;
-        border:0;
-        border-radius:5px;
-        background:#EAF2FF;
-        color:#2479FF;
-        font-family:inherit;
-        font-size:13px;
-        font-weight:950;
-        cursor:pointer;
-        transition:background .16s ease,transform .16s ease;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellAddBtn:hover{
-        background:#DCEBFF;
-        transform:translateY(-1px);
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker{
-        display:none;
-        margin-top:12px;
-        padding:14px;
-        border-radius:5px;
-        background:#FFFFFF;
-        box-shadow:0 10px 26px rgba(15,23,42,.10),0 1px 3px rgba(15,23,42,.08);
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker.is-active{
-        display:grid;
-        gap:12px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker__head{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker__head strong{
-        color:#0F172A;
-        font-size:14px;
-        font-weight:950;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker__head span{
-        display:block;
-        margin-top:3px;
-        color:#64748B;
-        font-size:12px;
-        font-weight:700;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker__close{
-        width:34px;
-        height:34px;
-        border:0;
-        border-radius:5px;
-        background:#F2F4F7;
-        color:#0F172A;
-        font-size:20px;
-        font-weight:950;
-        cursor:pointer;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellSearch{
-        width:100%;
-        min-height:40px;
-        border:1px solid #E5E7EB;
-        border-radius:5px;
-        padding:0 12px;
-        font-family:inherit;
-        font-weight:800;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickerGrid{
-        display:grid;
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:10px;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickCard{
-        display:grid;
-        grid-template-columns:54px minmax(0,1fr) auto;
-        align-items:center;
-        gap:10px;
-        padding:10px;
-        border:2px solid transparent;
-        border-radius:5px;
-        background:#F8FAFC;
-        cursor:pointer;
-        text-align:left;
-        font-family:inherit;
-      }
-
+      body[data-page="productos"] .main .prodComboUpsellPicker{display:none;margin-top:12px;padding:14px;border-radius:5px;background:#FFFFFF;box-shadow:0 10px 26px rgba(15,23,42,.10),0 1px 3px rgba(15,23,42,.08);}
+      body[data-page="productos"] .main .prodComboUpsellPicker.is-active{display:grid;gap:12px;}
+      body[data-page="productos"] .main .prodComboUpsellPicker__head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+      body[data-page="productos"] .main .prodComboUpsellPicker__head strong{color:#0F172A;font-size:14px;font-weight:950;}
+      body[data-page="productos"] .main .prodComboUpsellPicker__head span{display:block;margin-top:3px;color:#64748B;font-size:12px;font-weight:700;}
+      body[data-page="productos"] .main .prodComboUpsellPicker__close{width:34px;height:34px;border:0;border-radius:5px;background:#F2F4F7;color:#0F172A;font-size:20px;font-weight:950;cursor:pointer;}
+      body[data-page="productos"] .main .prodComboUpsellSearch{width:100%;min-height:40px;border:1px solid #E5E7EB;border-radius:5px;padding:0 12px;font-family:inherit;font-weight:800;}
+      body[data-page="productos"] .main .prodComboUpsellPickerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px;border:2px solid transparent;border-radius:5px;background:#F8FAFC;cursor:pointer;text-align:left;font-family:inherit;}
       body[data-page="productos"] .main .prodComboUpsellPickCard:hover,
-      body[data-page="productos"] .main .prodComboUpsellPickCard.is-selected{
-        border-color:#2479FF;
-        background:#EFF6FF;
-      }
+      body[data-page="productos"] .main .prodComboUpsellPickCard.is-selected{border-color:#2479FF;background:#EFF6FF;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard__image{width:54px;height:54px;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#EAF2FF;color:#2479FF;font-size:10px;font-weight:950;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard__image img{width:100%;height:100%;object-fit:cover;display:block;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard strong{color:#0F172A;font-size:13px;font-weight:950;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard span{display:block;margin-top:3px;color:#64748B;font-size:11px;font-weight:750;}
+      body[data-page="productos"] .main .prodComboUpsellPickCard b{color:#2479FF;font-size:13px;font-weight:950;white-space:nowrap;}
+      body[data-page="productos"] .main .prodComboUpsellPicker__actions{display:flex;justify-content:flex-end;}
+      body[data-page="productos"] .main .prodComboUpsellPickerConfirm{min-height:38px;padding:0 14px;border:0;border-radius:5px;background:#2479FF;color:#fff;font-family:inherit;font-size:13px;font-weight:950;cursor:pointer;}
 
-      body[data-page="productos"] .main .prodComboUpsellPickCard__image{
-        width:54px;
-        height:54px;
-        display:grid;
-        place-items:center;
-        overflow:hidden;
-        border-radius:5px;
-        background:#EAF2FF;
-        color:#2479FF;
-        font-size:10px;
-        font-weight:950;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickCard__image img{
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        display:block;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickCard strong{
-        color:#0F172A;
-        font-size:13px;
-        font-weight:950;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickCard span{
-        display:block;
-        margin-top:3px;
-        color:#64748B;
-        font-size:11px;
-        font-weight:750;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickCard b{
-        color:#2479FF;
-        font-size:13px;
-        font-weight:950;
-        white-space:nowrap;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPicker__actions{
-        display:flex;
-        justify-content:flex-end;
-      }
-
-      body[data-page="productos"] .main .prodComboUpsellPickerConfirm{
-        min-height:38px;
-        padding:0 14px;
-        border:0;
-        border-radius:5px;
-        background:#2479FF;
-        color:#fff;
-        font-family:inherit;
-        font-size:13px;
-        font-weight:950;
-        cursor:pointer;
-      }
-
-      @media(max-width:980px){
-        body[data-page="productos"] .main .prodComboUpsellCard{
-          grid-template-columns:48px minmax(0,1fr) 38px;
-        }
-        body[data-page="productos"] .main .prodComboUpsellImage{
-          display:none;
-        }
-        body[data-page="productos"] .main .prodComboUpsellFields,
-        body[data-page="productos"] .main .prodComboUpsellPickerGrid{
-          grid-template-columns:1fr;
-        }
-      }
+      @media(max-width:980px){body[data-page="productos"] .main .prodComboUpsellCard{grid-template-columns:48px minmax(0,1fr) 38px;}body[data-page="productos"] .main .prodComboUpsellImage{display:none;}body[data-page="productos"] .main .prodComboUpsellFields,body[data-page="productos"] .main .prodComboUpsellPickerGrid{grid-template-columns:1fr;}}
     `;
     document.head.appendChild(style);
   }
@@ -488,36 +186,6 @@
     return field ? String(field.value || '').trim() : '';
   }
 
-  function findProductSelect(card) {
-    return Array.from(card.querySelectorAll('select')).find(function (select) {
-      return String(select.id || '').includes('combo_opcional_') && String(select.id || '').endsWith('_product');
-    }) || null;
-  }
-
-  function cardIndex(card) {
-    const field = card.querySelector('input[id^="combo_opcional_"], select[id^="combo_opcional_"], textarea[id^="combo_opcional_"]');
-    const match = field && String(field.id || '').match(/^combo_opcional_(\d+)_/);
-    if (match) return Number(match[1]);
-    const list = card.closest('.prodComboItems');
-    return list ? Array.from(list.querySelectorAll('[data-combo-upsell-card], .prodComboItem--product')).indexOf(card) : 0;
-  }
-
-  function extractCardData(card) {
-    const select = findProductSelect(card);
-    const productId = card.dataset.productId || (select ? select.value : '') || fieldValueBySuffix(card, '_product') || 'cookies-con-chips';
-    const product = getProduct(productId);
-    const enabledRaw = String(card.dataset.upsellEnabled || '').trim();
-    const isOn = enabledRaw ? enabledRaw === '1' : (card.classList.contains('is-added') || !card.classList.contains('is-optional'));
-    const estadoRaw = fieldValueBySuffix(card, '_estado');
-    return {
-      product_id: product.id,
-      cantidad: fieldValueBySuffix(card, '_cantidad') || '1 unidad',
-      estadoVisual: String(estadoRaw || '').toLowerCase() === 'oculto' ? 'Oculto' : 'Visible',
-      activo: isOn,
-      snapshot_producto: product
-    };
-  }
-
   function buildUpsellCardInner(index, data) {
     const product = normalizeProduct((data && data.snapshot_producto) || getProduct(data && data.product_id));
     const isOn = !data || data.activo !== false;
@@ -544,23 +212,9 @@
   function buildUpsellCard(index, data) {
     const product = normalizeProduct((data && data.snapshot_producto) || getProduct(data && data.product_id));
     const isOn = !data || data.activo !== false;
-    return '<article class="prodComboItem prodComboItem--product prodComboUpsellCard ' + (isOn ? 'is-active' : 'is-disabled') + '" data-combo-upsell-card="1" data-combo-upsell-enhanced="1" data-product-id="' + escapeHtml(product.id) + '" data-upsell-enabled="' + (isOn ? '1' : '0') + '">' +
+    return '<article class="prodComboItem prodComboItem--product prodComboUpsellCard ' + (isOn ? 'is-active' : 'is-disabled') + '" data-combo-upsell-card="1" data-combo-upsell-enhanced="1" data-combo-upsell-source="picker" data-product-id="' + escapeHtml(product.id) + '" data-upsell-enabled="' + (isOn ? '1' : '0') + '">' +
       buildUpsellCardInner(index, Object.assign({}, data || {}, { product_id: product.id, snapshot_producto: product })) +
     '</article>';
-  }
-
-  function normalizeCard(card) {
-    if (!card) return;
-    if (card.dataset.comboUpsellEnhanced !== '1') {
-      const index = cardIndex(card);
-      const data = extractCardData(card);
-      card.className = 'prodComboItem prodComboItem--product prodComboUpsellCard ' + (data.activo ? 'is-active' : 'is-disabled');
-      card.dataset.comboUpsellCard = '1';
-      card.dataset.comboUpsellEnhanced = '1';
-      card.dataset.productId = data.product_id;
-      card.dataset.upsellEnabled = data.activo ? '1' : '0';
-      card.innerHTML = buildUpsellCardInner(index, data);
-    }
   }
 
   function currentComboId() {
@@ -568,11 +222,56 @@
     return String(slide && slide.dataset.comboId ? slide.dataset.comboId : 'combo-borrador').trim();
   }
 
-  function existingProductIds() {
+  function optionalList() {
     const section = findOptionalSection();
-    const list = section ? section.querySelector('.prodComboItems') : null;
+    return section ? section.querySelector('.prodComboItems') : null;
+  }
+
+  function ensureEmptyState(list) {
+    if (!list) return;
+    const hasCards = list.querySelector('[data-combo-upsell-card][data-combo-upsell-source="picker"]');
+    const empty = list.querySelector('[data-combo-upsell-empty]');
+    if (hasCards && empty) empty.remove();
+    if (!hasCards && !empty) {
+      list.innerHTML = '<div class="prodComboUpsellEmpty" data-combo-upsell-empty="1"><strong>Sin productos upsell todavía</strong><span>Usá + Agregar producto upsell para traer productos comestibles existentes. No se crean opciones manuales en esta sección.</span></div>';
+    }
+  }
+
+  function removeLegacyOptionalControls(section, list) {
+    if (!section || !list) return;
+
+    Array.from(section.querySelectorAll('.prodComboIncludedActions')).forEach(function (node) { node.remove(); });
+    Array.from(section.querySelectorAll('button')).forEach(function (button) {
+      const text = String(button.textContent || '').trim().toLowerCase();
+      if (button.matches('[data-combo-upsell-add], [data-combo-upsell-picker-close], [data-combo-upsell-pick], [data-combo-upsell-confirm], [data-combo-upsell-toggle], [data-combo-upsell-delete]')) return;
+      if (text.includes('agregar opción') || button.matches('[data-combo-add-included-option], [data-add-com-option], .prodComboAdd')) {
+        button.dataset.comboOptionalLegacyAdd = '1';
+        button.remove();
+        return;
+      }
+      if (button.querySelector('img') || text.includes('🗑') || text.includes('borrar') || text.includes('eliminar') || text.includes('trash')) {
+        button.dataset.comboOptionalLegacyTrash = '1';
+        button.remove();
+      }
+    });
+
+    Array.from(list.querySelectorAll('img, picture, figure')).forEach(function (node) {
+      if (node.closest('.prodComboUpsellImage') || node.closest('[data-combo-upsell-picker]')) return;
+      node.dataset.comboOptionalLegacyTrash = '1';
+      node.remove();
+    });
+
+    Array.from(list.querySelectorAll('.prodComboItem--product:not([data-combo-upsell-source="picker"]), [data-combo-upsell-card]:not([data-combo-upsell-source="picker"])')).forEach(function (node) {
+      node.remove();
+    });
+
+    ensureEmptyState(list);
+  }
+
+  function existingProductIds() {
+    const list = optionalList();
     if (!list) return new Set();
-    return new Set(Array.from(list.querySelectorAll('[data-combo-upsell-card]')).map(function (card) { return String(card.dataset.productId || '').trim(); }).filter(Boolean));
+    return new Set(Array.from(list.querySelectorAll('[data-combo-upsell-card][data-combo-upsell-source="picker"]')).map(function (card) { return String(card.dataset.productId || '').trim(); }).filter(Boolean));
   }
 
   function nextIndex(list) {
@@ -582,7 +281,7 @@
         return match ? Number(match[1]) : -1;
       })
       .filter(function (n) { return n >= 0; });
-    return ids.length ? Math.max.apply(Math, ids) + 1 : list.querySelectorAll('[data-combo-upsell-card], .prodComboItem--product').length;
+    return ids.length ? Math.max.apply(Math, ids) + 1 : list.querySelectorAll('[data-combo-upsell-card]').length;
   }
 
   function ensureActions(section, list) {
@@ -619,7 +318,7 @@
     grid.innerHTML = products.length ? products.map(function (product) {
       const image = product.imagen ? '<img src="' + escapeHtml(product.imagen) + '" alt="">' : '<span>IMG</span>';
       return '<button type="button" class="prodComboUpsellPickCard ' + (pendingSelected.has(product.id) ? 'is-selected' : '') + '" data-combo-upsell-pick="1" data-product-id="' + escapeHtml(product.id) + '"><div class="prodComboUpsellPickCard__image">' + image + '</div><div><strong>' + escapeHtml(product.nombre) + '</strong><span>' + escapeHtml(product.categoria || 'Producto comestible') + '</span></div><b>+ ' + escapeHtml(money(product.precio)) + '</b></button>';
-    }).join('') : '<div class="prodComboIncludedEmpty">No hay productos disponibles para sumar.</div>';
+    }).join('') : '<div class="prodComboUpsellEmpty"><strong>No hay productos disponibles</strong><span>Ya seleccionaste todos los productos comestibles disponibles para este combo.</span></div>';
   }
 
   function openPicker() {
@@ -644,6 +343,8 @@
     const section = findOptionalSection();
     const list = section ? section.querySelector('.prodComboItems') : null;
     if (!list || !pendingSelected.size) { closePicker(); return; }
+    const empty = list.querySelector('[data-combo-upsell-empty]');
+    if (empty) empty.remove();
     let index = nextIndex(list);
     pendingSelected.forEach(function (productId) {
       if (existingProductIds().has(productId)) return;
@@ -670,8 +371,9 @@
     if (!list) return;
     section.classList.add('prodComboSection--optionalUpsellsV1');
     list.classList.add('prodComboUpsellList');
-    Array.from(list.querySelectorAll('.prodComboItem--product, [data-combo-upsell-card]')).forEach(normalizeCard);
+    removeLegacyOptionalControls(section, list);
     ensureActions(section, list);
+    ensureEmptyState(list);
   }
 
   function scheduleEnhance() {
@@ -684,8 +386,9 @@
   }
 
   function deleteUpsell(card) {
-    if (!card) return;
-    card.remove();
+    const list = card ? card.closest('.prodComboItems') : optionalList();
+    if (card) card.remove();
+    ensureEmptyState(list);
     persistOptionalProducts();
     renderPicker('');
   }
@@ -706,10 +409,9 @@
   }
 
   function collectOptionalProducts() {
-    const section = findOptionalSection();
-    const list = section ? section.querySelector('.prodComboItems') : null;
+    const list = optionalList();
     if (!list) return [];
-    return Array.from(list.querySelectorAll('[data-combo-upsell-card]')).map(function (card, index) {
+    return Array.from(list.querySelectorAll('[data-combo-upsell-card][data-combo-upsell-source="picker"]')).map(function (card, index) {
       const product = getProduct(card.dataset.productId);
       const estado = fieldValueBySuffix(card, '_estado') || 'Visible';
       return {
@@ -737,6 +439,8 @@
       section_title: 'Agregados opcionales',
       source: 'productos_comestibles',
       relation_model: 'combo_optional_product_links',
+      manual_creation_enabled: false,
+      default_cards_enabled: false,
       items: collectOptionalProducts(),
       updated_at: new Date().toISOString()
     };
@@ -759,6 +463,14 @@
     document.body.dataset.productosCombosUpsellsUiBound = '1';
 
     document.addEventListener('click', function (event) {
+      const legacyAdd = event.target.closest('[data-combo-add-included-option], [data-add-com-option], .prodComboAdd');
+      if (legacyAdd && legacyAdd.closest('.prodComboSection--optionalUpsellsV1')) {
+        event.preventDefault();
+        event.stopPropagation();
+        legacyAdd.remove();
+        return;
+      }
+
       const add = event.target.closest('[data-combo-upsell-add]');
       if (add) {
         event.preventDefault();
