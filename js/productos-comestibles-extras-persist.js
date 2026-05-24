@@ -24,8 +24,11 @@
   }
 
   function writeJson(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); }
-    catch (error) { console.warn('[productos-comestibles-extras-persist.js] No se pudo guardar storage:', key, error); }
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.warn('[productos-comestibles-extras-persist.js] No se pudo guardar storage:', key, error);
+    }
   }
 
   function normalizeExtra(extra) {
@@ -50,85 +53,99 @@
     };
   }
 
-  function getExtraKey(extra) {
-    const data = normalizeExtra(extra);
-    return String(data.extra_id || data.id || data.title || data.nombre || '').trim().toLowerCase();
+  function readLinks() {
+    const parsed = readJson(LINKS_STORAGE_KEY, []);
+    return Array.isArray(parsed) ? parsed : [];
   }
 
-  function fallbackApi() {
-    function nowIso() { return new Date().toISOString(); }
-    function readLinks() {
-      const parsed = readJson(LINKS_STORAGE_KEY, []);
-      return Array.isArray(parsed) ? parsed : [];
-    }
-    function writeLinks(links) { writeJson(LINKS_STORAGE_KEY, Array.isArray(links) ? links : []); }
-    function sameOwner(link, ownerType, ownerId) {
-      return link && link.owner_type === ownerType && String(link.owner_id || '') === String(ownerId || '');
-    }
-    return {
-      getExtrasForOwner(ownerType, ownerId) {
-        return readLinks()
-          .filter(function (link) { return sameOwner(link, ownerType, ownerId); })
-          .sort(function (a, b) { return Number(a.orden || 0) - Number(b.orden || 0); })
-          .map(function (link) {
-            return Object.assign({}, link.snapshot_extra || {}, {
-              extra_id: link.extra_id,
-              link_id: link.link_id,
-              orden: link.orden,
-              link_estado: link.estado,
-              precio_override: link.precio_override
-            });
-          });
-      },
-      setLinksForOwner(ownerType, ownerId, extras) {
-        const incoming = Array.isArray(extras) ? extras : [];
-        const all = readLinks();
-        const previous = new Map(all.filter(function (link) { return sameOwner(link, ownerType, ownerId); }).map(function (link) { return [String(link.extra_id), link]; }));
-        const untouched = all.filter(function (link) { return !sameOwner(link, ownerType, ownerId); });
-        const links = incoming.map(function (extra, index) {
-          const snap = normalizeExtra(extra);
-          const old = previous.get(String(snap.extra_id));
-          return {
-            link_id: [ownerType, ownerId, snap.extra_id].map(slugify).join('__'),
-            owner_type: ownerType,
-            owner_id: ownerId,
-            extra_id: snap.extra_id,
-            orden: index + 1,
-            estado: 'activo',
-            precio_override: null,
-            snapshot_extra: snap,
-            created_at: old && old.created_at ? old.created_at : nowIso(),
-            updated_at: nowIso()
-          };
-        });
-        writeLinks(untouched.concat(links));
-        return links;
-      }
-    };
+  function writeLinks(links) {
+    writeJson(LINKS_STORAGE_KEY, Array.isArray(links) ? links : []);
   }
 
-  function api() { return window.ProductosExtraLinks || fallbackApi(); }
+  function sameOwner(link, ownerType, ownerId) {
+    return link && link.owner_type === ownerType && String(link.owner_id || '') === String(ownerId || '');
+  }
+
+  function setLinksForOwner(ownerType, ownerId, extras) {
+    const owner = String(ownerId || '').trim();
+    if (!owner) return [];
+    const incoming = Array.isArray(extras) ? extras.map(normalizeExtra) : [];
+    const all = readLinks();
+    const previous = new Map(all.filter(function (link) {
+      return sameOwner(link, ownerType, owner);
+    }).map(function (link) {
+      return [String(link.extra_id), link];
+    }));
+    const untouched = all.filter(function (link) {
+      return !sameOwner(link, ownerType, owner);
+    });
+    const now = new Date().toISOString();
+    const nextOwnerLinks = incoming.map(function (extra, index) {
+      const old = previous.get(String(extra.extra_id));
+      return {
+        link_id: [ownerType, owner, extra.extra_id].map(slugify).join('__'),
+        owner_type: ownerType,
+        owner_id: owner,
+        extra_id: extra.extra_id,
+        orden: index + 1,
+        estado: 'activo',
+        precio_override: null,
+        snapshot_extra: extra,
+        created_at: old && old.created_at ? old.created_at : now,
+        updated_at: now
+      };
+    });
+    writeLinks(untouched.concat(nextOwnerLinks));
+    try {
+      window.dispatchEvent(new CustomEvent('productos-extra-links:changed', {
+        detail: { owner_type: ownerType, owner_id: owner, links: nextOwnerLinks }
+      }));
+    } catch (_) {}
+    return nextOwnerLinks;
+  }
+
+  function getExtrasForOwner(ownerType, ownerId) {
+    const owner = String(ownerId || '').trim();
+    if (!owner) return [];
+    return readLinks()
+      .filter(function (link) { return sameOwner(link, ownerType, owner); })
+      .sort(function (a, b) { return Number(a.orden || 0) - Number(b.orden || 0); })
+      .map(function (link) {
+        return normalizeExtra(Object.assign({}, link.snapshot_extra || {}, {
+          id: link.extra_id,
+          extra_id: link.extra_id
+        }));
+      });
+  }
+
+  function productIdFromSlide() {
+    const slide = document.getElementById('prodComSlide');
+    return String(slide && slide.dataset.productId ? slide.dataset.productId : '').trim();
+  }
 
   function fieldValue(card, prefix, field) {
-    const input = Array.from(card.querySelectorAll('input, select, textarea')).find(function (el) {
+    const direct = Array.from(card.querySelectorAll('input, select, textarea')).find(function (el) {
       const id = String(el.id || '');
       return id.indexOf(prefix + '_') === 0 && id.endsWith('_' + field);
     });
-    return input ? String(input.value || '').trim() : '';
+    return direct ? String(direct.value || '').trim() : '';
   }
 
-  function collectSelectedExtras() {
+  function collectSelectedExtrasFromDom() {
     const cards = Array.from(document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComSelectedExtraCard'));
     const used = new Set();
     const extras = [];
+
     cards.forEach(function (card) {
+      const title = fieldValue(card, 'extras', 'nombre') || (card.querySelector('.prodComSelectedExtraCard__body strong') || {}).textContent || '';
+      const desc = fieldValue(card, 'extras', 'desc') || (card.querySelector('.prodComSelectedExtraCard__body span') || {}).textContent || '';
       const extra = normalizeExtra({
-        id: card.dataset.extraSourceId || fieldValue(card, 'extras', 'extra_id') || fieldValue(card, 'extras', 'id') || fieldValue(card, 'extras', 'nombre'),
-        extra_id: card.dataset.extraSourceId || fieldValue(card, 'extras', 'extra_id') || fieldValue(card, 'extras', 'id'),
-        title: fieldValue(card, 'extras', 'nombre') || (card.querySelector('.prodComSelectedExtraCard__body strong') || {}).textContent,
-        nombre: fieldValue(card, 'extras', 'nombre') || (card.querySelector('.prodComSelectedExtraCard__body strong') || {}).textContent,
-        description: fieldValue(card, 'extras', 'desc') || (card.querySelector('.prodComSelectedExtraCard__body span') || {}).textContent,
-        descripcion: fieldValue(card, 'extras', 'desc') || (card.querySelector('.prodComSelectedExtraCard__body span') || {}).textContent,
+        id: card.dataset.extraSourceId || fieldValue(card, 'extras', 'extra_id') || fieldValue(card, 'extras', 'id') || title,
+        extra_id: card.dataset.extraSourceId || fieldValue(card, 'extras', 'extra_id') || fieldValue(card, 'extras', 'id') || title,
+        title: title,
+        nombre: title,
+        description: desc,
+        descripcion: desc,
         price: fieldValue(card, 'extras', 'precio'),
         precio: fieldValue(card, 'extras', 'precio'),
         status: fieldValue(card, 'extras', 'estado') || 'Activo',
@@ -139,28 +156,24 @@
         folder: card.dataset.extraFolder || fieldValue(card, 'extras', 'folder'),
         tags: card.dataset.extraTags || fieldValue(card, 'extras', 'tags')
       });
-      const key = getExtraKey(extra);
+      const key = String(extra.extra_id || extra.id || '').trim().toLowerCase();
       if (!key || used.has(key)) return;
       used.add(key);
       extras.push(extra);
     });
+
     return extras;
   }
 
-  function currentProductId() {
-    const slide = document.getElementById('prodComSlide');
-    return String(slide && slide.dataset.productId ? slide.dataset.productId : '').trim();
-  }
-
-  function updateProductStorage(productId, links) {
-    if (!productId) return;
+  function mirrorExtrasIntoProduct(productId, extras) {
     const productos = readJson(PRODUCTOS_STORAGE_KEY, []);
-    if (!Array.isArray(productos)) return;
-    const ids = (Array.isArray(links) ? links : []).map(function (link) { return link.extra_id; }).filter(Boolean);
+    if (!Array.isArray(productos) || !productId) return;
+    const ids = extras.map(function (extra) { return extra.extra_id || extra.id; }).filter(Boolean);
     const next = productos.map(function (product) {
-      if (String(product.id || product.product_id || '') !== String(productId)) return product;
+      const id = String(product.id || product.product_id || '').trim();
+      if (id !== String(productId)) return product;
       return Object.assign({}, product, {
-        extras: [],
+        extras: extras,
         extras_ids: ids,
         extras_count: ids.length,
         relation_model: 'entity_extra_links'
@@ -170,73 +183,97 @@
   }
 
   function persistCurrentProductExtras() {
-    const productId = currentProductId();
+    const productId = productIdFromSlide();
     if (!productId) return [];
-    const extras = collectSelectedExtras();
-    const links = api().setLinksForOwner(OWNER_TYPE, productId, extras);
-    updateProductStorage(productId, links);
-    window.__PRODUCTOS_COMESTIBLES_EXTRA_LINKS_LAST__ = { product_id: productId, extras: extras, links: links };
+    const extras = collectSelectedExtrasFromDom();
+    const links = setLinksForOwner(OWNER_TYPE, productId, extras);
+    mirrorExtrasIntoProduct(productId, extras);
+    window.__PRODUCTOS_COMESTIBLES_EXTRA_LINKS_LAST__ = {
+      product_id: productId,
+      extras: extras,
+      links: links
+    };
     return links;
   }
 
-  function currentRenderedExtraKey() {
-    return Array.from(document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComSelectedExtraCard'))
-      .map(function (card) { return String(card.dataset.extraSourceId || '').trim(); })
-      .filter(Boolean)
-      .join('|');
+  function renderExtrasIntoProductSlide(extras) {
+    if (!extras.length) return false;
+    if (!window.ProductosExtrasSelector || typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder !== 'function') return false;
+    window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder(extras);
+    if (typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') {
+      window.ProductosExtrasSelector.ensurePickButtons();
+    }
+    return true;
   }
 
   function hydrateCurrentProductExtras() {
-    const productId = currentProductId();
+    const productId = productIdFromSlide();
     const slide = document.getElementById('prodComSlide');
     if (!productId || !slide || !slide.classList.contains('is-active')) return;
-    const extras = api().getExtrasForOwner(OWNER_TYPE, productId).map(normalizeExtra);
-    if (!extras.length) return;
-    const desiredKey = extras.map(function (extra) { return extra.extra_id || extra.id; }).join('|');
-    if (desiredKey && desiredKey === currentRenderedExtraKey()) return;
-    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder === 'function') {
-      window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder(extras);
-      if (typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') window.ProductosExtrasSelector.ensurePickButtons();
+
+    const linked = getExtrasForOwner(OWNER_TYPE, productId);
+    if (linked.length && renderExtrasIntoProductSlide(linked)) return;
+
+    const productos = readJson(PRODUCTOS_STORAGE_KEY, []);
+    const product = Array.isArray(productos) ? productos.find(function (item) {
+      return String(item.id || item.product_id || '') === String(productId);
+    }) : null;
+    const mirrored = product && Array.isArray(product.extras) ? product.extras.map(normalizeExtra) : [];
+    if (mirrored.length) {
+      setLinksForOwner(OWNER_TYPE, productId, mirrored);
+      renderExtrasIntoProductSlide(mirrored);
     }
   }
 
-  function scheduleHydrate() {
+  function scheduleHydrate(delay) {
     window.clearTimeout(hydrateTimer);
-    hydrateTimer = window.setTimeout(hydrateCurrentProductExtras, 180);
+    hydrateTimer = window.setTimeout(hydrateCurrentProductExtras, delay || 220);
+  }
+
+  function schedulePersist() {
+    [40, 180, 420].forEach(function (delay) {
+      setTimeout(persistCurrentProductExtras, delay);
+    });
   }
 
   function bind() {
-    if (document.body.dataset.productosComestiblesExtrasPersistBound === '1') return;
-    document.body.dataset.productosComestiblesExtrasPersistBound = '1';
+    if (document.body.dataset.productosComestiblesExtrasPersistV2Bound === '1') return;
+    document.body.dataset.productosComestiblesExtrasPersistV2Bound = '1';
 
     document.addEventListener('click', function (event) {
       if (event.target.closest('#prodComSaveBtn')) {
-        setTimeout(persistCurrentProductExtras, 0);
-        setTimeout(persistCurrentProductExtras, 120);
+        schedulePersist();
         return;
       }
       if (event.target.closest('[data-edit-com]')) {
-        setTimeout(scheduleHydrate, 240);
-        setTimeout(scheduleHydrate, 600);
+        [220, 520, 950].forEach(function (delay) { setTimeout(function () { scheduleHydrate(60); }, delay); });
+        return;
       }
-    }, false);
+      if (event.target.closest('#prodExtrasSelectConfirm')) {
+        setTimeout(function () {
+          const slide = document.getElementById('prodComSlide');
+          if (slide && slide.classList.contains('is-active') && productIdFromSlide()) persistCurrentProductExtras();
+        }, 260);
+      }
+    }, true);
 
     window.addEventListener('productos-comestibles:saved', function () {
-      setTimeout(persistCurrentProductExtras, 80);
-      setTimeout(scheduleHydrate, 200);
+      schedulePersist();
+      setTimeout(function () { scheduleHydrate(60); }, 500);
     });
   }
 
   function init() {
     if (!document.querySelector('body[data-page="productos"]')) return;
     bind();
-    scheduleHydrate();
+    scheduleHydrate(300);
   }
 
   window.ProductosComestiblesExtrasPersist = {
     persist: persistCurrentProductExtras,
     hydrate: hydrateCurrentProductExtras,
-    collect: collectSelectedExtras
+    collect: collectSelectedExtrasFromDom,
+    get: function (productId) { return getExtrasForOwner(OWNER_TYPE, productId); }
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
