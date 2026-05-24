@@ -123,6 +123,12 @@
     write(list);
     window.__lastComboPayload = list[index];
     window.__PRODUCTOS_COMBO_EXTRAS_PAYLOAD_FIX_LAST__ = list[index];
+
+    if (window.ProductosPayloads && typeof window.ProductosPayloads.renderLocalRows === 'function') {
+      setTimeout(function () { window.ProductosPayloads.renderLocalRows(); }, 20);
+      setTimeout(function () { window.ProductosPayloads.renderLocalRows(); }, 180);
+    }
+
     return list[index];
   }
 
@@ -173,15 +179,16 @@
 
   function bind() {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.body.dataset.comboExtrasPayloadFix === 'capture1') return;
-    document.body.dataset.comboExtrasPayloadFix = 'capture1';
+    if (document.body.dataset.comboExtrasPayloadFix === 'windowcapture1') return;
+    document.body.dataset.comboExtrasPayloadFix = 'windowcapture1';
+
+    window.addEventListener('click', function (event) {
+      if (event.target && event.target.closest && event.target.closest('#prodComboSaveBtn')) {
+        captureVisibleExtras();
+      }
+    }, true);
 
     document.addEventListener('click', function (event) {
-      if (event.target.closest('#prodComboSaveBtn')) {
-        captureVisibleExtras();
-        return;
-      }
-
       var edit = event.target.closest('[data-edit-local-product]');
       if (edit) scheduleRender(edit.dataset.editLocalProduct);
     }, true);
