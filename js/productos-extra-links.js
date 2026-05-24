@@ -238,9 +238,11 @@
     document.body.appendChild(script);
   }
 
-  function autoloadComboUis() {
+  function autoloadProductModules() {
     autoloadScript('productos-combos-incluidos-ui-js', '../js/productos-combos-incluidos-ui.js', 'ProductosCombosIncluidosUi');
     autoloadScript('productos-combos-upsells-ui-js', '../js/productos-combos-upsells-ui.js', 'ProductosCombosUpsellsUi');
+    autoloadScript('productos-comestibles-extras-persist-js', '../js/productos-comestibles-extras-persist.js', 'ProductosComestiblesExtrasPersist');
+    autoloadScript('productos-combos-persist-js', '../js/productos-combos-persist.js', 'ProductosCombosPersist');
   }
 
   window.ProductosExtraLinks = {
@@ -260,10 +262,10 @@
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoloadComboUis);
+    document.addEventListener('DOMContentLoaded', autoloadProductModules);
   } else {
-    autoloadComboUis();
+    autoloadProductModules();
   }
-  document.addEventListener('sazzu:page:load', autoloadComboUis);
-  window.addEventListener('load', autoloadComboUis);
+  document.addEventListener('sazzu:page:load', autoloadProductModules);
+  window.addEventListener('load', autoloadProductModules);
 })();
