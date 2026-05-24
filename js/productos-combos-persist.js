@@ -19,6 +19,15 @@
     catch (error) { console.warn('[productos-combos-persist.js] No se pudo guardar storage:', key, error); }
   }
 
+  function slugify(value) {
+    return String(value || 'item')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'item';
+  }
+  
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -114,6 +123,103 @@
     return window.ProductosExtraLinks || null;
   }
 
+  function setComboExtraLinks(comboId, extras) {
+    const id = String(comboId || '').trim();
+    if (!id) return [];
+
+    const normalizedExtras = (Array.isArray(extras) ? extras : [])
+      .map(normalizeExtra)
+      .filter(function (extra) {
+        return extra.extra_id || extra.id;
+      });
+
+    const api = getExtraLinksApi();
+
+    if (api && typeof api.setLinksForOwner === 'function') {
+      return api.setLinksForOwner(LINKS_OWNER_TYPE, id, normalizedExtras);
+    }
+
+    const allLinks = readJson('sazzu_entity_extra_links_v1', []);
+    const rows = Array.isArray(allLinks) ? allLinks : [];
+
+    const previous = new Map(
+      rows
+        .filter(function (link) {
+          return link.owner_type === LINKS_OWNER_TYPE && String(link.owner_id || '') === id;
+        })
+        .map(function (link) {
+          return [String(link.extra_id), link];
+        })
+    );
+
+    const untouched = rows.filter(function (link) {
+      return !(link.owner_type === LINKS_OWNER_TYPE && String(link.owner_id || '') === id);
+    });
+
+    const now = new Date().toISOString();
+
+    const nextLinks = normalizedExtras.map(function (extra, index) {
+      const old = previous.get(String(extra.extra_id));
+
+      return {
+        link_id: [LINKS_OWNER_TYPE, id, extra.extra_id].map(slugify).join('__'),
+        owner_type: LINKS_OWNER_TYPE,
+        owner_id: id,
+        extra_id: extra.extra_id,
+        orden: index + 1,
+        estado: 'activo',
+        precio_override: null,
+        snapshot_extra: extra,
+        created_at: old && old.created_at ? old.created_at : now,
+        updated_at: now
+      };
+    });
+
+    writeJson('sazzu_entity_extra_links_v1', untouched.concat(nextLinks));
+
+    try {
+      window.dispatchEvent(new CustomEvent('productos-extra-links:changed', {
+        detail: {
+          owner_type: LINKS_OWNER_TYPE,
+          owner_id: id,
+          links: nextLinks
+        }
+      }));
+    } catch (_) {}
+
+    return nextLinks;
+  }
+
+  function getComboExtrasFromLinks(comboId) {
+    const id = String(comboId || '').trim();
+    if (!id) return [];
+
+    const api = getExtraLinksApi();
+
+    if (api && typeof api.getExtrasForOwner === 'function') {
+      const linked = api.getExtrasForOwner(LINKS_OWNER_TYPE, id).map(normalizeExtra);
+      if (linked.length) return linked;
+    }
+
+    const allLinks = readJson('sazzu_entity_extra_links_v1', []);
+    const rows = Array.isArray(allLinks) ? allLinks : [];
+
+    return rows
+      .filter(function (link) {
+        return link.owner_type === LINKS_OWNER_TYPE && String(link.owner_id || '') === id;
+      })
+      .sort(function (a, b) {
+        return Number(a.orden || 0) - Number(b.orden || 0);
+      })
+      .map(function (link) {
+        return normalizeExtra(Object.assign({}, link.snapshot_extra || {}, {
+          id: link.extra_id,
+          extra_id: link.extra_id
+        }));
+      });
+  }
+
+
   function getOptionalPayloadFromUi(comboId) {
     if (window.ProductosCombosUpsellsUi && typeof window.ProductosCombosUpsellsUi.persist === 'function') {
       return window.ProductosCombosUpsellsUi.persist();
@@ -126,15 +232,17 @@
   function buildComboPayload() {
     const comboId = currentComboId() || 'combo-borrador';
     const optionalPayload = getOptionalPayloadFromUi(comboId);
+
     const includedPayload = window.ProductosCombosIncluidosUi && typeof window.ProductosCombosIncluidosUi.persist === 'function'
       ? window.ProductosCombosIncluidosUi.persist()
       : (window.__PRODUCTOS_COMBO_INCLUDED_PAYLOAD__ || { items: [] });
+
     const extras = collectComboExtras();
-    let extraLinks = [];
-    const api = getExtraLinksApi();
-    if (api && typeof api.setLinksForOwner === 'function') {
-      extraLinks = api.setLinksForOwner(LINKS_OWNER_TYPE, comboId, extras);
-    }
+    const extraLinks = setComboExtraLinks(comboId, extras);
+
+    const extraIds = extraLinks.length
+      ? extraLinks.map(function (link) { return link.extra_id; }).filter(Boolean)
+      : extras.map(function (extra) { return extra.extra_id || extra.id; }).filter(Boolean);
 
     return {
       combo_id: comboId,
@@ -143,6 +251,7 @@
       combo: true,
       structure_locked: true,
       relation_model: 'combo_commercial_builder',
+
       identity: {
         nombre: valueOf('combo_nombre'),
         categoria: valueOf('combo_categoria'),
@@ -152,13 +261,30 @@
         estado: valueOf('combo_estado'),
         descripcion: valueOf('combo_descripcion')
       },
-      imagenes: Array.from({ length: 6 }).map(function (_, i) { return valueOf('combo_img_' + (i + 1)); }).filter(Boolean),
+
+      nombre: valueOf('combo_nombre'),
+      categoria: valueOf('combo_categoria'),
+      badge: valueOf('combo_badge'),
+      precio: Number(valueOf('combo_precio') || 0),
+      promesa: valueOf('combo_promesa'),
+      estado: valueOf('combo_estado'),
+      descripcion: valueOf('combo_descripcion'),
+
+      imagenes: Array.from({ length: 6 }).map(function (_, i) {
+        return valueOf('combo_img_' + (i + 1));
+      }).filter(Boolean),
+
       included_value: includedPayload && Array.isArray(includedPayload.items) ? includedPayload.items : [],
+
       extras_combo: extras,
-      extras_ids: extraLinks.map(function (link) { return link.extra_id; }).filter(Boolean),
-      extras_count: extraLinks.length,
+      extrasCombo: extras,
+      extras_ids: extraIds,
+      extras_count: extraIds.length,
+      extras_combo_source: 'extras_bank',
+
       optional_products: optionalPayload && Array.isArray(optionalPayload.items) ? optionalPayload.items : [],
       optional_products_count: optionalPayload && Array.isArray(optionalPayload.items) ? optionalPayload.items.length : 0,
+
       future_keys: ['workspace_id', 'store_id', 'user_id', 'draft_version', 'published_version'],
       updated_at: new Date().toISOString()
     };
@@ -195,14 +321,34 @@
     (combo.imagenes || []).slice(0, 6).forEach(function (img, index) { setValue('combo_img_' + (index + 1), img); });
   }
 
-  function hydrateExtras(comboId) {
-    const api = getExtraLinksApi();
-    if (!api || typeof api.getExtrasForOwner !== 'function') return;
-    const extras = api.getExtrasForOwner(LINKS_OWNER_TYPE, comboId).map(normalizeExtra);
+  function hydrateExtras(comboId, combo) {
+    let extras = getComboExtrasFromLinks(comboId);
+
+    if (!extras.length && combo && Array.isArray(combo.extras_combo)) {
+      extras = combo.extras_combo.map(normalizeExtra).filter(function (extra) {
+        return extra.extra_id || extra.id;
+      });
+    }
+
+    if (!extras.length && combo && Array.isArray(combo.extrasCombo)) {
+      extras = combo.extrasCombo.map(normalizeExtra).filter(function (extra) {
+        return extra.extra_id || extra.id;
+      });
+    }
+
     if (!extras.length) return;
-    if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function') {
+
+    setComboExtraLinks(comboId, extras);
+
+    if (
+      window.ProductosExtrasSelector &&
+      typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function'
+    ) {
       window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder(extras);
-      if (typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') window.ProductosExtrasSelector.ensurePickButtons();
+
+      if (typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') {
+        window.ProductosExtrasSelector.ensurePickButtons();
+      }
     }
   }
 
@@ -266,7 +412,7 @@
     const combo = findSavedCombo(comboId);
     if (!combo) return;
     hydrateIdentity(combo);
-    hydrateExtras(comboId);
+    hydrateExtras(comboId, combo);
     hydrateOptionalProducts(combo);
     window.__PRODUCTOS_COMBO_DRAFT_LAST__ = combo;
   }
