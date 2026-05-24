@@ -227,15 +227,20 @@
     }
   }
 
-  function autoloadComboIncludedValueUi() {
+  function autoloadScript(loaderId, src, globalName) {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.querySelector('script[data-loader="productos-combos-incluidos-ui-js"]')) return;
-    if (window.ProductosCombosIncluidosUi) return;
+    if (globalName && window[globalName]) return;
+    if (document.querySelector('script[data-loader="' + loaderId + '"]')) return;
     const script = document.createElement('script');
-    script.src = '../js/productos-combos-incluidos-ui.js';
+    script.src = src;
     script.defer = true;
-    script.setAttribute('data-loader', 'productos-combos-incluidos-ui-js');
+    script.setAttribute('data-loader', loaderId);
     document.body.appendChild(script);
+  }
+
+  function autoloadComboUis() {
+    autoloadScript('productos-combos-incluidos-ui-js', '../js/productos-combos-incluidos-ui.js', 'ProductosCombosIncluidosUi');
+    autoloadScript('productos-combos-upsells-ui-js', '../js/productos-combos-upsells-ui.js', 'ProductosCombosUpsellsUi');
   }
 
   window.ProductosExtraLinks = {
@@ -255,10 +260,10 @@
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoloadComboIncludedValueUi);
+    document.addEventListener('DOMContentLoaded', autoloadComboUis);
   } else {
-    autoloadComboIncludedValueUi();
+    autoloadComboUis();
   }
-  document.addEventListener('sazzu:page:load', autoloadComboIncludedValueUi);
-  window.addEventListener('load', autoloadComboIncludedValueUi);
+  document.addEventListener('sazzu:page:load', autoloadComboUis);
+  window.addEventListener('load', autoloadComboUis);
 })();
