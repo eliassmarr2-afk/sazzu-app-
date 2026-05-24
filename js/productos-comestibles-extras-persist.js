@@ -2,7 +2,6 @@
   const OWNER_TYPE = 'producto_comestible';
   const PRODUCTOS_STORAGE_KEY = 'sazzu_productos_comestibles_v1';
   const LINKS_STORAGE_KEY = 'sazzu_entity_extra_links_v1';
-  let observerStarted = false;
   let hydrateTimer = null;
 
   function slugify(value) {
@@ -66,10 +65,6 @@
     function sameOwner(link, ownerType, ownerId) {
       return link && link.owner_type === ownerType && String(link.owner_id || '') === String(ownerId || '');
     }
-    function snapshotExtra(extra) {
-      const snap = normalizeExtra(extra);
-      return snap;
-    }
     return {
       getExtrasForOwner(ownerType, ownerId) {
         return readLinks()
@@ -91,7 +86,7 @@
         const previous = new Map(all.filter(function (link) { return sameOwner(link, ownerType, ownerId); }).map(function (link) { return [String(link.extra_id), link]; }));
         const untouched = all.filter(function (link) { return !sameOwner(link, ownerType, ownerId); });
         const links = incoming.map(function (extra, index) {
-          const snap = snapshotExtra(extra);
+          const snap = normalizeExtra(extra);
           const old = previous.get(String(snap.extra_id));
           return {
             link_id: [ownerType, ownerId, snap.extra_id].map(slugify).join('__'),
@@ -112,9 +107,7 @@
     };
   }
 
-  function api() {
-    return window.ProductosExtraLinks || fallbackApi();
-  }
+  function api() { return window.ProductosExtraLinks || fallbackApi(); }
 
   function fieldValue(card, prefix, field) {
     const input = Array.from(card.querySelectorAll('input, select, textarea')).find(function (el) {
@@ -128,7 +121,6 @@
     const cards = Array.from(document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComSelectedExtraCard'));
     const used = new Set();
     const extras = [];
-
     cards.forEach(function (card) {
       const extra = normalizeExtra({
         id: card.dataset.extraSourceId || fieldValue(card, 'extras', 'extra_id') || fieldValue(card, 'extras', 'id') || fieldValue(card, 'extras', 'nombre'),
@@ -152,7 +144,6 @@
       used.add(key);
       extras.push(extra);
     });
-
     return extras;
   }
 
@@ -188,12 +179,21 @@
     return links;
   }
 
+  function currentRenderedExtraKey() {
+    return Array.from(document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComSelectedExtraCard'))
+      .map(function (card) { return String(card.dataset.extraSourceId || '').trim(); })
+      .filter(Boolean)
+      .join('|');
+  }
+
   function hydrateCurrentProductExtras() {
     const productId = currentProductId();
     const slide = document.getElementById('prodComSlide');
     if (!productId || !slide || !slide.classList.contains('is-active')) return;
     const extras = api().getExtrasForOwner(OWNER_TYPE, productId).map(normalizeExtra);
     if (!extras.length) return;
+    const desiredKey = extras.map(function (extra) { return extra.extra_id || extra.id; }).join('|');
+    if (desiredKey && desiredKey === currentRenderedExtraKey()) return;
     if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder === 'function') {
       window.ProductosExtrasSelector.renderSelectedExtrasIntoBuilder(extras);
       if (typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') window.ProductosExtrasSelector.ensurePickButtons();
@@ -225,28 +225,11 @@
       setTimeout(persistCurrentProductExtras, 80);
       setTimeout(scheduleHydrate, 200);
     });
-
-    window.addEventListener('productos-extra-links:changed', function (event) {
-      const detail = event.detail || {};
-      if (detail.owner_type === OWNER_TYPE && String(detail.owner_id || '') === currentProductId()) {
-        setTimeout(scheduleHydrate, 160);
-      }
-    });
-  }
-
-  function startObserver() {
-    if (observerStarted) return;
-    const body = document.getElementById('prodComSlideBody');
-    if (!body) return;
-    observerStarted = true;
-    const observer = new MutationObserver(function () { scheduleHydrate(); });
-    observer.observe(body, { childList: true, subtree: true });
   }
 
   function init() {
     if (!document.querySelector('body[data-page="productos"]')) return;
     bind();
-    startObserver();
     scheduleHydrate();
   }
 
