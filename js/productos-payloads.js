@@ -144,6 +144,93 @@
     }).filter(function (item) { return !!item.linked_product_id; });
   }
 
+  function fieldValueFromCard(card, prefix, field) {
+    if (!card) return '';
+    const input = Array.from(card.querySelectorAll('input, select, textarea')).find(function (el) {
+      const id = String(el.id || '');
+      return id.indexOf(prefix + '_') === 0 && id.endsWith('_' + field);
+    });
+    return input ? String(input.value || '').trim() : '';
+  }
+
+  function textFromCard(card, selector) {
+    const el = card ? card.querySelector(selector) : null;
+    return el ? String(el.textContent || '').trim() : '';
+  }
+
+  function parseNumberValue(value) {
+    const parsed = Number(String(value || '').replace(/[^0-9.,-]/g, '').replace(',', '.'));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function normalizeComboExtra(extra, index) {
+    const data = extra || {};
+    const title = String(data.title || data.name || data.nombre || 'Extra').trim();
+    const id = String(data.extra_id || data.id || title).trim();
+    const priceRaw = data.price_delta != null ? data.price_delta : (data.price != null ? data.price : data.precio);
+    const price = parseNumberValue(priceRaw);
+
+    return {
+      id: id,
+      extra_id: id,
+      name: title,
+      title: title,
+      nombre: title,
+      description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      price_delta: price,
+      price: price,
+      precio: price,
+      image_url: data.image_url || data.image || data.imagen || null,
+      image: data.image || data.image_url || data.imagen || null,
+      imagen: data.imagen || data.image || data.image_url || null,
+      badge: data.badge || null,
+      status: normalizeOptionStatus(data.status || data.estado || 'activo'),
+      estado: normalizeOptionStatus(data.estado || data.status || 'activo'),
+      position: Number(data.position || index + 1)
+    };
+  }
+
+  function collectComboExtras() {
+    const cards = Array.from(document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard'));
+    const used = new Set();
+    const extras = [];
+
+    cards.forEach(function (card, index) {
+      const title = fieldValueFromCard(card, 'combo_extra', 'nombre') ||
+        textFromCard(card, '.prodComboSelectedExtraCard__body strong') ||
+        'Extra';
+
+      const extra = normalizeComboExtra({
+        id: card.dataset.extraSourceId ||
+          fieldValueFromCard(card, 'combo_extra', 'extra_id') ||
+          fieldValueFromCard(card, 'combo_extra', 'id') ||
+          title,
+        extra_id: card.dataset.extraSourceId ||
+          fieldValueFromCard(card, 'combo_extra', 'extra_id') ||
+          fieldValueFromCard(card, 'combo_extra', 'id') ||
+          title,
+        title: title,
+        name: title,
+        description: fieldValueFromCard(card, 'combo_extra', 'desc') ||
+          textFromCard(card, '.prodComboSelectedExtraCard__body span') ||
+          '',
+        price_delta: fieldValueFromCard(card, 'combo_extra', 'precio'),
+        image_url: fieldValueFromCard(card, 'combo_extra', 'img') || null,
+        badge: fieldValueFromCard(card, 'combo_extra', 'badge') || null,
+        status: fieldValueFromCard(card, 'combo_extra', 'estado') || 'activo',
+        position: index + 1
+      }, index);
+
+      const key = String(extra.extra_id || extra.id || '').trim().toLowerCase();
+      if (!key || used.has(key)) return;
+      used.add(key);
+      extras.push(extra);
+    });
+
+    return extras;
+  }
+
   function ensureLocalProductId(currentId, name, type) {
     const normalizedCurrent = String(currentId || '').trim();
     const isPlaceholder = !normalizedCurrent || normalizedCurrent === 'nuevo' || normalizedCurrent === 'nuevo-producto-comestible' || normalizedCurrent === 'nuevo-combo';
@@ -216,7 +303,7 @@
       images: collectImages('combo_img_', 6),
       combo_components: collectComboComponents(),
       optional_products: collectComboOptionalProducts(),
-      combo_extras: [],
+      combo_extras: collectComboExtras(),
       source: {
         panel: 'productos',
         module: 'productos_combos',
@@ -425,6 +512,7 @@
     context: PRODUCTOS_CONTEXT,
     buildProductoSimplePayload: buildProductoSimplePayload,
     buildComboPayload: buildComboPayload,
+    collectComboExtras: collectComboExtras,
     collectImages: collectImages,
     renderLocalRows: renderLocalRows,
     storageKeys: STORAGE_KEYS
