@@ -3,6 +3,9 @@
   const BUILDER_KEY = 'sazzu_productos_combos_v1';
   const LINKS_KEY = 'sazzu_entity_extra_links_v1';
   const DEBUG_ID = 'prodComboExtrasDebugPanel';
+  let listObserver = null;
+  let observedList = null;
+  let syncTimer = null;
 
   function read(key) {
     try {
@@ -24,6 +27,14 @@
   function currentComboId() {
     const slide = document.getElementById('prodComboSlide');
     return slide && slide.dataset ? String(slide.dataset.comboId || '').trim() : '';
+  }
+
+  function extrasList() {
+    return document.querySelector('.prodComboExtrasList[data-combo-extras-list="1"]');
+  }
+
+  function hasVisibleExtrasList() {
+    return !!extrasList();
   }
 
   function field(card, suffix) {
@@ -69,7 +80,10 @@
   }
 
   function visibleExtras() {
-    const cards = Array.from(document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard'));
+    const list = extrasList();
+    if (!list) return [];
+
+    const cards = Array.from(list.querySelectorAll('.prodComboSelectedExtraCard'));
     const used = new Set();
     const extras = [];
 
@@ -108,9 +122,9 @@
     }) || null;
   }
 
-  function bestExtras(comboId) {
+  function bestExtras(comboId, forceDom) {
     const fromDom = visibleExtras();
-    if (fromDom.length) return fromDom;
+    if (forceDom || hasVisibleExtrasList()) return fromDom;
     const payload = payloadCombo(comboId);
     if (payload && Array.isArray(payload.combo_extras) && payload.combo_extras.length) return payload.combo_extras.map(normalizeExtra);
     const builder = builderCombo(comboId);
@@ -141,12 +155,32 @@
     write(LINKS_KEY, untouched.concat(next));
   }
 
-  function syncBuilder() {
-    const comboId = currentComboId();
-    const extras = bestExtras(comboId);
-    if (!comboId || !extras.length) return null;
+  function syncPayload(comboId, extras) {
+    const payloads = read(PAYLOAD_KEY);
+    const index = payloads.findIndex(function (combo) {
+      return String(combo.product_id || '') === String(comboId || '');
+    });
+    const now = new Date().toISOString();
+    const base = index >= 0 ? payloads[index] : { product_id: comboId, product_type: 'combo' };
+    const next = Object.assign({}, base, {
+      product_id: comboId,
+      product_type: 'combo',
+      combo_extras: extras,
+      updated_at: now
+    });
+    if (index >= 0) payloads[index] = next;
+    else payloads.push(Object.assign({}, next, { created_at: now }));
+    write(PAYLOAD_KEY, payloads);
+    window.__lastComboPayload = next;
+    return next;
+  }
 
-    const payload = payloadCombo(comboId) || {};
+  function syncBuilder(forceDom) {
+    const comboId = currentComboId();
+    if (!comboId) return null;
+
+    const extras = bestExtras(comboId, !!forceDom);
+    const payload = syncPayload(comboId, extras);
     const identity = payload.identity || {};
     const combos = read(BUILDER_KEY);
     const index = combos.findIndex(function (combo) {
@@ -182,6 +216,13 @@
       updated_at: new Date().toISOString()
     };
 
+    if (window.ProductosPayloads && typeof window.ProductosPayloads.renderLocalRows === 'function') {
+      setTimeout(function () { window.ProductosPayloads.renderLocalRows(); }, 30);
+    }
+    if (window.ProductosSupabase && typeof window.ProductosSupabase.renderSupabaseRows === 'function') {
+      setTimeout(function () { window.ProductosSupabase.renderSupabaseRows(window.__lastSupabaseProducts || []); }, 60);
+    }
+
     return next;
   }
 
@@ -216,27 +257,64 @@
     };
   }
 
-  function show(stage) {
-    syncBuilder();
+  function show(stage, forceDom) {
+    syncBuilder(!!forceDom);
     panel(snapshot(stage + ' antes'));
-    setTimeout(function () { syncBuilder(); panel(snapshot(stage + ' 120ms')); }, 120);
-    setTimeout(function () { syncBuilder(); const data = snapshot(stage + ' 650ms'); window.__PRODUCTOS_COMBO_EXTRAS_DEBUG_LAST__ = data; panel(data); }, 650);
+    setTimeout(function () { syncBuilder(!!forceDom); panel(snapshot(stage + ' 120ms')); }, 120);
+    setTimeout(function () { syncBuilder(!!forceDom); const data = snapshot(stage + ' 650ms'); window.__PRODUCTOS_COMBO_EXTRAS_DEBUG_LAST__ = data; panel(data); }, 650);
+  }
+
+  function scheduleDomSync() {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      syncBuilder(true);
+      window.__PRODUCTOS_COMBO_EXTRAS_DEBUG_LAST__ = snapshot('auto sync dom');
+    }, 80);
+  }
+
+  function bindListObserver() {
+    const list = extrasList();
+    if (!list || list === observedList) return;
+    if (listObserver) listObserver.disconnect();
+    observedList = list;
+    listObserver = new MutationObserver(function () {
+      scheduleDomSync();
+    });
+    listObserver.observe(list, { childList: true, subtree: false });
+  }
+
+  function scheduleObserver() {
+    [0, 120, 360, 900].forEach(function (delay) {
+      setTimeout(bindListObserver, delay);
+    });
   }
 
   function bind() {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.body.dataset.comboExtrasSyncBound === '1') return;
-    document.body.dataset.comboExtrasSyncBound = '1';
+    if (document.body.dataset.comboExtrasSyncBound === '2') return;
+    document.body.dataset.comboExtrasSyncBound = '2';
+
+    scheduleObserver();
 
     window.addEventListener('click', function (event) {
-      if (event.target && event.target.closest && event.target.closest('#prodComboSaveBtn')) show('guardar combo');
+      if (event.target && event.target.closest && event.target.closest('#prodComboSaveBtn')) show('guardar combo', true);
+      if (event.target && event.target.closest && event.target.closest('[data-remove-selected-extra]')) {
+        setTimeout(function () { syncBuilder(true); scheduleObserver(); }, 120);
+      }
+      if (event.target && event.target.closest && event.target.closest('#prodExtrasSelectConfirm')) {
+        setTimeout(function () { syncBuilder(true); scheduleObserver(); }, 180);
+        setTimeout(function () { syncBuilder(true); scheduleObserver(); }, 520);
+      }
+      if (event.target && event.target.closest && event.target.closest('.prodComboExtraAdd, [data-open-extra-bank]')) {
+        setTimeout(scheduleObserver, 180);
+      }
       if (event.target && event.target.closest && event.target.closest('[data-close-combo-debug]')) {
         const box = document.getElementById(DEBUG_ID);
         if (box) box.remove();
       }
     }, true);
 
-    window.ProductosComboExtrasDebug = { show: function () { show('manual'); }, snapshot: snapshot, sync: syncBuilder };
+    window.ProductosComboExtrasDebug = { show: function () { show('manual', true); }, snapshot: snapshot, sync: function () { return syncBuilder(true); } };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
