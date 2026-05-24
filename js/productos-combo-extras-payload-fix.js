@@ -1,29 +1,24 @@
 /*
-  Persistencia puntual de extras en Combos.
+  DEBUG TEMPORAL · Extras en Combos
 
-  No intercepta el botón Guardar.
-  No usa observers.
-  Solo guarda en el payload local cuando el selector realmente pinta extras en el combo.
+  Objetivo:
+  Diagnosticar por qué Editar combo → Añadir extras → Guardar no conserva combo_extras.
+
+  No intercepta el guardado.
+  No corta propagación.
+  No toca loaders.
+  No modifica productos comestibles.
 */
 (function () {
   const COMBOS_KEY = 'sazzu_combos_payloads_local_v1';
-  let wrapped = false;
+  const DEBUG_ID = 'prodComboExtrasDebugPanel';
 
   function readCombos() {
     try {
       const parsed = JSON.parse(localStorage.getItem(COMBOS_KEY) || '[]');
       return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
-      console.warn('[productos-combo-extras-payload-fix.js] No se pudo leer combos:', error);
       return [];
-    }
-  }
-
-  function writeCombos(combos) {
-    try {
-      localStorage.setItem(COMBOS_KEY, JSON.stringify(Array.isArray(combos) ? combos : []));
-    } catch (error) {
-      console.warn('[productos-combo-extras-payload-fix.js] No se pudo guardar combos:', error);
     }
   }
 
@@ -32,95 +27,156 @@
     return slide && slide.dataset ? String(slide.dataset.comboId || '').trim() : '';
   }
 
-  function normalizeExtra(extra, index) {
-    const data = extra || {};
-    const title = String(data.title || data.name || data.nombre || 'Extra').trim();
-    const id = String(data.extra_id || data.id || title).trim();
-    const price = Number(data.price_delta != null ? data.price_delta : (data.price != null ? data.price : data.precio || 0)) || 0;
+  function getStoredCombo(comboId) {
+    const id = String(comboId || '').trim();
+    if (!id) return null;
+    return readCombos().find(function (combo) {
+      return String(combo.product_id || '') === id;
+    }) || null;
+  }
+
+  function field(card, suffix) {
+    const el = Array.from(card.querySelectorAll('input, select, textarea')).find(function (node) {
+      const nodeId = String(node.id || '');
+      return nodeId.indexOf('combo_extra_') === 0 && nodeId.endsWith('_' + suffix);
+    });
+    return el ? String(el.value || '').trim() : '';
+  }
+
+  function text(card, selector) {
+    const el = card ? card.querySelector(selector) : null;
+    return el ? String(el.textContent || '').trim() : '';
+  }
+
+  function collectCardsDebug() {
+    const cards = Array.from(document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard'));
+
+    return cards.map(function (card, index) {
+      return {
+        index: index,
+        extra_source_id: card.dataset.extraSourceId || '',
+        title: field(card, 'nombre') || text(card, '.prodComboSelectedExtraCard__body strong') || '',
+        extra_id: field(card, 'extra_id') || field(card, 'id') || '',
+        price: field(card, 'precio') || '',
+        hidden_inputs: card.querySelectorAll('input, select, textarea').length
+      };
+    });
+  }
+
+  function safeCount(value) {
+    return Array.isArray(value) ? value.length : 0;
+  }
+
+  function htmlEscape(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function ensurePanel() {
+    let panel = document.getElementById(DEBUG_ID);
+    if (panel) return panel;
+
+    panel = document.createElement('aside');
+    panel.id = DEBUG_ID;
+    panel.style.cssText = [
+      'position:fixed',
+      'right:18px',
+      'bottom:18px',
+      'z-index:99999',
+      'width:min(460px, calc(100vw - 36px))',
+      'max-height:min(72vh, 620px)',
+      'overflow:auto',
+      'background:#0f172a',
+      'color:#e5e7eb',
+      'border:1px solid rgba(255,255,255,.18)',
+      'box-shadow:0 24px 80px rgba(15,23,42,.38)',
+      'border-radius:8px',
+      'font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+      'padding:14px'
+    ].join(';');
+
+    document.body.appendChild(panel);
+    return panel;
+  }
+
+  function renderPanel(title, data) {
+    const panel = ensurePanel();
+    panel.innerHTML = '' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;">' +
+        '<strong style="font-size:14px;color:#fff;">' + htmlEscape(title) + '</strong>' +
+        '<button type="button" data-close-combo-debug="1" style="border:0;background:#1d4ed8;color:#fff;border-radius:6px;padding:6px 9px;font-weight:800;cursor:pointer;">Cerrar</button>' +
+      '</div>' +
+      '<pre style="white-space:pre-wrap;word-break:break-word;margin:0;background:rgba(255,255,255,.06);border-radius:6px;padding:12px;font-size:12px;line-height:1.45;color:#d1d5db;">' + htmlEscape(JSON.stringify(data, null, 2)) + '</pre>';
+  }
+
+  function buildSnapshot(stage) {
+    const comboId = currentComboId();
+    const cards = collectCardsDebug();
+    const stored = getStoredCombo(comboId);
 
     return {
-      id: id,
-      extra_id: id,
-      name: title,
-      title: title,
-      nombre: title,
-      description: String(data.description || data.descripcion || '').trim(),
-      descripcion: String(data.descripcion || data.description || '').trim(),
-      price_delta: price,
-      price: price,
-      precio: price,
-      badge: data.badge || '',
-      image_url: data.image_url || data.image || data.imagen || '',
-      image: data.image || data.image_url || data.imagen || '',
-      imagen: data.imagen || data.image || data.image_url || '',
-      status: data.status || data.estado || 'activo',
-      estado: data.estado || data.status || 'activo',
-      position: data.position || index + 1
+      stage: stage,
+      time: new Date().toISOString(),
+      script_loaded: true,
+      selector_available: !!(window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function'),
+      payloads_available: !!(window.ProductosPayloads && typeof window.ProductosPayloads.buildComboPayload === 'function'),
+      combo_id: comboId,
+      visible_cards_detected: cards.length,
+      visible_cards: cards,
+      stored_combo_exists: !!stored,
+      stored_combo_extras_count: stored ? safeCount(stored.combo_extras) : null,
+      stored_optional_products_count: stored ? safeCount(stored.optional_products) : null,
+      stored_combo_keys: stored ? Object.keys(stored) : [],
+      last_combo_payload_extras_count: window.__lastComboPayload ? safeCount(window.__lastComboPayload.combo_extras) : null,
+      last_combo_payload_id: window.__lastComboPayload ? window.__lastComboPayload.product_id : null
     };
   }
 
-  function persistRenderedComboExtras(extras) {
-    const comboId = currentComboId();
-    const normalized = (Array.isArray(extras) ? extras : [])
-      .map(normalizeExtra)
-      .filter(function (extra) { return extra.extra_id || extra.id; });
+  function showDebug(stage) {
+    const initial = buildSnapshot(stage + ' · antes');
+    renderPanel('Debug Extras Combo · antes/después', initial);
 
-    if (!comboId || !normalized.length) return null;
+    setTimeout(function () {
+      const after120 = buildSnapshot(stage + ' · después 120ms');
+      renderPanel('Debug Extras Combo · después 120ms', after120);
+      window.__PRODUCTOS_COMBO_EXTRAS_DEBUG_LAST__ = after120;
+    }, 120);
 
-    const combos = readCombos();
-    const index = combos.findIndex(function (combo) {
-      return String(combo.product_id || '') === comboId;
-    });
-
-    if (index < 0) {
-      window.__PRODUCTOS_COMBO_EXTRAS_PENDING__ = {
-        combo_id: comboId,
-        combo_extras: normalized,
-        updated_at: new Date().toISOString()
-      };
-      return null;
-    }
-
-    combos[index] = Object.assign({}, combos[index], {
-      combo_extras: normalized,
-      updated_at: new Date().toISOString()
-    });
-
-    writeCombos(combos);
-    window.__lastComboPayload = combos[index];
-    window.__PRODUCTOS_COMBO_EXTRAS_SELECTOR_PERSIST_LAST__ = combos[index];
-
-    if (window.ProductosPayloads && typeof window.ProductosPayloads.renderLocalRows === 'function') {
-      setTimeout(function () { window.ProductosPayloads.renderLocalRows(); }, 30);
-      setTimeout(function () { window.ProductosPayloads.renderLocalRows(); }, 220);
-    }
-
-    return combos[index];
+    setTimeout(function () {
+      const after650 = buildSnapshot(stage + ' · después 650ms');
+      renderPanel('Debug Extras Combo · después 650ms', after650);
+      window.__PRODUCTOS_COMBO_EXTRAS_DEBUG_LAST__ = after650;
+    }, 650);
   }
 
-  function wrapSelector() {
-    if (wrapped) return;
-    if (!window.ProductosExtrasSelector || typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder !== 'function') return;
+  function bind() {
+    if (!document.querySelector('body[data-page="productos"]')) return;
+    if (document.body.dataset.comboExtrasDebugBound === '1') return;
+    document.body.dataset.comboExtrasDebugBound = '1';
 
-    const original = window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder;
-    window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder = function (extras) {
-      const result = original.call(window.ProductosExtrasSelector, extras);
-      if (result) persistRenderedComboExtras(extras);
-      return result;
+    window.addEventListener('click', function (event) {
+      if (event.target && event.target.closest && event.target.closest('#prodComboSaveBtn')) {
+        showDebug('click guardar combo');
+      }
+
+      if (event.target && event.target.closest && event.target.closest('[data-close-combo-debug]')) {
+        const panel = document.getElementById(DEBUG_ID);
+        if (panel) panel.remove();
+      }
+    }, true);
+
+    window.ProductosComboExtrasDebug = {
+      show: function () { showDebug('manual'); },
+      snapshot: buildSnapshot
     };
-
-    wrapped = true;
-    window.ProductosComboExtrasPayloadFixActive = true;
   }
 
-  function scheduleWrap() {
-    [0, 80, 220, 520, 1000].forEach(function (delay) {
-      setTimeout(wrapSelector, delay);
-    });
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleWrap);
-  else scheduleWrap();
-  document.addEventListener('sazzu:page:load', scheduleWrap);
-  window.addEventListener('load', scheduleWrap);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+  document.addEventListener('sazzu:page:load', bind);
+  window.addEventListener('load', bind);
 })();
