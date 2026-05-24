@@ -227,6 +227,17 @@
     }
   }
 
+  function autoloadComboIncludedValueUi() {
+    if (!document.querySelector('body[data-page="productos"]')) return;
+    if (document.querySelector('script[data-loader="productos-combos-incluidos-ui-js"]')) return;
+    if (window.ProductosCombosIncluidosUi) return;
+    const script = document.createElement('script');
+    script.src = '../js/productos-combos-incluidos-ui.js';
+    script.defer = true;
+    script.setAttribute('data-loader', 'productos-combos-incluidos-ui-js');
+    document.body.appendChild(script);
+  }
+
   window.ProductosExtraLinks = {
     STORAGE_KEY: STORAGE_KEY,
     OWNER_TYPES: OWNER_TYPES,
@@ -242,4 +253,12 @@
     clearOwner: clearOwner,
     normalizeOwnerType: normalizeOwnerType
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoloadComboIncludedValueUi);
+  } else {
+    autoloadComboIncludedValueUi();
+  }
+  document.addEventListener('sazzu:page:load', autoloadComboIncludedValueUi);
+  window.addEventListener('load', autoloadComboIncludedValueUi);
 })();
