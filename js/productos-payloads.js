@@ -347,9 +347,9 @@
     const statusLabel = labelStatus(payload.status);
     const statusClass = statusLabel === 'Activo' ? 'prodComBadge--green' : 'prodComBadge--gray';
     const versionCount = isCombo ? (payload.combo_components || []).length : options.filter(function (item) { return item.section_type === 'version'; }).length;
-    const extraCount = isCombo ? (payload.optional_products || []).length : options.filter(function (item) { return item.section_type === 'extra'; }).length;
+    const extraCount = isCombo ? (payload.combo_extras || []).length : options.filter(function (item) { return item.section_type === 'extra'; }).length;
     const removableCount = isCombo ? 0 : options.filter(function (item) { return item.section_type === 'removable'; }).length;
-    const recommendedCount = isCombo ? (payload.combo_extras || []).length : options.filter(function (item) { return item.section_type === 'recommended'; }).length;
+    const recommendedCount = isCombo ? (payload.optional_products || []).length : options.filter(function (item) { return item.section_type === 'recommended'; }).length;
     const imageUrl = images[0] && images[0].image_url;
 
     return {
