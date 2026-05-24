@@ -328,6 +328,44 @@
     });
   }
 
+  function normalizeExtraForCombo(extra, index) {
+    const data = extra || {};
+    const title = String(data.title || data.name || data.nombre || 'Extra').trim();
+    const id = String(data.extra_id || data.id || title).trim();
+    const price = Number(data.price_delta != null ? data.price_delta : (data.price != null ? data.price : data.precio || 0)) || 0;
+    return {
+      id,
+      extra_id: id,
+      title,
+      nombre: title,
+      description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      price,
+      precio: price,
+      status: data.status || data.estado || 'Activo',
+      estado: data.estado || data.status || 'Activo',
+      badge: data.badge || '',
+      image: data.image_url || data.image || data.imagen || '',
+      imagen: data.imagen || data.image || data.image_url || '',
+      position: data.position || index + 1
+    };
+  }
+
+  function hydrateComboExtras(payload) {
+    const extras = Array.isArray(payload && payload.combo_extras)
+      ? payload.combo_extras.map(normalizeExtraForCombo).filter((item) => item.extra_id || item.id)
+      : [];
+
+    if (!extras.length) return;
+
+    if (
+      window.ProductosExtrasSelector &&
+      typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function'
+    ) {
+      window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder(extras);
+    }
+  }
+
   function fillComboSlide(payload) {
     const identity = payload.identity || {};
     const slide = document.getElementById('prodComboSlide');
@@ -346,6 +384,7 @@
     if (includedList) includedList.innerHTML = (payload.combo_components || []).map((item, index) => renderIncludedItem(index, item)).join('');
     const optionalList = document.querySelector('.prodComboItems:has([id^="combo_opcional_"])');
     if (optionalList) optionalList.innerHTML = (payload.optional_products || []).map((item, index) => renderOptionalItem(index, item)).join('');
+    hydrateComboExtras(payload);
     enhanceComboAddButtons();
     enhanceOptionDeletes();
   }
