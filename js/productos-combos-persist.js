@@ -428,10 +428,9 @@
 
     document.addEventListener('click', function (event) {
       if (event.target.closest('#prodComboSaveBtn')) {
-        setTimeout(persistCombo, 0);
-        setTimeout(persistCombo, 140);
         return;
       }
+
       if (event.target.closest('#prodComboNewBtn')) {
         setTimeout(scheduleHydrate, 260);
         setTimeout(scheduleHydrate, 700);
