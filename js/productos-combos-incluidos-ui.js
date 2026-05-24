@@ -62,9 +62,6 @@
 
       body[data-page="productos"] .main .prodComboSection--includedValueV2 .prodComboAdd,
       body[data-page="productos"] .main .prodComboSection--includedValueV2 [data-add-com-option],
-      body[data-page="productos"] .main .prodComboSection--includedValueV2 [data-combo-add-included-option],
-      body[data-page="productos"] .main .prodComboSection--includedValueV2 .prodComboIncludedActions,
-      body[data-page="productos"] .main .prodComboSection--includedValueV2 .prodComboIncludedAddBtn,
       body[data-page="productos"] .main .prodComboSection--includedValueV2 button[data-combo-included-legacy-add="1"]{
         display:none !important;
       }
@@ -166,6 +163,34 @@
         border-color:#2479FF;
       }
 
+      body[data-page="productos"] .main .prodComboIncludedActions{
+        display:flex;
+        justify-content:flex-start;
+        margin-top:12px;
+      }
+
+      body[data-page="productos"] .main .prodComboIncludedAddBtn{
+        min-height:38px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:0 14px;
+        border:0;
+        border-radius:5px;
+        background:#EAF2FF;
+        color:#2479FF;
+        font-family:inherit;
+        font-size:13px;
+        font-weight:950;
+        cursor:pointer;
+        transition:background .16s ease,transform .16s ease;
+      }
+
+      body[data-page="productos"] .main .prodComboIncludedAddBtn:hover{
+        background:#DCEBFF;
+        transform:translateY(-1px);
+      }
+
       body[data-page="productos"] .main .prodComboIncludedEmpty{
         padding:14px;
         border-radius:5px;
@@ -222,12 +247,28 @@
       '<button type="button" class="prodComboIncludedDelete" data-combo-included-delete="1" aria-label="Eliminar componente incluido">' + trashIcon() + '</button>';
   }
 
+  function buildIncludedCard(index, data) {
+    const item = data || {};
+    const key = item.key || ('custom_' + Date.now());
+    const isOn = item.incluido !== false;
+    return '<article class="prodComboItem prodComboIncludedCard ' + (isOn ? 'is-included' : 'is-removed') + '" data-combo-included-card="1" data-combo-included-enhanced="1" data-combo-included-key="' + escapeHtml(key) + '" data-included-enabled="' + (isOn ? '1' : '0') + '">' +
+      buildIncludedCardInner(index, item) +
+    '</article>';
+  }
+
   function findIncludedSection() {
     const sections = Array.from(document.querySelectorAll('#prodComboSlideBody .prodComboSection'));
     return sections.find(function (section) {
       const eyebrow = String((section.querySelector('.prodComboEyebrow') || {}).textContent || '').trim().toLowerCase();
       const title = String((section.querySelector('h3') || {}).textContent || '').trim().toLowerCase();
       return eyebrow.includes('valor incluido') && title.includes('incluye');
+    }) || null;
+  }
+
+  function findEstadoSelect(card) {
+    return Array.from(card.querySelectorAll('select')).find(function (select) {
+      const label = select.closest('label');
+      return label && /estado visual/i.test(label.textContent || '');
     }) || null;
   }
 
@@ -290,20 +331,6 @@
     });
   }
 
-  function normalizeEstadoSelect(card) {
-    const select = Array.from(card.querySelectorAll('select')).find(function (item) {
-      const label = item.closest('label');
-      return label && /estado visual/i.test(label.textContent || '');
-    });
-    if (!select || select.dataset.visualNormalized === '1') return;
-    const currentRaw = String(select.value || '').trim().toLowerCase();
-    const current = currentRaw === 'oculto' ? 'Oculto' : 'Visible';
-    select.innerHTML = '<option value="Visible">Visible</option><option value="Oculto">Oculto</option>';
-    select.value = current;
-    select.dataset.visualNormalized = '1';
-    card.dataset.visualState = current;
-  }
-
   function normalizeCard(card) {
     if (!card) return;
     if (card.dataset.comboIncludedEnhanced !== '1') {
@@ -322,6 +349,17 @@
     normalizeEstadoSelect(card);
   }
 
+  function normalizeEstadoSelect(card) {
+    const select = findEstadoSelect(card);
+    if (!select || select.dataset.visualNormalized === '1') return;
+    const currentRaw = String(select.value || '').trim().toLowerCase();
+    const current = currentRaw === 'oculto' ? 'Oculto' : 'Visible';
+    select.innerHTML = '<option value="Visible">Visible</option><option value="Oculto">Oculto</option>';
+    select.value = current;
+    select.dataset.visualNormalized = '1';
+    card.dataset.visualState = current;
+  }
+
   function syncCardToggleState(card, isOn) {
     if (!card) return;
     const toggle = card.querySelector('[data-combo-included-toggle]');
@@ -337,16 +375,43 @@
     if (hidden) hidden.value = isOn ? '1' : '0';
   }
 
-  function removeManualAddControls(section) {
+  function removeWrongAddButtons(section) {
     if (!section) return;
-    Array.from(section.querySelectorAll('.prodComboIncludedActions')).forEach(function (node) { node.remove(); });
     Array.from(section.querySelectorAll('button')).forEach(function (button) {
       const text = String(button.textContent || '').trim().toLowerCase();
-      if (text.includes('agregar opción') || button.matches('[data-combo-add-included-option], [data-add-com-option]')) {
-        button.dataset.comboIncludedLegacyAdd = '1';
-        button.remove();
-      }
+      if (!text.includes('agregar opción')) return;
+      if (button.matches('[data-combo-add-included-option]')) return;
+      button.dataset.comboIncludedLegacyAdd = '1';
+      button.remove();
     });
+
+    const addButtons = Array.from(section.querySelectorAll('[data-combo-add-included-option]'));
+    if (addButtons.length <= 1) return;
+    addButtons.slice(0, -1).forEach(function (button) {
+      const wrap = button.closest('.prodComboIncludedActions');
+      if (wrap) wrap.remove();
+      else button.remove();
+    });
+  }
+
+  function ensureAddButton(section, list) {
+    if (!section || !list) return;
+    removeWrongAddButtons(section);
+    if (section.querySelector('[data-combo-add-included-option]')) return;
+    const actions = document.createElement('div');
+    actions.className = 'prodComboIncludedActions';
+    actions.innerHTML = '<button type="button" class="prodComboIncludedAddBtn" data-combo-add-included-option="1">+ Agregar opción</button>';
+    list.insertAdjacentElement('afterend', actions);
+  }
+
+  function nextIndex(list) {
+    const ids = Array.from(list.querySelectorAll('input[id^="combo_incluido_"]'))
+      .map(function (input) {
+        const match = String(input.id || '').match(/^combo_incluido_(\d+)_/);
+        return match ? Number(match[1]) : -1;
+      })
+      .filter(function (n) { return n >= 0; });
+    return ids.length ? Math.max.apply(Math, ids) + 1 : list.querySelectorAll('[data-combo-included-card], .prodComboItem').length;
   }
 
   function enhanceIncludedSection() {
@@ -359,7 +424,8 @@
     section.classList.add('prodComboSection--includedValueV2');
     list.classList.add('prodComboIncludedList');
     Array.from(list.querySelectorAll('.prodComboItem, [data-combo-included-card]')).forEach(normalizeCard);
-    removeManualAddControls(section);
+    ensureAddButton(section, list);
+    removeWrongAddButtons(section);
   }
 
   function scheduleEnhance() {
@@ -371,12 +437,33 @@
     });
   }
 
+  function addIncludedOption() {
+    const section = findIncludedSection();
+    const list = section ? section.querySelector('.prodComboItems') : null;
+    if (!list) return;
+
+    const empty = list.querySelector('.prodComboIncludedEmpty');
+    if (empty) empty.remove();
+
+    const index = nextIndex(list);
+    list.insertAdjacentHTML('beforeend', buildIncludedCard(index, {
+      key: 'manual_' + Date.now(),
+      nombre: 'Nueva opción',
+      cantidad: '1 unidad',
+      descripcion: 'Componente del pack base.',
+      estadoVisual: 'Visible',
+      incluido: true
+    }));
+    enhanceIncludedSection();
+    persistIncludedItems();
+  }
+
   function deleteIncludedOption(card) {
     if (!card) return;
     const list = card.closest('.prodComboItems');
     card.remove();
     if (list && !list.querySelector('[data-combo-included-card], .prodComboItem')) {
-      list.innerHTML = '<div class="prodComboIncludedEmpty">Sin componentes incluidos. Agregá componentes desde la estructura real del combo, no desde opciones manuales libres.</div>';
+      list.innerHTML = '<div class="prodComboIncludedEmpty">Sin componentes incluidos. Agregá una opción para reconstruir el valor incluido del combo.</div>';
     }
     persistIncludedItems();
   }
@@ -423,8 +510,6 @@
       section_key: 'valor_incluido',
       section_title: 'Incluye este combo',
       source: 'prodComboSlide',
-      creation_mode: 'fixed_existing_components_only',
-      manual_creation_enabled: false,
       items: collectIncludedItems(),
       updated_at: new Date().toISOString()
     };
@@ -447,13 +532,11 @@
     document.body.dataset.productosCombosIncluidosUiBound = '1';
 
     document.addEventListener('click', function (event) {
-      const addBtn = event.target.closest('[data-combo-add-included-option], [data-add-com-option]');
-      if (addBtn && addBtn.closest('.prodComboSection--includedValueV2')) {
+      const addBtn = event.target.closest('[data-combo-add-included-option]');
+      if (addBtn) {
         event.preventDefault();
         event.stopPropagation();
-        const wrap = addBtn.closest('.prodComboIncludedActions');
-        if (wrap) wrap.remove();
-        else addBtn.remove();
+        addIncludedOption();
         return;
       }
 
