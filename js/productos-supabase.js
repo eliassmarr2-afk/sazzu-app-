@@ -30,13 +30,35 @@
     return value === 'combo' ? 'Combo' : 'Producto simple';
   }
 
+  function readLocalCombos() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem('sazzu_combos_payloads_local_v1') || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function getLocalCombo(clientProductKey) {
+    return readLocalCombos().find(function (combo) {
+      return String(combo.product_id || '') === String(clientProductKey || '');
+    }) || null;
+  }
+
+  function localComboExtrasCount(clientProductKey) {
+    const combo = getLocalCombo(clientProductKey);
+    return combo && Array.isArray(combo.combo_extras) ? combo.combo_extras.length : null;
+  }
+
   function rowCounts(item) {
     if (item.product_type === 'combo') {
+      const localExtras = localComboExtrasCount(item.client_product_key);
+      const remoteExtras = Number(item.combo_extra_count || 0);
       return {
         size: item.component_count || 0,
-        extra: item.optional_count || 0,
+        extra: localExtras != null ? localExtras : remoteExtras,
         removable: 0,
-        recommended: item.combo_extra_count || 0
+        recommended: item.optional_count || 0
       };
     }
 
@@ -152,16 +174,29 @@
     }
   }
 
+  function mergeLocalComboDetail(detail) {
+    if (!detail || detail.product_type !== 'combo') return detail;
+    const local = getLocalCombo(detail.product_id);
+    if (!local) return detail;
+
+    return Object.assign({}, detail, {
+      combo_extras: Array.isArray(local.combo_extras) ? local.combo_extras : (detail.combo_extras || []),
+      optional_products: Array.isArray(local.optional_products) ? local.optional_products : (detail.optional_products || []),
+      combo_components: Array.isArray(local.combo_components) ? local.combo_components : (detail.combo_components || [])
+    });
+  }
+
   function fillProductLikePayload(detail) {
     if (!detail || !window.ProductosPayloads) return;
-    const payload = Object.assign({}, detail, {
-      product_id: detail.product_id,
-      identity: detail.identity || {},
-      images: detail.images || [],
-      options: detail.options || [],
-      combo_components: detail.combo_components || [],
-      optional_products: detail.optional_products || [],
-      combo_extras: detail.combo_extras || []
+    const merged = mergeLocalComboDetail(detail);
+    const payload = Object.assign({}, merged, {
+      product_id: merged.product_id,
+      identity: merged.identity || {},
+      images: merged.images || [],
+      options: merged.options || [],
+      combo_components: merged.combo_components || [],
+      optional_products: merged.optional_products || [],
+      combo_extras: merged.combo_extras || []
     });
     window.__lastSupabaseProductDetail = payload;
   }
@@ -169,6 +204,7 @@
   function openSupabaseProduct(clientProductKey) {
     getProductDetail(clientProductKey).then((detail) => {
       if (!detail) return;
+      detail = mergeLocalComboDetail(detail);
       fillProductLikePayload(detail);
       if (detail.product_type === 'combo') {
         const btn = document.getElementById('prodComboNewBtn');
