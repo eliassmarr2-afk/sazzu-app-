@@ -17,7 +17,7 @@
   }
 
   function getExtra(id) {
-    return readExtras().find(function (item) { return item.id === id; });
+    return readExtras().find(function (item) { return item.id === id || item.extra_id === id; });
   }
 
   function escapeHtml(value) {
@@ -63,6 +63,84 @@
       image: String(data.image || data.imagen || '').trim(),
       imagen: String(data.imagen || data.image || '').trim()
     };
+  }
+
+  function getExtraKey(extra) {
+    const data = normalizeExtra(extra);
+    return String(data.extra_id || data.id || data.title || data.nombre || '').trim().toLowerCase();
+  }
+
+  function getFieldValue(card, prefix, index, field) {
+    const direct = card && card.querySelector('#' + prefix + '_' + index + '_' + field);
+    if (direct) return String(direct.value || '').trim();
+
+    const bySuffix = card && Array.from(card.querySelectorAll('input, select, textarea')).find(function (el) {
+      return String(el.id || '').endsWith('_' + field);
+    });
+    return bySuffix ? String(bySuffix.value || '').trim() : '';
+  }
+
+  function getIndexFromHiddenCard(card, prefix) {
+    const field = card && card.querySelector('input[id^="' + prefix + '_"], select[id^="' + prefix + '_"], textarea[id^="' + prefix + '_"]');
+    const match = field && String(field.id || '').match(new RegExp('^' + prefix + '_(\\d+)_'));
+    return match ? Number(match[1]) : 0;
+  }
+
+  function getExistingProductExtras() {
+    return Array.from(document.querySelectorAll('.prodComOptions[data-options-key="extras"] .prodComSelectedExtraCard')).map(function (card) {
+      const index = getIndexFromHiddenCard(card, 'extras');
+      return normalizeExtra({
+        id: card.dataset.extraSourceId || getFieldValue(card, 'extras', index, 'extra_id') || getFieldValue(card, 'extras', index, 'id') || getFieldValue(card, 'extras', index, 'nombre'),
+        extra_id: card.dataset.extraSourceId || getFieldValue(card, 'extras', index, 'extra_id') || getFieldValue(card, 'extras', index, 'id'),
+        title: getFieldValue(card, 'extras', index, 'nombre') || (card.querySelector('.prodComSelectedExtraCard__body strong') || {}).textContent,
+        description: getFieldValue(card, 'extras', index, 'desc') || (card.querySelector('.prodComSelectedExtraCard__body span') || {}).textContent,
+        price: getFieldValue(card, 'extras', index, 'precio'),
+        status: getFieldValue(card, 'extras', index, 'estado') || 'Activo',
+        badge: getFieldValue(card, 'extras', index, 'badge'),
+        image: getFieldValue(card, 'extras', index, 'img'),
+        folder: card.dataset.extraFolder || getFieldValue(card, 'extras', index, 'folder'),
+        tags: card.dataset.extraTags || getFieldValue(card, 'extras', index, 'tags')
+      });
+    }).filter(function (item) { return getExtraKey(item); });
+  }
+
+  function getExistingComboExtras() {
+    return Array.from(document.querySelectorAll('.prodComboExtrasList[data-combo-extras-list="1"] .prodComboSelectedExtraCard')).map(function (card) {
+      const index = getIndexFromHiddenCard(card, 'combo_extra');
+      return normalizeExtra({
+        id: card.dataset.extraSourceId || getFieldValue(card, 'combo_extra', index, 'extra_id') || getFieldValue(card, 'combo_extra', index, 'id') || getFieldValue(card, 'combo_extra', index, 'nombre'),
+        extra_id: card.dataset.extraSourceId || getFieldValue(card, 'combo_extra', index, 'extra_id') || getFieldValue(card, 'combo_extra', index, 'id'),
+        title: getFieldValue(card, 'combo_extra', index, 'nombre') || (card.querySelector('.prodComboSelectedExtraCard__body strong') || {}).textContent,
+        description: getFieldValue(card, 'combo_extra', index, 'desc') || (card.querySelector('.prodComboSelectedExtraCard__body span') || {}).textContent,
+        price: getFieldValue(card, 'combo_extra', index, 'precio'),
+        status: getFieldValue(card, 'combo_extra', index, 'estado') || 'Activo',
+        badge: getFieldValue(card, 'combo_extra', index, 'badge'),
+        image: getFieldValue(card, 'combo_extra', index, 'img'),
+        folder: card.dataset.extraFolder || getFieldValue(card, 'combo_extra', index, 'folder'),
+        tags: card.dataset.extraTags || getFieldValue(card, 'combo_extra', index, 'tags')
+      });
+    }).filter(function (item) { return getExtraKey(item); });
+  }
+
+  function mergeExtras(existing, incoming) {
+    const merged = [];
+    const used = new Set();
+
+    (Array.isArray(existing) ? existing : []).map(normalizeExtra).forEach(function (extra) {
+      const key = getExtraKey(extra);
+      if (!key || used.has(key)) return;
+      used.add(key);
+      merged.push(extra);
+    });
+
+    (Array.isArray(incoming) ? incoming : []).map(normalizeExtra).forEach(function (extra) {
+      const key = getExtraKey(extra);
+      if (!key || used.has(key)) return;
+      used.add(key);
+      merged.push(extra);
+    });
+
+    return merged;
   }
 
   function getExtraFromCard(card) {
@@ -368,12 +446,15 @@
     const extras = ids.map(getSelectedExtraById).filter(Boolean).map(normalizeExtra);
     if (!extras.length) return;
 
+    const existing = activeTarget === 'combo' ? getExistingComboExtras() : getExistingProductExtras();
+    const merged = mergeExtras(existing, extras);
+
     const rendered = activeTarget === 'combo'
-      ? renderSelectedExtrasIntoComboBuilder(extras)
-      : renderSelectedExtrasIntoBuilder(extras);
+      ? renderSelectedExtrasIntoComboBuilder(merged)
+      : renderSelectedExtrasIntoBuilder(merged);
 
     if (!rendered && activeTarget !== 'combo') {
-      renderSelectedExtrasIntoBuilder(extras);
+      renderSelectedExtrasIntoBuilder(merged);
     }
 
     const close = document.getElementById('prodExtrasCloseBtn');
