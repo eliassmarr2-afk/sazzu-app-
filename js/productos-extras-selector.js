@@ -449,6 +449,60 @@
     schedule();
   }
 
+  function ensureDirectScriptOnce(loaderId, src) {
+    if (document.querySelector('script[data-loader="' + loaderId + '"]')) return Promise.resolve(true);
+    if (Array.from(document.scripts).some(function (script) { return String(script.src || '').includes(src.replace('../', '/')); })) return Promise.resolve(true);
+
+    return new Promise(function (resolve) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      script.setAttribute('data-loader', loaderId);
+      script.onload = function () { resolve(true); };
+      script.onerror = function () { resolve(false); };
+      document.body.appendChild(script);
+    });
+  }
+
+  function fireProductosPageLoadBridge() {
+    try {
+      document.dispatchEvent(new CustomEvent('sazzu:page:load', {
+        detail: {
+          url: location.href,
+          file: (location.pathname.split('/').pop() || '').toLowerCase(),
+          isPanel: location.pathname.toLowerCase().includes('/panel/'),
+          source: 'productos-direct-refresh-bridge'
+        }
+      }));
+    } catch (error) {
+      console.warn('[productos-extras-selector.js] No se pudo emitir sazzu:page:load bridge:', error);
+    }
+  }
+
+  function runProductosDirectRefreshBridge() {
+    const body = document.querySelector('body[data-page="productos"]');
+    if (!body) return;
+    if (body.dataset.productosDirectRefreshBridge === '1') return;
+    body.dataset.productosDirectRefreshBridge = '1';
+
+    ensureDirectScriptOnce('productos-extra-links-js', '../js/productos-extra-links.js');
+    ensureDirectScriptOnce('productos-extras-editor-js', '../js/productos-extras-editor.js').then(function () {
+      fireProductosPageLoadBridge();
+    });
+
+    [120, 360, 820, 1400].forEach(function (delay) {
+      setTimeout(function () {
+        if (typeof window.ProductosMount === 'function') window.ProductosMount();
+        if (typeof window.ProductosSkuResumenMount === 'function') window.ProductosSkuResumenMount();
+        if (typeof window.ProductosComestiblesMount === 'function') window.ProductosComestiblesMount();
+        if (typeof window.ProductosCombosMount === 'function') window.ProductosCombosMount();
+        if (window.ProductosExtrasSelector && typeof window.ProductosExtrasSelector.ensurePickButtons === 'function') {
+          window.ProductosExtrasSelector.ensurePickButtons();
+        }
+      }, delay);
+    });
+  }
+
   window.ProductosExtrasSelector = {
     open: openBankAsSelector,
     ensurePickButtons: ensurePickButtons,
@@ -458,6 +512,12 @@
 
   document.addEventListener('DOMContentLoaded', init);
   document.addEventListener('sazzu:page:load', init);
-  window.addEventListener('load', init);
+  window.addEventListener('load', function () {
+    init();
+    setTimeout(runProductosDirectRefreshBridge, 90);
+  });
+  if (document.readyState === 'complete') {
+    setTimeout(runProductosDirectRefreshBridge, 90);
+  }
   window.addEventListener('productos:payload-ready', function () { setTimeout(ensurePickButtons, 200); });
 })();
