@@ -1,5 +1,7 @@
 (function () {
-  const EXTRAS_MOCK = [
+  const STORAGE_KEY = 'sazzu_productos_extras_bank_v2';
+
+  const DEFAULT_EXTRAS = [
     {
       id: 'extra-crema-suave',
       title: 'Extra crema suave',
@@ -26,6 +28,80 @@
 
   let observerStarted = false;
   let mountIntervalId = null;
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function normalizeExtra(extra) {
+    const data = extra || {};
+    const id = String(data.id || data.extra_id || ('extra-' + slugify(data.title || data.nombre || 'extra') + '-' + Date.now())).trim();
+    return {
+      id,
+      extra_id: id,
+      title: String(data.title || data.nombre || 'Extra').trim(),
+      nombre: String(data.nombre || data.title || 'Extra').trim(),
+      description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      price: Number(data.price != null ? data.price : (data.precio != null ? data.precio : 0)) || 0,
+      precio: Number(data.precio != null ? data.precio : (data.price != null ? data.price : 0)) || 0,
+      status: String(data.status || data.estado || 'Activo').trim(),
+      estado: String(data.estado || data.status || 'Activo').trim(),
+      badge: String(data.badge || '').trim(),
+      folder: String(data.folder || data.carpeta || '').trim(),
+      tags: String(data.tags || data.etiquetas || '').trim(),
+      image: String(data.image || data.imagen || '').trim(),
+      imagen: String(data.imagen || data.image || '').trim()
+    };
+  }
+
+  function repairExtras(items) {
+    const map = new Map();
+    DEFAULT_EXTRAS.forEach(function (extra) {
+      const normalized = normalizeExtra(extra);
+      map.set(normalized.id, normalized);
+    });
+    (Array.isArray(items) ? items : []).forEach(function (extra) {
+      const normalized = normalizeExtra(extra);
+      const seed = map.get(normalized.id) || {};
+      map.set(normalized.id, Object.assign({}, seed, normalized));
+    });
+
+    const userRows = (Array.isArray(items) ? items : [])
+      .map(normalizeExtra)
+      .filter(function (extra) {
+        return !DEFAULT_EXTRAS.some(function (seed) { return seed.id === extra.id; });
+      });
+    const seedRows = DEFAULT_EXTRAS.map(function (seed) { return map.get(seed.id); }).filter(Boolean);
+    return userRows.concat(seedRows);
+  }
+
+  function readExtras() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      const repaired = repairExtras(Array.isArray(parsed) ? parsed : DEFAULT_EXTRAS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(repaired));
+      return repaired;
+    } catch (error) {
+      console.warn('[productos-extras.js] No se pudo leer storage:', error);
+      const fallback = repairExtras(DEFAULT_EXTRAS);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback)); } catch (_) {}
+      return fallback;
+    }
+  }
+
+  function getExtra(id) {
+    return readExtras().find(function (item) { return item.id === id || item.extra_id === id; });
+  }
+
+  function slugify(value) {
+    return String(value || 'extra')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'extra';
+  }
 
   function ensureEditorAssets() {
     if (!document.querySelector('link[data-loader="productos-extras-editor-css"]')) {
@@ -136,22 +212,23 @@
   }
 
   function renderExtraCard(extra) {
-    const badge = extra.badge ? `<span class="prodExtraCard__badge">${escapeHtml(extra.badge)}</span>` : '';
-    const folder = extra.folder ? `<em>${escapeHtml(extra.folder)}</em>` : '';
-    const image = extra.image ? `<img src="${escapeHtml(extra.image)}" alt="">` : '<span class="prodExtraCard__empty">Sin imagen</span>';
+    const data = normalizeExtra(extra);
+    const badge = data.badge ? `<span class="prodExtraCard__badge">${escapeHtml(data.badge)}</span>` : '';
+    const folder = data.folder ? `<em>${escapeHtml(data.folder)}</em>` : '';
+    const image = data.image ? `<img src="${escapeHtml(data.image)}" alt="">` : '<span class="prodExtraCard__empty">Sin imagen</span>';
 
     return `
-      <button type="button" class="prodExtraCard" data-extra-id="${escapeHtml(extra.id)}">
+      <button type="button" class="prodExtraCard" data-extra-id="${escapeHtml(data.id)}">
         <div class="prodExtraCard__image">
           ${badge}${image}
         </div>
         <div class="prodExtraCard__info">
           <div>
-            <strong>${escapeHtml(extra.title)}</strong>
-            <span>${escapeHtml(extra.description)}</span>
+            <strong>${escapeHtml(data.title)}</strong>
+            <span>${escapeHtml(data.description)}</span>
             ${folder}
           </div>
-          <b class="prodExtraCard__price">${escapeHtml(money(extra.price))}</b>
+          <b class="prodExtraCard__price">${escapeHtml(money(data.price))}</b>
         </div>
       </button>
     `;
@@ -160,7 +237,10 @@
   function renderGrid() {
     const grid = document.getElementById('prodExtrasGrid');
     if (!grid) return;
-    grid.innerHTML = EXTRAS_MOCK.map(renderExtraCard).join('');
+    const extras = readExtras();
+    grid.innerHTML = extras.length
+      ? extras.map(renderExtraCard).join('')
+      : '<div class="prodExtrasEmpty">Todavía no hay extras creados.</div>';
   }
 
   function renderConfig(extra) {
@@ -168,7 +248,7 @@
     const title = document.getElementById('prodExtraConfigTitle');
     if (!body) return;
 
-    const data = extra || {
+    const data = normalizeExtra(extra || {
       id: 'nuevo-extra',
       title: 'Nuevo extra',
       description: 'Descripción breve del extra.',
@@ -178,7 +258,7 @@
       folder: '',
       tags: '',
       image: ''
-    };
+    });
 
     if (title) title.textContent = data.id && data.id !== 'nuevo-extra' ? 'Editar extra' : 'Nuevo extra';
     body.innerHTML = `
@@ -187,57 +267,22 @@
           ${data.badge ? `<span class="prodExtraPreviewBadge">${escapeHtml(data.badge)}</span>` : ''}
           ${data.image ? `<img src="${escapeHtml(data.image)}" alt="">` : `<span class="prodExtraPreviewEmpty">Imagen del extra</span>`}
         </div>
-
         <p class="prodExtraEditorNotice">La estructura visible del extra es fija. Se edita información comercial, no el diseño.</p>
-
         <div class="prodExtraEditorGrid">
-          <label class="prodExtraField">
-            <span>Nombre del extra</span>
-            <input id="prodExtraEditorName" type="text" value="${escapeHtml(data.title)}" placeholder="Ej: Salsa de chocolate">
-          </label>
-          <label class="prodExtraField">
-            <span>Valor agregado</span>
-            <input id="prodExtraEditorPrice" type="number" value="${escapeHtml(data.price)}" placeholder="2000">
-          </label>
+          <label class="prodExtraField"><span>Nombre del extra</span><input id="prodExtraEditorName" type="text" value="${escapeHtml(data.title)}" placeholder="Ej: Salsa de chocolate"></label>
+          <label class="prodExtraField"><span>Valor agregado</span><input id="prodExtraEditorPrice" type="number" value="${escapeHtml(data.price)}" placeholder="2000"></label>
         </div>
-
-        <label class="prodExtraField">
-          <span>Descripción breve</span>
-          <textarea id="prodExtraEditorDescription" placeholder="Texto corto visible debajo del título">${escapeHtml(data.description)}</textarea>
-        </label>
-
+        <label class="prodExtraField"><span>Descripción breve</span><textarea id="prodExtraEditorDescription" placeholder="Texto corto visible debajo del título">${escapeHtml(data.description)}</textarea></label>
         <div class="prodExtraEditorGrid">
-          <label class="prodExtraField">
-            <span>Badge comercial</span>
-            <input id="prodExtraEditorBadge" type="text" value="${escapeHtml(data.badge || '')}" placeholder="Ej: abundante">
-          </label>
-          <label class="prodExtraField">
-            <span>Estado</span>
-            <select id="prodExtraEditorStatus">
-              <option ${data.status === 'Activo' ? 'selected' : ''}>Activo</option>
-              <option ${data.status === 'Borrador' ? 'selected' : ''}>Borrador</option>
-              <option ${data.status === 'Oculto' ? 'selected' : ''}>Oculto</option>
-            </select>
-          </label>
+          <label class="prodExtraField"><span>Badge comercial</span><input id="prodExtraEditorBadge" type="text" value="${escapeHtml(data.badge || '')}" placeholder="Ej: abundante"></label>
+          <label class="prodExtraField"><span>Estado</span><select id="prodExtraEditorStatus"><option ${data.status === 'Activo' ? 'selected' : ''}>Activo</option><option ${data.status === 'Borrador' ? 'selected' : ''}>Borrador</option><option ${data.status === 'Oculto' ? 'selected' : ''}>Oculto</option></select></label>
         </div>
-
-        <label class="prodExtraField">
-          <span>URL de imagen</span>
-          <input id="prodExtraEditorImage" type="url" value="${escapeHtml(data.image || '')}" placeholder="https://...">
-        </label>
-
+        <label class="prodExtraField"><span>URL de imagen</span><input id="prodExtraEditorImage" type="url" value="${escapeHtml(data.image || '')}" placeholder="https://..."></label>
         <div class="prodExtraEditorGrid">
-          <label class="prodExtraField">
-            <span>Carpeta / clasificación comercial</span>
-            <input id="prodExtraEditorFolder" type="text" value="${escapeHtml(data.folder || '')}" placeholder="Ej: Tortas, Alfajores, Cafetería">
-          </label>
-          <label class="prodExtraField">
-            <span>Etiquetas internas</span>
-            <input id="prodExtraEditorTags" type="text" value="${escapeHtml(data.tags || '')}" placeholder="Ej: chocolate, regalo, cumpleaños">
-          </label>
+          <label class="prodExtraField"><span>Carpeta / clasificación comercial</span><input id="prodExtraEditorFolder" type="text" value="${escapeHtml(data.folder || '')}" placeholder="Ej: Tortas, Alfajores, Cafetería"></label>
+          <label class="prodExtraField"><span>Etiquetas internas</span><input id="prodExtraEditorTags" type="text" value="${escapeHtml(data.tags || '')}" placeholder="Ej: chocolate, regalo, cumpleaños"></label>
         </div>
-      </section>
-    `;
+      </section>`;
   }
 
   function openExtrasSlide() {
@@ -315,10 +360,10 @@
       }
 
       const card = event.target.closest('[data-extra-id]');
-      if (card) {
+      const bankSlide = document.getElementById('prodExtrasSlide');
+      if (card && bankSlide?.classList.contains('is-active') && !bankSlide.classList.contains('is-selecting')) {
         event.preventDefault();
-        const extra = EXTRAS_MOCK.find(function (item) { return item.id === card.dataset.extraId; });
-        openConfigSlide(extra);
+        openConfigSlide(getExtra(card.dataset.extraId));
         return;
       }
 
@@ -333,9 +378,9 @@
   function mountEverything() {
     const body = document.querySelector('body[data-page="productos"]');
     if (!body) return false;
-
     const launcherReady = mountLauncher();
     const slidesReady = mountSlides();
+    if (slidesReady) renderGrid();
     forceEditButtons();
     return launcherReady && slidesReady;
   }
@@ -356,18 +401,13 @@
   function startObserver() {
     if (observerStarted) return;
     observerStarted = true;
-
-    const observer = new MutationObserver(function () {
-      mountEverything();
-    });
-
+    const observer = new MutationObserver(function () { mountEverything(); });
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
   function initProductosExtras() {
     const body = document.querySelector('body[data-page="productos"]');
     if (!body) return;
-
     bindUi();
     mountEverything();
     startMountLoop();
@@ -376,9 +416,16 @@
     ensureFilterAssets();
   }
 
+  window.ProductosExtrasBank = {
+    read: readExtras,
+    render: renderGrid,
+    repair: function () { localStorage.setItem(STORAGE_KEY, JSON.stringify(repairExtras(readExtras()))); renderGrid(); }
+  };
+
   document.addEventListener('DOMContentLoaded', initProductosExtras);
   document.addEventListener('sazzu:page:load', initProductosExtras);
   window.addEventListener('productos:payload-ready', function () { setTimeout(forceEditButtons, 200); });
   window.addEventListener('productos:supabase-saved', function () { setTimeout(forceEditButtons, 200); });
+  window.addEventListener('productos-extras:saved', function () { setTimeout(renderGrid, 80); });
   window.addEventListener('load', initProductosExtras);
 })();
