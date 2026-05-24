@@ -199,6 +199,56 @@
     });
   }
 
+  function normalizeComboExtra(extra, index) {
+    const data = extra || {};
+    const title = String(data.title || data.name || data.nombre || 'Extra').trim();
+    const id = String(data.extra_id || data.id || title).trim();
+    const price = Number(data.price_delta != null ? data.price_delta : (data.price != null ? data.price : data.precio || 0)) || 0;
+
+    return {
+      id: id,
+      extra_id: id,
+      title: title,
+      nombre: title,
+      description: String(data.description || data.descripcion || '').trim(),
+      descripcion: String(data.descripcion || data.description || '').trim(),
+      price: price,
+      precio: price,
+      status: data.status || data.estado || 'Activo',
+      estado: data.estado || data.status || 'Activo',
+      badge: data.badge || '',
+      image: data.image_url || data.image || data.imagen || '',
+      imagen: data.imagen || data.image || data.image_url || '',
+      position: data.position || index + 1
+    };
+  }
+
+  function fillComboExtras(items) {
+    const extras = Array.isArray(items)
+      ? items.map(normalizeComboExtra).filter(function (item) { return item.extra_id || item.id; })
+      : [];
+
+    const list = document.querySelector('.prodComboExtrasList[data-combo-extras-list="1"]');
+    if (!list) return;
+
+    if (!extras.length) {
+      list.classList.remove('prodComboExtrasList--selected');
+      list.dataset.selectedExtrasCount = '0';
+      return;
+    }
+
+    if (
+      window.ProductosExtrasSelector &&
+      typeof window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder === 'function'
+    ) {
+      window.ProductosExtrasSelector.renderSelectedExtrasIntoComboBuilder(extras);
+      return;
+    }
+
+    list.classList.add('prodComboExtrasList--selected');
+    list.dataset.selectedExtrasCount = String(extras.length);
+  }
+
   function fillCombo(payload) {
     const identity = payload.identity || {};
     const slide = document.getElementById('prodComboSlide');
@@ -214,6 +264,7 @@
     fillGallery('combo_img_', payload.images || []);
     fillComboComponents(payload.combo_components || []);
     fillComboOptional(payload.optional_products || []);
+    fillComboExtras(payload.combo_extras || []);
   }
 
   function fillPayload(payload) {
