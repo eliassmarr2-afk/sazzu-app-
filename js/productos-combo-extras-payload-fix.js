@@ -1,5 +1,6 @@
 (function () {
   var KEY = 'sazzu_combos_payloads_local_v1';
+  var lastComboExtrasById = {};
 
   function read() {
     try {
@@ -88,9 +89,23 @@
     });
   }
 
-  function saveExtrasForCombo(comboId) {
-    var id = String(comboId || '').trim();
+  function currentComboId() {
+    var slide = document.getElementById('prodComboSlide');
+    return slide && slide.dataset ? String(slide.dataset.comboId || '').trim() : '';
+  }
+
+  function captureVisibleExtras() {
+    var id = currentComboId();
+    if (!id) return [];
     var extras = collectVisibleExtras();
+    if (extras.length) lastComboExtrasById[id] = extras;
+    window.__PRODUCTOS_COMBO_EXTRAS_CAPTURE_LAST__ = { combo_id: id, extras: extras };
+    return extras;
+  }
+
+  function saveExtrasForCombo(comboId, explicitExtras) {
+    var id = String(comboId || '').trim();
+    var extras = Array.isArray(explicitExtras) && explicitExtras.length ? explicitExtras : (lastComboExtrasById[id] || collectVisibleExtras());
     if (!id || !extras.length) return null;
 
     var list = read();
@@ -101,7 +116,7 @@
     if (index < 0) return null;
 
     list[index] = Object.assign({}, list[index], {
-      combo_extras: extras,
+      combo_extras: extras.map(normalize),
       updated_at: new Date().toISOString()
     });
 
@@ -145,7 +160,7 @@
   }
 
   function scheduleSave(comboId) {
-    [30, 140, 360].forEach(function (delay) {
+    [20, 80, 180, 360].forEach(function (delay) {
       setTimeout(function () { saveExtrasForCombo(comboId); }, delay);
     });
   }
@@ -158,19 +173,24 @@
 
   function bind() {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.body.dataset.comboExtrasPayloadFix === 'safe2') return;
-    document.body.dataset.comboExtrasPayloadFix = 'safe2';
+    if (document.body.dataset.comboExtrasPayloadFix === 'capture1') return;
+    document.body.dataset.comboExtrasPayloadFix = 'capture1';
+
+    document.addEventListener('click', function (event) {
+      if (event.target.closest('#prodComboSaveBtn')) {
+        captureVisibleExtras();
+        return;
+      }
+
+      var edit = event.target.closest('[data-edit-local-product]');
+      if (edit) scheduleRender(edit.dataset.editLocalProduct);
+    }, true);
 
     window.addEventListener('productos:payload-ready', function (event) {
       var payload = event.detail && event.detail.payload ? event.detail.payload : null;
       if (!payload || payload.product_type !== 'combo') return;
       scheduleSave(payload.product_id);
     });
-
-    document.addEventListener('click', function (event) {
-      var edit = event.target.closest('[data-edit-local-product]');
-      if (edit) scheduleRender(edit.dataset.editLocalProduct);
-    }, true);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
