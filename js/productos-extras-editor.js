@@ -44,46 +44,6 @@
       .replace(/^-+|-+$/g, '') || 'extra';
   }
 
-  function normalizeExtra(extra) {
-    const data = extra || {};
-    const id = String(data.id || data.extra_id || ('extra-' + slugify(data.title || data.nombre || 'extra') + '-' + Date.now())).trim();
-    return {
-      id,
-      extra_id: id,
-      title: String(data.title || data.nombre || 'Extra').trim(),
-      nombre: String(data.nombre || data.title || 'Extra').trim(),
-      description: String(data.description || data.descripcion || '').trim(),
-      descripcion: String(data.descripcion || data.description || '').trim(),
-      price: Number(data.price != null ? data.price : (data.precio != null ? data.precio : 0)) || 0,
-      precio: Number(data.precio != null ? data.precio : (data.price != null ? data.price : 0)) || 0,
-      status: String(data.status || data.estado || 'Activo').trim(),
-      estado: String(data.estado || data.status || 'Activo').trim(),
-      badge: String(data.badge || '').trim(),
-      folder: String(data.folder || data.carpeta || '').trim(),
-      tags: String(data.tags || data.etiquetas || '').trim(),
-      image: String(data.image || data.imagen || '').trim(),
-      imagen: String(data.imagen || data.image || '').trim()
-    };
-  }
-
-  function repairExtras(items) {
-    const map = new Map();
-    DEFAULTS.forEach(function (extra) {
-      const normalized = normalizeExtra(extra);
-      map.set(normalized.id, normalized);
-    });
-    (Array.isArray(items) ? items : []).forEach(function (extra) {
-      const normalized = normalizeExtra(extra);
-      const seed = map.get(normalized.id) || {};
-      map.set(normalized.id, Object.assign({}, seed, normalized));
-    });
-    const userRows = (Array.isArray(items) ? items : [])
-      .map(normalizeExtra)
-      .filter(function (extra) { return !DEFAULTS.some(function (seed) { return seed.id === extra.id; }); });
-    const seedRows = DEFAULTS.map(function (seed) { return map.get(seed.id); }).filter(Boolean);
-    return userRows.concat(seedRows);
-  }
-
   function money(value) {
     return '+ $' + Number(value || 0).toLocaleString('es-AR');
   }
@@ -91,25 +51,19 @@
   function readExtras() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      const repaired = repairExtras(Array.isArray(parsed) ? parsed : DEFAULTS);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(repaired));
-      return repaired;
+      if (Array.isArray(parsed)) return parsed;
     } catch (error) {
       console.warn('[productos-extras-editor.js] No se pudo leer storage:', error);
-      const fallback = repairExtras(DEFAULTS);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback)); } catch (_) {}
-      return fallback;
     }
+    return DEFAULTS.slice();
   }
 
   function writeExtras(items) {
-    const normalized = repairExtras(items || []);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-    window.dispatchEvent(new CustomEvent('productos-extras:saved', { detail: { extras: normalized } }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items || []));
   }
 
   function getExtra(id) {
-    return readExtras().find(function (item) { return item.id === id || item.extra_id === id; });
+    return readExtras().find(function (item) { return item.id === id; });
   }
 
   function valueOf(id) {
@@ -124,13 +78,12 @@
   }
 
   function cardHtml(extra) {
-    const data = normalizeExtra(extra);
-    const badge = data.badge ? '<span class="prodExtraCard__badge">' + escapeHtml(data.badge) + '</span>' : '';
-    const image = data.image ? '<img src="' + escapeHtml(data.image) + '" alt="">' : '<span class="prodExtraCard__empty">Sin imagen</span>';
-    const folder = data.folder ? '<em>' + escapeHtml(data.folder) + '</em>' : '';
-    return '<button type="button" class="prodExtraCard" data-extra-id="' + escapeHtml(data.id) + '">' +
+    const badge = extra.badge ? '<span class="prodExtraCard__badge">' + escapeHtml(extra.badge) + '</span>' : '';
+    const image = extra.image ? '<img src="' + escapeHtml(extra.image) + '" alt="">' : '<span class="prodExtraCard__empty">Sin imagen</span>';
+    const folder = extra.folder ? '<em>' + escapeHtml(extra.folder) + '</em>' : '';
+    return '<button type="button" class="prodExtraCard" data-extra-id="' + escapeHtml(extra.id) + '">' +
       '<div class="prodExtraCard__image">' + badge + image + '</div>' +
-      '<div class="prodExtraCard__info"><div><strong>' + escapeHtml(data.title) + '</strong><span>' + escapeHtml(data.description) + '</span>' + folder + '</div><b class="prodExtraCard__price">' + escapeHtml(money(data.price)) + '</b></div>' +
+      '<div class="prodExtraCard__info"><div><strong>' + escapeHtml(extra.title) + '</strong><span>' + escapeHtml(extra.description) + '</span>' + folder + '</div><b class="prodExtraCard__price">' + escapeHtml(money(extra.price)) + '</b></div>' +
       '</button>';
   }
 
@@ -141,30 +94,28 @@
   }
 
   function previewHtml(data) {
-    const normalized = normalizeExtra(data);
-    const badge = normalized.badge ? '<span class="prodExtraPreviewBadge">' + escapeHtml(normalized.badge) + '</span>' : '';
-    const image = normalized.image ? '<img src="' + escapeHtml(normalized.image) + '" alt="">' : '<span class="prodExtraPreviewEmpty">Imagen del extra</span>';
+    const badge = data.badge ? '<span class="prodExtraPreviewBadge">' + escapeHtml(data.badge) + '</span>' : '';
+    const image = data.image ? '<img src="' + escapeHtml(data.image) + '" alt="">' : '<span class="prodExtraPreviewEmpty">Imagen del extra</span>';
     return badge + image;
   }
 
   function editorHtml(data) {
-    const normalized = normalizeExtra(data);
     return '<section class="prodExtraConfigCard" data-extra-editor="1">' +
-      '<div class="prodExtraConfigPreview" id="prodExtraEditorPreview">' + previewHtml(normalized) + '</div>' +
+      '<div class="prodExtraConfigPreview" id="prodExtraEditorPreview">' + previewHtml(data) + '</div>' +
       '<p class="prodExtraEditorNotice">La estructura visual del extra es fija. Solo se editan sus características comerciales.</p>' +
       '<div class="prodExtraEditorGrid">' +
-        '<label class="prodExtraField"><span>Nombre del extra</span><input id="prodExtraEditorName" type="text" value="' + escapeHtml(normalized.title) + '" placeholder="Ej: Salsa de chocolate"></label>' +
-        '<label class="prodExtraField"><span>Valor agregado</span><input id="prodExtraEditorPrice" type="number" value="' + escapeHtml(normalized.price) + '" placeholder="2000"></label>' +
+        '<label class="prodExtraField"><span>Nombre del extra</span><input id="prodExtraEditorName" type="text" value="' + escapeHtml(data.title) + '" placeholder="Ej: Salsa de chocolate"></label>' +
+        '<label class="prodExtraField"><span>Valor agregado</span><input id="prodExtraEditorPrice" type="number" value="' + escapeHtml(data.price) + '" placeholder="2000"></label>' +
       '</div>' +
-      '<label class="prodExtraField"><span>Descripción breve</span><textarea id="prodExtraEditorDescription" placeholder="Texto corto visible debajo del título">' + escapeHtml(normalized.description) + '</textarea></label>' +
+      '<label class="prodExtraField"><span>Descripción breve</span><textarea id="prodExtraEditorDescription" placeholder="Texto corto visible debajo del título">' + escapeHtml(data.description) + '</textarea></label>' +
       '<div class="prodExtraEditorGrid">' +
-        '<label class="prodExtraField"><span>Badge comercial</span><input id="prodExtraEditorBadge" type="text" value="' + escapeHtml(normalized.badge || '') + '" placeholder="Ej: abundante"></label>' +
-        '<label class="prodExtraField"><span>Estado</span><select id="prodExtraEditorStatus"><option ' + (normalized.status === 'Activo' ? 'selected' : '') + '>Activo</option><option ' + (normalized.status === 'Borrador' ? 'selected' : '') + '>Borrador</option><option ' + (normalized.status === 'Oculto' ? 'selected' : '') + '>Oculto</option></select></label>' +
+        '<label class="prodExtraField"><span>Badge comercial</span><input id="prodExtraEditorBadge" type="text" value="' + escapeHtml(data.badge || '') + '" placeholder="Ej: abundante"></label>' +
+        '<label class="prodExtraField"><span>Estado</span><select id="prodExtraEditorStatus"><option ' + (data.status === 'Activo' ? 'selected' : '') + '>Activo</option><option ' + (data.status === 'Borrador' ? 'selected' : '') + '>Borrador</option><option ' + (data.status === 'Oculto' ? 'selected' : '') + '>Oculto</option></select></label>' +
       '</div>' +
-      '<label class="prodExtraField"><span>URL de imagen</span><input id="prodExtraEditorImage" type="url" value="' + escapeHtml(normalized.image || '') + '" placeholder="https://..."></label>' +
+      '<label class="prodExtraField"><span>URL de imagen</span><input id="prodExtraEditorImage" type="url" value="' + escapeHtml(data.image || '') + '" placeholder="https://..."></label>' +
       '<div class="prodExtraEditorGrid">' +
-        '<label class="prodExtraField"><span>Carpeta / clasificación comercial</span><input id="prodExtraEditorFolder" type="text" value="' + escapeHtml(normalized.folder || '') + '" placeholder="Ej: Tortas, Alfajores, Cafetería"></label>' +
-        '<label class="prodExtraField"><span>Etiquetas internas</span><input id="prodExtraEditorTags" type="text" value="' + escapeHtml(normalized.tags || '') + '" placeholder="Ej: chocolate, regalo, cumpleaños"></label>' +
+        '<label class="prodExtraField"><span>Carpeta / clasificación comercial</span><input id="prodExtraEditorFolder" type="text" value="' + escapeHtml(data.folder || '') + '" placeholder="Ej: Tortas, Alfajores, Cafetería"></label>' +
+        '<label class="prodExtraField"><span>Etiquetas internas</span><input id="prodExtraEditorTags" type="text" value="' + escapeHtml(data.tags || '') + '" placeholder="Ej: chocolate, regalo, cumpleaños"></label>' +
       '</div>' +
     '</section>';
   }
@@ -176,17 +127,29 @@
     const slide = document.getElementById('prodExtraConfigSlide');
     const overlay = document.getElementById('prodExtraConfigOverlay');
     if (!body || !slide || !overlay) return;
-    const data = extra || { id: '', title: 'Nuevo extra', description: 'Descripción breve del extra.', price: 0, status: 'Borrador', badge: '', folder: '', tags: '', image: '' };
-    const normalized = normalizeExtra(data);
-    slide.dataset.extraEditorId = extra ? normalized.id : '';
-    body.innerHTML = editorHtml(normalized);
-    if (title) title.textContent = extra ? 'Editar extra' : 'Nuevo extra';
+
+    const data = extra || {
+      id: '',
+      title: 'Nuevo extra',
+      description: 'Descripción breve del extra.',
+      price: 0,
+      status: 'Borrador',
+      badge: '',
+      folder: '',
+      tags: '',
+      image: ''
+    };
+
+    slide.dataset.extraEditorId = data.id || '';
+    body.innerHTML = editorHtml(data);
+    if (title) title.textContent = data.id ? 'Editar extra' : 'Nuevo extra';
     if (save) {
       save.textContent = 'Guardar extra';
       save.disabled = false;
       save.removeAttribute('disabled');
       save.id = 'prodExtraEditorSaveBtn';
     }
+
     overlay.classList.add('is-active');
     slide.classList.add('is-active');
     slide.setAttribute('aria-hidden', 'false');
@@ -195,7 +158,10 @@
   function refreshPreview() {
     const preview = document.getElementById('prodExtraEditorPreview');
     if (!preview) return;
-    preview.innerHTML = previewHtml({ image: valueOf('prodExtraEditorImage'), badge: valueOf('prodExtraEditorBadge') });
+    preview.innerHTML = previewHtml({
+      image: valueOf('prodExtraEditorImage'),
+      badge: valueOf('prodExtraEditorBadge')
+    });
   }
 
   function saveEditor() {
@@ -203,7 +169,7 @@
     const currentId = slide?.dataset.extraEditorId || '';
     const title = valueOf('prodExtraEditorName') || 'Nuevo extra';
     const items = readExtras();
-    const next = normalizeExtra({
+    const next = {
       id: currentId || 'extra-' + slugify(title) + '-' + Date.now(),
       title: title,
       description: valueOf('prodExtraEditorDescription'),
@@ -213,8 +179,8 @@
       folder: valueOf('prodExtraEditorFolder'),
       tags: valueOf('prodExtraEditorTags'),
       image: valueOf('prodExtraEditorImage')
-    });
-    const index = items.findIndex(function (item) { return item.id === next.id || item.extra_id === next.id; });
+    };
+    const index = items.findIndex(function (item) { return item.id === next.id; });
     if (index >= 0) items[index] = next;
     else items.unshift(next);
     writeExtras(items);
@@ -244,6 +210,7 @@
         openEditor(null);
         return;
       }
+
       const card = event.target.closest('[data-extra-id]');
       const bankSlide = document.getElementById('prodExtrasSlide');
       if (card && bankSlide?.classList.contains('is-active')) {
@@ -253,6 +220,7 @@
         openEditor(getExtra(card.dataset.extraId));
         return;
       }
+
       const save = event.target.closest('#prodExtraEditorSaveBtn, .prodExtraConfigSave');
       if (save && document.querySelector('[data-extra-editor="1"]')) {
         event.preventDefault();
