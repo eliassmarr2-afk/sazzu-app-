@@ -260,6 +260,7 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     ensureScript_('../js/productos-combo-optionals-stage-a.js', 'productos-combo-optionals-stage-a-js');
     ensureScript_('../js/productos-combo-optionals-payload-sync.js', 'productos-combo-optionals-payload-sync-js');
     ensureScript_('../js/productos-combo-optionals-collector-bridge.js', 'productos-combo-optionals-collector-bridge-js');
+    ensureScript_('../js/productos-combo-optionals-payload-fields-bridge.js', 'productos-combo-optionals-payload-fields-bridge-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
