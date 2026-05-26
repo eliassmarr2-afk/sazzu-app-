@@ -4,7 +4,7 @@
   Corrige el layout de Extras después del polish general:
   - imagen izquierda
   - contenido central
-  - meta/precio ordenado
+  - meta/precio en la misma tarjeta
   - tachito rojo arriba a la derecha
   - sin botones abajo
 
@@ -19,7 +19,9 @@
 
   function injectStyles() {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.getElementById(STYLE_ID)) return;
+
+    const old = document.getElementById(STYLE_ID);
+    if (old) old.remove();
 
     const style = document.createElement('style');
     style.id = STYLE_ID;
@@ -32,11 +34,12 @@
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard{
         position:relative !important;
         display:grid !important;
-        grid-template-columns:104px minmax(0,1fr) minmax(150px,auto) 34px !important;
+        grid-template-columns:82px minmax(0,1fr) minmax(160px,max-content) 34px !important;
+        grid-template-areas:"image body meta delete" !important;
         align-items:start !important;
         gap:18px !important;
         padding:16px !important;
-        min-height:118px !important;
+        min-height:116px !important;
         border:1px solid #b8e4ff !important;
         border-radius:7px !important;
         background:#e5f6ff !important;
@@ -44,6 +47,7 @@
         box-shadow:0 8px 24px rgba(36,121,255,.08),0 1px 3px rgba(15,23,42,.08) !important;
         transform:none !important;
         transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease !important;
+        overflow:hidden !important;
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard:hover{
@@ -53,6 +57,7 @@
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__image{
+        grid-area:image !important;
         width:82px !important;
         height:82px !important;
         min-width:82px !important;
@@ -75,6 +80,7 @@
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__body{
+        grid-area:body !important;
         min-width:0 !important;
         display:grid !important;
         align-content:start !important;
@@ -100,18 +106,23 @@
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__meta{
+        grid-area:meta !important;
         display:flex !important;
         align-items:center !important;
         justify-content:flex-end !important;
         gap:10px !important;
-        align-self:center !important;
+        align-self:start !important;
+        justify-self:end !important;
         min-width:0 !important;
+        max-width:100% !important;
         white-space:nowrap !important;
+        padding-top:2px !important;
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__badge{
         display:inline-flex !important;
         align-items:center !important;
+        max-width:120px !important;
         min-height:26px !important;
         padding:0 10px !important;
         border-radius:999px !important;
@@ -119,6 +130,9 @@
         color:#2479ff !important;
         font-size:11px !important;
         font-weight:950 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__badge--soft{
@@ -130,9 +144,11 @@
         color:#2479ff !important;
         font-size:14px !important;
         font-weight:950 !important;
+        white-space:nowrap !important;
       }
 
       body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__delete{
+        grid-area:delete !important;
         width:34px !important;
         height:34px !important;
         min-width:34px !important;
@@ -170,9 +186,10 @@
       @media(max-width:980px){
         body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard{
           grid-template-columns:82px minmax(0,1fr) 34px !important;
+          grid-template-areas:"image body delete" "image meta meta" !important;
         }
         body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__meta{
-          grid-column:2 / -1 !important;
+          justify-self:start !important;
           justify-content:flex-start !important;
         }
       }
