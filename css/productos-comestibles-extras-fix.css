@@ -1,0 +1,15 @@
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComOptions[data-options-key="extras"] .prodComOption__num,
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComOptions[data-options-key="extras"] .prodComOption__visual{
+  display:none !important;
+}
+
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard__delete{
+  width:34px !important;
+  height:34px !important;
+  display:grid !important;
+  place-items:center !important;
+  align-self:start !important;
+  justify-self:end !important;
+  background:#fee2e2 !important;
+  color:#b91c1c !important;
+}
