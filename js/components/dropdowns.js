@@ -263,6 +263,7 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     ensureScript_('../js/productos-combo-optionals-payload-fields-bridge.js', 'productos-combo-optionals-payload-fields-bridge-js');
     ensureScript_('../js/productos-combo-optionals-recommended-count-bridge.js', 'productos-combo-optionals-recommended-count-bridge-js');
     ensureScript_('../js/productos-comestibles-optionals-stage-a.js', 'productos-comestibles-optionals-stage-a-js');
+    ensureScript_('../js/productos-comestibles-optionals-click-fix.js', 'productos-comestibles-optionals-click-fix-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
