@@ -1,0 +1,11 @@
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard > .prodComOption__visual,
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard > .prodComOption__num,
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="versiones"] .prodComOption > .prodComOption__num,
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="sinCosto"] .prodComOption > .prodComOption__num{
+  display:none !important;
+}
+
+body[data-page="productos"] #prodComSlideBody [data-prod-com-section="extras"] .prodComSelectedExtraCard{
+  grid-template-columns:82px minmax(0,1fr) auto 34px !important;
+  align-items:start !important;
+}
