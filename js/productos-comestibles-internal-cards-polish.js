@@ -2,30 +2,36 @@
   FASE VISUAL · Producto Comestible: cards internas
 
   Alcance visual:
-  - Oculta numeradores internos de las cards.
-  - Agranda las imágenes 4x4.
-  - Aplica fondo celeste agua + hover/cursor a cards internas.
-  - Normaliza botones de borrado existentes al tachito rojo estándar.
-  - Elimina duplicados visuales/íconos fantasma dentro de la misma card.
+  - Oculta numeradores internos de Tamaño / Sin costo.
+  - Agranda las imágenes 4x4 de Tamaño / Sin costo.
+  - Aplica fondo celeste agua + hover/cursor a cards internas simples.
 
-  No modifica guardado, persistencia, Extras ni Combos.
+  Importante:
+  - NO toca Extras. Extras tiene layout propio desde productos-extras-selector.js.
+  - NO toca Agregados opcionales. Agregados opcionales tiene layout propio.
+  - No modifica guardado, persistencia ni Combos.
 */
 (function () {
   const STYLE_ID = 'productos-comestibles-internal-cards-polish-css';
   let observerStarted = false;
 
-  function trashIcon() {
-    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Z" fill="currentColor"></path><path d="M7 8h10l-.85 12.25A2 2 0 0 1 14.16 22H9.84a2 2 0 0 1-1.99-1.75L7 8Z" fill="currentColor"></path><path d="M10 11v7M14 11v7" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"></path></svg>';
+  function isAllowedSection(card) {
+    const list = card && card.closest('.prodComOptions');
+    const key = list ? String(list.dataset.optionsKey || '') : '';
+    return key === 'versiones' || key === 'sinCosto';
   }
 
   function injectStyles() {
     if (!document.querySelector('body[data-page="productos"]')) return;
-    if (document.getElementById(STYLE_ID)) return;
+
+    const old = document.getElementById(STYLE_ID);
+    if (old) old.remove();
 
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOption{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption{
         background:#eefaff !important;
         border:1px solid #d9efff !important;
         border-radius:7px !important;
@@ -33,25 +39,29 @@
         transition:background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOption:hover{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption:hover,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption:hover{
         background:#e5f6ff !important;
         border-color:#b8e4ff !important;
         box-shadow:0 8px 24px rgba(36,121,255,.08),0 1px 3px rgba(15,23,42,.08) !important;
         transform:translateY(-1px) !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]){
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption{
         grid-template-columns:104px minmax(0,1fr) !important;
         align-items:center !important;
         gap:18px !important;
         padding:16px !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOption__num{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption__num,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption__num{
         display:none !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]) .prodComOption__visual{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption__visual,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption__visual{
         width:96px !important;
         height:96px !important;
         min-width:96px !important;
@@ -62,75 +72,37 @@
         font-weight:950 !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]) .prodComOption__visual img{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption__visual img,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption__visual img{
         width:100% !important;
         height:100% !important;
         object-fit:cover !important;
         display:block !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]) .prodComGrid--option{
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComGrid--option,
+      body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComGrid--option{
         grid-template-columns:repeat(3,minmax(0,1fr)) !important;
         gap:12px !important;
       }
 
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOptionDelete,
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOption__delete,
-      body[data-page="productos"] #prodComSlideBody .prodComOptions [data-prod-com-option-delete],
-      body[data-page="productos"] #prodComSlideBody .prodComOptions [data-delete-option]{
-        width:34px !important;
-        height:34px !important;
-        min-width:34px !important;
-        display:grid !important;
-        place-items:center !important;
-        border:0 !important;
-        border-radius:6px !important;
-        background:#fee2e2 !important;
-        color:#b91c1c !important;
-        padding:0 !important;
-        line-height:1 !important;
-        box-shadow:none !important;
-        cursor:pointer !important;
-      }
-
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOptionDelete svg,
-      body[data-page="productos"] #prodComSlideBody .prodComOptions .prodComOption__delete svg,
-      body[data-page="productos"] #prodComSlideBody .prodComOptions [data-prod-com-option-delete] svg,
-      body[data-page="productos"] #prodComSlideBody .prodComOptions [data-delete-option] svg{
-        width:17px !important;
-        height:17px !important;
-        display:block !important;
-      }
-
       @media(max-width:980px){
-        body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]){
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption,
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption{
           grid-template-columns:1fr !important;
         }
-        body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]) .prodComOption__visual{
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption__visual,
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption__visual{
           width:100% !important;
           height:140px !important;
         }
-        body[data-page="productos"] #prodComSlideBody .prodComOptions:not([data-options-key="recomendados"]) .prodComOption:not([data-prod-com-optionals-card="1"]) .prodComGrid--option{
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComGrid--option,
+        body[data-page="productos"] #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComGrid--option{
           grid-template-columns:1fr !important;
         }
       }
     `;
     document.head.appendChild(style);
-  }
-
-  function normalizeExistingDeleteButtons(card) {
-    const candidates = Array.from(card.querySelectorAll('.prodComOptionDelete, .prodComOption__delete, [data-prod-com-option-delete], [data-delete-option], button[aria-label*="Eliminar"], button[title*="Eliminar"]'));
-    if (!candidates.length) return;
-
-    let keep = candidates[0];
-    candidates.forEach(function (button, index) {
-      if (index > 0) button.remove();
-    });
-
-    keep.type = 'button';
-    keep.classList.add('prodComOptionDelete');
-    keep.setAttribute('aria-label', keep.getAttribute('aria-label') || 'Eliminar opción');
-    keep.innerHTML = trashIcon();
   }
 
   function removeDuplicateVisuals(card) {
@@ -140,12 +112,12 @@
   }
 
   function normalizeCards() {
-    const cards = Array.from(document.querySelectorAll('#prodComSlideBody .prodComOptions .prodComOption'));
+    const cards = Array.from(document.querySelectorAll('#prodComSlideBody .prodComOptions[data-options-key="versiones"] .prodComOption, #prodComSlideBody .prodComOptions[data-options-key="sinCosto"] .prodComOption'));
     cards.forEach(function (card) {
+      if (!isAllowedSection(card)) return;
       const num = card.querySelector(':scope > .prodComOption__num');
       if (num) num.remove();
       removeDuplicateVisuals(card);
-      normalizeExistingDeleteButtons(card);
     });
   }
 
