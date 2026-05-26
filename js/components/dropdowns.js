@@ -272,6 +272,7 @@ window.ProtocolDropdowns = window.ProtocolDropdowns || (function () {
     ensureScript_('../js/productos-comestibles-optionals-visual-stability.js', 'productos-comestibles-optionals-visual-stability-js');
     ensureScript_('../js/productos-comestibles-internal-cards-polish.js', 'productos-comestibles-internal-cards-polish-js');
     ensureScript_('../js/productos-comestibles-extras-layout-restore.js', 'productos-comestibles-extras-layout-restore-js');
+    ensureScript_('../js/productos-physical-click-normalizer.js', 'productos-physical-click-normalizer-js');
   }
 
   document.addEventListener('DOMContentLoaded', loadProductosComestibles_);
