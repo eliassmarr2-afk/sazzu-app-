@@ -94,6 +94,160 @@
 .logPriorityList { margin: 0; padding-left: 20px; }
 .logPriorityList li + li { margin-top: 8px; }
 .logCpNote { margin-bottom: 12px; padding: 12px; border-radius: 14px; background: #eef5ff; color: #2479ff; font-weight: 750; }
+
+/* ==========================================================
+   Logística · Simulador CP · Tarjeta ejecutiva
+   ========================================================== */
+
+.logLookupResult {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: #f7faff;
+  padding: 14px;
+  color: #697386;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.logLookupExec {
+  display: grid;
+  gap: 14px;
+}
+
+.logLookupExec__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.logLookupExec__head span,
+.logLookupExec__badges > span {
+  display: block;
+  color: #97a1b2;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.logLookupExec__head strong {
+  display: block;
+  color: #252a32;
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.logLookupExec__head small {
+  display: block;
+  margin-top: 6px;
+  color: #697386;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 750;
+}
+
+.logLookupExecStatus {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 11px;
+  font-size: 12px;
+  line-height: 1;
+  font-style: normal;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.logLookupExecStatus--ok { background: #eaf8f1; color: #10a66a; }
+.logLookupExecStatus--warning { background: #fff7ed; color: #c05621; }
+.logLookupExecStatus--error { background: #fff1f0; color: #d93025; }
+
+.logLookupExec__hero {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.logLookupExec__hero > div,
+.logLookupExec__grid > div,
+.logLookupExec__badges,
+.logLookupExec__notice {
+  border-radius: 15px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 12px;
+}
+
+.logLookupExec__hero span,
+.logLookupExec__grid span {
+  display: block;
+  margin-bottom: 7px;
+  color: #697386;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.logLookupExec__hero strong {
+  display: block;
+  color: #252a32;
+  font-size: 18px;
+  line-height: 1.08;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.logLookupExec__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.logLookupExec__grid strong {
+  display: block;
+  color: #252a32;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 900;
+  word-break: break-word;
+}
+
+.logLookupExec__badges > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.logLookupExec__notice {
+  display: grid;
+  gap: 5px;
+  border-left: 5px solid #2479ff;
+}
+
+.logLookupExec__notice strong {
+  color: #252a32;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.logLookupExec__notice span {
+  color: #697386;
+  font-size: 12px;
+  font-weight: 650;
+}
+
 .logOrderSlide { position: fixed; inset: 0; z-index: 2147483000; visibility: hidden; pointer-events: none; }
 .logOrderSlide.is-open { visibility: visible; pointer-events: auto; }
 .logOrderSlide__overlay { position: absolute; inset: 0; border: 0; background: rgba(15, 23, 42, 0.42); opacity: 0; transition: opacity 180ms ease; }
@@ -112,4 +266,4 @@
 .logCheckRow input { width: 16px; height: 16px; }
 .logOrderForm__submit { width: 100%; min-height: 44px; }
 html.logSlideLock,body.logSlideLock { overflow: hidden !important; }
-@media screen and (max-width: 980px) { .logisticsHero,.logGrid--2 { grid-template-columns: 1fr; } .logCard__head--toolbar { align-items: stretch; flex-direction: column; } .logToolbar { justify-content: stretch; } .logToolbar .logInput,.logToolbar .logSelect { min-width: 100%; } }
+@media screen and (max-width: 980px) { .logisticsHero,.logGrid--2,.logLookupExec__hero,.logLookupExec__grid { grid-template-columns: 1fr; } .logCard__head--toolbar { align-items: stretch; flex-direction: column; } .logToolbar { justify-content: stretch; } .logToolbar .logInput,.logToolbar .logSelect { min-width: 100%; } }
