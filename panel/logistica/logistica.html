@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../../css/panel.css">
   <link rel="stylesheet" href="../../css/sidebar.css">
   <link rel="stylesheet" href="../../css/logistica/logistica.css">
+  <link rel="stylesheet" href="../../css/logistica/logistica-rule-slide.css">
   <link rel="stylesheet" href="../../css/style.css">
 </head>
 
@@ -150,6 +151,166 @@
             <div class="logBannerList" id="logBannerList"></div>
           </article>
         </section>
+
+        <section class="logRuleSlide" id="logRuleSlide" aria-hidden="true">
+          <button class="logRuleSlide__overlay" id="logRuleSlideOverlay" type="button" aria-label="Cerrar nueva regla"></button>
+
+          <aside class="logRuleSlide__panel" role="dialog" aria-modal="true" aria-label="Nueva regla logística">
+            <header class="logRuleSlide__header">
+              <button class="logRuleSlide__back" id="logRuleSlideClose" type="button" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+
+              <div class="logRuleSlide__headerText">
+                <strong>Nueva regla</strong>
+                <span>Define una condición logística para consultas públicas</span>
+              </div>
+
+              <div class="logRuleSlide__ghost" aria-hidden="true"></div>
+            </header>
+
+            <form class="logRuleForm" id="logRuleForm">
+              <div class="logRuleForm__card">
+                <div class="logRuleForm__cardHead">
+                  <strong>Alcance de la regla</strong>
+                  <span>Cuanto más específico sea el alcance, mayor peso tendrá en el motor.</span>
+                </div>
+
+                <div class="logRuleForm__grid">
+                  <div class="logRuleField">
+                    <label for="logRuleScopeType">Tipo</label>
+                    <select class="logRuleSelect" id="logRuleScopeType">
+                      <option value="zone">Zona</option>
+                      <option value="province">Provincia</option>
+                      <option value="locality">Localidad</option>
+                      <option value="postal_code">Código postal</option>
+                      <option value="default">Default</option>
+                    </select>
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleScopeValue">Valor</label>
+                    <input class="logRuleInput" id="logRuleScopeValue" type="text" placeholder="Ej: interior_centro, Cordoba, 5000">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleZoneId">Zona operativa</label>
+                    <input class="logRuleInput" id="logRuleZoneId" type="text" placeholder="Ej: interior_centro">
+                    <span class="logRuleHint">Si el tipo es Zona, puede quedar igual al valor.</span>
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRulePriority">Prioridad</label>
+                    <input class="logRuleInput" id="logRulePriority" type="number" placeholder="Automática">
+                  </div>
+                </div>
+              </div>
+
+              <div class="logRuleForm__card">
+                <div class="logRuleForm__cardHead">
+                  <strong>Condición de envío</strong>
+                  <span>Esto es lo que verá el usuario al consultar el código postal.</span>
+                </div>
+
+                <div class="logRuleForm__grid">
+                  <div class="logRuleField">
+                    <label for="logRuleShippingMode">Modo</label>
+                    <select class="logRuleSelect" id="logRuleShippingMode">
+                      <option value="paid">Pagado</option>
+                      <option value="free">Gratis</option>
+                      <option value="quote_required">A confirmar</option>
+                      <option value="unavailable">No disponible</option>
+                    </select>
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleShippingPrice">Precio</label>
+                    <input class="logRuleInput" id="logRuleShippingPrice" type="number" placeholder="Ej: 8900">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleShippingLabel">Etiqueta pública</label>
+                    <input class="logRuleInput" id="logRuleShippingLabel" type="text" placeholder="Ej: $8.900">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRulePromise">Promesa</label>
+                    <input class="logRuleInput" id="logRulePromise" type="text" placeholder="Ej: Llega en 3 a 5 días">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleMinDays">Días mínimos</label>
+                    <input class="logRuleInput" id="logRuleMinDays" type="number" placeholder="Ej: 3">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleMaxDays">Días máximos</label>
+                    <input class="logRuleInput" id="logRuleMaxDays" type="number" placeholder="Ej: 5">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleTimeBand">Banda horaria</label>
+                    <input class="logRuleInput" id="logRuleTimeBand" type="text" placeholder="Ej: A confirmar por logística">
+                  </div>
+
+                  <div class="logRuleField">
+                    <label for="logRuleBanner">Banner ID</label>
+                    <input class="logRuleInput" id="logRuleBanner" type="text" placeholder="Ej: ban_navid_003">
+                  </div>
+                </div>
+              </div>
+
+              <div class="logRuleForm__card">
+                <div class="logRuleForm__cardHead">
+                  <strong>Identidad y vista previa</strong>
+                  <span>Usá nombres claros para poder auditar la regla más adelante.</span>
+                </div>
+
+                <div class="logRuleForm__grid">
+                  <div class="logRuleField logRuleField--full">
+                    <label for="logRuleName">Nombre interno</label>
+                    <input class="logRuleInput" id="logRuleName" type="text" placeholder="Ej: Promo Córdoba · Envío especial">
+                  </div>
+
+                  <div class="logRuleField logRuleField--full">
+                    <label for="logRuleId">ID de regla opcional</label>
+                    <input class="logRuleInput" id="logRuleId" type="text" placeholder="Vacío = se genera automáticamente">
+                  </div>
+
+                  <label class="logRuleCheck logRuleField--full">
+                    <input id="logRuleIsActive" type="checkbox" checked>
+                    <span>Regla activa</span>
+                  </label>
+                </div>
+
+                <div class="logRulePreview">
+                  <div class="logRulePreview__top">
+                    <div>
+                      <strong id="logRulePreviewTitle">Nueva regla</strong>
+                      <span id="logRulePreviewScope">zone · sin valor</span>
+                    </div>
+                    <span class="logBadge logBadge--blue">Vista previa</span>
+                  </div>
+                  <div class="logRulePreview__meta">
+                    <div><span>Envío</span><strong id="logRulePreviewMode">Pagado · $0</strong></div>
+                    <div><span>Promesa</span><strong id="logRulePreviewPromise">Llega en 3 a 7 días</strong></div>
+                    <div><span>Prioridad</span><strong id="logRulePreviewPriority">Automática</strong></div>
+                    <div><span>Banner</span><strong id="logRulePreviewBanner">ban_navid_003</strong></div>
+                  </div>
+                </div>
+
+                <div class="logRuleMessage" id="logRuleMessage"></div>
+              </div>
+
+              <div class="logRuleForm__footer">
+                <button class="btn btn--primary logRuleForm__submit" id="logRuleSubmit" type="submit">Guardar regla</button>
+                <button class="btn btn--secondary" type="button" id="logRuleSlideCancel">Cancelar</button>
+              </div>
+            </form>
+          </aside>
+        </section>
       </main>
     </div>
   </div>
@@ -160,5 +321,6 @@
   <script src="../../js/logistica/logistica.js"></script>
   <script src="../../js/logistica/logistica-supabase.js"></script>
   <script src="../../js/logistica/logistica-simulador-card.js"></script>
+  <script src="../../js/logistica/logistica-rule-slide.js"></script>
 </body>
 </html>
