@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="view-transition" content="same-origin">
+  <title>Protocol Data - Login interno</title>
+
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/auth/login.css">
+</head>
+
+<body class="protocolLoginBody" data-page="login">
+  <main class="protocolLoginMain" aria-label="Login interno Protocol Data">
+    <section class="protocolLoginShell">
+      <article class="protocolLoginHero" aria-label="Protocol Data">
+        <div class="protocolLoginBrand">
+          <div class="protocolLoginBrand__mark" aria-hidden="true"></div>
+          <div>
+            <strong>Protocol Data</strong>
+            <span>Sazzú Control Tower</span>
+          </div>
+        </div>
+
+        <div class="protocolLoginHeroText">
+          <h1>Acceso interno seguro.</h1>
+          <p>Ingresá para operar acciones de escritura dentro de Protocol Data. La lectura puede mantenerse abierta, pero guardar reglas exige sesión autenticada.</p>
+          <div class="protocolLoginPills" aria-label="Permisos">
+            <span>Supabase Auth</span>
+            <span>Sin service_role</span>
+            <span>RPC protegida</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="protocolLoginCard" aria-label="Formulario de acceso">
+        <div class="protocolLoginCard__head">
+          <span>LOGIN INTERNO</span>
+          <h2>Entrar al sistema</h2>
+          <p>Usá el usuario creado en Supabase Auth. Esta pantalla no guarda claves propias ni expone credenciales privadas.</p>
+        </div>
+
+        <form class="protocolLoginForm" id="protocolLoginForm">
+          <div class="protocolLoginField">
+            <label for="protocolLoginEmail">Email</label>
+            <input id="protocolLoginEmail" type="email" autocomplete="email" placeholder="usuario@empresa.com" required>
+          </div>
+
+          <div class="protocolLoginField">
+            <label for="protocolLoginPassword">Contraseña</label>
+            <input id="protocolLoginPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña" required>
+          </div>
+
+          <div class="protocolLoginMessage" id="protocolLoginMessage"></div>
+
+          <button class="protocolLoginSubmit" id="protocolLoginSubmit" type="submit">Ingresar al sistema</button>
+        </form>
+
+        <p class="protocolLoginFootnote">La escritura real sigue bloqueada desde Supabase si no existe sesión autenticada. El frontend solo acompaña el flujo.</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config/supabase-config.js"></script>
+  <script src="../js/auth/auth-client.js"></script>
+  <script src="../js/auth/login.js"></script>
+</body>
+</html>
