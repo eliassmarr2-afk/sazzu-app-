@@ -13,6 +13,15 @@
     return location.pathname.toLowerCase().includes("/panel/");
   }
 
+  function runPageSpecificInit_() {
+    const page = (document.body.getAttribute("data-page") || "").toLowerCase();
+    const file = getCurrentFile_();
+
+    if ((page === "logistica" || file === "logistica.html") && typeof window.ProtocolLogisticaInit === "function") {
+      window.ProtocolLogisticaInit();
+    }
+  }
+
   async function injectSidebarIfNeeded_() {
     const aside = document.querySelector('aside.sidebar[data-include="sidebar"]');
     if (!aside) return;
@@ -149,6 +158,7 @@
 
     setActiveNav_();
     firePageLoadEvent_();
+    runPageSpecificInit_();
   }
 
   function enableSoftNavigation_() {
@@ -189,6 +199,7 @@
     setActiveNav_();
     enableSoftNavigation_();
     firePageLoadEvent_();
+    runPageSpecificInit_();
   });
 })();
 /* =========================================================
