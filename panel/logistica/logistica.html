@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="view-transition" content="same-origin">
+  <title>Sazzú Control Tower - Logística</title>
+
+  <link rel="stylesheet" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/panel.css">
+  <link rel="stylesheet" href="../../css/sidebar.css">
+  <link rel="stylesheet" href="../../css/logistica/logistica.css">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body data-page="logistica">
+  <div class="appShell">
+    <div class="bodyGrid">
+      <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
+
+      <main class="main logisticsMain" aria-label="Panel de logística">
+        <header class="appHeader logisticsHeader" aria-label="Encabezado de logística">
+          <div class="appHeader__left">
+            <div class="appHeader__title">Logística</div>
+            <div class="appHeader__sub">Control de entregas, tarifas, códigos postales y seguimiento público. Fuente futura: Supabase.</div>
+          </div>
+
+          <div class="appHeader__right logisticsHeader__right">
+            <button class="btn btn--secondary" type="button" id="logBtnSyncSupabase">Sincronizar Supabase</button>
+            <button class="btn btn--primary" type="button" id="logBtnNewRule">Nueva regla</button>
+          </div>
+        </header>
+
+        <section class="logisticsHero" aria-label="Resumen operativo de logística">
+          <article class="logHeroCard logHeroCard--primary">
+            <span class="logHeroCard__label">Pedidos activos</span>
+            <strong id="logKpiActive">0</strong>
+            <small>Recibidos, despachados o en camino.</small>
+          </article>
+          <article class="logHeroCard">
+            <span class="logHeroCard__label">Intervenidos</span>
+            <strong id="logKpiIssues">0</strong>
+            <small>Con incidencia activa.</small>
+          </article>
+          <article class="logHeroCard">
+            <span class="logHeroCard__label">Entregados</span>
+            <strong id="logKpiDelivered">0</strong>
+            <small>Cerrados correctamente.</small>
+          </article>
+          <article class="logHeroCard">
+            <span class="logHeroCard__label">CP no reconocidos</span>
+            <strong id="logKpiUnknownCp">0</strong>
+            <small>Requieren validación operativa.</small>
+          </article>
+        </section>
+
+        <section class="logisticsTabs" aria-label="Secciones de logística">
+          <button class="logTab is-active" type="button" data-log-tab="resumen">Resumen</button>
+          <button class="logTab" type="button" data-log-tab="pedidos">Pedidos</button>
+          <button class="logTab" type="button" data-log-tab="reglas">Reglas de envío</button>
+          <button class="logTab" type="button" data-log-tab="codigos">Códigos postales</button>
+          <button class="logTab" type="button" data-log-tab="incidencias">Incidencias</button>
+          <button class="logTab" type="button" data-log-tab="banners">Banners</button>
+        </section>
+
+        <section class="logPanel is-active" data-log-panel="resumen">
+          <div class="logGrid logGrid--2">
+            <article class="logCard">
+              <div class="logCard__head">
+                <div>
+                  <span class="u-sectionLabel">ESTADOS</span>
+                  <h2>Distribución de pedidos</h2>
+                </div>
+              </div>
+              <div class="logStateList" id="logStateList"></div>
+            </article>
+
+            <article class="logCard">
+              <div class="logCard__head">
+                <div>
+                  <span class="u-sectionLabel">LECTURA OPERATIVA</span>
+                  <h2>Riesgos de hoy</h2>
+                </div>
+              </div>
+              <div class="logInsightList" id="logInsightList"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="logPanel" data-log-panel="pedidos">
+          <article class="logCard">
+            <div class="logCard__head logCard__head--toolbar">
+              <div>
+                <span class="u-sectionLabel">PEDIDOS</span>
+                <h2>Estados públicos de envío</h2>
+              </div>
+              <div class="logToolbar">
+                <input id="logOrderSearch" class="logInput" type="search" placeholder="Buscar pedido, email, CP...">
+                <select id="logOrderStatusFilter" class="logSelect" aria-label="Filtrar por estado">
+                  <option value="todos">Todos</option>
+                  <option value="recibido">Recibido</option>
+                  <option value="despachado">Despachado</option>
+                  <option value="en_camino">En camino</option>
+                  <option value="entregado">Entregado</option>
+                  <option value="intervenido">Intervenidos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="logTableWrap">
+              <table class="logTable" aria-label="Pedidos logísticos">
+                <thead>
+                  <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>CP</th>
+                    <th>Estado</th>
+                    <th>Incidencia</th>
+                    <th>Actualización</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="logOrdersTbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="logPanel" data-log-panel="reglas">
+          <div class="logGrid logGrid--2">
+            <article class="logCard">
+              <div class="logCard__head"><div><span class="u-sectionLabel">REGLAS</span><h2>Tarifas por provincia o zona</h2></div></div>
+              <div class="logRuleList" id="logRulesList"></div>
+            </article>
+            <article class="logCard logCard--soft">
+              <div class="logCard__head"><div><span class="u-sectionLabel">ORDEN DE CÁLCULO</span><h2>Prioridad de resolución</h2></div></div>
+              <ol class="logPriorityList">
+                <li>Regla específica por código postal.</li>
+                <li>Regla por localidad.</li>
+                <li>Regla por provincia.</li>
+                <li>Regla por zona operativa.</li>
+                <li>Regla nacional por defecto.</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <section class="logPanel" data-log-panel="codigos">
+          <article class="logCard">
+            <div class="logCard__head logCard__head--toolbar">
+              <div><span class="u-sectionLabel">CÓDIGOS POSTALES</span><h2>Base maestra CP → localidad → provincia</h2></div>
+              <div class="logToolbar"><input id="logCpSearch" class="logInput" type="search" placeholder="Buscar CP, localidad o provincia..."></div>
+            </div>
+            <div class="logCpNote">El CSV de 22 mil líneas debe usarse como base de reconocimiento. Las tarifas se calculan por reglas globales y excepciones, no editando precio por cada CP.</div>
+            <div class="logTableWrap">
+              <table class="logTable" aria-label="Códigos postales">
+                <thead><tr><th>CP</th><th>Localidad</th><th>Provincia</th><th>Zona</th><th>Regla aplicada</th></tr></thead>
+                <tbody id="logCpTbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="logPanel" data-log-panel="incidencias">
+          <article class="logCard">
+            <div class="logCard__head"><div><span class="u-sectionLabel">INCIDENCIAS</span><h2>Pedidos que requieren intervención</h2></div></div>
+            <div class="logIssueList" id="logIssueList"></div>
+          </article>
+        </section>
+
+        <section class="logPanel" data-log-panel="banners">
+          <article class="logCard">
+            <div class="logCard__head"><div><span class="u-sectionLabel">BANNERS</span><h2>Mensajes públicos controlados desde Protocol Data</h2></div></div>
+            <div class="logBannerList" id="logBannerList"></div>
+          </article>
+        </section>
+
+        <aside class="logOrderSlide" id="logOrderSlide" aria-hidden="true">
+          <button class="logOrderSlide__overlay" type="button" id="logSlideCloseOverlay" aria-label="Cerrar editor"></button>
+          <div class="logOrderSlide__panel" role="dialog" aria-modal="true" aria-label="Editar estado logístico">
+            <header class="logOrderSlide__header">
+              <button class="logOrderSlide__back" type="button" id="logSlideCloseBtn" aria-label="Volver">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div><strong>Editar logística</strong><span id="logSlideSubtitle">Pedido</span></div>
+              <div class="logOrderSlide__ghost" aria-hidden="true"></div>
+            </header>
+
+            <form class="logOrderForm" id="logOrderForm">
+              <input type="hidden" id="logEditTrackingId">
+              <label>Estado logístico<select id="logEditStatus" class="logSelect"><option value="recibido">Tu pedido fue recibido</option><option value="despachado">Despachado</option><option value="en_camino">En camino</option><option value="entregado">Entregado con éxito</option></select></label>
+              <label>Banda horaria estimada<input id="logEditTimeBand" class="logInput" type="text" placeholder="Ej: 14:00 a 18:00"></label>
+              <label>Banner público<select id="logEditBanner" class="logSelect"></select></label>
+              <label class="logCheckRow"><input id="logEditIssueActive" type="checkbox"><span>Pedido intervenido</span></label>
+              <label>Tipo de incidencia<select id="logEditIssueType" class="logSelect"><option value="">Sin incidencia</option><option value="direccion_incorrecta">Dirección incorrecta</option><option value="demora_logistica">Demora logística</option><option value="cliente_ausente">Cliente ausente</option><option value="problema_transportadora">Problema con transportadora</option><option value="stock_revisar">Stock a revisar</option><option value="otro">Otro</option></select></label>
+              <label>Mensaje público de incidencia<textarea id="logEditIssueMessage" class="logTextarea" rows="3" placeholder="Texto visible para el cliente"></textarea></label>
+              <label>Observación pública<textarea id="logEditPublicNote" class="logTextarea" rows="3" placeholder="Texto visible en Estado de tu envío"></textarea></label>
+              <label>Observación interna<textarea id="logEditInternalNote" class="logTextarea" rows="3" placeholder="Solo visible en Protocol Data"></textarea></label>
+              <button class="btn btn--primary logOrderForm__submit" type="submit">Guardar actualización</button>
+            </form>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <script src="../../js/app.js"></script>
+  <script src="../../js/logistica/logistica.js"></script>
+</body>
+</html>
