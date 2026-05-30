@@ -15,6 +15,26 @@
   flex-wrap: wrap;
 }
 
+.logConnectionBadge {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: #f3f4f6;
+  color: #697386;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.logConnectionBadge.is-live { background: #eaf8f1; color: #10a66a; }
+.logConnectionBadge.is-demo { background: #fff7ed; color: #c05621; }
+.logConnectionBadge.is-error { background: #fff1f0; color: #d93025; }
+.logConnectionBadge.is-loading { background: #eef5ff; color: #2479ff; }
+
 .logisticsHero {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -30,442 +50,66 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
-.logHeroCard {
-  padding: 16px;
-}
+.logHeroCard { padding: 16px; }
+.logHeroCard--primary { border-color: rgba(36, 121, 255, 0.22); background: linear-gradient(135deg, rgba(36, 121, 255, 0.10), #ffffff 62%); }
+.logHeroCard__label { display: block; color: #697386; font-size: 12px; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+.logHeroCard strong { display: block; color: #252a32; font-size: 30px; line-height: 1; font-weight: 950; letter-spacing: -0.04em; }
+.logHeroCard small { display: block; margin-top: 8px; color: #697386; font-size: 12px; line-height: 1.25; font-weight: 650; }
 
-.logHeroCard--primary {
-  border-color: rgba(36, 121, 255, 0.22);
-  background: linear-gradient(135deg, rgba(36, 121, 255, 0.10), #ffffff 62%);
-}
-
-.logHeroCard__label {
-  display: block;
-  color: #697386;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 8px;
-}
-
-.logHeroCard strong {
-  display: block;
-  color: #252a32;
-  font-size: 30px;
-  line-height: 1;
-  font-weight: 950;
-  letter-spacing: -0.04em;
-}
-
-.logHeroCard small {
-  display: block;
-  margin-top: 8px;
-  color: #697386;
-  font-size: 12px;
-  line-height: 1.25;
-  font-weight: 650;
-}
-
-.logisticsTabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 2px 0 12px;
-  margin-bottom: 2px;
-}
-
-.logTab {
-  min-height: 38px;
-  border: 1px solid rgba(15, 23, 42, 0.10);
-  border-radius: 999px;
-  background: #ffffff;
-  color: #697386;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 850;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.logTab.is-active {
-  background: #2479ff;
-  border-color: #2479ff;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(36, 121, 255, 0.22);
-}
-
-.logPanel {
-  display: none;
-}
-
-.logPanel.is-active {
-  display: block;
-}
-
-.logGrid {
-  display: grid;
-  gap: 14px;
-}
-
-.logGrid--2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.logCard {
-  padding: 16px;
-  min-width: 0;
-}
-
-.logCard--soft {
-  background: #f7faff;
-}
-
-.logCard__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.logCard__head h2 {
-  margin: 4px 0 0;
-  color: #252a32;
-  font-size: 20px;
-  line-height: 1.05;
-  font-weight: 950;
-  letter-spacing: -0.035em;
-}
-
-.logCard__head--toolbar {
-  align-items: center;
-}
-
-.logToolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.logInput,
-.logSelect,
-.logTextarea {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 12px;
-  background: #ffffff;
-  color: #252a32;
-  font: inherit;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.logInput,
-.logSelect {
-  min-height: 40px;
-  padding: 0 12px;
-}
-
-.logTextarea {
-  padding: 10px 12px;
-  resize: vertical;
-}
-
-.logInput:focus,
-.logSelect:focus,
-.logTextarea:focus {
-  border-color: #2479ff;
-  box-shadow: 0 0 0 4px rgba(36, 121, 255, 0.12);
-}
-
-.logTableWrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.logTable {
-  width: 100%;
-  min-width: 820px;
-  border-collapse: collapse;
-}
-
-.logTable th,
-.logTable td {
-  padding: 12px 10px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  text-align: left;
-  vertical-align: middle;
-  font-size: 13px;
-}
-
-.logTable th {
-  color: #697386;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.logTable td {
-  color: #252a32;
-  font-weight: 650;
-}
-
-.logBadge {
-  display: inline-flex;
-  min-height: 24px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 4px 8px;
-  font-size: 11px;
-  line-height: 1;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
+.logisticsTabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; margin-bottom: 2px; }
+.logTab { min-height: 38px; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 999px; background: #ffffff; color: #697386; padding: 0 14px; font-size: 13px; font-weight: 850; white-space: nowrap; cursor: pointer; }
+.logTab.is-active { background: #2479ff; border-color: #2479ff; color: #ffffff; box-shadow: 0 8px 18px rgba(36, 121, 255, 0.22); }
+.logPanel { display: none; }
+.logPanel.is-active { display: block; }
+.logGrid { display: grid; gap: 14px; }
+.logGrid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.logCard { padding: 16px; min-width: 0; }
+.logCard--soft { background: #f7faff; }
+.logCard__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.logCard__head h2 { margin: 4px 0 0; color: #252a32; font-size: 20px; line-height: 1.05; font-weight: 950; letter-spacing: -0.035em; }
+.logCard__head--toolbar { align-items: center; }
+.logToolbar { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.logInput,.logSelect,.logTextarea { width: 100%; border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 12px; background: #ffffff; color: #252a32; font: inherit; outline: none; box-sizing: border-box; }
+.logInput,.logSelect { min-height: 40px; padding: 0 12px; }
+.logTextarea { padding: 10px 12px; resize: vertical; }
+.logInput:focus,.logSelect:focus,.logTextarea:focus { border-color: #2479ff; box-shadow: 0 0 0 4px rgba(36, 121, 255, 0.12); }
+.logTableWrap { width: 100%; overflow-x: auto; }
+.logTable { width: 100%; min-width: 820px; border-collapse: collapse; }
+.logTable th,.logTable td { padding: 12px 10px; border-bottom: 1px solid rgba(15, 23, 42, 0.08); text-align: left; vertical-align: middle; font-size: 13px; }
+.logTable th { color: #697386; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.logTable td { color: #252a32; font-weight: 650; }
+.logBadge { display: inline-flex; min-height: 24px; align-items: center; justify-content: center; border-radius: 999px; padding: 4px 8px; font-size: 11px; line-height: 1; font-weight: 950; white-space: nowrap; }
 .logBadge--blue { background: #eef5ff; color: #2479ff; }
 .logBadge--green { background: #eaf8f1; color: #10a66a; }
 .logBadge--red { background: #fff1f0; color: #d93025; }
 .logBadge--gray { background: #f3f4f6; color: #697386; }
 .logBadge--orange { background: #fff7ed; color: #c05621; }
-
-.logActionBtn {
-  min-height: 32px;
-  border: 0;
-  border-radius: 10px;
-  background: #2479ff;
-  color: #ffffff;
-  padding: 0 10px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.logStateList,
-.logInsightList,
-.logRuleList,
-.logIssueList,
-.logBannerList {
-  display: grid;
-  gap: 10px;
-}
-
-.logStateItem,
-.logInsightItem,
-.logRuleItem,
-.logIssueItem,
-.logBannerItem {
-  display: grid;
-  gap: 6px;
-  padding: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 14px;
-  background: #ffffff;
-}
-
-.logStateItem {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-}
-
-.logStateItem strong,
-.logInsightItem strong,
-.logRuleItem strong,
-.logIssueItem strong,
-.logBannerItem strong {
-  color: #252a32;
-  font-size: 14px;
-  font-weight: 950;
-}
-
-.logStateItem span,
-.logInsightItem span,
-.logRuleItem span,
-.logIssueItem span,
-.logBannerItem span,
-.logCpNote,
-.logPriorityList {
-  color: #697386;
-  font-size: 12px;
-  line-height: 1.35;
-  font-weight: 650;
-}
-
-.logPriorityList {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.logPriorityList li + li {
-  margin-top: 8px;
-}
-
-.logCpNote {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  background: #eef5ff;
-  color: #2479ff;
-  font-weight: 750;
-}
-
-.logOrderSlide {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483000;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.logOrderSlide.is-open {
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.logOrderSlide__overlay {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  background: rgba(15, 23, 42, 0.42);
-  opacity: 0;
-  transition: opacity 180ms ease;
-}
-
-.logOrderSlide.is-open .logOrderSlide__overlay {
-  opacity: 1;
-}
-
-.logOrderSlide__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(92vw, 520px);
-  background: #ededed;
-  transform: translateX(105%);
-  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: -18px 0 48px rgba(15, 23, 42, 0.20);
-  overflow-y: auto;
-}
-
-.logOrderSlide.is-open .logOrderSlide__panel {
-  transform: translateX(0);
-}
-
-.logOrderSlide__header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
-  align-items: center;
-  min-height: 64px;
-  padding: 9px 14px;
-  background: #2479ff;
-  color: #ffffff;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
-}
-
-.logOrderSlide__back {
-  display: inline-flex;
-  width: 38px;
-  height: 38px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  padding: 0;
-  cursor: pointer;
-}
-
-.logOrderSlide__back svg {
-  width: 24px;
-  height: 24px;
-}
-
-.logOrderSlide__header div:not(.logOrderSlide__ghost) {
-  min-width: 0;
-  text-align: center;
-}
-
-.logOrderSlide__header strong {
-  display: block;
-  color: #ffffff;
-  font-size: 18px;
-  line-height: 1.08;
-  font-weight: 950;
-}
-
-.logOrderSlide__header span {
-  display: block;
-  margin-top: 3px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 11px;
-  font-weight: 750;
-}
-
-.logOrderForm {
-  display: grid;
-  gap: 12px;
-  padding: 16px;
-}
-
-.logOrderForm label {
-  display: grid;
-  gap: 6px;
-  color: #252a32;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.logCheckRow {
-  display: flex !important;
-  grid-template-columns: none !important;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px !important;
-  padding: 12px;
-  border-radius: 14px;
-  background: #ffffff;
-}
-
-.logCheckRow input {
-  width: 16px;
-  height: 16px;
-}
-
-.logOrderForm__submit {
-  width: 100%;
-  min-height: 44px;
-}
-
-html.logSlideLock,
-body.logSlideLock {
-  overflow: hidden !important;
-}
-
-@media screen and (max-width: 980px) {
-  .logisticsHero,
-  .logGrid--2 {
-    grid-template-columns: 1fr;
-  }
-
-  .logCard__head--toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .logToolbar {
-    justify-content: stretch;
-  }
-
-  .logToolbar .logInput,
-  .logToolbar .logSelect {
-    min-width: 100%;
-  }
-}
+.logActionBtn { min-height: 32px; border: 0; border-radius: 10px; background: #2479ff; color: #ffffff; padding: 0 10px; font-size: 12px; font-weight: 900; cursor: pointer; }
+.logStateList,.logInsightList,.logRuleList,.logIssueList,.logBannerList { display: grid; gap: 10px; }
+.logStateItem,.logInsightItem,.logRuleItem,.logIssueItem,.logBannerItem { display: grid; gap: 6px; padding: 12px; border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 14px; background: #ffffff; }
+.logStateItem { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.logItemTopline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.logStateItem strong,.logInsightItem strong,.logRuleItem strong,.logIssueItem strong,.logBannerItem strong { color: #252a32; font-size: 14px; font-weight: 950; }
+.logStateItem span,.logInsightItem span,.logRuleItem span,.logIssueItem span,.logBannerItem span,.logCpNote,.logPriorityList { color: #697386; font-size: 12px; line-height: 1.35; font-weight: 650; }
+.logPriorityList { margin: 0; padding-left: 20px; }
+.logPriorityList li + li { margin-top: 8px; }
+.logCpNote { margin-bottom: 12px; padding: 12px; border-radius: 14px; background: #eef5ff; color: #2479ff; font-weight: 750; }
+.logOrderSlide { position: fixed; inset: 0; z-index: 2147483000; visibility: hidden; pointer-events: none; }
+.logOrderSlide.is-open { visibility: visible; pointer-events: auto; }
+.logOrderSlide__overlay { position: absolute; inset: 0; border: 0; background: rgba(15, 23, 42, 0.42); opacity: 0; transition: opacity 180ms ease; }
+.logOrderSlide.is-open .logOrderSlide__overlay { opacity: 1; }
+.logOrderSlide__panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(92vw, 520px); background: #ededed; transform: translateX(105%); transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1); box-shadow: -18px 0 48px rgba(15, 23, 42, 0.20); overflow-y: auto; }
+.logOrderSlide.is-open .logOrderSlide__panel { transform: translateX(0); }
+.logOrderSlide__header { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; min-height: 64px; padding: 9px 14px; background: #2479ff; color: #ffffff; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16); }
+.logOrderSlide__back { display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; border: 0; border-radius: 10px; background: rgba(255, 255, 255, 0.14); color: #ffffff; padding: 0; cursor: pointer; }
+.logOrderSlide__back svg { width: 24px; height: 24px; }
+.logOrderSlide__header div:not(.logOrderSlide__ghost) { min-width: 0; text-align: center; }
+.logOrderSlide__header strong { display: block; color: #ffffff; font-size: 18px; line-height: 1.08; font-weight: 950; }
+.logOrderSlide__header span { display: block; margin-top: 3px; color: rgba(255, 255, 255, 0.82); font-size: 11px; font-weight: 750; }
+.logOrderForm { display: grid; gap: 12px; padding: 16px; }
+.logOrderForm label { display: grid; gap: 6px; color: #252a32; font-size: 12px; font-weight: 900; }
+.logCheckRow { display: flex !important; grid-template-columns: none !important; flex-direction: row; align-items: center; gap: 8px !important; padding: 12px; border-radius: 14px; background: #ffffff; }
+.logCheckRow input { width: 16px; height: 16px; }
+.logOrderForm__submit { width: 100%; min-height: 44px; }
+html.logSlideLock,body.logSlideLock { overflow: hidden !important; }
+@media screen and (max-width: 980px) { .logisticsHero,.logGrid--2 { grid-template-columns: 1fr; } .logCard__head--toolbar { align-items: stretch; flex-direction: column; } .logToolbar { justify-content: stretch; } .logToolbar .logInput,.logToolbar .logSelect { min-width: 100%; } }
