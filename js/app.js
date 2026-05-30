@@ -137,28 +137,37 @@
     }
 
     const incomingScripts = Array.from(doc.querySelectorAll("script[src]"))
-      .map(s => new URL(s.getAttribute("src"), targetUrl).href)
-      .filter(Boolean)
-      .filter(srcAbs => !srcAbs.includes("/js/app.js"));
+  .map(s => new URL(s.getAttribute("src"), targetUrl).href)
+  .filter(Boolean)
+  .filter(srcAbs => !srcAbs.includes("/js/app.js"));
 
-    for (const srcAbs of incomingScripts) {
-      await ensureScriptLoaded_(srcAbs);
-    }
+history.pushState({}, "", href);
 
-    history.pushState({}, "", href);
+if (doc.title) document.title = doc.title;
 
-    if (doc.title) document.title = doc.title;
+const newBody = doc.querySelector("body");
+if (newBody && newBody.getAttribute("data-page")) {
+  document.body.setAttribute("data-page", newBody.getAttribute("data-page"));
+}
 
-    const newBody = doc.querySelector("body");
-    if (newBody && newBody.getAttribute("data-page")) {
-      document.body.setAttribute("data-page", newBody.getAttribute("data-page"));
-    }
+/*
+  Primero insertamos el nuevo <main>.
+  Después cargamos el JS del módulo.
+  Si cargamos el JS antes, el módulo intenta renderizar sobre elementos que todavía no existen.
+*/
+currentMain.replaceWith(newMain);
 
-    currentMain.replaceWith(newMain);
+for (const srcAbs of incomingScripts) {
+  await ensureScriptLoaded_(srcAbs);
+}
 
-    setActiveNav_();
-    firePageLoadEvent_();
-    runPageSpecificInit_();
+setActiveNav_();
+firePageLoadEvent_();
+runPageSpecificInit_();
+
+window.requestAnimationFrame(() => {
+  runPageSpecificInit_();
+});
   }
 
   function enableSoftNavigation_() {
