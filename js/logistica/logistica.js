@@ -1,10 +1,13 @@
 /* ==========================================================
    Protocol Data · Panel Logística
    Mock operativo preparado para migrar a Supabase
+   Compatible con navegación SPA de app.js
    ========================================================== */
 
 (function () {
-  const state = {
+  const PAGE_EVENT = 'sazzu:page:load';
+
+  const state = window.__protocolLogisticaState || {
     activeTab: 'resumen',
     orders: [
       {
@@ -86,6 +89,8 @@
     ]
   };
 
+  window.__protocolLogisticaState = state;
+
   const statusLabels = {
     recibido: 'Recibido',
     despachado: 'Despachado',
@@ -100,50 +105,67 @@
     entregado: 'logBadge--gray'
   };
 
-  function $(selector) {
-    return document.querySelector(selector);
+  function getRoot() {
+    return document.querySelector('main.logisticsMain');
   }
 
-  function $all(selector) {
-    return Array.from(document.querySelectorAll(selector));
+  function $(root, selector) {
+    return root ? root.querySelector(selector) : null;
+  }
+
+  function $all(root, selector) {
+    return root ? Array.from(root.querySelectorAll(selector)) : [];
   }
 
   function money(value) {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value || 0);
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      maximumFractionDigits: 0
+    }).format(value || 0);
   }
 
-  function renderKpis() {
+  function setText(root, selector, value) {
+    const el = $(root, selector);
+    if (el) el.textContent = value;
+  }
+
+  function renderKpis(root) {
     const active = state.orders.filter(order => order.estado_logistico !== 'entregado').length;
     const issues = state.orders.filter(order => order.issue_active).length;
     const delivered = state.orders.filter(order => order.estado_logistico === 'entregado').length;
     const unknownCp = state.orders.filter(order => order.localidad === 'Sin validar').length;
 
-    $('#logKpiActive').textContent = active;
-    $('#logKpiIssues').textContent = issues;
-    $('#logKpiDelivered').textContent = delivered;
-    $('#logKpiUnknownCp').textContent = unknownCp;
+    setText(root, '#logKpiActive', active);
+    setText(root, '#logKpiIssues', issues);
+    setText(root, '#logKpiDelivered', delivered);
+    setText(root, '#logKpiUnknownCp', unknownCp);
   }
 
-  function renderSummary() {
+  function renderSummary(root) {
     const states = ['recibido', 'despachado', 'en_camino', 'entregado'];
-    const stateList = $('#logStateList');
-    const insightList = $('#logInsightList');
+    const stateList = $(root, '#logStateList');
+    const insightList = $(root, '#logInsightList');
 
-    stateList.innerHTML = states.map(status => {
-      const count = state.orders.filter(order => order.estado_logistico === status).length;
-      return `<div class="logStateItem"><div><strong>${statusLabels[status]}</strong><span>${count} pedidos en este estado</span></div><span class="logBadge ${statusClass[status]}">${count}</span></div>`;
-    }).join('');
+    if (stateList) {
+      stateList.innerHTML = states.map(status => {
+        const count = state.orders.filter(order => order.estado_logistico === status).length;
+        return `<div class="logStateItem"><div><strong>${statusLabels[status]}</strong><span>${count} pedidos en este estado</span></div><span class="logBadge ${statusClass[status]}">${count}</span></div>`;
+      }).join('');
+    }
 
-    insightList.innerHTML = [
-      '<div class="logInsightItem"><strong>Supabase como fuente operativa</strong><span>El panel debe escribir estados, reglas y eventos en tablas relacionales. Shopify solo consultará endpoints públicos.</span></div>',
-      '<div class="logInsightItem"><strong>Reglas antes que 22 mil precios</strong><span>La base de CP reconoce localidad/provincia. Las tarifas deben resolverse por regla global y excepciones.</span></div>',
-      '<div class="logInsightItem"><strong>Eventos obligatorios</strong><span>Cada cambio de estado debe crear historial para auditoría y soporte.</span></div>'
-    ].join('');
+    if (insightList) {
+      insightList.innerHTML = [
+        '<div class="logInsightItem"><strong>Supabase como fuente operativa</strong><span>El panel debe escribir estados, reglas y eventos en tablas relacionales. Shopify solo consultará endpoints públicos.</span></div>',
+        '<div class="logInsightItem"><strong>Reglas antes que 22 mil precios</strong><span>La base de CP reconoce localidad/provincia. Las tarifas deben resolverse por regla global y excepciones.</span></div>',
+        '<div class="logInsightItem"><strong>Eventos obligatorios</strong><span>Cada cambio de estado debe crear historial para auditoría y soporte.</span></div>'
+      ].join('');
+    }
   }
 
-  function getFilteredOrders() {
-    const query = ($('#logOrderSearch')?.value || '').trim().toLowerCase();
-    const filter = $('#logOrderStatusFilter')?.value || 'todos';
+  function getFilteredOrders(root) {
+    const query = ($(root, '#logOrderSearch')?.value || '').trim().toLowerCase();
+    const filter = $(root, '#logOrderStatusFilter')?.value || 'todos';
 
     return state.orders.filter(order => {
       const matchesQuery = !query || [order.tracking_id, order.order_id, order.cliente, order.email_cliente, order.codigo_postal, order.producto]
@@ -160,11 +182,11 @@
     });
   }
 
-  function renderOrders() {
-    const tbody = $('#logOrdersTbody');
+  function renderOrders(root) {
+    const tbody = $(root, '#logOrdersTbody');
     if (!tbody) return;
 
-    const rows = getFilteredOrders();
+    const rows = getFilteredOrders(root);
 
     tbody.innerHTML = rows.map(order => `
       <tr>
@@ -179,8 +201,8 @@
     `).join('');
   }
 
-  function renderRules() {
-    const list = $('#logRulesList');
+  function renderRules(root) {
+    const list = $(root, '#logRulesList');
     if (!list) return;
 
     list.innerHTML = state.rules.map(rule => `
@@ -191,11 +213,11 @@
     `).join('');
   }
 
-  function renderPostalCodes() {
-    const tbody = $('#logCpTbody');
+  function renderPostalCodes(root) {
+    const tbody = $(root, '#logCpTbody');
     if (!tbody) return;
 
-    const query = ($('#logCpSearch')?.value || '').trim().toLowerCase();
+    const query = ($(root, '#logCpSearch')?.value || '').trim().toLowerCase();
     const rows = state.postalCodes.filter(cp => !query || [cp.codigo_postal, cp.localidad, cp.provincia, cp.zona_operativa].join(' ').toLowerCase().includes(query));
 
     tbody.innerHTML = rows.map(cp => `
@@ -209,8 +231,8 @@
     `).join('');
   }
 
-  function renderIssues() {
-    const list = $('#logIssueList');
+  function renderIssues(root) {
+    const list = $(root, '#logIssueList');
     if (!list) return;
 
     const issues = state.orders.filter(order => order.issue_active);
@@ -219,8 +241,8 @@
       : '<div class="logIssueItem"><strong>Sin incidencias activas</strong><span>No hay pedidos intervenidos en este momento.</span></div>';
   }
 
-  function renderBanners() {
-    const list = $('#logBannerList');
+  function renderBanners(root) {
+    const list = $(root, '#logBannerList');
     if (!list) return;
 
     list.innerHTML = state.banners.map(banner => `
@@ -231,24 +253,37 @@
     `).join('');
   }
 
-  function openOrderSlide(trackingId) {
+  function openOrderSlide(root, trackingId) {
     const order = state.orders.find(item => item.tracking_id === trackingId);
-    const slide = $('#logOrderSlide');
+    const slide = $(root, '#logOrderSlide');
     if (!order || !slide) return;
 
-    $('#logSlideSubtitle').textContent = `${order.tracking_id} · ${order.cliente}`;
-    $('#logEditTrackingId').value = order.tracking_id;
-    $('#logEditStatus').value = order.estado_logistico;
-    $('#logEditTimeBand').value = order.banda_horaria_estimada || '';
-    $('#logEditIssueActive').checked = Boolean(order.issue_active);
-    $('#logEditIssueType').value = order.issue_type || '';
-    $('#logEditIssueMessage').value = order.issue_message_public || '';
-    $('#logEditPublicNote').value = order.observacion_publica || '';
-    $('#logEditInternalNote').value = order.observacion_interna || '';
+    setText(root, '#logSlideSubtitle', `${order.tracking_id} · ${order.cliente}`);
+    $('#logEditTrackingId');
 
-    const bannerSelect = $('#logEditBanner');
-    bannerSelect.innerHTML = state.banners.map(banner => `<option value="${banner.banner_id}">${banner.banner_id} · ${banner.titulo}</option>`).join('');
-    bannerSelect.value = order.banner_id;
+    const trackingInput = $(root, '#logEditTrackingId');
+    const statusInput = $(root, '#logEditStatus');
+    const timeBandInput = $(root, '#logEditTimeBand');
+    const issueActiveInput = $(root, '#logEditIssueActive');
+    const issueTypeInput = $(root, '#logEditIssueType');
+    const issueMessageInput = $(root, '#logEditIssueMessage');
+    const publicNoteInput = $(root, '#logEditPublicNote');
+    const internalNoteInput = $(root, '#logEditInternalNote');
+    const bannerSelect = $(root, '#logEditBanner');
+
+    if (trackingInput) trackingInput.value = order.tracking_id;
+    if (statusInput) statusInput.value = order.estado_logistico;
+    if (timeBandInput) timeBandInput.value = order.banda_horaria_estimada || '';
+    if (issueActiveInput) issueActiveInput.checked = Boolean(order.issue_active);
+    if (issueTypeInput) issueTypeInput.value = order.issue_type || '';
+    if (issueMessageInput) issueMessageInput.value = order.issue_message_public || '';
+    if (publicNoteInput) publicNoteInput.value = order.observacion_publica || '';
+    if (internalNoteInput) internalNoteInput.value = order.observacion_interna || '';
+
+    if (bannerSelect) {
+      bannerSelect.innerHTML = state.banners.map(banner => `<option value="${banner.banner_id}">${banner.banner_id} · ${banner.titulo}</option>`).join('');
+      bannerSelect.value = order.banner_id;
+    }
 
     slide.classList.add('is-open');
     slide.setAttribute('aria-hidden', 'false');
@@ -256,8 +291,8 @@
     document.body.classList.add('logSlideLock');
   }
 
-  function closeOrderSlide() {
-    const slide = $('#logOrderSlide');
+  function closeOrderSlide(root) {
+    const slide = $(root, '#logOrderSlide') || document.querySelector('#logOrderSlide');
     if (!slide) return;
 
     slide.classList.remove('is-open');
@@ -266,73 +301,93 @@
     document.body.classList.remove('logSlideLock');
   }
 
-  function saveOrder(event) {
+  function saveOrder(root, event) {
     event.preventDefault();
-    const trackingId = $('#logEditTrackingId').value;
+
+    const trackingId = $(root, '#logEditTrackingId')?.value;
     const order = state.orders.find(item => item.tracking_id === trackingId);
     if (!order) return;
 
-    order.estado_logistico = $('#logEditStatus').value;
-    order.banda_horaria_estimada = $('#logEditTimeBand').value;
-    order.banner_id = $('#logEditBanner').value;
-    order.issue_active = $('#logEditIssueActive').checked;
-    order.issue_type = $('#logEditIssueType').value;
-    order.issue_message_public = $('#logEditIssueMessage').value;
-    order.observacion_publica = $('#logEditPublicNote').value;
-    order.observacion_interna = $('#logEditInternalNote').value;
+    order.estado_logistico = $(root, '#logEditStatus')?.value || order.estado_logistico;
+    order.banda_horaria_estimada = $(root, '#logEditTimeBand')?.value || '';
+    order.banner_id = $(root, '#logEditBanner')?.value || order.banner_id;
+    order.issue_active = Boolean($(root, '#logEditIssueActive')?.checked);
+    order.issue_type = $(root, '#logEditIssueType')?.value || '';
+    order.issue_message_public = $(root, '#logEditIssueMessage')?.value || '';
+    order.observacion_publica = $(root, '#logEditPublicNote')?.value || '';
+    order.observacion_interna = $(root, '#logEditInternalNote')?.value || '';
     order.fecha_ultima_actualizacion = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
-    closeOrderSlide();
-    renderAll();
+    closeOrderSlide(root);
+    renderAll(root);
   }
 
-  function setTab(tab) {
+  function setTab(root, tab) {
     state.activeTab = tab;
-    $all('[data-log-tab]').forEach(button => button.classList.toggle('is-active', button.dataset.logTab === tab));
-    $all('[data-log-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.logPanel === tab));
+    $all(root, '[data-log-tab]').forEach(button => button.classList.toggle('is-active', button.dataset.logTab === tab));
+    $all(root, '[data-log-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.logPanel === tab));
   }
 
-  function bindEvents() {
-    $all('[data-log-tab]').forEach(button => {
-      button.addEventListener('click', () => setTab(button.dataset.logTab));
+  function bindEvents(root) {
+    if (!root || root.dataset.logisticaBound === '1') return;
+    root.dataset.logisticaBound = '1';
+
+    $all(root, '[data-log-tab]').forEach(button => {
+      button.addEventListener('click', () => setTab(root, button.dataset.logTab));
     });
 
-    $('#logOrderSearch')?.addEventListener('input', renderOrders);
-    $('#logOrderStatusFilter')?.addEventListener('change', renderOrders);
-    $('#logCpSearch')?.addEventListener('input', renderPostalCodes);
+    $(root, '#logOrderSearch')?.addEventListener('input', () => renderOrders(root));
+    $(root, '#logOrderStatusFilter')?.addEventListener('change', () => renderOrders(root));
+    $(root, '#logCpSearch')?.addEventListener('input', () => renderPostalCodes(root));
 
-    document.addEventListener('click', event => {
+    root.addEventListener('click', event => {
       const editBtn = event.target.closest('[data-edit-order]');
-      if (editBtn) openOrderSlide(editBtn.dataset.editOrder);
+      if (editBtn) openOrderSlide(root, editBtn.dataset.editOrder);
     });
 
-    $('#logSlideCloseOverlay')?.addEventListener('click', closeOrderSlide);
-    $('#logSlideCloseBtn')?.addEventListener('click', closeOrderSlide);
-    $('#logOrderForm')?.addEventListener('submit', saveOrder);
+    $(root, '#logSlideCloseOverlay')?.addEventListener('click', () => closeOrderSlide(root));
+    $(root, '#logSlideCloseBtn')?.addEventListener('click', () => closeOrderSlide(root));
+    $(root, '#logOrderForm')?.addEventListener('submit', event => saveOrder(root, event));
 
-    $('#logBtnSyncSupabase')?.addEventListener('click', () => {
-      alert('Próxima etapa: conectar con Supabase. Este panel ya está pensado para tablas relacionales, no Sheets.');
+    $(root, '#logBtnSyncSupabase')?.addEventListener('click', () => {
+      window.alert('Próxima etapa: conectar con Supabase. Este panel ya está pensado para tablas relacionales, no Sheets.');
     });
 
-    $('#logBtnNewRule')?.addEventListener('click', () => {
-      setTab('reglas');
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeOrderSlide();
+    $(root, '#logBtnNewRule')?.addEventListener('click', () => {
+      setTab(root, 'reglas');
     });
   }
 
-  function renderAll() {
-    renderKpis();
-    renderSummary();
-    renderOrders();
-    renderRules();
-    renderPostalCodes();
-    renderIssues();
-    renderBanners();
+  function renderAll(root) {
+    if (!root) return;
+    renderKpis(root);
+    renderSummary(root);
+    renderOrders(root);
+    renderRules(root);
+    renderPostalCodes(root);
+    renderIssues(root);
+    renderBanners(root);
+    setTab(root, state.activeTab || 'resumen');
   }
 
-  bindEvents();
-  renderAll();
+  function initLogisticaPanel() {
+    const root = getRoot();
+    if (!root) return;
+
+    bindEvents(root);
+    renderAll(root);
+  }
+
+  window.ProtocolLogisticaInit = initLogisticaPanel;
+
+  document.addEventListener(PAGE_EVENT, initLogisticaPanel);
+  document.addEventListener('DOMContentLoaded', initLogisticaPanel);
+
+  if (document.readyState !== 'loading') {
+    initLogisticaPanel();
+  }
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeOrderSlide(getRoot());
+  });
 })();
