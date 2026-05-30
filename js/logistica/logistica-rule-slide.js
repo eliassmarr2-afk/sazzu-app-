@@ -18,10 +18,39 @@
     return window.SAZZU_SUPABASE_CONFIG || window.PROTOCOL_SUPABASE_CONFIG || null;
   }
 
+  function ensureProtocolAuth() {
+    if (window.ProtocolAuth) return Promise.resolve(window.ProtocolAuth);
+    if (window.__protocolAuthLoader) return window.__protocolAuthLoader;
+
+    window.__protocolAuthLoader = new Promise(function (resolve, reject) {
+      const existing = document.querySelector('script[data-protocol-auth-client="1"]');
+      if (existing) {
+        existing.addEventListener('load', function () { resolve(window.ProtocolAuth || null); });
+        existing.addEventListener('error', reject);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = '/js/auth/auth-client.js';
+      script.defer = true;
+      script.dataset.protocolAuthClient = '1';
+      script.onload = function () { resolve(window.ProtocolAuth || null); };
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+
+    return window.__protocolAuthLoader;
+  }
+
   function getClient() {
+    if (window.ProtocolAuth && typeof window.ProtocolAuth.getClient === 'function') {
+      const shared = window.ProtocolAuth.getClient();
+      if (shared) return shared;
+    }
+
     if (window.__protocolLogisticaRuleClient) return window.__protocolLogisticaRuleClient;
     const config = cfg();
-    const key = config && (config.anonKey || config.publishableKey || config.key);
+    const key = config && (config.publishableKey || config.anonKey || config.key);
     if (!window.supabase || !config || !config.url || !key) return null;
     window.__protocolLogisticaRuleClient = window.supabase.createClient(config.url, key);
     return window.__protocolLogisticaRuleClient;
@@ -173,17 +202,33 @@
       return;
     }
 
+    try {
+      await ensureProtocolAuth();
+    } catch (authLoadError) {
+      console.warn('[Nueva regla logística] No se pudo cargar auth-client:', authLoadError);
+    }
+
     const client = getClient();
     if (!client) {
       setMessage('error', 'Supabase no está configurado en este navegador.');
       return;
     }
 
-    const sessionResult = await client.auth.getSession();
-    const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+    let session = null;
+    try {
+      if (window.ProtocolAuth && typeof window.ProtocolAuth.getSession === 'function') {
+        session = await window.ProtocolAuth.getSession();
+      } else {
+        const sessionResult = await client.auth.getSession();
+        session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+      }
+    } catch (sessionError) {
+      console.warn('[Nueva regla logística] Sesión no disponible:', sessionError);
+    }
 
     if (!session) {
-      setMessage('info', 'El slide ya está listo. Para guardar reglas reales falta iniciar sesión interna en Supabase Auth. Por seguridad, la RPC no permite escritura anónima.');
+      const login = window.ProtocolAuth ? window.ProtocolAuth.loginUrl('/panel/logistica/logistica.html') : '/panel/login.html?next=%2Fpanel%2Flogistica%2Flogistica.html';
+      setMessage('info', 'Para guardar reglas reales tenés que iniciar sesión interna. Abrí: ' + login);
       return;
     }
 
@@ -227,6 +272,7 @@
 
     q('#logRuleSlideOverlay')?.addEventListener('click', closeSlide);
     q('#logRuleSlideClose')?.addEventListener('click', closeSlide);
+    q('#logRuleSlideCancel')?.addEventListener('click', closeSlide);
     q('#logRuleForm')?.addEventListener('submit', saveRule, true);
 
     ['#logRuleScopeType', '#logRuleScopeValue', '#logRuleShippingMode', '#logRuleShippingPrice', '#logRulePromise', '#logRulePriority', '#logRuleBanner', '#logRuleName'].forEach(function (selector) {
