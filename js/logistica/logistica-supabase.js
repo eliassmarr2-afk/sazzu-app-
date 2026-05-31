@@ -25,6 +25,11 @@
   }
 
   function client() {
+    if (window.ProtocolAuth && typeof window.ProtocolAuth.getClient === 'function') {
+      const shared = window.ProtocolAuth.getClient();
+      if (shared) return shared;
+    }
+
     if (window.__protocolLogisticaClient) return window.__protocolLogisticaClient;
     const c = cfg();
     const key = c && (c.anonKey || c.publishableKey || c.key);
@@ -171,12 +176,18 @@
     }
   }
 
+  window.ProtocolLogisticaSupabaseRefresh = loadAll;
+
   function bind() {
     const r = root();
     if (!r || r.dataset.logisticaSupabaseBound === '1') return;
     r.dataset.logisticaSupabaseBound = '1';
 
-    q('#logBtnSyncSupabase')?.addEventListener('click', loadAll);
+    q('#logBtnSyncSupabase')?.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      loadAll();
+    }, true);
 
     q('#logCpSearch')?.addEventListener('input', debounce(async () => {
       try {
