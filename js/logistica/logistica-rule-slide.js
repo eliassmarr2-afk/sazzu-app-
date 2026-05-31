@@ -183,11 +183,14 @@
   }
 
   async function refreshPanel() {
+    if (typeof window.ProtocolLogisticaSupabaseRefresh === 'function') {
+      await window.ProtocolLogisticaSupabaseRefresh();
+      return;
+    }
+
     if (typeof window.ProtocolLogisticaInit === 'function') {
       window.ProtocolLogisticaInit();
     }
-
-    q('#logBtnSyncSupabase')?.click();
   }
 
   async function saveRule(event) {
