@@ -5,6 +5,16 @@
 
 .logPedidosCard {
   overflow: hidden;
+  border: 0 !important;
+  border-radius: 5px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+.logPedidosCard .logCard__head {
+  align-items: flex-start;
+  gap: 18px;
+  padding-bottom: 18px;
 }
 
 .logPedidosToolbar {
@@ -19,19 +29,24 @@
   min-width: min(360px, 100%);
 }
 
+.logPedidosToolbar .logSelect {
+  min-width: 210px;
+}
+
 .logPedidosSummary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
 .logPedidosMetric {
   min-height: 78px;
   padding: 14px;
-  border: 1px solid rgba(36, 121, 255, 0.12);
-  border-radius: 16px;
-  background: linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%);
+  border: 0 !important;
+  border-radius: 5px !important;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
 }
 
 .logPedidosMetric span {
@@ -51,11 +66,129 @@
 
 .logPedidosTableWrap {
   width: 100%;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 0 !important;
+  border-radius: 5px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.logPedidosTableWrap::-webkit-scrollbar {
+  height: 12px;
+}
+
+.logPedidosTableWrap::-webkit-scrollbar-track {
+  background: #eef1f5;
+  border-radius: 999px;
+}
+
+.logPedidosTableWrap::-webkit-scrollbar-thumb {
+  background: #9aa4b2;
+  border-radius: 999px;
 }
 
 .logPedidosTable {
-  min-width: 1180px;
+  min-width: 2260px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.logPedidosTable th,
+.logPedidosTable td {
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.logPedidosTable th {
+  padding: 16px 12px;
+  background: #ffffff;
+  color: #637085;
+  font-size: 11px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.logPedidosTable td {
+  padding: 18px 12px;
+  border-top: 1px solid #edf0f4;
+  color: #243044;
+  font-size: 13px;
+  line-height: 1.22;
+  font-weight: 800;
+}
+
+.logPedidosTable th:nth-child(1),
+.logPedidosTable td:nth-child(1) {
+  width: 130px;
+}
+
+.logPedidosTable th:nth-child(2),
+.logPedidosTable td:nth-child(2) {
+  width: 210px;
+}
+
+.logPedidosTable th:nth-child(3),
+.logPedidosTable td:nth-child(3) {
+  width: 260px;
+}
+
+.logPedidosTable th:nth-child(4),
+.logPedidosTable td:nth-child(4) {
+  width: 280px;
+}
+
+.logPedidosTable th:nth-child(5),
+.logPedidosTable td:nth-child(5) {
+  width: 130px;
+}
+
+.logPedidosTable th:nth-child(6),
+.logPedidosTable td:nth-child(6) {
+  width: 150px;
+}
+
+.logPedidosTable th:nth-child(7),
+.logPedidosTable td:nth-child(7) {
+  width: 150px;
+}
+
+.logPedidosTable th:nth-child(8),
+.logPedidosTable td:nth-child(8) {
+  width: 150px;
+}
+
+.logPedidosTable th:nth-child(9),
+.logPedidosTable td:nth-child(9) {
+  width: 180px;
+}
+
+.logPedidosTable th:nth-child(10),
+.logPedidosTable td:nth-child(10) {
+  width: 320px;
+}
+
+.logPedidosTable th:nth-child(11),
+.logPedidosTable td:nth-child(11) {
+  width: 145px;
+}
+
+.logPedidosTable th:nth-child(12),
+.logPedidosTable td:nth-child(12) {
+  width: 105px;
+  text-align: right;
+}
+
+.logPedidosTable td span,
+.logPedidosTable td strong,
+.logPedidosMiniStack,
+.logPedidosMiniStack span,
+.logPedidosMiniStack strong {
+  max-width: 100%;
 }
 
 .logPedidosTable td span {
@@ -69,21 +202,35 @@
   font-weight: 950;
 }
 
+.logPedidosTable td span:not(.logPedidosBadge),
+.logPedidosTable td strong,
+.logPedidosMiniStack span,
+.logPedidosMiniStack strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
 .logPedidosMiniStack {
   display: grid;
-  gap: 4px;
+  gap: 5px;
 }
 
 .logPedidosActionBtn {
   border: 0;
-  border-radius: 999px;
+  border-radius: 5px;
   background: #2479ff;
   color: #ffffff;
-  padding: 8px 12px;
+  padding: 9px 12px;
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(36, 121, 255, 0.22);
 }
 
 .logPedidosActionBtn:hover {
@@ -131,12 +278,13 @@
 
 .logPedidosEmpty {
   padding: 28px;
-  border: 1px dashed #d7deea;
-  border-radius: 16px;
-  background: #fafcff;
+  border: 0 !important;
+  border-radius: 5px;
+  background: #ffffff;
   color: #657287;
   text-align: center;
   font-weight: 850;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
 }
 
 .logPedidosSlide {
@@ -170,10 +318,10 @@
   top: 0;
   right: 0;
   display: flex;
-  width: min(520px, 100%);
+  width: min(560px, 100%);
   height: 100%;
   flex-direction: column;
-  background: #f5f7fb;
+  background: #EDEDED;
   box-shadow: -22px 0 60px rgba(15, 23, 42, 0.18);
   transform: translateX(100%);
   transition: transform 220ms ease;
@@ -189,9 +337,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-bottom: 1px solid #e6ebf3;
+  border: 0 !important;
   background: #ffffff;
   padding: 0 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 .logPedidosSlide__header button {
@@ -201,7 +350,7 @@
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 12px;
+  border-radius: 5px;
   background: #eef5ff;
   color: #2479ff;
   cursor: pointer;
@@ -244,10 +393,11 @@
 .logPedidosForm__card {
   display: grid;
   gap: 12px;
-  border: 1px solid #e5ebf4;
-  border-radius: 18px;
+  border: 0 !important;
+  border-radius: 5px;
   background: #ffffff;
   padding: 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 .logPedidosForm__cardHead strong,
@@ -295,15 +445,24 @@
 .logPedidosField select,
 .logPedidosField textarea {
   width: 100%;
-  border: 1px solid #dfe6f0;
-  border-radius: 12px;
-  background: #ffffff;
+  border: 0 !important;
+  border-radius: 5px;
+  background: #f7f8fb;
   color: #1f2937;
   padding: 10px 11px;
   font: inherit;
   font-size: 13px;
   font-weight: 750;
   outline: 0;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+.logPedidosField input:focus,
+.logPedidosField select:focus,
+.logPedidosField textarea:focus {
+  box-shadow:
+    inset 0 0 0 1px rgba(36, 121, 255, 0.18),
+    0 0 0 3px rgba(36, 121, 255, 0.10);
 }
 
 .logPedidosField textarea {
