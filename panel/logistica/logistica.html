@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="../../css/sidebar.css">
   <link rel="stylesheet" href="../../css/logistica/logistica.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-rule-slide.css">
+  <link rel="stylesheet" href="../../css/logistica/logistica-pedidos.css">
   <link rel="stylesheet" href="../../css/style.css">
 </head>
 
@@ -60,6 +61,7 @@
         <section class="logisticsTabs" aria-label="Secciones de logística">
           <button class="logTab is-active" type="button" data-log-tab="resumen">Resumen</button>
           <button class="logTab" type="button" data-log-tab="simulador">Simulador CP</button>
+          <button class="logTab" type="button" data-log-tab="pedidos">Pedidos</button>
           <button class="logTab" type="button" data-log-tab="reglas">Reglas de envío</button>
           <button class="logTab" type="button" data-log-tab="codigos">Códigos postales</button>
           <button class="logTab" type="button" data-log-tab="excepciones">Excepciones</button>
@@ -109,6 +111,57 @@
           </article>
         </section>
 
+        <section class="logPanel" data-log-panel="pedidos">
+          <article class="logCard logPedidosCard">
+            <div class="logCard__head logCard__head--toolbar">
+              <div>
+                <span class="u-sectionLabel">SHOPIFY → ESTADO DE ENVÍO</span>
+                <h2>Pedidos y estados logísticos</h2>
+              </div>
+              <div class="logPedidosToolbar">
+                <input id="logPedidosSearch" class="logInput" type="search" placeholder="Buscar pedido, cliente, email, domicilio, producto...">
+                <select id="logPedidosStatusFilter" class="logSelect" aria-label="Filtrar pedidos por estado">
+                  <option value="todos">Todos</option>
+                  <option value="recibido">Recibido</option>
+                  <option value="despachado">Despachado</option>
+                  <option value="en_camino">En camino</option>
+                  <option value="entregado">Entregado</option>
+                  <option value="intervenido">Intervenidos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="logPedidosSummary" aria-label="Resumen de pedidos logísticos">
+              <div class="logPedidosMetric"><span>Pedidos activos</span><strong id="logPedidosMetricActive">0</strong></div>
+              <div class="logPedidosMetric"><span>Pago pendiente</span><strong id="logPedidosMetricPendingPayment">0</strong></div>
+              <div class="logPedidosMetric"><span>Intervenidos</span><strong id="logPedidosMetricIssues">0</strong></div>
+              <div class="logPedidosMetric"><span>Entregados</span><strong id="logPedidosMetricDelivered">0</strong></div>
+            </div>
+
+            <div class="logPedidosTableWrap">
+              <table class="logTable logPedidosTable" aria-label="Pedidos conectados a Estado de tu envío">
+                <thead>
+                  <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Domicilio</th>
+                    <th>Producto</th>
+                    <th>Pago</th>
+                    <th>Envío</th>
+                    <th>Estado</th>
+                    <th>Banner</th>
+                    <th>Incidencia</th>
+                    <th>Observación pública</th>
+                    <th>Actualización</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="logPedidosTbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
         <section class="logPanel" data-log-panel="reglas">
           <article class="logCard">
             <div class="logCard__head logCard__head--toolbar">
@@ -150,6 +203,163 @@
             <div class="logCard__head"><div><span class="u-sectionLabel">BANNERS</span><h2>Mensajes públicos usados por el motor</h2></div></div>
             <div class="logBannerList" id="logBannerList"></div>
           </article>
+        </section>
+
+        <section class="logPedidosSlide" id="logPedidosSlide" aria-hidden="true">
+          <button class="logPedidosSlide__overlay" id="logPedidosSlideOverlay" type="button" aria-label="Cerrar editor de pedido"></button>
+
+          <aside class="logPedidosSlide__panel" role="dialog" aria-modal="true" aria-label="Editar pedido logístico">
+            <header class="logPedidosSlide__header">
+              <button id="logPedidosSlideClose" type="button" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+
+              <div class="logPedidosSlide__title">
+                <strong>Editar pedido</strong>
+                <span id="logPedidosSlideSubtitle">Estado público de envío</span>
+              </div>
+
+              <div style="width:38px" aria-hidden="true"></div>
+            </header>
+
+            <form class="logPedidosForm" id="logPedidosForm">
+              <input type="hidden" id="logPedidoEditTrackingId">
+
+              <section class="logPedidosForm__card">
+                <div class="logPedidosForm__cardHead">
+                  <strong>Estado público</strong>
+                  <span>Controla la línea de tiempo visible en “Estado de tu envío”.</span>
+                </div>
+
+                <div class="logPedidosForm__grid">
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditStatus">Estado logístico</label>
+                    <select id="logPedidoEditStatus">
+                      <option value="recibido">Recibido</option>
+                      <option value="despachado">Despachado</option>
+                      <option value="en_camino">En camino</option>
+                      <option value="entregado">Entregado</option>
+                    </select>
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditTimeBand">Banda horaria</label>
+                    <input id="logPedidoEditTimeBand" type="text" placeholder="Ej: 14:00 a 18:00">
+                  </div>
+
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditBanner">Banner público</label>
+                    <input id="logPedidoEditBanner" type="text" placeholder="Ej: ban_navid_001">
+                  </div>
+                </div>
+              </section>
+
+              <section class="logPedidosForm__card">
+                <div class="logPedidosForm__cardHead">
+                  <strong>Domicilio y detalle de entrega</strong>
+                  <span>Alimenta la tarjeta inferior de la página pública.</span>
+                </div>
+
+                <div class="logPedidosForm__grid">
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditAddress">Domicilio</label>
+                    <input id="logPedidoEditAddress" type="text" placeholder="Domicilio de entrega">
+                  </div>
+
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditProduct">Producto</label>
+                    <input id="logPedidoEditProduct" type="text" placeholder="Producto comprado">
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditPaymentStatus">Pago</label>
+                    <select id="logPedidoEditPaymentStatus">
+                      <option value="pagado">Pagado</option>
+                      <option value="no_pagado">No pagado</option>
+                    </select>
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditAmountToCollect">Monto a cobrar</label>
+                    <input id="logPedidoEditAmountToCollect" type="text" placeholder="$0,00">
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditShippingStatus">Envío</label>
+                    <select id="logPedidoEditShippingStatus">
+                      <option value="gratis">Gratis</option>
+                      <option value="pagado">Pagado</option>
+                    </select>
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditShippingValue">Valor envío</label>
+                    <input id="logPedidoEditShippingValue" type="text" placeholder="$0,00">
+                  </div>
+                </div>
+              </section>
+
+              <section class="logPedidosForm__card">
+                <div class="logPedidosForm__cardHead">
+                  <strong>Incidencia y observaciones</strong>
+                  <span>Información pública y privada del responsable.</span>
+                </div>
+
+                <div class="logPedidosForm__grid">
+                  <label class="logPedidosCheck logPedidosField--full">
+                    <input id="logPedidoEditIssueActive" type="checkbox">
+                    <span>Pedido intervenido</span>
+                  </label>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditIssueStage">Etapa de incidencia</label>
+                    <select id="logPedidoEditIssueStage">
+                      <option value="">Sin etapa</option>
+                      <option value="recibido">Recibido</option>
+                      <option value="despachado">Despachado</option>
+                      <option value="en_camino">En camino</option>
+                      <option value="entregado">Entregado</option>
+                    </select>
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditIssueType">Tipo de incidencia</label>
+                    <select id="logPedidoEditIssueType">
+                      <option value="">Sin incidencia</option>
+                      <option value="direccion_incorrecta">Dirección incorrecta</option>
+                      <option value="demora_logistica">Demora logística</option>
+                      <option value="cliente_ausente">Cliente ausente</option>
+                      <option value="problema_transportadora">Problema transportadora</option>
+                      <option value="stock_revisar">Stock a revisar</option>
+                      <option value="otro">Otro</option>
+                    </select>
+                  </div>
+
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditIssueMessage">Mensaje público de incidencia</label>
+                    <textarea id="logPedidoEditIssueMessage" placeholder="Texto visible dentro de la línea de tiempo"></textarea>
+                  </div>
+
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditPublicObservation">Observación pública del responsable</label>
+                    <textarea id="logPedidoEditPublicObservation" placeholder="Texto visible en el slide Observaciones"></textarea>
+                  </div>
+
+                  <div class="logPedidosField logPedidosField--full">
+                    <label for="logPedidoEditInternalObservation">Observación interna</label>
+                    <textarea id="logPedidoEditInternalObservation" placeholder="Solo Protocol Data"></textarea>
+                  </div>
+                </div>
+              </section>
+
+              <div class="logPedidosForm__footer">
+                <button class="btn btn--primary" type="submit">Guardar estado</button>
+                <button class="btn btn--secondary" id="logPedidosSlideCancel" type="button">Cancelar</button>
+              </div>
+            </form>
+          </aside>
         </section>
 
         <section class="logRuleSlide" id="logRuleSlide" aria-hidden="true">
@@ -320,6 +530,7 @@
   <script src="../../js/app.js"></script>
   <script src="../../js/logistica/logistica.js"></script>
   <script src="../../js/logistica/logistica-supabase.js"></script>
+  <script src="../../js/logistica/logistica-pedidos.js"></script>
   <script src="../../js/logistica/logistica-simulador-card.js"></script>
   <script src="../../js/logistica/logistica-rule-slide.js"></script>
 </body>
