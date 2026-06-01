@@ -7,6 +7,8 @@
 (function () {
   const PAGE_EVENT = 'sazzu:page:load';
   const READY_FLAG = '__protocolLogisticaPedidosReady';
+  const TRACKING_STORAGE_KEY = 'alpaso_tracking_orders';
+  const TRACKING_EVENT = 'alpaso:tracking-orders-updated';
 
   const state = window.__protocolLogisticaPedidosState || {
     query: '',
@@ -106,6 +108,66 @@
     entregado: 'logPedidosBadge--gray'
   };
 
+  function normalizeForTracking(order) {
+    return {
+      tracking_id: order.tracking_id,
+      shopify_order_name: order.shopify_order_name || '',
+      cliente: order.cliente || '',
+      email_cliente: order.email_cliente || '',
+      telefono_cliente: order.telefono_cliente || '',
+      estado_logistico: order.estado_logistico || 'recibido',
+      estado_visual_index: order.estado_visual_index || 1,
+      banner_id: order.banner_id || '',
+      banda_horaria_estimada: order.banda_horaria_estimada || 'A confirmar',
+      domicilio_entrega: order.domicilio_entrega || '--',
+      producto: order.producto || '--',
+      pago_estado: order.pago_estado || 'no_pagado',
+      monto_a_pagar_repartidor: order.monto_a_pagar_repartidor || '$0,00',
+      envio_estado: order.envio_estado || 'gratis',
+      envio_valor: order.envio_valor || '$0,00',
+      issue_active: Boolean(order.issue_active),
+      issue_stage: order.issue_stage || '',
+      issue_type: order.issue_type || '',
+      issue_message_public: order.issue_message_public || '',
+      observacion_publica: order.observacion_publica || '',
+      observacion_interna: order.observacion_interna || '',
+      responsable: order.responsable || 'Equipo de logística Al Paso Store',
+      fecha_ultima_actualizacion: order.fecha_ultima_actualizacion || new Date().toISOString().slice(0, 16).replace('T', ' ')
+    };
+  }
+
+  function buildTrackingOrdersMap() {
+    return state.orders.reduce((acc, order) => {
+      const normalized = normalizeForTracking(order);
+      acc[String(normalized.tracking_id || '').toUpperCase()] = normalized;
+      return acc;
+    }, {});
+  }
+
+  function publishTrackingContract() {
+    const orders = buildTrackingOrdersMap();
+    const payload = {
+      source: 'protocol-data-logistica-pedidos-mock',
+      updated_at: new Date().toISOString(),
+      orders
+    };
+
+    window.ALPASO_TRACKING_ORDERS = orders;
+    window.__protocolTrackingOrdersPayload = payload;
+
+    try {
+      window.localStorage.setItem(TRACKING_STORAGE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      // El contrato global sigue disponible aunque el navegador bloquee localStorage.
+    }
+
+    window.dispatchEvent(new CustomEvent(TRACKING_EVENT, { detail: payload }));
+
+    return payload;
+  }
+
+  window.ProtocolLogisticaPedidosExport = publishTrackingContract;
+
   function root() {
     return document.querySelector('main.logisticsMain');
   }
@@ -113,11 +175,6 @@
   function q(selector) {
     const r = root();
     return r ? r.querySelector(selector) : null;
-  }
-
-  function qa(selector) {
-    const r = root();
-    return r ? Array.from(r.querySelectorAll(selector)) : [];
   }
 
   function esc(value) {
@@ -220,6 +277,7 @@
   }
 
   function renderAll() {
+    publishTrackingContract();
     renderMetrics();
     renderTable();
   }
