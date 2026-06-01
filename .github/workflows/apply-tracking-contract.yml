@@ -1,0 +1,52 @@
+name: Apply tracking contract asset
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/apply-tracking-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Load tracking contract in theme layout
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('layout/theme.liquid')
+          text = path.read_text()
+          line = "    {{ 'alpaso-tracking-contract.js' | asset_url | script_tag }}"
+
+          if line not in text:
+              anchor = "    {{ 'alpaso-sticky-delivery-contract.js' | asset_url | script_tag }}"
+              if anchor not in text:
+                  raise SystemExit('Anchor script not found')
+              text = text.replace(anchor, anchor + "\n" + line, 1)
+              path.write_text(text)
+          PY
+
+      - name: Commit tracking contract loader
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add layout/theme.liquid
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Load public tracking contract reader"
+            git push
+          fi
