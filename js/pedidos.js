@@ -1,620 +1,497 @@
-console.log("[pedidos.js] cargado OK");
+/* ==========================================================
+   Protocol Data · Panel Pedidos
+   Fase 2D · lectura defensiva desde Supabase / Shopify orders.
+   Vista general del pedido. No toca Logística ni Shopify theme.
+   ========================================================== */
 
-// URLs y build aislados para Pedidos (no chocan con home.js)
-window.__PEDIDOS_BACKEND_URL__ = window.__PEDIDOS_BACKEND_URL__ || "https://script.google.com/macros/s/AKfycbzmE22xYqN4cHJxuepWlJWcVzYr7mPsdg8lcJSZT5IHDX1oCggjhQSuPX600SLk7xs/exec";
-const PEDIDOS_BACKEND_URL = window.__PEDIDOS_BACKEND_URL__;
+(function () {
+  const PAGE_EVENT = 'sazzu:page:load';
+  const READY_FLAG = '__protocolSidebarPedidosReady';
 
-window.__PEDIDOS_EXPECTED_BUILD__ = window.__PEDIDOS_EXPECTED_BUILD__ || "SAZZU_BACKEND_BUILD_2026-02-11_DEMAND_FIX_01";
-const PEDIDOS_EXPECTED_BUILD = window.__PEDIDOS_EXPECTED_BUILD__;
-
-// caché de pedidos para SPA
-window.__PEDIDOS_CACHE__ = window.__PEDIDOS_CACHE__ || null;
-// Skeleton para listado de pedidos (mientras el backend responde)
-const ORDERS_SKELETON_HTML = `
-  <div class="ordersListSkeleton" aria-hidden="true">
-    <div class="ordersListSkeleton__item">
-      <div class="ordersListSkeleton__icon"></div>
-      <div class="ordersListSkeleton__body">
-        <div class="ordersListSkeleton__line ordersListSkeleton__line--strong"></div>
-        <div class="ordersListSkeleton__line"></div>
-        <div class="ordersListSkeleton__meta">
-          <span class="ordersListSkeleton__pill"></span>
-          <span class="ordersListSkeleton__pill"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ordersListSkeleton__item">
-      <div class="ordersListSkeleton__icon"></div>
-      <div class="ordersListSkeleton__body">
-        <div class="ordersListSkeleton__line ordersListSkeleton__line--strong"></div>
-        <div class="ordersListSkeleton__line"></div>
-        <div class="ordersListSkeleton__meta">
-          <span class="ordersListSkeleton__pill"></span>
-          <span class="ordersListSkeleton__pill"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ordersListSkeleton__item">
-      <div class="ordersListSkeleton__icon"></div>
-      <div class="ordersListSkeleton__body">
-        <div class="ordersListSkeleton__line ordersListSkeleton__line--strong"></div>
-        <div class="ordersListSkeleton__line"></div>
-        <div class="ordersListSkeleton__meta">
-          <span class="ordersListSkeleton__pill"></span>
-          <span class="ordersListSkeleton__pill"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="ordersListSkeleton__item">
-      <div class="ordersListSkeleton__icon"></div>
-      <div class="ordersListSkeleton__body">
-        <div class="ordersListSkeleton__line ordersListSkeleton__line--strong"></div>
-        <div class="ordersListSkeleton__line"></div>
-        <div class="ordersListSkeleton__meta">
-          <span class="ordersListSkeleton__pill"></span>
-          <span class="ordersListSkeleton__pill"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-`;
-
-function backendBuildWarn_(msg) {
-  const id = "backendBuildWarn";
-  let el = document.getElementById(id);
-
-  if (!el) {
-    el = document.createElement("div");
-    el.id = id;
-    el.style.position = "fixed";
-    el.style.top = "12px";
-    el.style.right = "12px";
-    el.style.zIndex = "999999";
-    el.style.maxWidth = "420px";
-    el.style.padding = "10px 12px";
-    el.style.borderRadius = "10px";
-    el.style.fontSize = "13px";
-    el.style.fontWeight = "700";
-    el.style.lineHeight = "1.25";
-    el.style.boxShadow = "0 10px 25px rgba(0,0,0,.12)";
-    el.style.background = "#fff2f2";
-    el.style.border = "1px solid #ffd0d0";
-    el.style.color = "#8a1f1f";
-    document.body.appendChild(el);
-  }
-
-  el.textContent = msg;
-  el.hidden = false;
-}
-
-function backendBuildWarnHide_() {
-  const el = document.getElementById("backendBuildWarn");
-  if (el) el.hidden = true;
-}
-
-function enforceBackendBuild_(res) {
-  const got = String(res?.build || "");
-  if (!got) {
-    backendBuildWarn_("Backend: falta el campo 'build'. Posible deploy desactualizado.");
-    return false;
-  }
-  if (got !== PEDIDOS_EXPECTED_BUILD) {
-    backendBuildWarn_(
-      `Backend desactualizado. Esperado: ${PEDIDOS_EXPECTED_BUILD} | Recibido: ${got}. ` +
-      `Solución: corregir PEDIDOS_BACKEND_URL al deploy correcto.`
-    );
-    return false;
-  }
-  backendBuildWarnHide_();
-  return true;
-}
-
-// ---------- Helpers fecha ----------
-function toLocalInputValue(iso) {
-  const d = new Date(iso);
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function isoRangeTodayAR() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return {
-    from: `${y}-${m}-${d}T00:00:00-03:00`,
-    to: `${y}-${m}-${d}T23:59:59-03:00`
+  const state = window.__protocolSidebarPedidosState || {
+    all: [],
+    filtered: [],
+    query: '',
+    status: 'todos',
+    page: 1,
+    pageSize: 12,
+    total: 0,
+    loading: false,
+    live: false,
+    error: ''
   };
-}
 
-function isoRangePreset(preset) {
-  const now = new Date();
-  const start = new Date(now);
-  const end = new Date(now);
+  window.__protocolSidebarPedidosState = state;
 
-  if (preset === "today") return isoRangeTodayAR();
-
-  if (preset === "yesterday") {
-    start.setDate(start.getDate() - 1);
-    end.setDate(end.getDate() - 1);
-  } else if (preset === "last7") {
-    start.setDate(start.getDate() - 6);
-  } else if (preset === "month") {
-    start.setDate(1);
-  }
-
-  const pad = (n) => String(n).padStart(2, "0");
-  return {
-    from: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}T00:00:00-03:00`,
-    to: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T23:59:59-03:00`
+  const statusLabels = {
+    recibido: 'Recibido',
+    despachado: 'Despachado',
+    en_camino: 'En camino',
+    entregado: 'Entregado'
   };
-}
 
-function applyCustomRangeFromInputs_() {
-  const dtFrom = document.getElementById("dtFrom");
-  const dtTo = document.getElementById("dtTo");
-  if (!dtFrom || !dtTo) return null;
-
-  if (!dtFrom.value || !dtTo.value) {
-    console.warn("[Pedidos] Rango incompleto. Completar Desde y Hasta.");
-    return null;
-  }
-
-  let fromIso = dtFrom.value + ":00-03:00";
-
-  const toVal = dtTo.value;
-  let toIso = "";
-  if (/T00:00$/.test(toVal)) {
-    toIso = toVal.replace(/T00:00$/, "T23:59:59") + "-03:00";
-  } else {
-    toIso = toVal + ":59-03:00";
-  }
-
-  return { from: fromIso, to: toIso };
-}
-function getGlobalRangeForPedidos_() {
-  const g = window.__SAZZU_GLOBAL_RANGE__;
-  if (!g || !g.from || !g.to) return null;
-  return {
-    from: String(g.from),
-    to: String(g.to)
+  const statusClasses = {
+    recibido: 'ordersBadge--blue',
+    despachado: 'ordersBadge--orange',
+    en_camino: 'ordersBadge--green',
+    entregado: 'ordersBadge--gray'
   };
-}
 
-function formatMoney(n) {
-  const x = Number(n) || 0;
-  return "$" + x.toLocaleString("es-AR");
-}
+  function el(id) {
+    return document.getElementById(id);
+  }
 
-function statusClassLogistica(v) {
-  const s = String(v || "").toLowerCase();
-  if (s.includes("entregado")) return "state--green";
-  if (s.includes("despachado")) return "state--navy";
-  if (s.includes("intervenido")) return "state--red";
-  return "state--sky";
-}
+  function isPedidosPage() {
+    return Boolean(document.querySelector('body[data-page="pedidos"]'));
+  }
 
-function statusClassIngreso(v) {
-  const s = String(v || "").toLowerCase();
-  if (s.includes("procesado")) return "state--green";
-  if (s.includes("intervenido")) return "state--red";
-  return "state--sky";
-}
+  function cfg() {
+    return window.SAZZU_SUPABASE_CONFIG || window.PROTOCOL_SUPABASE_CONFIG || null;
+  }
 
-// ---------- JSONP ----------
-function jsonp(url) {
-  return new Promise((resolve) => {
-    const cbName = "cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-
-    const kill = (payload) => {
-      try { delete window[cbName]; } catch(e){}
-      if (script && script.parentNode) script.parentNode.removeChild(script);
-      resolve(payload);
-    };
-
-    const t = setTimeout(() => {
-      kill({ ok:false, error:"JSONP timeout (8s). Backend no respondió o bloqueado." });
-    }, 8000);
-
-    window[cbName] = (data) => {
-      clearTimeout(t);
-      kill(data);
-    };
-
-    script.onerror = () => {
-      clearTimeout(t);
-      kill({ ok:false, error:"JSONP script error. URL inválida, deploy caído o bloqueado por red." });
-    };
-
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cbName + "&_nocache=" + Math.random();
-    document.body.appendChild(script);
-  });
-}
-
-// ================================
-// Estado global del panel Pedidos
-// ================================
-const OrdersState = {
-  fromIso: "",
-  toIso: "",
-  all: [],
-  filtered: [],
-  page: 1,
-  pageSize: 12,
-  q: "",
-  quick: "" // entregado|despachado|pendiente|intervenido
-};
-
-function normalize_(s){ return String(s || "").trim().toLowerCase(); }
-
-function applyFilters_() {
-  const q = normalize_(OrdersState.q);
-  const quick = normalize_(OrdersState.quick);
-
-  const list = Array.isArray(OrdersState.all) ? OrdersState.all : [];
-
-  const filtered = list.filter(p => {
-    const stLog = normalize_(p?.estado_logistica);
-    if (quick) {
-      if (quick === "pendiente") {
-        const isPend = !stLog.includes("entregado") && !stLog.includes("despachado") && !stLog.includes("intervenido");
-        if (!isPend) return false;
-      } else {
-        if (!stLog.includes(quick)) return false;
-      }
+  function client() {
+    if (window.ProtocolAuth && typeof window.ProtocolAuth.getClient === 'function') {
+      const shared = window.ProtocolAuth.getClient();
+      if (shared) return shared;
     }
 
-    if (!q) return true;
+    if (window.__protocolSidebarPedidosClient) return window.__protocolSidebarPedidosClient;
 
-    const hay = [
-      p?.id,
-      p?.cliente,
-      p?.email,
-      p?.fecha_iso,
-      p?.tracking,
-      p?.sku,
-      p?.producto
-    ].map(normalize_).join(" | ");
+    const c = cfg();
+    const key = c && (c.anonKey || c.publishableKey || c.key);
 
-    return hay.includes(q);
-  });
+    if (!window.supabase || !c || !c.url || !key) return null;
 
-  OrdersState.filtered = filtered;
-  OrdersState.page = 1;
-}
-
-function updatePagerUI_() {
-  const meta = document.getElementById("ordersPagerMeta");
-  const btnPrev = document.getElementById("btnPrevOrders");
-  const btnNext = document.getElementById("btnNextOrders");
-
-  const total = OrdersState.filtered.length;
-  const ps = OrdersState.pageSize;
-  const totalPages = Math.max(1, Math.ceil(total / ps));
-  let page = OrdersState.page;
-
-  if (page < 1) page = 1;
-  if (page > totalPages) page = totalPages;
-  OrdersState.page = page;
-
-  const start = total ? ((page - 1) * ps + 1) : 0;
-  const end = total ? Math.min(page * ps, total) : 0;
-
-  if (meta) meta.textContent = total ? `${start}–${end} de ${total}` : `0 de 0`;
-  if (btnPrev) btnPrev.disabled = (page <= 1);
-  if (btnNext) btnNext.disabled = (page >= totalPages);
-}
-
-function renderOrders_() {
-  const cont = document.getElementById("ordersList");
-  const info = document.getElementById("ordersInfo");
-  if (!cont) return;
-
-  const allFiltered = OrdersState.filtered;
-  const total = allFiltered.length;
-
-  if (info) {
-    const rangeTxt = OrdersState.fromIso ? OrdersState.fromIso.slice(0,10) : "—";
-    const rangeTxt2 = OrdersState.toIso ? OrdersState.toIso.slice(0,10) : "—";
-    info.textContent = `${total} pedidos · ${rangeTxt} → ${rangeTxt2}`;
+    window.__protocolSidebarPedidosClient = window.supabase.createClient(c.url, key);
+    return window.__protocolSidebarPedidosClient;
   }
 
-  if (!total) {
-    cont.innerHTML = `<div class="u-muted" style="font-size:14px;">No hay pedidos con los filtros actuales.</div>`;
-    updatePagerUI_();
-    return;
+  async function rpc(name, args) {
+    const c = client();
+    if (!c) throw new Error('Supabase no configurado');
+
+    const res = await c.rpc(name, args || {});
+    if (res.error) throw res.error;
+    return res.data;
   }
 
-  const page = OrdersState.page;
-  const ps = OrdersState.pageSize;
-  const startIdx = (page - 1) * ps;
-  const slice = allFiltered.slice(startIdx, startIdx + ps);
-
-  let html = "";
-  slice.forEach(p => {
-    const stLog = p.estado_logistica || "Pendiente";
-    const stIng = p.estado_ingreso || "Pendiente";
-
-    html += `
-      <div class="listItem orderItem" style="align-items:flex-start;">
-        <div class="orderItem__left" style="min-width:0;">
-          <div class="orderIconWrap" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true" class="orderIcon">
-              <path d="M200-80q-33 0-56.5-23.5T120-160v-480q0-33 23.5-56.5T200-720h80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720h80q33 0 56.5 23.5T840-640v480q0 33-23.5 56.5T760-80H200Zm280-320q83 0 141.5-58.5T680-600h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85h-80q0 83 58.5 141.5T480-400ZM360-720h240q0-50-35-85t-85-35q-50 0-85 35t-35 85Z"/>
-            </svg>
-          </div>
-
-          <div style="min-width:0;">
-            <div style="font-weight:900; margin-bottom:3px;">${p.cliente || "Cliente sin nombre"}</div>
-            <div class="u-muted" style="font-size:13px;">
-              ID: ${p.id || "(sin ID)"} · ${p.email || ""} · ${p.fecha_iso || ""}
-            </div>
-            <div class="u-muted" style="font-size:13px; margin-top:4px;">
-              Monto: ${formatMoney(p.monto_ars)}
-            </div>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
-          <span class="stateBadge ${statusClassLogistica(stLog)}">${stLog}</span>
-          <span class="stateBadge ${statusClassIngreso(stIng)}">${stIng}</span>
-        </div>
-      </div>
-    `;
-  });
-
-  cont.innerHTML = html;
-  updatePagerUI_();
-}
-
-async function loadPedidos_(fromIso, toIso) {
-  OrdersState.fromIso = fromIso;
-  OrdersState.toIso = toIso;
-
-  const cont = document.getElementById("ordersList");
-  if (cont) {
-    // Mientras esperamos al backend, mostramos skeleton
-    cont.innerHTML = ORDERS_SKELETON_HTML;
+  function esc(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  const t = Date.now();
-  const url =
-    `${PEDIDOS_BACKEND_URL}?action=getHomeSummary` +
-    `&from=${encodeURIComponent(fromIso)}` +
-    `&to=${encodeURIComponent(toIso)}` +
-    `&limit=200` +
-    `&debug=1` +
-    `&_t=${t}`;
+  function norm(value) {
+    return String(value || '').trim().toLowerCase();
+  }
 
-  const res = await jsonp(url);
-  window.__lastPedidos = res;
+  function setConnection(message, type) {
+    const badge = el('ordersConnectionBadge');
+    if (!badge) return;
 
-  console.log("[Pedidos] URL:", url);
-  console.log("[Pedidos] RES (raw):", res);
+    badge.textContent = message;
+    badge.className = 'ordersConnectionBadge ' + (type || '');
+  }
 
-  enforceBackendBuild_(res);
-
-  if (!res || res.ok !== true) {
-    const msg = (res && res.error) ? res.error : "Respuesta inválida del backend.";
-    if (cont) {
-      cont.innerHTML = `
-        <div class="u-muted" style="font-size:14px;">
-          ${msg}<br>
-          <span style="font-size:12px; opacity:.85;">${url}</span>
-        </div>`;
+  function toast(message, type) {
+    let box = document.getElementById('ordersToast');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'ordersToast';
+      box.style.position = 'fixed';
+      box.style.right = '16px';
+      box.style.bottom = '16px';
+      box.style.zIndex = '99999';
+      box.style.maxWidth = '360px';
+      box.style.borderRadius = '5px';
+      box.style.padding = '12px 14px';
+      box.style.fontSize = '13px';
+      box.style.fontWeight = '850';
+      box.style.boxShadow = '0 16px 34px rgba(15,23,42,.18)';
+      document.body.appendChild(box);
     }
-    return;
+
+    box.textContent = message;
+    box.style.background = type === 'error' ? '#fff0f0' : '#e9f9f0';
+    box.style.color = type === 'error' ? '#b42318' : '#168a50';
+    box.hidden = false;
+
+    window.clearTimeout(window.__ordersToastTimer);
+    window.__ordersToastTimer = window.setTimeout(() => {
+      box.hidden = true;
+    }, 2800);
   }
 
-  const pedidos = Array.isArray(res?.pedidos) ? res.pedidos : [];
-  OrdersState.all = pedidos;
-
-  // guardamos cache para SPA
-  window.__PEDIDOS_CACHE__ = {
-    from: fromIso,
-    to: toIso,
-    res
-  };
-
-  applyFilters_();
-  renderOrders_();
-}
-
-// ================================
-// UI: buscador + quick filters + pager
-// ================================
-function wireUI_() {
-  const search = document.getElementById("ordersSearch");
-  const btnClear = document.getElementById("btnClearOrders");
-
-  const btnPrev = document.getElementById("btnPrevOrders");
-  const btnNext = document.getElementById("btnNextOrders");
-
-  if (search) {
-    search.addEventListener("input", () => {
-      OrdersState.q = search.value || "";
-      applyFilters_();
-      renderOrders_();
-    });
+  function statusIndex(status) {
+    return Math.max(['recibido', 'despachado', 'en_camino', 'entregado'].indexOf(status) + 1, 1);
   }
 
-  document.querySelectorAll("[data-quick]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const v = String(btn.dataset.quick || "").toLowerCase();
+  function normalizeOrder(order) {
+    const estado = order.estado_logistico || 'recibido';
 
-      OrdersState.quick = (OrdersState.quick === v) ? "" : v;
-
-      document.querySelectorAll("[data-quick]").forEach(b => {
-        b.classList.toggle("is-active", String(b.dataset.quick || "").toLowerCase() === OrdersState.quick);
-      });
-
-      applyFilters_();
-      renderOrders_();
-    });
-  });
-
-  if (btnClear) {
-    btnClear.addEventListener("click", () => {
-      OrdersState.q = "";
-      OrdersState.quick = "";
-      if (search) search.value = "";
-
-      document.querySelectorAll("[data-quick]").forEach(b => b.classList.remove("is-active"));
-
-      applyFilters_();
-      renderOrders_();
-    });
-  }
-
-  if (btnPrev) {
-    btnPrev.onclick = () => {
-      OrdersState.page = Math.max(1, OrdersState.page - 1);
-      renderOrders_();
+    return {
+      tracking_id: String(order.tracking_id || '').toUpperCase(),
+      shopify_order_name: order.shopify_order_name || '',
+      cliente: order.cliente || 'Cliente sin nombre',
+      email_cliente: order.email_cliente || '',
+      telefono_cliente: order.telefono_cliente || '',
+      estado_logistico: estado,
+      estado_visual_index: Number(order.estado_visual_index || statusIndex(estado)),
+      banner_id: order.banner_id || 'banner_operativo_default',
+      banda_horaria_estimada: order.banda_horaria_estimada || 'A confirmar',
+      domicilio_entrega: order.domicilio_entrega || '--',
+      producto: order.producto || '--',
+      pago_estado: order.pago_estado || 'no_pagado',
+      monto_a_pagar_repartidor: order.monto_a_pagar_repartidor || '$0,00',
+      envio_estado: order.envio_estado || 'a_confirmar',
+      envio_valor: order.envio_valor || '$0,00',
+      issue_active: Boolean(order.issue_active),
+      issue_stage: order.issue_stage || '',
+      issue_type: order.issue_type || '',
+      issue_message_public: order.issue_message_public || '',
+      observacion_publica: order.observacion_publica || '',
+      observacion_interna: order.observacion_interna || '',
+      responsable: order.responsable || 'Equipo de logística Al Paso Store',
+      fecha_ultima_actualizacion: order.fecha_ultima_actualizacion || '--'
     };
   }
-  if (btnNext) {
-    btnNext.onclick = () => {
-      const total = OrdersState.filtered.length;
-      const totalPages = Math.max(1, Math.ceil(total / OrdersState.pageSize));
-      OrdersState.page = Math.min(totalPages, OrdersState.page + 1);
-      renderOrders_();
+
+  function getStatusBadge(order) {
+    const cls = statusClasses[order.estado_logistico] || 'ordersBadge--gray';
+    const label = statusLabels[order.estado_logistico] || order.estado_logistico || 'Pendiente';
+    return '<span class="ordersBadge ' + cls + '">' + esc(label) + '</span>';
+  }
+
+  function getPaymentBadge(order) {
+    if (order.pago_estado === 'pagado') {
+      return '<span class="ordersBadge ordersBadge--green">Pagado</span>';
+    }
+
+    return '<span class="ordersBadge ordersBadge--orange">No pagado</span>';
+  }
+
+  function getShippingBadge(order) {
+    if (order.envio_estado === 'gratis') {
+      return '<span class="ordersBadge ordersBadge--green">Envío gratis</span>';
+    }
+
+    if (order.envio_estado === 'a_confirmar') {
+      return '<span class="ordersBadge ordersBadge--gray">A confirmar</span>';
+    }
+
+    return '<span class="ordersBadge ordersBadge--blue">Envío ' + esc(order.envio_valor || '--') + '</span>';
+  }
+
+  function applyFilters() {
+    const query = norm(state.query);
+    const filter = norm(state.status || 'todos');
+
+    state.filtered = state.all.filter((order) => {
+      const statusMatch =
+        filter === 'todos' ||
+        order.estado_logistico === filter ||
+        (filter === 'intervenido' && order.issue_active) ||
+        (filter === 'pago_pendiente' && order.pago_estado !== 'pagado');
+
+      if (!statusMatch) return false;
+      if (!query) return true;
+
+      const haystack = [
+        order.tracking_id,
+        order.shopify_order_name,
+        order.cliente,
+        order.email_cliente,
+        order.telefono_cliente,
+        order.domicilio_entrega,
+        order.producto,
+        order.banner_id,
+        order.estado_logistico,
+        order.issue_type,
+        order.observacion_publica
+      ].map(norm).join(' | ');
+
+      return haystack.includes(query);
+    });
+
+    const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+    if (state.page > totalPages) state.page = totalPages;
+    if (state.page < 1) state.page = 1;
+  }
+
+  function renderMetrics() {
+    const active = state.all.filter((order) => order.estado_logistico !== 'entregado').length;
+    const pendingPayment = state.all.filter((order) => order.pago_estado !== 'pagado').length;
+    const issues = state.all.filter((order) => order.issue_active).length;
+    const delivered = state.all.filter((order) => order.estado_logistico === 'entregado').length;
+
+    const values = {
+      ordersMetricActive: active,
+      ordersMetricPendingPayment: pendingPayment,
+      ordersMetricIssues: issues,
+      ordersMetricDelivered: delivered
     };
-  }
-}
 
-// ================================
-// UI: dateFilter (mismo patrón que Home)
-// ================================
-function wireDateFilter_() {
-  const wrap = document.getElementById("dateFilter");
-  const panel = document.getElementById("datePanel");
-  const btnToggle = document.getElementById("btnToggleDates");
-  const btnApply = document.getElementById("btnApplyRange");
-
-  function openDates() {
-    if (!panel || !btnToggle) return;
-    panel.hidden = false;
-    btnToggle.setAttribute("aria-expanded", "true");
-  }
-  function closeDates() {
-    if (!panel || !btnToggle) return;
-    panel.hidden = true;
-    btnToggle.setAttribute("aria-expanded", "false");
-  }
-  function toggleDates() {
-    if (!panel) return;
-    panel.hidden ? openDates() : closeDates();
-  }
-
-  if (btnToggle) {
-    btnToggle.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      toggleDates();
+    Object.keys(values).forEach((id) => {
+      const node = el(id);
+      if (node) node.textContent = values[id];
     });
   }
 
-  document.addEventListener("click", (ev) => {
-    if (!wrap || !panel) return;
-    const inside = wrap.contains(ev.target);
-    if (!inside) closeDates();
-  });
+  function renderInfo() {
+    const info = el('ordersInfo');
+    if (!info) return;
 
-  document.querySelectorAll(".filterPill[data-preset]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const preset = btn.dataset.preset;
-      const r = isoRangePreset(preset);
+    const source = state.live ? 'Supabase activo' : 'Sin conexión';
+    info.textContent = state.filtered.length + ' pedidos visibles · ' + state.all.length + ' totales · ' + source;
+  }
 
-      const dtFrom = document.getElementById("dtFrom");
-      const dtTo = document.getElementById("dtTo");
-      if (dtFrom) dtFrom.value = toLocalInputValue(r.from);
-      if (dtTo) dtTo.value = toLocalInputValue(r.to);
+  function renderPager() {
+    const meta = el('ordersPagerMeta');
+    const prev = el('btnPrevOrders');
+    const next = el('btnNextOrders');
 
-      document.querySelectorAll(".filterPill[data-preset]").forEach(b => {
-        b.classList.toggle("is-active", b.dataset.preset === preset);
+    const total = state.filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    const start = total ? (state.page - 1) * state.pageSize + 1 : 0;
+    const end = total ? Math.min(state.page * state.pageSize, total) : 0;
+
+    if (meta) meta.textContent = total ? `${start}-${end} de ${total}` : '0 de 0';
+    if (prev) prev.disabled = state.page <= 1;
+    if (next) next.disabled = state.page >= totalPages;
+  }
+
+  function renderTable() {
+    const container = el('ordersList');
+    if (!container) return;
+
+    if (state.loading) {
+      container.innerHTML = '<div class="ordersEmpty">Sincronizando pedidos desde Supabase...</div>';
+      renderPager();
+      return;
+    }
+
+    applyFilters();
+    renderMetrics();
+    renderInfo();
+    renderPager();
+
+    if (state.error && !state.all.length) {
+      container.innerHTML = '<div class="ordersEmpty">No se pudo conectar con Supabase. Revisá configuración o permisos RPC.</div>';
+      return;
+    }
+
+    if (!state.filtered.length) {
+      container.innerHTML = '<div class="ordersEmpty">No hay pedidos para mostrar con los filtros actuales.</div>';
+      return;
+    }
+
+    const start = (state.page - 1) * state.pageSize;
+    const rows = state.filtered.slice(start, start + state.pageSize);
+
+    const body = rows.map((order) => {
+      return '<tr>' +
+        '<td><div class="ordersMiniStack"><strong>' + esc(order.tracking_id) + '</strong><span>' + esc(order.shopify_order_name || 'Sin número Shopify') + '</span></div></td>' +
+        '<td><div class="ordersMiniStack"><strong>' + esc(order.cliente) + '</strong><span>' + esc(order.email_cliente || order.telefono_cliente || 'Sin contacto') + '</span></div></td>' +
+        '<td><div class="ordersMiniStack"><strong>' + esc(order.domicilio_entrega) + '</strong><span>' + esc(order.telefono_cliente || '') + '</span></div></td>' +
+        '<td><div class="ordersMiniStack"><strong>' + esc(order.producto) + '</strong><span>Banner ' + esc(order.banner_id || '--') + '</span></div></td>' +
+        '<td>' + getPaymentBadge(order) + '<br><span>' + esc(order.monto_a_pagar_repartidor || '$0,00') + '</span></td>' +
+        '<td>' + getShippingBadge(order) + '</td>' +
+        '<td>' + getStatusBadge(order) + '<br><span>' + esc(order.banda_horaria_estimada || 'A confirmar') + '</span></td>' +
+        '<td>' + (order.issue_active ? '<span class="ordersBadge ordersBadge--red">' + esc(order.issue_type || 'Intervenido') + '</span>' : '<span class="ordersBadge ordersBadge--gray">Sin incidencia</span>') + '</td>' +
+        '<td><span>' + esc(order.fecha_ultima_actualizacion || '--') + '</span></td>' +
+        '<td><button class="ordersActionBtn" type="button" data-order-detail="' + esc(order.tracking_id) + '">Ver detalle</button></td>' +
+      '</tr>';
+    }).join('');
+
+    container.innerHTML = '<table class="ordersTable" aria-label="Pedidos conectados a Supabase"><thead><tr>' +
+      '<th>Pedido</th><th>Cliente</th><th>Domicilio</th><th>Producto</th><th>Pago</th><th>Envío</th><th>Estado</th><th>Incidencia</th><th>Actualización</th><th></th>' +
+      '</tr></thead><tbody>' + body + '</tbody></table>';
+  }
+
+  async function loadOrders(options) {
+    const opts = options || {};
+
+    state.loading = true;
+    state.error = '';
+    renderTable();
+    setConnection('Sincronizando...', 'is-loading');
+
+    try {
+      const data = await rpc('protocol_logistics_orders_list', {
+        input_query: '',
+        input_status: 'todos',
+        input_limit: 100,
+        input_offset: 0
       });
 
-      loadPedidos_(r.from, r.to);
-      closeDates();
+      const items = Array.isArray(data && data.items) ? data.items : [];
+      state.all = items.map(normalizeOrder);
+      state.total = Number((data && data.total) || state.all.length || 0);
+      state.live = true;
+      state.error = '';
+      setConnection('Supabase activo', 'is-live');
+
+      if (!opts.silent) toast('Pedidos sincronizados desde Supabase.', 'success');
+    } catch (error) {
+      console.warn('[Pedidos Supabase]', error);
+      state.error = error && error.message ? error.message : 'No se pudo conectar con Supabase';
+      state.live = false;
+      setConnection('Sin conexión', 'is-error');
+
+      if (!opts.silent) toast('No se pudo sincronizar pedidos.', 'error');
+    } finally {
+      state.loading = false;
+      renderTable();
+    }
+  }
+
+  function detailItem(label, value) {
+    return '<div class="ordersDetailItem"><span>' + esc(label) + '</span><strong>' + esc(value || '—') + '</strong></div>';
+  }
+
+  function detailCard(title, items) {
+    return '<article class="ordersDetailCard"><h3>' + esc(title) + '</h3><div class="ordersDetailGrid">' + items.join('') + '</div></article>';
+  }
+
+  function openDetail(trackingId) {
+    const order = state.all.find((item) => item.tracking_id === trackingId);
+    const slide = el('ordersDetailSlide');
+    const content = el('ordersDetailContent');
+    const subtitle = el('ordersDetailSubtitle');
+
+    if (!order || !slide || !content) return;
+
+    if (subtitle) subtitle.textContent = order.tracking_id + ' · ' + order.cliente;
+
+    content.innerHTML = [
+      detailCard('Pedido', [
+        detailItem('Tracking ID', order.tracking_id),
+        detailItem('Pedido Shopify', order.shopify_order_name),
+        detailItem('Estado logístico', statusLabels[order.estado_logistico] || order.estado_logistico),
+        detailItem('Última actualización', order.fecha_ultima_actualizacion)
+      ]),
+      detailCard('Cliente', [
+        detailItem('Nombre', order.cliente),
+        detailItem('Email', order.email_cliente),
+        detailItem('Teléfono', order.telefono_cliente),
+        detailItem('Responsable', order.responsable)
+      ]),
+      detailCard('Entrega', [
+        detailItem('Domicilio', order.domicilio_entrega),
+        detailItem('Producto resumen', order.producto),
+        detailItem('Envío', order.envio_estado + ' · ' + order.envio_valor),
+        detailItem('Banda horaria', order.banda_horaria_estimada),
+        detailItem('Banner', order.banner_id)
+      ]),
+      detailCard('Pago e incidencias', [
+        detailItem('Estado de pago', order.pago_estado),
+        detailItem('Monto a cobrar', order.monto_a_pagar_repartidor),
+        detailItem('Incidencia activa', order.issue_active ? 'Sí' : 'No'),
+        detailItem('Tipo de incidencia', order.issue_type),
+        detailItem('Mensaje público incidencia', order.issue_message_public),
+        detailItem('Observación pública', order.observacion_publica),
+        detailItem('Observación interna', order.observacion_interna)
+      ])
+    ].join('');
+
+    slide.classList.add('is-open');
+    slide.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('ordersSlideLock');
+    document.body.classList.add('ordersSlideLock');
+  }
+
+  function closeDetail() {
+    const slide = el('ordersDetailSlide');
+    if (!slide) return;
+
+    slide.classList.remove('is-open');
+    slide.setAttribute('aria-hidden', 'true');
+    document.documentElement.classList.remove('ordersSlideLock');
+    document.body.classList.remove('ordersSlideLock');
+  }
+
+  function bind() {
+    if (!isPedidosPage()) return;
+
+    const main = document.querySelector('main.ordersMain');
+    if (!main || main.dataset.ordersBound === '1') return;
+
+    main.dataset.ordersBound = '1';
+
+    el('ordersRefreshBtn')?.addEventListener('click', () => loadOrders({ silent: false }));
+
+    el('ordersSearch')?.addEventListener('input', (event) => {
+      state.query = event.target.value || '';
+      state.page = 1;
+      renderTable();
     });
-  });
 
-  if (btnApply) {
-    btnApply.addEventListener("click", () => {
-      document.querySelectorAll(".filterPill[data-preset]").forEach(b => b.classList.remove("is-active"));
+    el('ordersStatusFilter')?.addEventListener('change', (event) => {
+      state.status = event.target.value || 'todos';
+      state.page = 1;
+      renderTable();
+    });
 
-      const r = applyCustomRangeFromInputs_();
-      if (!r) return;
+    el('ordersClearBtn')?.addEventListener('click', () => {
+      state.query = '';
+      state.status = 'todos';
+      state.page = 1;
 
-      loadPedidos_(r.from, r.to);
-      closeDates();
+      const search = el('ordersSearch');
+      const filter = el('ordersStatusFilter');
+      if (search) search.value = '';
+      if (filter) filter.value = 'todos';
+
+      renderTable();
+    });
+
+    el('btnPrevOrders')?.addEventListener('click', () => {
+      state.page = Math.max(1, state.page - 1);
+      renderTable();
+    });
+
+    el('btnNextOrders')?.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+      state.page = Math.min(totalPages, state.page + 1);
+      renderTable();
+    });
+
+    document.addEventListener('click', (event) => {
+      const detailBtn = event.target.closest('[data-order-detail]');
+      if (detailBtn) openDetail(detailBtn.dataset.orderDetail);
+    });
+
+    el('ordersDetailOverlay')?.addEventListener('click', closeDetail);
+    el('ordersDetailClose')?.addEventListener('click', closeDetail);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeDetail();
     });
   }
-}
 
-// ================================
-// Boot (SPA-safe)
-// ================================
-function initPedidos_() {
-  if (!document.getElementById("ordersList")) return;
+  function init() {
+    if (!isPedidosPage()) return;
 
-  if (window.__pedidosInited === true) return;
-  window.__pedidosInited = true;
+    bind();
 
-  wireUI_();
-  wireDateFilter_();
+    if (!window[READY_FLAG]) {
+      window[READY_FLAG] = true;
+      loadOrders({ silent: true });
+      return;
+    }
 
-  const cache = window.__PEDIDOS_CACHE__;
-  if (cache && cache.res && Array.isArray(cache.res.pedidos)) {
-    OrdersState.fromIso = cache.from;
-    OrdersState.toIso = cache.to;
-    OrdersState.all = cache.res.pedidos.slice();
-
-    const dtFrom = document.getElementById("dtFrom");
-    const dtTo = document.getElementById("dtTo");
-    if (dtFrom) dtFrom.value = toLocalInputValue(cache.from);
-    if (dtTo) dtTo.value = toLocalInputValue(cache.to);
-
-    document.querySelectorAll(".filterPill[data-preset]").forEach(b => b.classList.remove("is-active"));
-
-    applyFilters_();
-    renderOrders_();
-    return;
+    renderTable();
   }
 
-  const globalRange = getGlobalRangeForPedidos_();
+  window.ProtocolPedidosRefresh = loadOrders;
 
-  const r = globalRange || {
-    from: "2025-10-01T00:00:00-03:00",
-    to: "2025-10-31T23:59:59-03:00"
-  };
+  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener(PAGE_EVENT, init);
 
-  const dtFrom = document.getElementById("dtFrom");
-  const dtTo = document.getElementById("dtTo");
-  if (dtFrom) dtFrom.value = toLocalInputValue(r.from);
-  if (dtTo) dtTo.value = toLocalInputValue(r.to);
-
-  document.querySelectorAll(".filterPill[data-preset]").forEach(b => b.classList.remove("is-active"));
-
-  loadPedidos_(r.from, r.to);
-}
-
-// Carga normal
-document.addEventListener("DOMContentLoaded", initPedidos_);
-
-// SPA navigation
-document.addEventListener("sazzu:page:load", () => {
-  if (document.getElementById("ordersList")) {
-    window.__pedidosInited = false;
-    initPedidos_();
+  if (document.readyState !== 'loading') {
+    init();
   }
-});
-
-// Hook explícito para router.js (si lo necesitás)
-window.PedidosMount = function () {
-  window.__pedidosInited = false;
-  initPedidos_();
-};
+})();
