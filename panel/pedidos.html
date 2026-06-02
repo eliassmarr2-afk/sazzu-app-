@@ -6,133 +6,165 @@
   <meta name="view-transition" content="same-origin">
   <title>Pedidos · Sazzú Control Tower</title>
 
-  <!-- CSS base del sistema -->
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/panel.css">
   <link rel="stylesheet" href="../css/sidebar.css">
-  
-  <!-- (Opcional) tu style.css anterior, por si lo querés mantener como override -->
   <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .ordersMain{background:#f5f7fb;}
+    .ordersHeader__right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .ordersConnectionBadge{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:5px;background:#eef2ff;color:#2479FF;font-size:12px;font-weight:900;letter-spacing:.01em;}
+    .ordersConnectionBadge.is-live{background:#e9f9f0;color:#168a50;}
+    .ordersConnectionBadge.is-loading{background:#fff4dc;color:#a26100;}
+    .ordersConnectionBadge.is-error{background:#fff0f0;color:#b42318;}
+    .ordersHero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px;}
+    .ordersMetric{border-radius:5px;background:#fff;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.06);}
+    .ordersMetric span{display:block;color:#697386;font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.045em;}
+    .ordersMetric strong{display:block;margin-top:8px;color:#252A32;font-size:31px;line-height:1;font-weight:950;letter-spacing:-.045em;}
+    .ordersMetric small{display:block;margin-top:6px;color:#697386;font-size:12px;font-weight:700;line-height:1.25;}
+    .ordersToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .ordersToolbar__filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;}
+    .ordersInput,.ordersSelect{height:40px;border-radius:5px;border:1px solid var(--border,#e5e7eb);background:#fff;color:#111827;padding:0 12px;font:inherit;font-size:13px;font-weight:750;outline:0;}
+    .ordersInput{min-width:280px;flex:1;}
+    .ordersSelect{min-width:150px;}
+    .ordersTableShell{margin-top:12px;border-radius:5px;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,.07);overflow:hidden;}
+    .ordersTableWrap{width:100%;overflow-x:auto;}
+    .ordersTable{width:100%;min-width:1120px;border-collapse:collapse;}
+    .ordersTable th,.ordersTable td{padding:13px 12px;border-bottom:1px solid #eef2f7;text-align:left;vertical-align:top;font-size:13px;line-height:1.25;}
+    .ordersTable th{background:#f8fafc;color:#697386;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.045em;white-space:nowrap;}
+    .ordersMiniStack strong{display:block;color:#252A32;font-size:13px;font-weight:950;max-width:240px;line-height:1.16;}
+    .ordersMiniStack span{display:block;margin-top:4px;color:#697386;font-size:12px;font-weight:700;max-width:260px;line-height:1.25;}
+    .ordersBadge{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:0 9px;border-radius:5px;font-size:11px;font-weight:950;white-space:nowrap;}
+    .ordersBadge--blue{background:#eaf2ff;color:#2479FF;}
+    .ordersBadge--green{background:#e9f9f0;color:#168a50;}
+    .ordersBadge--orange{background:#fff4dc;color:#a26100;}
+    .ordersBadge--red{background:#fff0f0;color:#b42318;}
+    .ordersBadge--gray{background:#eef2f7;color:#697386;}
+    .ordersActionBtn{border:0;border-radius:5px;background:#2479FF;color:#fff;min-height:34px;padding:0 12px;font:inherit;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap;}
+    .ordersMutedBtn{border:1px solid #d8dee8;border-radius:5px;background:#fff;color:#334155;min-height:38px;padding:0 13px;font:inherit;font-size:12px;font-weight:900;cursor:pointer;}
+    .ordersEmpty{padding:22px;color:#697386;font-size:14px;font-weight:800;text-align:center;}
+    .ordersPager{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-top:1px solid #eef2f7;background:#fff;}
+    .ordersPager__meta{color:#697386;font-size:12px;font-weight:850;}
+    .ordersPager__actions{display:flex;align-items:center;gap:8px;}
+    .ordersPager__actions button{border:1px solid #d8dee8;border-radius:5px;background:#fff;color:#334155;min-height:34px;padding:0 12px;font:inherit;font-size:12px;font-weight:900;cursor:pointer;}
+    .ordersPager__actions button:disabled{opacity:.45;cursor:not-allowed;}
+    .ordersSlide{position:fixed;inset:0;z-index:9999;display:none;}
+    .ordersSlide.is-open{display:block;}
+    .ordersSlide__overlay{position:absolute;inset:0;border:0;background:rgba(15,23,42,.38);}
+    .ordersSlide__panel{position:absolute;top:0;right:0;width:min(520px,100%);height:100%;overflow:auto;background:#ededed;box-shadow:-18px 0 40px rgba(15,23,42,.18);}
+    .ordersSlide__header{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;background:#fff;border-bottom:1px solid #e5e7eb;}
+    .ordersSlide__header button{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:5px;background:#eef2ff;color:#2479FF;cursor:pointer;}
+    .ordersSlide__title strong{display:block;color:#252A32;font-size:16px;font-weight:950;}
+    .ordersSlide__title span{display:block;margin-top:3px;color:#697386;font-size:12px;font-weight:800;}
+    .ordersDetail{display:grid;gap:10px;padding:12px;}
+    .ordersDetailCard{border-radius:5px;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,.06);padding:14px;}
+    .ordersDetailCard h3{margin:0 0 10px;color:#252A32;font-size:15px;font-weight:950;letter-spacing:-.02em;}
+    .ordersDetailGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .ordersDetailItem span{display:block;color:#697386;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.045em;}
+    .ordersDetailItem strong{display:block;margin-top:4px;color:#252A32;font-size:13px;font-weight:850;line-height:1.25;word-break:break-word;}
+    @media(max-width:900px){.ordersHero{grid-template-columns:repeat(2,minmax(0,1fr));}.ordersToolbar{align-items:stretch}.ordersToolbar__filters{width:100%;}.ordersInput,.ordersSelect{min-width:100%;}.ordersHeader__right{justify-content:flex-start;}.ordersDetailGrid{grid-template-columns:1fr;}}
+  </style>
 </head>
 
 <body data-page="pedidos">
   <div class="appShell">
     <div class="bodyGrid">
+      <aside class="sidebar" aria-label="Navegación" data-include="sidebar"></aside>
 
-      <!-- Sidebar -->
-     <!-- Sidebar (inyectado por app.js) -->
-<aside class="sidebar" aria-label="Navegación" data-include="sidebar"></aside>
-
-
-      <!-- Main -->
-      <main class="main" aria-label="Contenido principal">
-
-        <!-- Header interno -->
-        <header class="appHeader" aria-label="Encabezado general">
+      <main class="main ordersMain" aria-label="Panel de pedidos">
+        <header class="appHeader" aria-label="Encabezado de pedidos">
           <div class="appHeader__left">
             <div class="appHeader__title">Pedidos</div>
-            <div class="appHeader__sub">Centro operativo</div>
+            <div class="appHeader__sub">Vista general de pedidos conectada a Shopify, Supabase y logística.</div>
           </div>
 
-          <div class="appHeader__right">
-            <button class="iconBtn" type="button" title="Buscar">⌕</button>
-            <button class="iconBtn" type="button" title="Notificaciones">🔔</button>
-
-            <!-- (Opcional) Reusamos tu dateFilter exactamente igual -->
-            <div class="dateFilter" id="dateFilter">
-              <button class="dateFilter__btn" id="btnToggleDates" type="button" aria-haspopup="true" aria-expanded="false">
-                Fechas
-              </button>
-
-              <div class="dateFilter__panel" id="datePanel" aria-label="Selector de fechas" hidden>
-                <div class="dateFilter__presets">
-                  <button class="filterPill" type="button" data-preset="today">Hoy</button>
-                  <button class="filterPill" type="button" data-preset="yesterday">Ayer</button>
-                  <button class="filterPill" type="button" data-preset="last7">Últimos 7 días</button>
-                  <button class="filterPill" type="button" data-preset="month">Este mes</button>
-                </div>
-
-                <div class="dateFilter__range">
-                  <label class="filterField">
-                    <span>Desde</span>
-                    <input id="dtFrom" type="datetime-local" />
-                  </label>
-
-                  <label class="filterField">
-                    <span>Hasta</span>
-                    <input id="dtTo" type="datetime-local" />
-                  </label>
-
-                  <button class="filterApply" id="btnApplyRange" type="button">Aplicar</button>
-                </div>
-              </div>
-            </div>
-
-            <button class="iconBtn" type="button" title="Usuario">👤</button>
+          <div class="appHeader__right ordersHeader__right">
+            <span class="ordersConnectionBadge" id="ordersConnectionBadge">Preparando conexión</span>
+            <button class="ordersMutedBtn" id="ordersRefreshBtn" type="button">Sincronizar pedidos</button>
           </div>
         </header>
 
-        <!-- Barra operativa (buscador + atajos) -->
+        <section class="ordersHero" aria-label="Resumen de pedidos">
+          <article class="ordersMetric"><span>Pedidos activos</span><strong id="ordersMetricActive">0</strong><small>No entregados dentro del flujo operativo.</small></article>
+          <article class="ordersMetric"><span>Pago pendiente</span><strong id="ordersMetricPendingPayment">0</strong><small>Pedidos con monto pendiente de cobro.</small></article>
+          <article class="ordersMetric"><span>Intervenidos</span><strong id="ordersMetricIssues">0</strong><small>Casos con incidencia activa.</small></article>
+          <article class="ordersMetric"><span>Entregados</span><strong id="ordersMetricDelivered">0</strong><small>Pedidos finalizados correctamente.</small></article>
+        </section>
+
         <section class="u-card" aria-label="Herramientas de pedidos">
           <div class="u-cardInner u-cardInner--tight">
-
             <div class="blockTitle">
               <div class="blockTitle__left">
-                <h3>Búsqueda y atajos</h3>
-                <span class="u-sectionLabel">OPERACIÓN</span>
+                <h3>Búsqueda y filtros</h3>
+                <span class="u-sectionLabel">SHOPIFY → PROTOCOL DATA</span>
               </div>
-              <span class="u-muted" style="font-size:13px;">Estado: estructura base</span>
+              <span class="u-muted" id="ordersInfo" style="font-size:13px;">—</span>
             </div>
 
-            <!-- Nota: en Fase 1 dejamos el input simple (sin CSS nuevo).
-                 En Fase 2 lo estilizamos como el resto del sistema. -->
-            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-              <input id="ordersSearch" type="text" placeholder="Buscar por ID, email, cliente, SKU, tracking…"
-                     style="flex:1; min-width:260px; height:38px; border-radius:12px; border:1px solid var(--border); padding:0 12px; background:#fff; color:#111827;">
-
-              <button class="filterPill" type="button" data-quick="pendiente">Pendiente</button>
-              <button class="filterPill" type="button" data-quick="despachado">Despachado</button>
-              <button class="filterPill" type="button" data-quick="entregado">Entregado</button>
-              <button class="filterPill" type="button" data-quick="intervenido">Intervenido</button>
-
-              <button class="filterApply" id="btnClearOrders" type="button">Limpiar</button>
+            <div class="ordersToolbar">
+              <div class="ordersToolbar__filters">
+                <input id="ordersSearch" class="ordersInput" type="search" placeholder="Buscar tracking, pedido, cliente, email, teléfono, domicilio o producto..." autocomplete="off">
+                <select id="ordersStatusFilter" class="ordersSelect" aria-label="Filtrar por estado">
+                  <option value="todos">Todos</option>
+                  <option value="recibido">Recibido</option>
+                  <option value="despachado">Despachado</option>
+                  <option value="en_camino">En camino</option>
+                  <option value="entregado">Entregado</option>
+                  <option value="intervenido">Intervenidos</option>
+                  <option value="pago_pendiente">Pago pendiente</option>
+                </select>
+              </div>
+              <button class="ordersMutedBtn" id="ordersClearBtn" type="button">Limpiar</button>
             </div>
-
           </div>
         </section>
 
-               <!-- Card grande: pedidos -->
         <section class="u-card" aria-label="Listado de pedidos">
           <div class="u-cardInner u-cardInner--tight">
-
             <div class="blockTitle">
               <div class="blockTitle__left">
-                <h3>Pedidos</h3>
-                <span class="u-sectionLabel" id="ordersInfo">—</span>
+                <h3>Tabla general de pedidos</h3>
+                <span class="u-sectionLabel">MISMA FUENTE QUE LOGÍSTICA / PEDIDOS</span>
               </div>
+            </div>
 
+            <div class="ordersTableShell">
+              <div id="ordersList" class="ordersTableWrap" aria-label="Listado de pedidos">
+                <div class="ordersEmpty">Sincronizando pedidos desde Supabase...</div>
+              </div>
               <div class="ordersPager" aria-label="Paginación de pedidos">
-                <button class="pagerBtn pagerBtn--icon" id="btnPrevOrders" type="button" disabled aria-label="Anterior">‹</button>
-                <div class="pagerMeta" id="ordersPagerMeta">—</div>
-                <button class="pagerBtn pagerBtn--icon pagerBtn--primary" id="btnNextOrders" type="button" disabled aria-label="Siguiente">›</button>
+                <span class="ordersPager__meta" id="ordersPagerMeta">—</span>
+                <div class="ordersPager__actions">
+                  <button id="btnPrevOrders" type="button" disabled>Anterior</button>
+                  <button id="btnNextOrders" type="button" disabled>Siguiente</button>
+                </div>
               </div>
             </div>
-
-            <!-- Listado: muestra skeleton hasta que pedidos.js reemplace el contenido -->
-            <div id="ordersList" class="list ordersList" aria-label="Listado">
-              <!-- El skeleton lo maneja pedidos.js -->
-              <div class="u-muted" style="font-size:14px;">Cargando…</div>
-            </div>
-
           </div>
         </section>
 
+        <section class="ordersSlide" id="ordersDetailSlide" aria-hidden="true">
+          <button class="ordersSlide__overlay" id="ordersDetailOverlay" type="button" aria-label="Cerrar detalle de pedido"></button>
+          <aside class="ordersSlide__panel" role="dialog" aria-modal="true" aria-label="Detalle de pedido">
+            <header class="ordersSlide__header">
+              <button id="ordersDetailClose" type="button" aria-label="Cerrar">‹</button>
+              <div class="ordersSlide__title">
+                <strong>Detalle de pedido</strong>
+                <span id="ordersDetailSubtitle">Pedido conectado a Protocol Data</span>
+              </div>
+              <div style="width:38px" aria-hidden="true"></div>
+            </header>
+            <div class="ordersDetail" id="ordersDetailContent"></div>
+          </aside>
+        </section>
       </main>
     </div>
   </div>
 
-  <!-- JS global + JS del módulo -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config/supabase-config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/pedidos.js"></script>
 </body>
