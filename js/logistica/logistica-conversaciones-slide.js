@@ -205,6 +205,11 @@
 
     main.addEventListener('click', event => {
       const open = event.target.closest('[data-log-open-conversation]');
+    
+      if (open && open.dataset.logOpenConversationReal === '1') {
+        return;
+      }
+    
       if (open) {
         event.preventDefault();
         event.stopPropagation();
@@ -212,7 +217,10 @@
         openSlide(open.dataset.logOpenConversation);
         return;
       }
-      if (event.target.closest('#logConversationSlideOverlay') || event.target.closest('#logConversationSlideClose')) closeSlide();
+    
+      if (event.target.closest('#logConversationSlideOverlay') || event.target.closest('#logConversationSlideClose')) {
+        closeSlide();
+      }
     }, true);
 
     main.addEventListener('submit', event => {
