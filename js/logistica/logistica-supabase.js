@@ -356,3 +356,310 @@
   document.addEventListener(PAGE_EVENT, boot);
   if (document.readyState !== 'loading') boot();
 })();
+
+/* ==========================================================
+   Protocol Data · Logística · Conversaciones
+   Fase 1: tab mock preparado para Supabase.
+   ========================================================== */
+
+(function () {
+  const PAGE_EVENT = 'sazzu:page:load';
+  const READY_FLAG = '__protocolLogisticaConversacionesReady';
+
+  const conversations = [
+    {
+      conversation_id: 'CONV-ALP-0001',
+      status: 'nueva',
+      priority: 'alta',
+      verified: true,
+      tracking_id: 'ALP-000124',
+      customer_email: 'cliente@email.com',
+      shopify_order_name: '#1001',
+      customer_name: 'Cliente Demo',
+      product_name: 'Bandera Argentina para Capó | Pack x3',
+      shipping_address: 'Recoleta, 1189, Capital Federal',
+      payment_status: 'No pagado · cobra repartidor',
+      shipping_status: 'Recibido',
+      logistics_status: 'Preparación pendiente',
+      reason: 'Quiero saber cuándo llega',
+      last_message: 'Completé el ID de seguimiento y necesito confirmar el horario de entrega.',
+      created_at: '2026-06-04 10:42',
+      last_message_at: '2026-06-04 10:42',
+      assigned_to: 'Sin asignar'
+    },
+    {
+      conversation_id: 'CONV-ALP-0002',
+      status: 'en_proceso',
+      priority: 'media',
+      verified: true,
+      tracking_id: 'ALP-000125',
+      customer_email: 'comprador@email.com',
+      shopify_order_name: '#1002',
+      customer_name: 'Comprador Demo',
+      product_name: 'Sombrero Mundialista Argentina',
+      shipping_address: 'Palermo, 1414, Capital Federal',
+      payment_status: 'Pagado',
+      shipping_status: 'En camino',
+      logistics_status: 'Distribución activa',
+      reason: 'Cambiar datos de entrega',
+      last_message: 'Necesito ajustar el departamento antes de que llegue el repartidor.',
+      created_at: '2026-06-04 09:18',
+      last_message_at: '2026-06-04 09:44',
+      assigned_to: 'Logística'
+    },
+    {
+      conversation_id: 'CONV-ALP-0003',
+      status: 'respondida',
+      priority: 'alta',
+      verified: false,
+      tracking_id: 'ALP-000126',
+      customer_email: 'usuario@email.com',
+      shopify_order_name: '#1003',
+      customer_name: 'Usuario Intervenido',
+      product_name: 'Combo Accesorios Mundialistas',
+      shipping_address: 'Av. Siempre Viva 742, Buenos Aires',
+      payment_status: 'No pagado · cobra repartidor',
+      shipping_status: 'Despachado',
+      logistics_status: 'Intervenido por dirección',
+      reason: 'Pedido demorado o intervenido',
+      last_message: 'El CP no coincide con mi localidad. Ya envié la dirección corregida.',
+      created_at: '2026-06-03 18:21',
+      last_message_at: '2026-06-04 08:05',
+      assigned_to: 'Soporte'
+    }
+  ];
+
+  const statusLabels = {
+    nueva: 'Nueva',
+    en_proceso: 'En proceso',
+    respondida: 'Respondida',
+    cerrada: 'Cerrada'
+  };
+
+  const statusClasses = {
+    nueva: 'logBadge--blue',
+    en_proceso: 'logBadge--orange',
+    respondida: 'logBadge--green',
+    cerrada: 'logBadge--gray'
+  };
+
+  const priorityLabels = {
+    alta: 'Alta',
+    media: 'Media',
+    baja: 'Baja'
+  };
+
+  function root() { return document.querySelector('main.logisticsMain'); }
+  function esc(value) { return String(value || '—').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[c])); }
+
+  function ensureStyles() {
+    if (document.getElementById('logConversacionesStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'logConversacionesStyles';
+    style.textContent = `
+      .logConversationsSummary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}.logConversationMetric{border:1px solid rgba(15,23,42,.08);border-radius:15px;background:#f7faff;padding:12px}.logConversationMetric span{display:block;color:#697386;font-size:11px;font-weight:900;line-height:1;margin-bottom:7px}.logConversationMetric strong{display:block;color:#252a32;font-size:24px;line-height:1;font-weight:950;letter-spacing:-.04em}.logConversationsToolbar{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.logConversationsToolbar .logInput{max-width:310px}.logConversationsToolbar .logSelect{max-width:180px}.logConversationsTable{min-width:1180px}.logConversationsTable td span{color:#697386;font-size:12px;font-weight:650}.logConversationMessage{max-width:260px;color:#252a32;font-weight:700;line-height:1.32}.logConversationOrder{display:grid;gap:3px}.logConversationOrder strong{font-size:13px}.logConversationOrder em{font-style:normal;color:#697386;font-size:12px;font-weight:650}.logConversationVerified{display:inline-flex;min-height:24px;align-items:center;justify-content:center;border-radius:999px;padding:4px 8px;font-size:11px;line-height:1;font-weight:950;white-space:nowrap}.logConversationVerified--yes{background:#eaf8f1;color:#10a66a}.logConversationVerified--no{background:#fff7ed;color:#c05621}.logConversationEmpty{padding:18px;border-radius:15px;background:#f7faff;color:#697386;font-size:13px;font-weight:750;text-align:center}@media(max-width:900px){.logConversationsSummary{grid-template-columns:repeat(2,minmax(0,1fr))}.logConversationsToolbar{justify-content:flex-start}.logConversationsToolbar .logInput,.logConversationsToolbar .logSelect{max-width:none}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureTabAndPanel() {
+    const main = root();
+    if (!main) return false;
+
+    const tabs = main.querySelector('.logisticsTabs');
+    if (!tabs) return false;
+
+    if (!tabs.querySelector('[data-log-tab="conversaciones"]')) {
+      const button = document.createElement('button');
+      button.className = 'logTab';
+      button.type = 'button';
+      button.dataset.logTab = 'conversaciones';
+      button.textContent = 'Conversaciones';
+      const pedidosTab = tabs.querySelector('[data-log-tab="pedidos"]');
+      if (pedidosTab && pedidosTab.nextSibling) {
+        tabs.insertBefore(button, pedidosTab.nextSibling);
+      } else {
+        tabs.appendChild(button);
+      }
+    }
+
+    if (!main.querySelector('[data-log-panel="conversaciones"]')) {
+      const panel = document.createElement('section');
+      panel.className = 'logPanel';
+      panel.dataset.logPanel = 'conversaciones';
+      panel.innerHTML = `
+        <article class="logCard logConversationsCard">
+          <div class="logCard__head logCard__head--toolbar">
+            <div>
+              <span class="u-sectionLabel">SOPORTE LOGÍSTICO</span>
+              <h2>Conversaciones con clientes</h2>
+            </div>
+            <div class="logConversationsToolbar">
+              <input id="logConversationsSearch" class="logInput" type="search" placeholder="Buscar email, tracking, cliente, producto...">
+              <select id="logConversationsStatus" class="logSelect" aria-label="Filtrar conversaciones por estado">
+                <option value="todos">Todos</option>
+                <option value="nueva">Nuevas</option>
+                <option value="en_proceso">En proceso</option>
+                <option value="respondida">Respondidas</option>
+                <option value="cerrada">Cerradas</option>
+                <option value="no_verificada">No verificadas</option>
+              </select>
+            </div>
+          </div>
+          <div class="logConversationsSummary" id="logConversationsSummary"></div>
+          <div class="logTableWrap">
+            <table class="logTable logConversationsTable" aria-label="Tabla de conversaciones con clientes">
+              <thead>
+                <tr>
+                  <th>Conversación</th>
+                  <th>Cliente</th>
+                  <th>Compra asociada</th>
+                  <th>Entrega / pago</th>
+                  <th>Motivo</th>
+                  <th>Último mensaje</th>
+                  <th>Estado</th>
+                  <th>Responsable</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="logConversationsTbody"></tbody>
+            </table>
+          </div>
+        </article>
+      `;
+      const pedidosPanel = main.querySelector('[data-log-panel="pedidos"]');
+      if (pedidosPanel && pedidosPanel.nextSibling) {
+        main.insertBefore(panel, pedidosPanel.nextSibling);
+      } else {
+        main.appendChild(panel);
+      }
+    }
+
+    return true;
+  }
+
+  function filteredRows() {
+    const main = root();
+    const query = (main.querySelector('#logConversationsSearch')?.value || '').trim().toLowerCase();
+    const status = main.querySelector('#logConversationsStatus')?.value || 'todos';
+
+    return conversations.filter(item => {
+      const matchesQuery = !query || [
+        item.conversation_id,
+        item.status,
+        item.tracking_id,
+        item.customer_email,
+        item.shopify_order_name,
+        item.customer_name,
+        item.product_name,
+        item.shipping_address,
+        item.reason,
+        item.last_message,
+        item.assigned_to
+      ].join(' ').toLowerCase().includes(query);
+
+      const matchesStatus = status === 'todos' || item.status === status || (status === 'no_verificada' && !item.verified);
+      return matchesQuery && matchesStatus;
+    });
+  }
+
+  function renderSummary() {
+    const main = root();
+    const box = main.querySelector('#logConversationsSummary');
+    if (!box) return;
+
+    const count = status => conversations.filter(item => item.status === status).length;
+    const notVerified = conversations.filter(item => !item.verified).length;
+    box.innerHTML = `
+      <div class="logConversationMetric"><span>Nuevas</span><strong>${count('nueva')}</strong></div>
+      <div class="logConversationMetric"><span>En proceso</span><strong>${count('en_proceso')}</strong></div>
+      <div class="logConversationMetric"><span>Respondidas</span><strong>${count('respondida')}</strong></div>
+      <div class="logConversationMetric"><span>Cerradas</span><strong>${count('cerrada')}</strong></div>
+      <div class="logConversationMetric"><span>No verificadas</span><strong>${notVerified}</strong></div>
+    `;
+  }
+
+  function renderTable() {
+    const main = root();
+    const tbody = main.querySelector('#logConversationsTbody');
+    if (!tbody) return;
+
+    const rows = filteredRows();
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="logConversationEmpty">No hay conversaciones para los filtros seleccionados.</div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(item => `
+      <tr>
+        <td><strong>${esc(item.conversation_id)}</strong><br><span>${esc(item.created_at)}</span></td>
+        <td>${esc(item.customer_name)}<br><span>${esc(item.customer_email)}</span><br><span class="logConversationVerified ${item.verified ? 'logConversationVerified--yes' : 'logConversationVerified--no'}">${item.verified ? 'Verificada' : 'No verificada'}</span></td>
+        <td><div class="logConversationOrder"><strong>${esc(item.tracking_id)} · ${esc(item.shopify_order_name)}</strong><em>${esc(item.product_name)}</em><em>${esc(item.shipping_address)}</em></div></td>
+        <td>${esc(item.shipping_status)}<br><span>${esc(item.logistics_status)}</span><br><span>${esc(item.payment_status)}</span></td>
+        <td>${esc(item.reason)}<br><span>Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span></td>
+        <td><div class="logConversationMessage">${esc(item.last_message)}</div><span>${esc(item.last_message_at)}</span></td>
+        <td><span class="logBadge ${statusClasses[item.status] || 'logBadge--gray'}">${esc(statusLabels[item.status] || item.status)}</span></td>
+        <td>${esc(item.assigned_to)}</td>
+        <td><button class="logActionBtn" type="button" data-log-open-conversation="${esc(item.conversation_id)}">Ver</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function setTab(tab) {
+    const main = root();
+    main.querySelectorAll('[data-log-tab]').forEach(button => button.classList.toggle('is-active', button.dataset.logTab === tab));
+    main.querySelectorAll('[data-log-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.logPanel === tab));
+  }
+
+  function bind() {
+    const main = root();
+    if (!main || main.dataset.logisticaConversacionesBound === '1') return;
+    main.dataset.logisticaConversacionesBound = '1';
+
+    main.addEventListener('click', event => {
+      const tab = event.target.closest('[data-log-tab="conversaciones"]');
+      if (tab) {
+        event.preventDefault();
+        setTab('conversaciones');
+        renderAll();
+        return;
+      }
+
+      const open = event.target.closest('[data-log-open-conversation]');
+      if (open) {
+        const item = conversations.find(row => row.conversation_id === open.dataset.logOpenConversation);
+        if (!item) return;
+        alert(`Próxima fase: abrir detalle tipo chat.\n\n${item.conversation_id}\n${item.customer_name}\n${item.tracking_id}\n${item.last_message}`);
+      }
+    });
+
+    main.addEventListener('input', event => {
+      if (event.target.closest('#logConversationsSearch')) renderTable();
+    });
+
+    main.addEventListener('change', event => {
+      if (event.target.closest('#logConversationsStatus')) renderTable();
+    });
+  }
+
+  function renderAll() {
+    renderSummary();
+    renderTable();
+  }
+
+  function boot() {
+    if (window[READY_FLAG] && root()?.dataset.logisticaConversacionesBooted === '1') return;
+    window[READY_FLAG] = true;
+    const main = root();
+    if (!main) return;
+    main.dataset.logisticaConversacionesBooted = '1';
+    ensureStyles();
+    if (!ensureTabAndPanel()) return;
+    bind();
+    renderAll();
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
+  document.addEventListener(PAGE_EVENT, boot);
+  if (document.readyState !== 'loading') boot();
+})();
