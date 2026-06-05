@@ -117,11 +117,16 @@
     const issues = state.orders.filter(order => order.issue_active).length;
     const delivered = state.orders.filter(order => order.estado_logistico === 'entregado').length;
     const unknownCp = state.orders.filter(order => order.localidad === 'Sin validar').length;
-
-    $('#logKpiActive').textContent = active;
-    $('#logKpiIssues').textContent = issues;
-    $('#logKpiDelivered').textContent = delivered;
-    $('#logKpiUnknownCp').textContent = unknownCp;
+  
+    const setText = (selector, value) => {
+      const el = $(selector);
+      if (el) el.textContent = value;
+    };
+  
+    setText('#logKpiActive', active);
+    setText('#logKpiIssues', issues);
+    setText('#logKpiDelivered', delivered);
+    setText('#logKpiUnknownCp', unknownCp);
   }
 
   function renderSummary() {
