@@ -104,6 +104,39 @@
     });
   }
 
+  function messageDateParts(value) {
+    if (!value) {
+      return { label: '—', time: '', cls: 'old' };
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return { label: String(value), time: '', cls: 'old' };
+    }
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    let label = date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    let cls = 'old';
+
+    if (target === today) {
+      label = 'Hoy';
+      cls = 'today';
+    } else if (target === today - oneDay) {
+      label = 'Ayer';
+      cls = 'yesterday';
+    }
+
+    return {
+      label,
+      cls,
+      time: date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+    };
+  }
+
   function unreadCount(item) {
     const explicit = Number(item?.unread_count || item?.customer_unread_count || item?.new_customer_messages_count || 0);
     if (explicit > 0) return explicit;
@@ -180,6 +213,11 @@
     }, { nuevas: 0, en_proceso: 0, respondidas: 0, cerradas: 0, no_verificadas: 0 });
   }
 
+  function verificationBadge(item) {
+    const verified = Boolean(item?.is_verified);
+    return `<span class="logConversationVerified ${verified ? 'logConversationVerified--yes' : 'logConversationVerified--no'}"><span class="logVerifyIcon">${verified ? '✓' : '×'}</span>${verified ? 'Verificada' : 'No verificada'}</span>`;
+  }
+
   function ensureStyles() {
     if (document.getElementById('logConversationsSupabaseStyles')) return;
 
@@ -187,8 +225,9 @@
     style.id = 'logConversationsSupabaseStyles';
     style.textContent = `
       .logConversationsLiveBadge{display:inline-flex;align-items:center;justify-content:center;min-height:26px;border-radius:999px;padding:0 10px;background:#eaf8f1;color:#10a66a;font-size:11px;font-weight:950;letter-spacing:.02em}.logConversationsLiveBadge.is-demo{background:#fff7ed;color:#c05621}.logConversationLiveEmpty{padding:18px;border-radius:15px;background:#f7faff;color:#697386;font-size:13px;font-weight:750;text-align:center}.logConversationLiveError{padding:14px;border-radius:15px;background:#fff1f1;color:#b42318;font-size:13px;font-weight:750}.logConversationSlide__loading{padding:16px;border-radius:5px;background:#fff;color:#697386;font-size:13px;font-weight:800}.logConversationSlide__error{padding:16px;border-radius:5px;background:#fff1f1;color:#b42318;font-size:13px;font-weight:800}
-      .logConversationRow--attention{background:#e9fbf5!important}.logConversationRow--attention td{background:#e9fbf5!important}.logConversationAlertCell{display:flex;align-items:flex-start;gap:8px}.logConversationAlertBadge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(229,57,53,.24);flex:0 0 auto}.logConversationMessageMeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.logConversationNeedsReply{display:inline-flex;align-items:center;min-height:20px;border-radius:999px;background:#e53935;color:#fff;padding:0 7px;font-size:10px;font-weight:950;letter-spacing:.02em}.protocolSidebarNotify{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;margin-left:auto;padding:0 6px;box-shadow:0 6px 14px rgba(229,57,53,.22)}
+      .logConversationRow--attention{background:#e9fbf5!important}.logConversationRow--attention td{background:#e9fbf5!important}.logConversationAlertCell{display:flex;align-items:flex-start;gap:8px}.logConversationAlertBadge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(229,57,53,.24);flex:0 0 auto}.logConversationMessageMeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px}.logConversationNeedsReply{display:inline-flex;align-items:center;min-height:20px;border-radius:5px;background:#e53935;color:#fff;padding:0 7px;font-size:10px;font-weight:950;letter-spacing:.02em}.protocolSidebarNotify{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;margin-left:auto;padding:0 6px;box-shadow:0 6px 14px rgba(229,57,53,.22)}
       .logConversationSlide__panel{width:80vw!important;max-width:80vw!important;border-radius:5px 0 0 5px!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}.logConversationSlide__header{flex:0 0 auto!important}.logConversationSlide__content{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding:14px!important}.logConversationStatusRow{flex:0 0 auto}.logConversationDetailGrid{flex:1 1 auto;min-height:0;height:100%;display:grid;grid-template-columns:minmax(0,1fr)minmax(320px,360px);gap:14px}.logConversationBox{border-radius:5px!important;min-height:0;display:flex;flex-direction:column;overflow:hidden}.logConversationBox--chat{min-height:0}.logConversationBox--data{min-height:0}.logConversationBox__head{flex:0 0 auto}.logConversationChat{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationReply{flex:0 0 auto;border-top:1px solid rgba(15,23,42,.08);padding-top:10px;margin-top:10px}.logConversationDataList{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationBox--data .logConversationBox__head{margin-bottom:8px}.logConversationBubble{border-radius:5px!important}.logConversationBubble--customer{justify-self:start;background:#f6f8fb!important;border:1px solid #dde1e8!important}.logConversationBubble--operator{justify-self:end;background:#2479ff!important;color:#fff!important}.logConversationBubble--operator p,.logConversationBubble--operator strong,.logConversationBubble--operator small{color:#fff!important}.logConversationReply textarea{min-height:82px!important;max-height:120px!important;resize:none!important;border-radius:5px!important}.logConversationReply__actions .btn{border-radius:5px!important}@media(max-width:980px){.logConversationSlide__panel{width:100vw!important;max-width:100vw!important;border-radius:0!important}.logConversationDetailGrid{grid-template-columns:1fr}.logConversationBox--data{max-height:34vh}}
+      #logConversationsTbody td{vertical-align:top}.logClamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.28}.logClampStrong{font-weight:950;color:#232a35}.logClampMuted{font-size:12px;font-weight:780;color:#657187}.logConversationVerified{display:inline-flex!important;align-items:center;gap:5px;min-height:22px;border-radius:5px!important;padding:0 7px!important;font-size:11px!important;font-weight:950!important;line-height:1!important;color:#fff!important;margin-top:5px}.logConversationVerified--yes{background:#12a66a!important}.logConversationVerified--no{background:#e53935!important}.logVerifyIcon{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;font-size:10px;font-weight:950}.logBadge{border-radius:5px!important}.logConversationRelative{font-size:12px;font-weight:950}.logConversationRelative--today{color:#12a66a}.logConversationRelative--yesterday{color:#2479ff}.logConversationRelative--old{color:#657187}.logConversationTime{font-size:12px;font-weight:850;color:#7a8496}.logConversationCount{display:block;margin-top:4px;font-size:12px;font-weight:950;color:#59657a}.logConversationOrder em{font-style:normal;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.logConversationMessage{font-weight:900;color:#232a35}.logConversationMessageMeta .logConversationNeedsReply{margin-right:2px}
     `;
     document.head.appendChild(style);
   }
@@ -273,16 +312,18 @@
     tbody.innerHTML = items.map(item => {
       const unread = unreadCount(item);
       const needsAttention = unread > 0;
+      const lastMessageDate = messageDateParts(item.last_message_at);
+
       return `
         <tr class="${needsAttention ? 'logConversationRow--attention' : ''}">
-          <td><div class="logConversationAlertCell">${needsAttention ? `<span class="logConversationAlertBadge">${unread}</span>` : ''}<div><strong>${esc(item.conversation_id)}</strong><br><span>${esc(shortDate(item.created_at))}</span></div></div></td>
-          <td>${esc(item.customer_name)}<br><span>${esc(item.customer_email)}</span><br><span class="logConversationVerified ${item.is_verified ? 'logConversationVerified--yes' : 'logConversationVerified--no'}">${item.is_verified ? 'Verificada' : 'No verificada'}</span></td>
-          <td><div class="logConversationOrder"><strong>${esc(item.tracking_id)} · ${esc(item.shopify_order_name)}</strong><em>${esc(item.product_name)}</em><em>${esc(item.shipping_address)}</em></div></td>
-          <td>${esc(item.shipping_status)}<br><span>${esc(item.logistics_status)}</span><br><span>${esc(item.payment_status)}</span></td>
-          <td>${esc(item.reason)}<br><span>Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span></td>
-          <td><div class="logConversationMessage">${esc(item.last_message)}</div><span class="logConversationMessageMeta">${needsAttention ? '<em class="logConversationNeedsReply">Nuevo cliente</em>' : ''}<span>${esc(shortDate(item.last_message_at))} · ${Number(item.messages_count || 0)} mensajes</span></span></td>
+          <td><div class="logConversationAlertCell">${needsAttention ? `<span class="logConversationAlertBadge">${unread}</span>` : ''}<div><strong class="logClamp logClampStrong">${esc(item.conversation_id)}</strong><span class="logClampMuted">${esc(shortDate(item.created_at))}</span></div></div></td>
+          <td><strong class="logClamp logClampStrong">${esc(item.customer_name)}</strong><span class="logClamp logClampMuted">${esc(item.customer_email)}</span>${verificationBadge(item)}</td>
+          <td><div class="logConversationOrder"><strong class="logClamp logClampStrong">${esc(item.tracking_id)} · ${esc(item.shopify_order_name)}</strong><em>${esc(item.product_name)}</em><em>${esc(item.shipping_address)}</em></div></td>
+          <td><strong class="logClamp logClampStrong">${esc(item.shipping_status)}</strong><span class="logClamp logClampMuted">${esc(item.logistics_status)}</span><span class="logClamp logClampMuted">${esc(item.payment_status)}</span></td>
+          <td><strong class="logClamp logClampStrong">${esc(item.reason)}</strong><span class="logClampMuted">Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span></td>
+          <td><div class="logConversationMessage logClamp">${esc(item.last_message)}</div><div class="logConversationMessageMeta">${needsAttention ? '<em class="logConversationNeedsReply">Requiere respuesta</em>' : ''}<span class="logConversationRelative logConversationRelative--${esc(lastMessageDate.cls)}">${esc(lastMessageDate.label)}</span>${lastMessageDate.time ? `<span class="logConversationTime">${esc(lastMessageDate.time)}</span>` : ''}</div><span class="logConversationCount">${Number(item.messages_count || 0)} mensajes</span></td>
           <td><span class="logBadge ${statusClasses[item.status] || 'logBadge--gray'}">${esc(statusLabels[item.status] || item.status)}</span></td>
-          <td>${esc(item.assigned_to || 'Sin asignar')}</td>
+          <td><span class="logClamp logClampStrong">${esc(item.assigned_to || 'Sin asignar')}</span></td>
           <td><button class="logActionBtn" type="button" data-log-open-conversation="${esc(item.conversation_id)}" data-log-open-conversation-real="1">Ver</button></td>
         </tr>
       `;
@@ -425,7 +466,7 @@
       <div class="logConversationStatusRow">
         <span class="logBadge ${statusClasses[item.status] || 'logBadge--gray'}">${esc(statusLabels[item.status] || item.status)}</span>
         <span class="logBadge ${item.priority === 'alta' ? 'logBadge--red' : item.priority === 'media' ? 'logBadge--orange' : 'logBadge--gray'}">Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span>
-        <span class="logConversationVerified ${item.is_verified ? 'logConversationVerified--yes' : 'logConversationVerified--no'}">${item.is_verified ? 'Verificada por tracking + email' : 'Pendiente de verificación'}</span>
+        ${verificationBadge(item).replace('Verificada', 'Verificada por tracking + email')}
       </div>
       <div class="logConversationDetailGrid">
         <section class="logConversationBox logConversationBox--chat">
