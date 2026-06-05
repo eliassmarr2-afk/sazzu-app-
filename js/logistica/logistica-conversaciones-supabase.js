@@ -8,6 +8,7 @@
   const READY_FLAG = '__protocolLogisticaConversacionesSupabaseReady';
   const LIST_POLLING_MS = 10000;
   const DETAIL_POLLING_MS = 5000;
+  const TABLE_PAGE_SIZE = 5;
 
   const state = {
     items: [],
@@ -17,6 +18,7 @@
     query: '',
     limit: 50,
     offset: 0,
+    tableLimit: TABLE_PAGE_SIZE,
     isLive: false,
     activeConversationId: '',
     listPollTimer: null,
@@ -32,10 +34,17 @@
   };
 
   const statusClasses = {
-    nueva: 'logBadge--blue',
-    en_proceso: 'logBadge--orange',
-    respondida: 'logBadge--green',
-    cerrada: 'logBadge--gray'
+    nueva: 'logStatusPill--blue',
+    en_proceso: 'logStatusPill--orange',
+    respondida: 'logStatusPill--green',
+    cerrada: 'logStatusPill--gray'
+  };
+
+  const statusIcons = {
+    nueva: '•',
+    en_proceso: '↻',
+    respondida: '✓',
+    cerrada: '✓'
   };
 
   const priorityLabels = {
@@ -138,9 +147,9 @@
   }
 
   function unreadCount(item) {
+    if (item?.last_message_sender_type !== 'customer') return 0;
     const explicit = Number(item?.unread_count || item?.customer_unread_count || item?.new_customer_messages_count || 0);
-    if (explicit > 0) return explicit;
-    return item?.last_message_sender_type === 'customer' ? 1 : 0;
+    return explicit > 0 ? explicit : 1;
   }
 
   function attentionCount(items) {
@@ -189,11 +198,12 @@
       const currentTime = dateMs(item.last_message_at || item.updated_at || item.created_at);
       const previousTime = dateMs(previous.last_message_at || previous.updated_at || previous.created_at);
       const base = currentTime >= previousTime ? item : previous;
+      const totalUnread = unreadCount(previous) + unreadCount(item);
 
       grouped.set(key, {
         ...base,
         messages_count: Number(previous.messages_count || 0) + Number(item.messages_count || 0),
-        unread_count: unreadCount(previous) + unreadCount(item),
+        unread_count: base.last_message_sender_type === 'customer' ? totalUnread : 0,
         __group_count: Number(previous.__group_count || 1) + 1
       });
     });
@@ -218,6 +228,20 @@
     return `<span class="logConversationVerified ${verified ? 'logConversationVerified--yes' : 'logConversationVerified--no'}"><span class="logVerifyIcon">${verified ? '✓' : '×'}</span>${verified ? 'Verificada' : 'No verificada'}</span>`;
   }
 
+  function statusBadge(item) {
+    const status = item?.status || 'nueva';
+    const cls = statusClasses[status] || 'logStatusPill--gray';
+    const icon = statusIcons[status] || '•';
+    const label = statusLabels[status] || status;
+    return `<span class="logStatusPill ${cls}"><span class="logStatusIcon">${esc(icon)}</span>${esc(label)}</span>`;
+  }
+
+  function responsibleBadge(item) {
+    const responsible = item?.assigned_to || 'Sin asignar';
+    const assigned = Boolean(item?.assigned_to);
+    return `<span class="logResponsiblePill ${assigned ? 'logResponsiblePill--assigned' : 'logResponsiblePill--empty'}"><span class="logResponsibleIcon">${assigned ? '✓' : '•'}</span>${esc(responsible)}</span>`;
+  }
+
   function ensureStyles() {
     if (document.getElementById('logConversationsSupabaseStyles')) return;
 
@@ -225,9 +249,9 @@
     style.id = 'logConversationsSupabaseStyles';
     style.textContent = `
       .logConversationsLiveBadge{display:inline-flex;align-items:center;justify-content:center;min-height:26px;border-radius:999px;padding:0 10px;background:#eaf8f1;color:#10a66a;font-size:11px;font-weight:950;letter-spacing:.02em}.logConversationsLiveBadge.is-demo{background:#fff7ed;color:#c05621}.logConversationLiveEmpty{padding:18px;border-radius:15px;background:#f7faff;color:#697386;font-size:13px;font-weight:750;text-align:center}.logConversationLiveError{padding:14px;border-radius:15px;background:#fff1f1;color:#b42318;font-size:13px;font-weight:750}.logConversationSlide__loading{padding:16px;border-radius:5px;background:#fff;color:#697386;font-size:13px;font-weight:800}.logConversationSlide__error{padding:16px;border-radius:5px;background:#fff1f1;color:#b42318;font-size:13px;font-weight:800}
-      .logConversationRow--attention{background:#e9fbf5!important}.logConversationRow--attention td{background:#e9fbf5!important}.logConversationAlertCell{display:flex;align-items:flex-start;gap:8px}.logConversationAlertBadge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(229,57,53,.24);flex:0 0 auto}.logConversationMessageMeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px}.logConversationNeedsReply{display:inline-flex;align-items:center;min-height:20px;border-radius:5px;background:#e53935;color:#fff;padding:0 7px;font-size:10px;font-weight:950;letter-spacing:.02em}.protocolSidebarNotify{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#e53935;color:#fff;font-size:11px;font-weight:950;margin-left:auto;padding:0 6px;box-shadow:0 6px 14px rgba(229,57,53,.22)}
-      .logConversationSlide__panel{width:80vw!important;max-width:80vw!important;border-radius:5px 0 0 5px!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}.logConversationSlide__header{flex:0 0 auto!important}.logConversationSlide__content{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding:14px!important}.logConversationStatusRow{flex:0 0 auto}.logConversationDetailGrid{flex:1 1 auto;min-height:0;height:100%;display:grid;grid-template-columns:minmax(0,1fr)minmax(320px,360px);gap:14px}.logConversationBox{border-radius:5px!important;min-height:0;display:flex;flex-direction:column;overflow:hidden}.logConversationBox--chat{min-height:0}.logConversationBox--data{min-height:0}.logConversationBox__head{flex:0 0 auto}.logConversationChat{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationReply{flex:0 0 auto;border-top:1px solid rgba(15,23,42,.08);padding-top:10px;margin-top:10px}.logConversationDataList{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationBox--data .logConversationBox__head{margin-bottom:8px}.logConversationBubble{border-radius:5px!important}.logConversationBubble--customer{justify-self:start;background:#f6f8fb!important;border:1px solid #dde1e8!important}.logConversationBubble--operator{justify-self:end;background:#2479ff!important;color:#fff!important}.logConversationBubble--operator p,.logConversationBubble--operator strong,.logConversationBubble--operator small{color:#fff!important}.logConversationReply textarea{min-height:82px!important;max-height:120px!important;resize:none!important;border-radius:5px!important}.logConversationReply__actions .btn{border-radius:5px!important}@media(max-width:980px){.logConversationSlide__panel{width:100vw!important;max-width:100vw!important;border-radius:0!important}.logConversationDetailGrid{grid-template-columns:1fr}.logConversationBox--data{max-height:34vh}}
-      #logConversationsTbody td{vertical-align:top}.logClamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.28}.logClampStrong{font-weight:950;color:#232a35}.logClampMuted{font-size:12px;font-weight:780;color:#657187}.logConversationVerified{display:inline-flex!important;align-items:center;gap:5px;min-height:22px;border-radius:5px!important;padding:0 7px!important;font-size:11px!important;font-weight:950!important;line-height:1!important;color:#fff!important;margin-top:5px}.logConversationVerified--yes{background:#12a66a!important}.logConversationVerified--no{background:#e53935!important}.logVerifyIcon{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;font-size:10px;font-weight:950}.logBadge{border-radius:5px!important}.logConversationRelative{font-size:12px;font-weight:950}.logConversationRelative--today{color:#12a66a}.logConversationRelative--yesterday{color:#2479ff}.logConversationRelative--old{color:#657187}.logConversationTime{font-size:12px;font-weight:850;color:#7a8496}.logConversationCount{display:block;margin-top:4px;font-size:12px;font-weight:950;color:#59657a}.logConversationOrder em{font-style:normal;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.logConversationMessage{font-weight:900;color:#232a35}.logConversationMessageMeta .logConversationNeedsReply{margin-right:2px}
+      .logPanel[data-log-panel="conversaciones"]{width:calc(100vw - 88px)!important;max-width:none!important;margin-right:0!important}.logPanel[data-log-panel="conversaciones"]>.logCard{width:100%!important;max-width:none!important;border-radius:5px 0 0 5px!important}.logPanel[data-log-panel="conversaciones"] .logTableWrap{overflow-x:auto}.logPanel[data-log-panel="conversaciones"] .logTable{min-width:1260px}.logConversationRow--attention{background:#e9fbf5!important}.logConversationRow--attention td{background:#e9fbf5!important}.logConversationAlertCell{display:flex;align-items:flex-start;gap:8px}.logConversationAlertBadge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:999px;background:#e53935;color:#fff!important;font-size:11px;font-weight:950;box-shadow:0 6px 14px rgba(229,57,53,.24);flex:0 0 auto}.logConversationMessageMeta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px}.logConversationNeedsReply{display:inline-flex;align-items:center;min-height:20px;border-radius:5px;background:#e53935;color:#fff!important;padding:0 7px;font-size:10px;font-weight:950;letter-spacing:.02em}.protocolSidebarNotify{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#e53935;color:#fff!important;font-size:11px;font-weight:950;margin-left:auto;padding:0 6px;box-shadow:0 6px 14px rgba(229,57,53,.22)}
+      .logConversationSlide__panel{width:80vw!important;max-width:80vw!important;border-radius:5px 0 0 5px!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}.logConversationSlide__header{flex:0 0 auto!important}.logConversationSlide__content{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding:14px!important}.logConversationStatusRow{flex:0 0 auto}.logConversationDetailGrid{flex:1 1 auto;min-height:0;height:100%;display:grid;grid-template-columns:minmax(0,1fr)minmax(320px,360px);gap:14px}.logConversationBox{border-radius:5px!important;min-height:0;display:flex;flex-direction:column;overflow:hidden}.logConversationBox--chat{min-height:0}.logConversationBox--data{min-height:0}.logConversationBox__head{flex:0 0 auto}.logConversationChat{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationReply{flex:0 0 auto;border-top:1px solid rgba(15,23,42,.08);padding-top:10px;margin-top:10px}.logConversationDataList{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin}.logConversationBox--data .logConversationBox__head{margin-bottom:8px}.logConversationBubble{border-radius:5px!important}.logConversationBubble--customer{justify-self:start;background:#f6f8fb!important;border:1px solid #dde1e8!important}.logConversationBubble--operator{justify-self:end;background:#2479ff!important;color:#fff!important}.logConversationBubble--operator p,.logConversationBubble--operator strong,.logConversationBubble--operator small{color:#fff!important}.logConversationReply textarea{min-height:82px!important;max-height:120px!important;resize:none!important;border-radius:5px!important}.logConversationReply__actions .btn{border-radius:5px!important}@media(max-width:980px){.logConversationSlide__panel{width:100vw!important;max-width:100vw!important;border-radius:0!important}.logConversationDetailGrid{grid-template-columns:1fr}.logConversationBox--data{max-height:34vh}.logPanel[data-log-panel="conversaciones"]{width:100%!important}}
+      #logConversationsTbody td{vertical-align:top}#logConversationsTbody tr[data-log-row-open]{cursor:pointer;transition:background .18s ease,transform .18s ease,box-shadow .18s ease}#logConversationsTbody tr[data-log-row-open]:hover td{background:#f7fbff!important}#logConversationsTbody tr[data-log-row-open]:hover td:first-child{border-radius:5px 0 0 5px}#logConversationsTbody tr[data-log-row-open]:hover td:last-child{border-radius:0 5px 5px 0}.logConversationRow--attention:hover td{background:#def7ee!important}.logClamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.28}.logClampStrong{font-weight:950;color:#232a35}.logClampMuted{font-size:12px;font-weight:780;color:#657187}.logConversationVerified,.logStatusPill,.logResponsiblePill{display:inline-flex!important;align-items:center;gap:5px;min-height:22px;border-radius:5px!important;padding:0 7px!important;font-size:11px!important;font-weight:950!important;line-height:1!important;color:#fff!important}.logConversationVerified--yes,.logStatusPill--green,.logResponsiblePill--assigned{background:#12a66a!important}.logConversationVerified--no{background:#e53935!important}.logStatusPill--blue{background:#2479ff!important}.logStatusPill--orange{background:#ff8a00!important}.logStatusPill--gray,.logResponsiblePill--empty{background:#6b7280!important}.logVerifyIcon,.logStatusIcon,.logResponsibleIcon{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff!important;font-size:10px;font-weight:950}.logBadge{border-radius:5px!important}.logConversationRelative{font-size:12px;font-weight:950}.logConversationRelative--today{color:#12a66a}.logConversationRelative--yesterday{color:#2479ff}.logConversationRelative--old{color:#657187}.logConversationTime{font-size:12px;font-weight:850;color:#7a8496}.logConversationCount{display:block;margin-top:4px;font-size:12px;font-weight:950;color:#59657a}.logConversationOrder em{font-style:normal;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.logConversationMessage{font-weight:900;color:#232a35}.logConversationMessageMeta .logConversationNeedsReply{margin-right:2px}.logActionBtn--ghost{background:transparent!important;color:#2479ff!important;border:0!important;box-shadow:none!important;padding:0!important;display:inline-flex!important;align-items:center!important;gap:5px!important;font-size:12px!important;font-weight:950!important}.logActionArrow{display:inline-flex;transition:transform .18s ease}.logActionBtn--ghost:hover .logActionArrow,#logConversationsTbody tr[data-log-row-open]:hover .logActionArrow{transform:translateX(4px)}.logConversationMoreRow td{background:#fff!important;padding:12px!important;text-align:center}.logConversationMoreBtn{border:1px solid #dde6f3;background:#fff;border-radius:5px;color:#2479ff;font-size:12px;font-weight:950;padding:9px 14px;cursor:pointer}.logConversationMoreBtn:hover{background:#f7fbff}
     `;
     document.head.appendChild(style);
   }
@@ -308,26 +332,31 @@
     }
 
     setSidebarNotification(attentionCount(items));
+    const visibleItems = items.slice(0, state.tableLimit);
 
-    tbody.innerHTML = items.map(item => {
+    tbody.innerHTML = visibleItems.map(item => {
       const unread = unreadCount(item);
       const needsAttention = unread > 0;
       const lastMessageDate = messageDateParts(item.last_message_at);
 
       return `
-        <tr class="${needsAttention ? 'logConversationRow--attention' : ''}">
+        <tr class="${needsAttention ? 'logConversationRow--attention' : ''}" data-log-row-open="${esc(item.conversation_id)}">
           <td><div class="logConversationAlertCell">${needsAttention ? `<span class="logConversationAlertBadge">${unread}</span>` : ''}<div><strong class="logClamp logClampStrong">${esc(item.conversation_id)}</strong><span class="logClampMuted">${esc(shortDate(item.created_at))}</span></div></div></td>
           <td><strong class="logClamp logClampStrong">${esc(item.customer_name)}</strong><span class="logClamp logClampMuted">${esc(item.customer_email)}</span>${verificationBadge(item)}</td>
           <td><div class="logConversationOrder"><strong class="logClamp logClampStrong">${esc(item.tracking_id)} · ${esc(item.shopify_order_name)}</strong><em>${esc(item.product_name)}</em><em>${esc(item.shipping_address)}</em></div></td>
           <td><strong class="logClamp logClampStrong">${esc(item.shipping_status)}</strong><span class="logClamp logClampMuted">${esc(item.logistics_status)}</span><span class="logClamp logClampMuted">${esc(item.payment_status)}</span></td>
           <td><strong class="logClamp logClampStrong">${esc(item.reason)}</strong><span class="logClampMuted">Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span></td>
           <td><div class="logConversationMessage logClamp">${esc(item.last_message)}</div><div class="logConversationMessageMeta">${needsAttention ? '<em class="logConversationNeedsReply">Requiere respuesta</em>' : ''}<span class="logConversationRelative logConversationRelative--${esc(lastMessageDate.cls)}">${esc(lastMessageDate.label)}</span>${lastMessageDate.time ? `<span class="logConversationTime">${esc(lastMessageDate.time)}</span>` : ''}</div><span class="logConversationCount">${Number(item.messages_count || 0)} mensajes</span></td>
-          <td><span class="logBadge ${statusClasses[item.status] || 'logBadge--gray'}">${esc(statusLabels[item.status] || item.status)}</span></td>
-          <td><span class="logClamp logClampStrong">${esc(item.assigned_to || 'Sin asignar')}</span></td>
-          <td><button class="logActionBtn" type="button" data-log-open-conversation="${esc(item.conversation_id)}" data-log-open-conversation-real="1">Ver</button></td>
+          <td>${statusBadge(item)}</td>
+          <td>${responsibleBadge(item)}</td>
+          <td><button class="logActionBtn logActionBtn--ghost" type="button" data-log-open-conversation="${esc(item.conversation_id)}" data-log-open-conversation-real="1">Ver más <span class="logActionArrow">→</span></button></td>
         </tr>
       `;
-    }).join('');
+    }).join('') + (items.length > visibleItems.length ? `
+      <tr class="logConversationMoreRow">
+        <td colspan="9"><button class="logConversationMoreBtn" type="button" data-log-table-more="1">Mostrar 5 conversaciones más · ${items.length - visibleItems.length} restantes</button></td>
+      </tr>
+    ` : '');
   }
 
   async function loadConversations(options) {
@@ -464,8 +493,8 @@
 
     content.innerHTML = `
       <div class="logConversationStatusRow">
-        <span class="logBadge ${statusClasses[item.status] || 'logBadge--gray'}">${esc(statusLabels[item.status] || item.status)}</span>
-        <span class="logBadge ${item.priority === 'alta' ? 'logBadge--red' : item.priority === 'media' ? 'logBadge--orange' : 'logBadge--gray'}">Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span>
+        ${statusBadge(item)}
+        <span class="logStatusPill ${item.priority === 'alta' ? 'logStatusPill--red' : item.priority === 'media' ? 'logStatusPill--orange' : 'logStatusPill--gray'}"><span class="logStatusIcon">!</span>Prioridad ${esc(priorityLabels[item.priority] || item.priority)}</span>
         ${verificationBadge(item).replace('Verificada', 'Verificada por tracking + email')}
       </div>
       <div class="logConversationDetailGrid">
@@ -542,12 +571,24 @@
     main.dataset.logisticaConversacionesSupabaseBound = '1';
 
     main.addEventListener('click', event => {
+      const more = event.target.closest('[data-log-table-more]');
+      if (more) {
+        event.preventDefault();
+        event.stopPropagation();
+        state.tableLimit += TABLE_PAGE_SIZE;
+        renderTable(state.visibleItems);
+        return;
+      }
+
       const open = event.target.closest('[data-log-open-conversation]');
-      if (open && open.dataset.logOpenConversationReal === '1') {
+      const row = event.target.closest('[data-log-row-open]');
+      const id = open?.dataset.logOpenConversation || row?.dataset.logRowOpen;
+
+      if (id) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        openConversation(open.dataset.logOpenConversation);
+        openConversation(id);
         return;
       }
 
@@ -559,11 +600,17 @@
     main.addEventListener('input', event => {
       if (!event.target.closest('#logConversationsSearch')) return;
       window.clearTimeout(window.__logConversationsLiveSearchTimer);
-      window.__logConversationsLiveSearchTimer = window.setTimeout(() => loadConversations({ silent: false }), 260);
+      window.__logConversationsLiveSearchTimer = window.setTimeout(() => {
+        state.tableLimit = TABLE_PAGE_SIZE;
+        loadConversations({ silent: false });
+      }, 260);
     });
 
     main.addEventListener('change', event => {
-      if (event.target.closest('#logConversationsStatus')) loadConversations({ silent: false });
+      if (event.target.closest('#logConversationsStatus')) {
+        state.tableLimit = TABLE_PAGE_SIZE;
+        loadConversations({ silent: false });
+      }
     });
 
     main.addEventListener('submit', event => {
