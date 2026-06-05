@@ -1,6 +1,6 @@
 /* ==========================================================
    Protocol Data · Logística · Conversaciones · Supabase real
-   Fase 4E.1: tabla + slide operativo con alertas y polling.
+   Fase 4E.1: tabla + slide operativo con alertas, polling y filas por conversación.
    ========================================================== */
 
 (function () {
@@ -11,6 +11,7 @@
 
   const state = {
     items: [],
+    visibleItems: [],
     summary: null,
     status: 'todos',
     query: '',
@@ -120,6 +121,65 @@
     return [item.updated_at || '', item.last_message_at || '', messages.length, last?.message_id || ''].join('|');
   }
 
+  function dateMs(value) {
+    const date = new Date(value || 0);
+    return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+  }
+
+  function conversationRowKey(item) {
+    const email = String(item?.customer_email || '').trim().toLowerCase();
+    if (email) return `email:${email}`;
+
+    const tracking = String(item?.tracking_id || '').trim().toLowerCase();
+    if (tracking) return `tracking:${tracking}`;
+
+    return `conversation:${String(item?.conversation_id || '').trim()}`;
+  }
+
+  function mergeConversationRows(items) {
+    const grouped = new Map();
+
+    (items || []).forEach(item => {
+      const key = conversationRowKey(item);
+      const previous = grouped.get(key);
+
+      if (!previous) {
+        grouped.set(key, {
+          ...item,
+          messages_count: Number(item.messages_count || 0),
+          unread_count: unreadCount(item),
+          __group_count: 1
+        });
+        return;
+      }
+
+      const currentTime = dateMs(item.last_message_at || item.updated_at || item.created_at);
+      const previousTime = dateMs(previous.last_message_at || previous.updated_at || previous.created_at);
+      const base = currentTime >= previousTime ? item : previous;
+
+      grouped.set(key, {
+        ...base,
+        messages_count: Number(previous.messages_count || 0) + Number(item.messages_count || 0),
+        unread_count: unreadCount(previous) + unreadCount(item),
+        __group_count: Number(previous.__group_count || 1) + 1
+      });
+    });
+
+    return Array.from(grouped.values()).sort((a, b) => dateMs(b.last_message_at || b.updated_at || b.created_at) - dateMs(a.last_message_at || a.updated_at || a.created_at));
+  }
+
+  function buildVisibleSummary(items) {
+    return (items || []).reduce((acc, item) => {
+      const status = item.status || 'nueva';
+      if (status === 'nueva') acc.nuevas += 1;
+      if (status === 'en_proceso') acc.en_proceso += 1;
+      if (status === 'respondida') acc.respondidas += 1;
+      if (status === 'cerrada') acc.cerradas += 1;
+      if (!item.is_verified) acc.no_verificadas += 1;
+      return acc;
+    }, { nuevas: 0, en_proceso: 0, respondidas: 0, cerradas: 0, no_verificadas: 0 });
+  }
+
   function ensureStyles() {
     if (document.getElementById('logConversationsSupabaseStyles')) return;
 
@@ -208,10 +268,9 @@
       return;
     }
 
-    const orderedItems = items.slice().sort((a, b) => new Date(b.last_message_at || b.updated_at || b.created_at || 0) - new Date(a.last_message_at || a.updated_at || a.created_at || 0));
-    setSidebarNotification(attentionCount(orderedItems));
+    setSidebarNotification(attentionCount(items));
 
-    tbody.innerHTML = orderedItems.map(item => {
+    tbody.innerHTML = items.map(item => {
       const unread = unreadCount(item);
       const needsAttention = unread > 0;
       return `
@@ -250,11 +309,12 @@
       });
 
       state.items = Array.isArray(data?.items) ? data.items : [];
-      state.summary = data?.summary || null;
+      state.visibleItems = mergeConversationRows(state.items);
+      state.summary = buildVisibleSummary(state.visibleItems);
       state.isLive = true;
 
       renderSummary(state.summary);
-      renderTable(state.items);
+      renderTable(state.visibleItems);
       setLiveBadge('Supabase activo', true);
     } catch (error) {
       console.warn('[Conversaciones Supabase]', error);
