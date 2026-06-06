@@ -62,6 +62,7 @@
           <button class="logTab is-active" type="button" data-log-tab="resumen">Resumen</button>
           <button class="logTab" type="button" data-log-tab="simulador">Simulador CP</button>
           <button class="logTab" type="button" data-log-tab="pedidos">Pedidos</button>
+          <button class="logTab" type="button" data-log-tab="conversaciones">Conversaciones</button>
           <button class="logTab" type="button" data-log-tab="reglas">Reglas de envío</button>
           <button class="logTab" type="button" data-log-tab="codigos">Códigos postales</button>
           <button class="logTab" type="button" data-log-tab="excepciones">Excepciones</button>
@@ -157,6 +158,48 @@
                   </tr>
                 </thead>
                 <tbody id="logPedidosTbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="logPanel" data-log-panel="conversaciones">
+          <article class="logCard logConversationsCard">
+            <div class="logCard__head logCard__head--toolbar">
+              <div>
+                <span class="u-sectionLabel">SOPORTE LOGÍSTICO</span>
+                <h2>Conversaciones con clientes</h2>
+              </div>
+              <div class="logConversationsToolbar">
+                <input id="logConversationsSearch" class="logInput" type="search" placeholder="Buscar email, tracking, cliente, producto.">
+                <select id="logConversationsStatus" class="logSelect" aria-label="Filtrar conversaciones por estado">
+                  <option value="todos">Todos</option>
+                  <option value="nueva">Nuevas</option>
+                  <option value="en_proceso">En proceso</option>
+                  <option value="respondida">Respondidas</option>
+                  <option value="cerrada">Cerradas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="logConversationsSummary" id="logConversationsSummary" aria-label="Resumen de conversaciones"></div>
+
+            <div class="logTableWrap">
+              <table class="logTable logConversationsTable" aria-label="Conversaciones de soporte logístico">
+                <thead>
+                  <tr>
+                    <th>Conversación</th>
+                    <th>Cliente</th>
+                    <th>Compra asociada</th>
+                    <th>Entrega / pago</th>
+                    <th>Motivo</th>
+                    <th>Último mensaje</th>
+                    <th>Estado</th>
+                    <th>Responsable</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="logConversationsTbody"></tbody>
               </table>
             </div>
           </article>
@@ -264,254 +307,221 @@
 
                 <div class="logPedidosForm__grid">
                   <div class="logPedidosField logPedidosField--full">
-                    <label for="logPedidoEditAddress">Domicilio</label>
-                    <input id="logPedidoEditAddress" type="text" placeholder="Domicilio de entrega">
+                    <label for="logPedidoEditAddress">Domicilio de entrega</label>
+                    <input id="logPedidoEditAddress" type="text" placeholder="Ej: Palermo, 1414, Capital Federal">
                   </div>
 
                   <div class="logPedidosField logPedidosField--full">
                     <label for="logPedidoEditProduct">Producto</label>
-                    <input id="logPedidoEditProduct" type="text" placeholder="Producto comprado">
+                    <input id="logPedidoEditProduct" type="text" placeholder="Ej: Sombrero Mundialista Argentina">
                   </div>
 
                   <div class="logPedidosField">
                     <label for="logPedidoEditPaymentStatus">Pago</label>
                     <select id="logPedidoEditPaymentStatus">
-                      <option value="pagado">Pagado</option>
-                      <option value="no_pagado">No pagado</option>
+                      <option value="paid">Pagado</option>
+                      <option value="cash_on_delivery">No pagado · cobra repartidor</option>
                     </select>
                   </div>
 
                   <div class="logPedidosField">
-                    <label for="logPedidoEditAmountToCollect">Monto a cobrar</label>
-                    <input id="logPedidoEditAmountToCollect" type="text" placeholder="$0,00">
+                    <label for="logPedidoEditAmount">Monto a cobrar</label>
+                    <input id="logPedidoEditAmount" type="number" min="0" step="1" placeholder="0">
                   </div>
 
                   <div class="logPedidosField">
-                    <label for="logPedidoEditShippingStatus">Envío</label>
-                    <select id="logPedidoEditShippingStatus">
-                      <option value="gratis">Gratis</option>
-                      <option value="pagado">Pagado</option>
-                    </select>
+                    <label for="logPedidoEditShippingCost">Costo de envío</label>
+                    <input id="logPedidoEditShippingCost" type="number" min="0" step="1" placeholder="0">
                   </div>
 
                   <div class="logPedidosField">
-                    <label for="logPedidoEditShippingValue">Valor envío</label>
-                    <input id="logPedidoEditShippingValue" type="text" placeholder="$0,00">
-                  </div>
-                </div>
-              </section>
-
-              <section class="logPedidosForm__card">
-                <div class="logPedidosForm__cardHead">
-                  <strong>Incidencia y observaciones</strong>
-                  <span>Información pública y privada del responsable.</span>
-                </div>
-
-                <div class="logPedidosForm__grid">
-                  <label class="logPedidosCheck logPedidosField--full">
-                    <input id="logPedidoEditIssueActive" type="checkbox">
-                    <span>Pedido intervenido</span>
-                  </label>
-
-                  <div class="logPedidosField">
-                    <label for="logPedidoEditIssueStage">Etapa de incidencia</label>
-                    <select id="logPedidoEditIssueStage">
-                      <option value="">Sin etapa</option>
-                      <option value="recibido">Recibido</option>
-                      <option value="despachado">Despachado</option>
-                      <option value="en_camino">En camino</option>
-                      <option value="entregado">Entregado</option>
-                    </select>
+                    <label for="logPedidoEditCourier">Transportadora</label>
+                    <input id="logPedidoEditCourier" type="text" placeholder="Ej: Correo Argentino">
                   </div>
 
                   <div class="logPedidosField">
-                    <label for="logPedidoEditIssueType">Tipo de incidencia</label>
-                    <select id="logPedidoEditIssueType">
-                      <option value="">Sin incidencia</option>
-                      <option value="direccion_incorrecta">Dirección incorrecta</option>
-                      <option value="demora_logistica">Demora logística</option>
-                      <option value="cliente_ausente">Cliente ausente</option>
-                      <option value="problema_transportadora">Problema transportadora</option>
-                      <option value="stock_revisar">Stock a revisar</option>
-                      <option value="otro">Otro</option>
-                    </select>
+                    <label for="logPedidoEditTrackingUrl">URL tracking</label>
+                    <input id="logPedidoEditTrackingUrl" type="url" placeholder="https://...">
+                  </div>
+
+                  <div class="logPedidosField">
+                    <label for="logPedidoEditTrackingNumber">Número de guía</label>
+                    <input id="logPedidoEditTrackingNumber" type="text" placeholder="Ej: CA123456789AR">
                   </div>
 
                   <div class="logPedidosField logPedidosField--full">
-                    <label for="logPedidoEditIssueMessage">Mensaje público de incidencia</label>
-                    <textarea id="logPedidoEditIssueMessage" placeholder="Texto visible dentro de la línea de tiempo"></textarea>
+                    <label for="logPedidoEditCustomerNote">Observación pública</label>
+                    <textarea id="logPedidoEditCustomerNote" placeholder="Mensaje visible para el cliente"></textarea>
                   </div>
 
                   <div class="logPedidosField logPedidosField--full">
-                    <label for="logPedidoEditPublicObservation">Observación pública del responsable</label>
-                    <textarea id="logPedidoEditPublicObservation" placeholder="Texto visible en el slide Observaciones"></textarea>
-                  </div>
-
-                  <div class="logPedidosField logPedidosField--full">
-                    <label for="logPedidoEditInternalObservation">Observación interna</label>
-                    <textarea id="logPedidoEditInternalObservation" placeholder="Solo Protocol Data"></textarea>
+                    <label for="logPedidoEditInternalNote">Nota interna</label>
+                    <textarea id="logPedidoEditInternalNote" placeholder="Solo para operación interna"></textarea>
                   </div>
                 </div>
+
+                <div class="logRuleMessage" id="logPedidosMessage"></div>
               </section>
 
               <div class="logPedidosForm__footer">
-                <button class="btn btn--primary" type="submit">Guardar estado</button>
-                <button class="btn btn--secondary" id="logPedidosSlideCancel" type="button">Cancelar</button>
+                <button class="btn btn--primary" type="submit">Guardar cambios</button>
+                <button class="btn btn--secondary" type="button" id="logPedidosCancel">Cancelar</button>
               </div>
             </form>
           </aside>
         </section>
 
         <section class="logRuleSlide" id="logRuleSlide" aria-hidden="true">
-          <button class="logRuleSlide__overlay" id="logRuleSlideOverlay" type="button" aria-label="Cerrar nueva regla"></button>
+          <button class="logRuleSlide__overlay" id="logRuleSlideOverlay" type="button" aria-label="Cerrar editor de regla"></button>
 
-          <aside class="logRuleSlide__panel" role="dialog" aria-modal="true" aria-label="Nueva regla logística">
+          <aside class="logRuleSlide__panel" role="dialog" aria-modal="true" aria-label="Editor de regla logística">
             <header class="logRuleSlide__header">
-              <button class="logRuleSlide__back" id="logRuleSlideClose" type="button" aria-label="Cerrar">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+              <button id="logRuleSlideClose" type="button" aria-label="Cerrar editor">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
 
-              <div class="logRuleSlide__headerText">
-                <strong>Nueva regla</strong>
-                <span>Define una condición logística para consultas públicas</span>
+              <div class="logRuleSlide__title">
+                <strong id="logRuleSlideTitle">Nueva regla</strong>
+                <span id="logRuleSlideSubtitle">Configuración operativa</span>
               </div>
 
-              <div class="logRuleSlide__ghost" aria-hidden="true"></div>
+              <div style="width:38px" aria-hidden="true"></div>
             </header>
 
             <form class="logRuleForm" id="logRuleForm">
-              <div class="logRuleForm__card">
-                <div class="logRuleForm__cardHead">
-                  <strong>Alcance de la regla</strong>
-                  <span>Cuanto más específico sea el alcance, mayor peso tendrá en el motor.</span>
-                </div>
-
-                <div class="logRuleForm__grid">
-                  <div class="logRuleField">
-                    <label for="logRuleScopeType">Tipo</label>
-                    <select class="logRuleSelect" id="logRuleScopeType">
-                      <option value="zone">Zona</option>
-                      <option value="province">Provincia</option>
-                      <option value="locality">Localidad</option>
-                      <option value="postal_code">Código postal</option>
-                      <option value="default">Default</option>
-                    </select>
+              <input type="hidden" id="logRuleEditId">
+              <div class="logRuleForm__body">
+                <section class="logRuleForm__card">
+                  <div class="logRuleForm__cardHead">
+                    <strong>Alcance</strong>
+                    <span>Define dónde aplica la regla antes de calcular precio y promesa.</span>
                   </div>
 
-                  <div class="logRuleField">
-                    <label for="logRuleScopeValue">Valor</label>
-                    <input class="logRuleInput" id="logRuleScopeValue" type="text" placeholder="Ej: interior_centro, Cordoba, 5000">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleZoneId">Zona operativa</label>
-                    <input class="logRuleInput" id="logRuleZoneId" type="text" placeholder="Ej: interior_centro">
-                    <span class="logRuleHint">Si el tipo es Zona, puede quedar igual al valor.</span>
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRulePriority">Prioridad</label>
-                    <input class="logRuleInput" id="logRulePriority" type="number" placeholder="Automática">
-                  </div>
-                </div>
-              </div>
-
-              <div class="logRuleForm__card">
-                <div class="logRuleForm__cardHead">
-                  <strong>Condición de envío</strong>
-                  <span>Esto es lo que verá el usuario al consultar el código postal.</span>
-                </div>
-
-                <div class="logRuleForm__grid">
-                  <div class="logRuleField">
-                    <label for="logRuleShippingMode">Modo</label>
-                    <select class="logRuleSelect" id="logRuleShippingMode">
-                      <option value="paid">Pagado</option>
-                      <option value="free">Gratis</option>
-                      <option value="quote_required">A confirmar</option>
-                      <option value="unavailable">No disponible</option>
-                    </select>
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleShippingPrice">Precio</label>
-                    <input class="logRuleInput" id="logRuleShippingPrice" type="number" placeholder="Ej: 8900">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleShippingLabel">Etiqueta pública</label>
-                    <input class="logRuleInput" id="logRuleShippingLabel" type="text" placeholder="Ej: $8.900">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRulePromise">Promesa</label>
-                    <input class="logRuleInput" id="logRulePromise" type="text" placeholder="Ej: Llega en 3 a 5 días">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleMinDays">Días mínimos</label>
-                    <input class="logRuleInput" id="logRuleMinDays" type="number" placeholder="Ej: 3">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleMaxDays">Días máximos</label>
-                    <input class="logRuleInput" id="logRuleMaxDays" type="number" placeholder="Ej: 5">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleTimeBand">Banda horaria</label>
-                    <input class="logRuleInput" id="logRuleTimeBand" type="text" placeholder="Ej: A confirmar por logística">
-                  </div>
-
-                  <div class="logRuleField">
-                    <label for="logRuleBanner">Banner ID</label>
-                    <input class="logRuleInput" id="logRuleBanner" type="text" placeholder="Ej: ban_navid_003">
-                  </div>
-                </div>
-              </div>
-
-              <div class="logRuleForm__card">
-                <div class="logRuleForm__cardHead">
-                  <strong>Identidad y vista previa</strong>
-                  <span>Usá nombres claros para poder auditar la regla más adelante.</span>
-                </div>
-
-                <div class="logRuleForm__grid">
-                  <div class="logRuleField logRuleField--full">
-                    <label for="logRuleName">Nombre interno</label>
-                    <input class="logRuleInput" id="logRuleName" type="text" placeholder="Ej: Promo Córdoba · Envío especial">
-                  </div>
-
-                  <div class="logRuleField logRuleField--full">
-                    <label for="logRuleId">ID de regla opcional</label>
-                    <input class="logRuleInput" id="logRuleId" type="text" placeholder="Vacío = se genera automáticamente">
-                  </div>
-
-                  <label class="logRuleCheck logRuleField--full">
-                    <input id="logRuleIsActive" type="checkbox" checked>
-                    <span>Regla activa</span>
-                  </label>
-                </div>
-
-                <div class="logRulePreview">
-                  <div class="logRulePreview__top">
-                    <div>
-                      <strong id="logRulePreviewTitle">Nueva regla</strong>
-                      <span id="logRulePreviewScope">zone · sin valor</span>
+                  <div class="logRuleForm__grid">
+                    <div class="logRuleField">
+                      <label for="logRuleScope">Tipo</label>
+                      <select id="logRuleScope" class="logRuleInput">
+                        <option value="zone">Zona</option>
+                        <option value="province">Provincia</option>
+                        <option value="locality">Localidad</option>
+                        <option value="postal_code">Código postal</option>
+                      </select>
                     </div>
-                    <span class="logBadge logBadge--blue">Vista previa</span>
-                  </div>
-                  <div class="logRulePreview__meta">
-                    <div><span>Envío</span><strong id="logRulePreviewMode">Pagado · $0</strong></div>
-                    <div><span>Promesa</span><strong id="logRulePreviewPromise">Llega en 3 a 7 días</strong></div>
-                    <div><span>Prioridad</span><strong id="logRulePreviewPriority">Automática</strong></div>
-                    <div><span>Banner</span><strong id="logRulePreviewBanner">ban_navid_003</strong></div>
-                  </div>
-                </div>
 
-                <div class="logRuleMessage" id="logRuleMessage"></div>
+                    <div class="logRuleField">
+                      <label for="logRuleScopeValue">Valor</label>
+                      <input class="logRuleInput" id="logRuleScopeValue" type="text" placeholder="Ej: caba, Buenos Aires, 1414">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRulePriority">Prioridad</label>
+                      <input class="logRuleInput" id="logRulePriority" type="number" min="1" step="1" value="100">
+                    </div>
+                  </div>
+                </section>
+
+                <section class="logRuleForm__card">
+                  <div class="logRuleForm__cardHead">
+                    <strong>Promesa y costos</strong>
+                    <span>Datos que verá el usuario y que usará el motor.</span>
+                  </div>
+
+                  <div class="logRuleForm__grid">
+                    <div class="logRuleField">
+                      <label for="logRuleShippingMode">Tipo de envío</label>
+                      <select id="logRuleShippingMode" class="logRuleInput">
+                        <option value="free">Gratis</option>
+                        <option value="paid">Pagado</option>
+                      </select>
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleShippingCost">Costo</label>
+                      <input class="logRuleInput" id="logRuleShippingCost" type="number" min="0" step="1" value="0">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRulePromiseType">Promesa</label>
+                      <select id="logRulePromiseType" class="logRuleInput">
+                        <option value="relative_days">Días relativos</option>
+                        <option value="weekday">Día de semana</option>
+                        <option value="custom_text">Texto personalizado</option>
+                      </select>
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleMinDays">Mín. días</label>
+                      <input class="logRuleInput" id="logRuleMinDays" type="number" min="0" step="1" value="3">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleMaxDays">Máx. días</label>
+                      <input class="logRuleInput" id="logRuleMaxDays" type="number" min="0" step="1" value="7">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleCustomText">Texto público</label>
+                      <input class="logRuleInput" id="logRuleCustomText" type="text" placeholder="Ej: Llega mañana">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleCutoff">Hora corte</label>
+                      <input class="logRuleInput" id="logRuleCutoff" type="time" value="17:00">
+                    </div>
+
+                    <div class="logRuleField">
+                      <label for="logRuleTimeBand">Banda horaria</label>
+                      <input class="logRuleInput" id="logRuleTimeBand" type="text" placeholder="Ej: 14:00 a 18:00">
+                    </div>
+
+                    <div class="logRuleField logRuleField--full">
+                      <label for="logRuleBanner">Banner</label>
+                      <input class="logRuleInput" id="logRuleBanner" type="text" placeholder="Ej: ban_navid_003">
+                    </div>
+                  </div>
+                </section>
+
+                <section class="logRuleForm__card">
+                  <div class="logRuleForm__cardHead">
+                    <strong>Control interno</strong>
+                    <span>Nombre visible en operación y estado de la regla.</span>
+                  </div>
+
+                  <div class="logRuleForm__grid">
+                    <div class="logRuleField logRuleField--full">
+                      <label for="logRuleName">Nombre interno</label>
+                      <input class="logRuleInput" id="logRuleName" type="text" placeholder="Ej: Promo Córdoba · Envío especial">
+                    </div>
+
+                    <div class="logRuleField logRuleField--full">
+                      <label for="logRuleId">ID de regla opcional</label>
+                      <input class="logRuleInput" id="logRuleId" type="text" placeholder="Vacío = se genera automáticamente">
+                    </div>
+
+                    <label class="logRuleCheck logRuleField--full">
+                      <input id="logRuleIsActive" type="checkbox" checked>
+                      <span>Regla activa</span>
+                    </label>
+                  </div>
+
+                  <div class="logRulePreview">
+                    <div class="logRulePreview__top">
+                      <div>
+                        <strong id="logRulePreviewTitle">Nueva regla</strong>
+                        <span id="logRulePreviewScope">zone · sin valor</span>
+                      </div>
+                      <span class="logBadge logBadge--blue">Vista previa</span>
+                    </div>
+                    <div class="logRulePreview__meta">
+                      <div><span>Envío</span><strong id="logRulePreviewMode">Pagado · $0</strong></div>
+                      <div><span>Promesa</span><strong id="logRulePreviewPromise">Llega en 3 a 7 días</strong></div>
+                      <div><span>Prioridad</span><strong id="logRulePreviewPriority">Automática</strong></div>
+                      <div><span>Banner</span><strong id="logRulePreviewBanner">ban_navid_003</strong></div>
+                    </div>
+                  </div>
+
+                  <div class="logRuleMessage" id="logRuleMessage"></div>
+                </section>
               </div>
 
               <div class="logRuleForm__footer">
@@ -533,6 +543,8 @@
 <script src="../../js/logistica/logistica-pedidos.js"></script>
 <script src="../../js/logistica/logistica-conversaciones-slide.js"></script>
 <script src="../../js/logistica/logistica-conversaciones-supabase.js"></script>
+<script src="../../js/logistica/logistica-conversaciones-read.js"></script>
+<script src="../../js/logistica/logistica-conversaciones-tools.js"></script>
 <script src="../../js/logistica/logistica-conversaciones-send.js"></script>
 <script src="../../js/logistica/logistica-conversaciones-force-real.js"></script>
 <script src="../../js/logistica/logistica-simulador-card.js"></script>
