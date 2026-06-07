@@ -182,6 +182,14 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const dryRun = body.send === true ? false : true;
+    const requestedTrackingId = tracking(body.tracking_id || body.trackingId || body.id || "");
+
+    if (!dryRun && !requestedTrackingId) {
+      return responseJson({
+        status: "blocked",
+        message: "Para enviar un correo real tenés que indicar tracking_id.",
+      }, 400);
+    }
 
     const supabaseUrl = env("SUPABASE_URL");
     const supabaseKey = env("ALPASO_TRACKING_SUPABASE_KEY");
@@ -202,6 +210,7 @@ Deno.serve(async (req) => {
       .filter((order) => !isGenericTracking(order.tracking_id))
       .filter((order) => isEmail(order.email_cliente))
       .filter((order) => passesStartDate(order))
+      .filter((order) => !requestedTrackingId || tracking(order.tracking_id) === requestedTrackingId)
       .sort((a, b) => rowTime(a) - rowTime(b));
 
     const ids = candidates.map((order) => tracking(order.tracking_id));
@@ -217,12 +226,13 @@ Deno.serve(async (req) => {
 
     const pending = candidates
       .filter((order) => canSend(eventMap.get(tracking(order.tracking_id))))
-      .slice(0, maxPerRun);
+      .slice(0, requestedTrackingId ? 1 : maxPerRun);
 
     if (dryRun) {
       return responseJson({
         status: "dry_run",
-        note: "Para enviar de verdad llamá la función con {\"send\":true}.",
+        note: "Para enviar de verdad llamá la función con {\"send\":true,\"tracking_id\":\"ALP-...\"}.",
+        requested_tracking_id: requestedTrackingId || null,
         total_orders_seen: orders.length,
         total_candidates: candidates.length,
         pending_to_send: pending.map((order) => ({
@@ -296,6 +306,7 @@ Deno.serve(async (req) => {
 
     return responseJson({
       status: "ok",
+      requested_tracking_id: requestedTrackingId,
       total_orders_seen: orders.length,
       total_candidates: candidates.length,
       processed: results.length,
