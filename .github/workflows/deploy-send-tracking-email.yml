@@ -1,0 +1,49 @@
+name: Deploy send-tracking-email
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: Branch o commit desde donde tomar la funcion
+        required: true
+        default: debug/conversaciones-desync
+      function_name:
+        description: Nombre de la Edge Function
+        required: true
+        default: send-tracking-email
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy Edge Function
+        env:
+          DEPLOY_TOKEN: ${{ secrets.SUPABASE_DEPLOY_TOKEN }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          FUNCTION_NAME: ${{ inputs.function_name }}
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "Missing GitHub secret: SUPABASE_DEPLOY_TOKEN"
+            exit 1
+          fi
+
+          if [ -z "$PROJECT_REF" ]; then
+            echo "Missing GitHub secret: SUPABASE_PROJECT_REF"
+            exit 1
+          fi
+
+          SUPABASE_ACCESS_TOKEN="$DEPLOY_TOKEN" supabase functions deploy "$FUNCTION_NAME" --project-ref "$PROJECT_REF"
