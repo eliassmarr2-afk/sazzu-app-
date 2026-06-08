@@ -183,11 +183,12 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const dryRun = body.send === true ? false : true;
     const requestedTrackingId = tracking(body.tracking_id || body.trackingId || body.id || "");
+    const autoMode = text(body.mode).toLowerCase() === "auto";
 
-    if (!dryRun && !requestedTrackingId) {
+    if (!dryRun && !requestedTrackingId && !autoMode) {
       return responseJson({
         status: "blocked",
-        message: "Para enviar un correo real tenés que indicar tracking_id.",
+        message: "Para enviar un correo real tenés que indicar tracking_id o mode:auto.",
       }, 400);
     }
 
@@ -233,6 +234,7 @@ Deno.serve(async (req) => {
         status: "dry_run",
         note: "Para enviar de verdad llamá la función con {\"send\":true,\"tracking_id\":\"ALP-...\"}.",
         requested_tracking_id: requestedTrackingId || null,
+        auto_mode: autoMode,
         total_orders_seen: orders.length,
         total_candidates: candidates.length,
         pending_to_send: pending.map((order) => ({
@@ -306,7 +308,8 @@ Deno.serve(async (req) => {
 
     return responseJson({
       status: "ok",
-      requested_tracking_id: requestedTrackingId,
+      requested_tracking_id: requestedTrackingId || null,
+      auto_mode: autoMode,
       total_orders_seen: orders.length,
       total_candidates: candidates.length,
       processed: results.length,
