@@ -191,3 +191,29 @@
   document.addEventListener(PAGE_EVENT, boot);
   if (document.readyState !== 'loading') boot();
 })();
+
+/* ==========================================================
+   Protocol Data · Logística · Conversaciones · Loader cierre
+   Carga el control Abierta/Finalizada del slide de soporte.
+   ========================================================== */
+
+(function () {
+  const SCRIPT_ID = 'logistica-conversaciones-cierre-loader';
+  const SCRIPT_SRC = '../../js/logistica/logistica-conversaciones-cierre.js';
+
+  function loadConversacionesCierre() {
+    if (!document.querySelector('main.logisticsMain')) return;
+    if (document.getElementById(SCRIPT_ID)) return;
+
+    const script = document.createElement('script');
+    script.id = SCRIPT_ID;
+    script.src = SCRIPT_SRC;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  document.addEventListener('DOMContentLoaded', loadConversacionesCierre);
+  document.addEventListener('sazzu:page:load', loadConversacionesCierre);
+
+  if (document.readyState !== 'loading') loadConversacionesCierre();
+})();
