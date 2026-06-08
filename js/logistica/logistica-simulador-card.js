@@ -191,3 +191,29 @@
   document.addEventListener(PAGE_EVENT, boot);
   if (document.readyState !== 'loading') boot();
 })();
+
+/* ==========================================================
+   Protocol Data · Logística · Pedidos · Loader de intervención
+   Carga una capa aislada para Logística > Pedidos.
+   ========================================================== */
+
+(function () {
+  const SCRIPT_ID = 'logistica-pedidos-intervencion-loader';
+  const SCRIPT_SRC = '../../js/logistica/logistica-pedidos-intervencion.js';
+
+  function loadPedidosIntervencion() {
+    if (!document.querySelector('main.logisticsMain')) return;
+    if (document.getElementById(SCRIPT_ID)) return;
+
+    const script = document.createElement('script');
+    script.id = SCRIPT_ID;
+    script.src = SCRIPT_SRC;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  document.addEventListener('DOMContentLoaded', loadPedidosIntervencion);
+  document.addEventListener('sazzu:page:load', loadPedidosIntervencion);
+
+  if (document.readyState !== 'loading') loadPedidosIntervencion();
+})();
