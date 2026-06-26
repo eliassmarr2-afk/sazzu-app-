@@ -1,0 +1,288 @@
+/* ==========================================================
+   Protocol Data · Logística Dark Overrides
+   Correcciones puntuales: sidebar, slide conversaciones y filas con criterio.
+   Debe cargarse después de logistica-dark.css.
+   ========================================================== */
+
+/* Sidebar oscuro solo cuando Logística está en dark */
+body[data-page="logistica"].logistica-dark .sidebar{
+  background:linear-gradient(180deg, #171717 0%, #202020 100%) !important;
+  border-right:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:18px 0 42px rgba(0,0,0,.38), inset 1px 0 0 rgba(255,255,255,.04) !important;
+}
+
+body[data-page="logistica"].logistica-dark .sidebar::before,
+body[data-page="logistica"].logistica-dark .sidebar::after{
+  opacity:0 !important;
+}
+
+body[data-page="logistica"].logistica-dark .sidebar__head,
+body[data-page="logistica"].logistica-dark .sidebar__account,
+body[data-page="logistica"].logistica-dark .navHero,
+body[data-page="logistica"].logistica-dark .navGroup__head,
+body[data-page="logistica"].logistica-dark .navSubItem{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.08) !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .sidebar__account,
+body[data-page="logistica"].logistica-dark .navHero,
+body[data-page="logistica"].logistica-dark .navSubItem:hover,
+body[data-page="logistica"].logistica-dark .navSubItem.is-active-sub{
+  background:rgba(255,255,255,.08) !important;
+}
+
+body[data-page="logistica"].logistica-dark .navSubItem.is-active-sub{
+  background:#2479ff !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 22px rgba(36,121,255,.26) !important;
+}
+
+body[data-page="logistica"].logistica-dark .sidebar__accName,
+body[data-page="logistica"].logistica-dark .sidebar__accMeta,
+body[data-page="logistica"].logistica-dark .navGroup__kicker,
+body[data-page="logistica"].logistica-dark .navGroup__name,
+body[data-page="logistica"].logistica-dark .navGroup__caret,
+body[data-page="logistica"].logistica-dark .navSubItem__txt,
+body[data-page="logistica"].logistica-dark .navSubItem__ico,
+body[data-page="logistica"].logistica-dark .navHero__chev{
+  color:#d7d7d7 !important;
+}
+
+body[data-page="logistica"].logistica-dark .navSubItem.is-active-sub .navSubItem__txt,
+body[data-page="logistica"].logistica-dark .navSubItem.is-active-sub .navSubItem__ico{
+  color:#ffffff !important;
+}
+
+/* Tablas: header y filas en dark real */
+body[data-page="logistica"].logistica-dark .logPedidosTableWrap,
+body[data-page="logistica"].logistica-dark .logTableWrap{
+  background:#2f2f2f !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.28) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable th,
+body[data-page="logistica"].logistica-dark .logConversationsTable th,
+body[data-page="logistica"].logistica-dark .logTable th{
+  background:#262626 !important;
+  color:#bdbdbd !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable td,
+body[data-page="logistica"].logistica-dark .logConversationsTable td,
+body[data-page="logistica"].logistica-dark .logTable td{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable td span:not(.logPedidosBadge),
+body[data-page="logistica"].logistica-dark .logPedidosTable td strong,
+body[data-page="logistica"].logistica-dark .logPedidosMiniStack span,
+body[data-page="logistica"].logistica-dark .logPedidosMiniStack strong,
+body[data-page="logistica"].logistica-dark .logConversationsTable td span,
+body[data-page="logistica"].logistica-dark .logConversationsTable td strong{
+  color:inherit !important;
+}
+
+/* Filas destacadas por criterio: conservar señal, bajar luminosidad */
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr,
+body[data-page="logistica"].logistica-dark .logTable tbody tr{
+  background:#2f2f2f !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style*="background"],
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style*="background"],
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style*="background"],
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-highlight,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-highlight,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-selected,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-selected,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-open,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-open{
+  background:rgba(36,121,255,.08) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style*="background"] td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style*="background"] td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style*="background"] td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-highlight td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-highlight td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-selected td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-selected td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-open td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-open td{
+  background:rgba(36,121,255,.08) !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover td{
+  background:rgba(255,255,255,.055) !important;
+}
+
+/* Métricas claras dentro de conversaciones */
+body[data-page="logistica"].logistica-dark .logConversationsSummary > *,
+body[data-page="logistica"].logistica-dark .logConversationsCard [class*="Metric"],
+body[data-page="logistica"].logistica-dark .logConversationsCard [class*="Summary"] > div{
+  background:#2f2f2f !important;
+  border-color:rgba(255,255,255,.10) !important;
+  color:#ececec !important;
+  box-shadow:0 14px 30px rgba(0,0,0,.22) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsSummary span,
+body[data-page="logistica"].logistica-dark .logConversationsSummary small{
+  color:#b4b4b4 !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsSummary strong{
+  color:#ececec !important;
+}
+
+/* Botón Ver más y acciones oscuras */
+body[data-page="logistica"].logistica-dark .logConversationsTable button,
+body[data-page="logistica"].logistica-dark .logPedidosTable button,
+body[data-page="logistica"].logistica-dark .logPedidosActionBtn,
+body[data-page="logistica"].logistica-dark .logActionBtn{
+  background:#383838 !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable button:hover,
+body[data-page="logistica"].logistica-dark .logPedidosTable button:hover,
+body[data-page="logistica"].logistica-dark .logPedidosActionBtn:hover,
+body[data-page="logistica"].logistica-dark .logActionBtn:hover{
+  background:#444444 !important;
+}
+
+/* Slide de conversaciones: neutralizar estilos inline inyectados por JS */
+body[data-page="logistica"].logistica-dark .logConversationSlide__overlay{
+  background:rgba(0,0,0,.66) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__panel{
+  background:#212121 !important;
+  color:#ececec !important;
+  box-shadow:-24px 0 58px rgba(0,0,0,.52) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__header{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+  border-bottom:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.24) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__close{
+  background:#383838 !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__content,
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid{
+  background:#212121 !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox,
+body[data-page="logistica"].logistica-dark .logConversationDataItem,
+body[data-page="logistica"].logistica-dark .logConversationReply,
+body[data-page="logistica"].logistica-dark .logConversationReply textarea{
+  background:#2f2f2f !important;
+  border-color:rgba(255,255,255,.10) !important;
+  color:#ececec !important;
+  box-shadow:0 16px 38px rgba(0,0,0,.26) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox__head strong,
+body[data-page="logistica"].logistica-dark .logConversationDataItem strong,
+body[data-page="logistica"].logistica-dark .logConversationBubble strong,
+body[data-page="logistica"].logistica-dark .logConversationBubble p{
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox__head span,
+body[data-page="logistica"].logistica-dark .logConversationDataItem span,
+body[data-page="logistica"].logistica-dark .logConversationBubble small{
+  color:#b4b4b4 !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--customer{
+  background:#383838 !important;
+  border-color:rgba(255,255,255,.10) !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator{
+  background:#2479ff !important;
+  border-color:#2479ff !important;
+  color:#ffffff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator strong,
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator p,
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator small{
+  color:#ffffff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--system{
+  background:rgba(36,121,255,.12) !important;
+  border-color:rgba(36,121,255,.26) !important;
+  color:#b7d0ff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply textarea::placeholder{
+  color:rgba(180,180,180,.65) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply textarea:focus{
+  border-color:rgba(36,121,255,.72) !important;
+  box-shadow:0 0 0 4px rgba(36,121,255,.18) !important;
+}
+
+/* Panel lateral real de conversación que aparece en capturas */
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="Panel"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="panel"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="Aside"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="aside"]{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body[data-page="logistica"].logistica-dark [class*="Conversation"] input,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] select,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] textarea,
+body[data-page="logistica"].logistica-dark [class*="conversation"] input,
+body[data-page="logistica"].logistica-dark [class*="conversation"] select,
+body[data-page="logistica"].logistica-dark [class*="conversation"] textarea{
+  background:#2a2a2a !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.14) !important;
+}
+
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background:#fff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background: #fff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background:#ffffff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background: #ffffff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background:#fff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background: #fff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background:#ffffff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background: #ffffff"]{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="color:#252a32"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="color: #252a32"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="color:#1f2937"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="color: #1f2937"]{
+  color:#ececec !important;
+}
