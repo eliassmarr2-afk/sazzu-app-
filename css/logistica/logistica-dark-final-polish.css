@@ -1,0 +1,235 @@
+/* ==========================================================
+   Protocol Data · Logística Dark Final Polish
+   Ajustes finales: hover/fila activa y slide real de conversación.
+   Cargar al final de los CSS de Logística.
+   ========================================================== */
+
+/* Hover / cursor: nada debe volver a blanco puro */
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover td{
+  background:#383838 !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover td *,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover td *,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover td *{
+  color:inherit !important;
+}
+
+/* Filas con criterio operativo: mantener acento, sin fondo blanco */
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style],
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style],
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style]{
+  background:rgba(36,121,255,.075) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style] td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style] td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style] td{
+  background:rgba(36,121,255,.075) !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style]:hover td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style]:hover td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style]:hover td{
+  background:rgba(36,121,255,.14) !important;
+}
+
+/* Estados/acento por prioridad o incidencia: dark friendly */
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--red) td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--red) td{
+  background:rgba(239,68,68,.07) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--orange) td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--orange) td{
+  background:rgba(245,158,11,.07) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--green) td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--green) td{
+  background:rgba(34,197,94,.055) !important;
+}
+
+/* Slide real de conversación: selectors amplios porque parte se inyecta por JS */
+body[data-page="logistica"].logistica-dark .logConversationSlide,
+body[data-page="logistica"].logistica-dark .logConversationSlide *,
+body[data-page="logistica"].logistica-dark [id*="ConversationSlide"],
+body[data-page="logistica"].logistica-dark [id*="ConversationSlide"] *,
+body[data-page="logistica"].logistica-dark [class*="ConversationSlide"],
+body[data-page="logistica"].logistica-dark [class*="ConversationSlide"] *,
+body[data-page="logistica"].logistica-dark [class*="conversationSlide"],
+body[data-page="logistica"].logistica-dark [class*="conversationSlide"] *{
+  border-color:rgba(255,255,255,.10) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__panel,
+body[data-page="logistica"].logistica-dark [id*="ConversationSlide"] aside,
+body[data-page="logistica"].logistica-dark [class*="ConversationSlide"] aside,
+body[data-page="logistica"].logistica-dark [class*="conversationSlide"] aside,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [role="dialog"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [role="dialog"]{
+  background:#212121 !important;
+  color:#ececec !important;
+  box-shadow:-24px 0 58px rgba(0,0,0,.55) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__content,
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid,
+body[data-page="logistica"].logistica-dark .logConversationChat,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="content"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="Content"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="content"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="Content"]{
+  background:#212121 !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox,
+body[data-page="logistica"].logistica-dark .logConversationDataItem,
+body[data-page="logistica"].logistica-dark .logConversationReply,
+body[data-page="logistica"].logistica-dark .logConversationReply__actions,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="Box"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="box"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="Card"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [class*="card"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="Box"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="box"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="Card"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [class*="card"]{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.10) !important;
+  box-shadow:0 16px 38px rgba(0,0,0,.26) !important;
+}
+
+/* Zona central blanca del historial */
+body[data-page="logistica"].logistica-dark .logConversationBox [style*="background"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background:#fff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background: #fff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background:#ffffff"],
+body[data-page="logistica"].logistica-dark [class*="Conversation"] [style*="background: #ffffff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background:#fff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background: #fff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background:#ffffff"],
+body[data-page="logistica"].logistica-dark [class*="conversation"] [style*="background: #ffffff"]{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+}
+
+/* Por si el historial usa contenedores genéricos sin clase semántica */
+body[data-page="logistica"].logistica-dark .logConversationSlide__content > div,
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid > *,
+body[data-page="logistica"].logistica-dark .logConversationBox > *,
+body[data-page="logistica"].logistica-dark .logConversationChat{
+  background-color:transparent !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox{
+  background:#2f2f2f !important;
+}
+
+/* Burbujas: estilo ChatGPT dark */
+body[data-page="logistica"].logistica-dark .logConversationBubble,
+body[data-page="logistica"].logistica-dark [class*="Bubble"],
+body[data-page="logistica"].logistica-dark [class*="bubble"]{
+  background:#383838 !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#ececec !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator,
+body[data-page="logistica"].logistica-dark [class*="Bubble--operator"],
+body[data-page="logistica"].logistica-dark [class*="bubble--operator"]{
+  background:#2479ff !important;
+  border-color:#2479ff !important;
+  color:#ffffff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--system,
+body[data-page="logistica"].logistica-dark [class*="Bubble--system"],
+body[data-page="logistica"].logistica-dark [class*="bubble--system"]{
+  background:rgba(255,255,255,.08) !important;
+  border-color:rgba(255,255,255,.12) !important;
+  color:#b4b4b4 !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble *,
+body[data-page="logistica"].logistica-dark [class*="Bubble"] *,
+body[data-page="logistica"].logistica-dark [class*="bubble"] *{
+  color:inherit !important;
+}
+
+/* Texto del slide */
+body[data-page="logistica"].logistica-dark .logConversationSlide strong,
+body[data-page="logistica"].logistica-dark .logConversationSlide h1,
+body[data-page="logistica"].logistica-dark .logConversationSlide h2,
+body[data-page="logistica"].logistica-dark .logConversationSlide h3,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] strong,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] h1,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] h2,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] h3{
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide span,
+body[data-page="logistica"].logistica-dark .logConversationSlide small,
+body[data-page="logistica"].logistica-dark .logConversationSlide label,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] span,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] small,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] label{
+  color:#b4b4b4 !important;
+}
+
+/* Datos laterales de compra */
+body[data-page="logistica"].logistica-dark .logConversationDataItem{
+  background:#303030 !important;
+  border-bottom:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationDataItem strong{
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationDataItem span{
+  color:#b4b4b4 !important;
+}
+
+/* Composer/respuesta */
+body[data-page="logistica"].logistica-dark .logConversationReply textarea,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] textarea,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] input,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] select{
+  background:#2a2a2a !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.14) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply textarea::placeholder,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] textarea::placeholder,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] input::placeholder{
+  color:rgba(180,180,180,.68) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply button,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] button{
+  background:#383838 !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply .btn--primary,
+body[data-page="logistica"].logistica-dark [class*="Conversation"] .btn--primary{
+  background:#2479ff !important;
+  color:#ffffff !important;
+  border-color:#2479ff !important;
+}
