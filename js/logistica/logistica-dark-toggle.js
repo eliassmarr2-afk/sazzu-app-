@@ -7,6 +7,8 @@
 (function () {
   const STORAGE_KEY = 'protocolData.logistica.theme';
   const DARK_CLASS = 'logistica-dark';
+  const PEDIDOS_BADGES_SCRIPT_ID = 'logisticaDarkPedidosBadgesScript';
+  const PEDIDOS_BADGES_SCRIPT_SRC = '../../js/logistica/logistica-dark-pedidos-badges.js';
 
   function isLogisticaPage() {
     return document.body && document.body.getAttribute('data-page') === 'logistica';
@@ -36,6 +38,23 @@
     return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m14.95 6.95 1.42 1.42M3.63 3.63l1.42 1.42m13.9-1.42-1.42 1.42M5.05 18.95l-1.42 1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/></svg>';
   }
 
+  function ensurePedidosBadgesModule() {
+    if (!isLogisticaPage()) return;
+    if (document.getElementById(PEDIDOS_BADGES_SCRIPT_ID)) return;
+
+    const script = document.createElement('script');
+    script.id = PEDIDOS_BADGES_SCRIPT_ID;
+    script.src = PEDIDOS_BADGES_SCRIPT_SRC;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  function schedulePedidosBadgesModule() {
+    window.setTimeout(ensurePedidosBadgesModule, 0);
+    window.setTimeout(ensurePedidosBadgesModule, 180);
+    window.setTimeout(ensurePedidosBadgesModule, 520);
+  }
+
   function applyTheme(theme) {
     const dark = theme === 'dark';
     document.body.classList.toggle(DARK_CLASS, dark);
@@ -47,6 +66,8 @@
     toggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
     toggle.setAttribute('title', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
     toggle.setAttribute('aria-label', dark ? 'Cambiar Logística a modo claro' : 'Cambiar Logística a modo oscuro');
+
+    if (dark) schedulePedidosBadgesModule();
   }
 
   function ensureToggle() {
@@ -82,6 +103,7 @@
     if (!isLogisticaPage()) return;
     ensureToggle();
     applyTheme(getStoredTheme());
+    schedulePedidosBadgesModule();
   }
 
   if (document.readyState === 'loading') {
