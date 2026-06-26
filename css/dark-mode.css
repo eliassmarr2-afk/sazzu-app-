@@ -1,0 +1,549 @@
+/* =========================================================
+   Protocol Data · Global Dark Mode
+   Capa visual segura: no modifica lógica, datos ni flujo funcional.
+   Se carga al final desde js/app.js para ganar sobre estilos de módulos.
+   ========================================================= */
+
+:root{
+  color-scheme: dark;
+
+  --blue:#3B82F6;
+  --blueSoft: rgba(59,130,246,.14);
+  --blueBorder: rgba(59,130,246,.28);
+
+  --bg:#070B12;
+  --bg-2:#0A101B;
+  --card:#101827;
+  --card-2:#121C2D;
+  --surface:#101827;
+  --surface-2:#172033;
+  --surface-3:#1D293D;
+
+  --text:#E5E7EB;
+  --text-strong:#F8FAFC;
+  --muted:#9CA3AF;
+  --muted-2:#64748B;
+
+  --border: rgba(148,163,184,.16);
+  --border-strong: rgba(148,163,184,.26);
+
+  --shadow: 0 18px 44px rgba(0,0,0,.46);
+  --shadowSoft: 0 10px 26px rgba(0,0,0,.34);
+
+  --input-bg:#0B1220;
+  --input-bg-focus:#0F1B2D;
+
+  --success:#22C55E;
+  --warning:#F59E0B;
+  --danger:#EF4444;
+}
+
+html,
+body{
+  background:
+    radial-gradient(circle at 18% 0%, rgba(36,121,255,.12), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(59,130,246,.08), transparent 28%),
+    var(--bg) !important;
+  color:var(--text) !important;
+}
+
+body{
+  accent-color: var(--blue);
+}
+
+::selection{
+  background:rgba(59,130,246,.34);
+  color:#FFFFFF;
+}
+
+/* Scrollbar global */
+*{
+  scrollbar-color: rgba(148,163,184,.34) transparent;
+}
+
+*::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+*::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+*::-webkit-scrollbar-thumb{
+  background:rgba(148,163,184,.28) !important;
+  border-radius:999px;
+  border:2px solid transparent;
+  background-clip:content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover{
+  background:rgba(148,163,184,.44) !important;
+}
+
+/* Layout base */
+.appShell,
+.bodyGrid,
+.main{
+  background:transparent !important;
+  color:var(--text) !important;
+}
+
+.main{
+  box-shadow:none !important;
+}
+
+/* Superficies principales */
+.u-card,
+.listItem,
+.contentTopbar,
+.dateFilter__panel,
+.u-miniStat,
+.homeWideCard,
+.topProdCard,
+.demandCardWide,
+.prodBoardCard,
+.prodKpiCard,
+.prodTableShell,
+.prodSkuDonutCard,
+.prodSideColumn .prodBoardCard,
+[class*="Card"],
+[class*="card"],
+[class*="Panel"],
+[class*="panel"],
+[class*="Drawer"],
+[class*="drawer"],
+[class*="Slide"],
+[class*="slide"],
+[class*="Sheet"],
+[class*="sheet"],
+[class*="Modal"],
+[class*="modal"]{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--card) 100%) !important;
+  border-color:var(--border) !important;
+  color:var(--text) !important;
+  box-shadow:var(--shadowSoft) !important;
+}
+
+.u-card,
+.listItem,
+.prodBoardCard,
+.prodTableShell{
+  border:1px solid var(--border) !important;
+}
+
+.u-cardInner,
+.prodBoardCard__inner,
+[class*="__inner"]{
+  color:var(--text) !important;
+}
+
+/* Header interno */
+.appHeader,
+.contentTopbar{
+  background:transparent !important;
+  color:var(--text) !important;
+}
+
+.appHeader__title,
+.contentTopbar__title,
+.blockTitle h3,
+.hcTitle,
+h1,h2,h3,
+.prodHero__title,
+.prodSectionHead__title,
+.prodDecisionHeader__title,
+.prodTableTopbar__title,
+.topProdCard__title,
+.logiCard__title{
+  color:var(--text-strong) !important;
+}
+
+.appHeader__sub,
+.hcSub,
+.u-muted,
+small,
+.kpi__hint,
+.prodHero__sub,
+.prodSectionHead__sub,
+.prodDecisionHeader__sub,
+.prodTableTopbar__note,
+.prodKpiCard__hint,
+.pagerMeta,
+.demandRange,
+.logiMini,
+[class*="__sub"],
+[class*="__hint"],
+[class*="__note"],
+[class*="Meta"]{
+  color:var(--muted) !important;
+}
+
+.u-sectionLabel,
+.prodHero__eyebrow,
+.prodSectionHead__eyebrow,
+.prodDecisionHeader__eyebrow{
+  color:#94A3B8 !important;
+}
+
+/* Inputs, selects, fechas y controles */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.u-input,
+.filterField input,
+.prodSearchInput,
+.prodTypeFilter,
+.prodTableSearchInput,
+.prodSkuDateInput,
+[contenteditable="true"]{
+  background:var(--input-bg) !important;
+  color:var(--text-strong) !important;
+  border:1px solid var(--border-strong) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 10px 24px rgba(0,0,0,.18) !important;
+  outline:none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.u-input:focus,
+.prodTableSearchInput:focus{
+  background:var(--input-bg-focus) !important;
+  border-color:var(--blueBorder) !important;
+  box-shadow:0 0 0 3px rgba(59,130,246,.16), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:rgba(156,163,175,.72) !important;
+}
+
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+select{
+  color-scheme:dark;
+}
+
+label,
+.filterField,
+.prodSkuDateWrap__label{
+  color:var(--muted) !important;
+}
+
+/* Botones */
+button,
+.btn,
+.iconBtn,
+.topBtn,
+.filterPill,
+.dateFilter__btn,
+.pagerBtn,
+.prodTab,
+.prodMetricToggle{
+  background:var(--surface-2) !important;
+  color:var(--text) !important;
+  border-color:var(--border) !important;
+  box-shadow:none !important;
+}
+
+button:hover,
+.btn:hover,
+.iconBtn:hover,
+.topBtn:hover,
+.filterPill:hover,
+.dateFilter__btn:hover,
+.pagerBtn:hover,
+.prodTab:hover,
+.prodMetricToggle:hover{
+  background:var(--surface-3) !important;
+  color:var(--text-strong) !important;
+  border-color:var(--border-strong) !important;
+}
+
+.btn--primary,
+.filterApply,
+.pagerBtn--primary,
+.prodPrimaryAction,
+.prodSkuApplyBtn,
+.prodTab.is-active,
+.prodMetricToggle.is-active,
+.filterPill.is-active{
+  background:linear-gradient(180deg, #3B82F6 0%, #2479FF 100%) !important;
+  color:#FFFFFF !important;
+  border-color:rgba(96,165,250,.38) !important;
+  box-shadow:0 12px 28px rgba(36,121,255,.24) !important;
+}
+
+.btn--primary:hover,
+.filterApply:hover,
+.pagerBtn--primary:hover,
+.prodPrimaryAction:hover,
+.prodSkuApplyBtn:hover{
+  background:linear-gradient(180deg, #60A5FA 0%, #2479FF 100%) !important;
+}
+
+button:disabled,
+.btn:disabled,
+.pagerBtn:disabled{
+  opacity:.42 !important;
+  cursor:not-allowed !important;
+}
+
+/* Badges / pills */
+.badge,
+.u-pill,
+.stateBadge,
+.demandPill,
+.logiPill,
+.prodMiniPill,
+.prodSkuDonutCard__toggles,
+.prodTabs,
+.topProdTotal,
+.logiTotal,
+.kpi__trend{
+  background:rgba(59,130,246,.12) !important;
+  border:1px solid rgba(59,130,246,.22) !important;
+  color:#BFDBFE !important;
+  box-shadow:none !important;
+}
+
+.prodMiniPill--soft,
+.demandPill--soft{
+  background:rgba(148,163,184,.10) !important;
+  border-color:rgba(148,163,184,.18) !important;
+  color:var(--muted) !important;
+}
+
+.state--green{
+  background:rgba(34,197,94,.14) !important;
+  border-color:rgba(34,197,94,.28) !important;
+  color:#86EFAC !important;
+}
+
+.state--sky,
+.state--navy{
+  background:rgba(59,130,246,.14) !important;
+  border-color:rgba(59,130,246,.28) !important;
+  color:#BFDBFE !important;
+}
+
+.state--red{
+  background:rgba(239,68,68,.14) !important;
+  border-color:rgba(239,68,68,.28) !important;
+  color:#FCA5A5 !important;
+}
+
+/* Listas y separadores */
+.ordersList--compact .listItem.orderItem,
+.prodSectionHead,
+.prodDecisionHeader,
+.prodTableTopbar,
+.prodTable tbody td,
+.prodTable thead th,
+.navGroup + .navGroup::before{
+  border-color:var(--border) !important;
+}
+
+.orderItem:hover,
+.ordersList--compact .orderItem:hover,
+.listItem:hover,
+.prodTable tbody tr:hover td,
+.prodKpiCard:hover,
+.kpiCard:hover{
+  background:rgba(59,130,246,.10) !important;
+}
+
+/* Tablas */
+table,
+.prodTable{
+  color:var(--text) !important;
+}
+
+thead,
+thead th,
+.prodTable thead th{
+  background:var(--surface-2) !important;
+  color:var(--muted) !important;
+  border-color:var(--border) !important;
+}
+
+tbody td,
+.prodTable tbody td{
+  background:var(--surface) !important;
+  color:var(--text) !important;
+  border-color:var(--border) !important;
+}
+
+.prodTableEmpty{
+  color:var(--muted) !important;
+}
+
+.prodTableWrap,
+.prodTableShell,
+.prodTableTopbar,
+.prodSkuDonutCard__filters{
+  background:var(--surface) !important;
+  border-color:var(--border) !important;
+}
+
+/* Sidebar: mantener azul corporativo, pero con presencia dark */
+.sidebar{
+  background:linear-gradient(180deg, #0F5FE8 0%, #0B4FCA 100%) !important;
+  box-shadow:18px 0 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.sidebar__account,
+.navHero__ico,
+.navSubItem:hover,
+.navSubItem.is-active-sub{
+  background:rgba(255,255,255,.14) !important;
+  border-color:rgba(255,255,255,.16) !important;
+}
+
+.sidebar__accName,
+.sidebar__accMeta,
+.navHero__txt,
+.navGroup__name,
+.navSubItem__txt,
+.navGroup__kicker,
+.navGroup__caret,
+.navHero__chev,
+.navSubItem__ico,
+.navSubItem__ico svg{
+  color:#FFFFFF !important;
+  fill:#FFFFFF !important;
+}
+
+/* Iconografía */
+svg,
+.kpiIcon,
+.orderIcon,
+.topProdIcon,
+.finAlertsIcon svg{
+  fill:currentColor;
+}
+
+.kpiIcon,
+.orderIcon,
+.topProdIcon{
+  color:var(--text-strong) !important;
+  fill:var(--text-strong) !important;
+  filter:none !important;
+  opacity:.9 !important;
+}
+
+.kpiCard:hover .kpiIcon,
+.orderItem:hover .orderIcon{
+  color:#FFFFFF !important;
+  fill:#FFFFFF !important;
+}
+
+.kpiIconWrap,
+.orderIconWrap,
+.topProdIconWrap,
+.logiIconWrap{
+  background:rgba(59,130,246,.14) !important;
+  box-shadow:none !important;
+}
+
+/* Home específico */
+.topProdRange,
+.demandRange,
+.demandHours,
+.demandTip__t,
+.demandTip__v{
+  color:var(--muted) !important;
+}
+
+.demandSpark,
+#demandPath,
+#demandDot{
+  color:#60A5FA !important;
+  stroke:#60A5FA !important;
+  fill:#60A5FA !important;
+}
+
+.demandTip{
+  background:var(--surface-2) !important;
+  border:1px solid var(--border) !important;
+  box-shadow:var(--shadowSoft) !important;
+  color:var(--text) !important;
+}
+
+/* Productos específico */
+body[data-page="productos"] .main .prodHero__title,
+body[data-page="productos"] .main .prodSectionHead__title,
+body[data-page="productos"] .main .prodDecisionHeader__title,
+body[data-page="productos"] .main .prodKpiCard__label,
+body[data-page="productos"] .main .prodTableTopbar__title,
+body[data-page="productos"] .main .prodTable tbody td{
+  color:var(--text-strong) !important;
+}
+
+body[data-page="productos"] .main .prodKpiCard,
+body[data-page="productos"] .main .prodBoardCard,
+body[data-page="productos"] .main .prodTableShell,
+body[data-page="productos"] .main .prodTableTopbar,
+body[data-page="productos"] .main .prodSkuDonutCard__filters{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--card) 100%) !important;
+  border-color:var(--border) !important;
+}
+
+body[data-page="productos"] .main .prodKpiCard:hover{
+  background:linear-gradient(180deg, #132033 0%, #101827 100%) !important;
+}
+
+body[data-page="productos"] .main .prodKpiCard__value{
+  color:#60A5FA !important;
+}
+
+body[data-page="productos"] .main .prodTabs{
+  background:rgba(15,23,42,.72) !important;
+  border-color:var(--border) !important;
+}
+
+/* Logística verde conserva identidad, adaptada al dark */
+.logiCard{
+  background:linear-gradient(180deg, #15803D 0%, #14532D 100%) !important;
+  border:1px solid rgba(34,197,94,.22) !important;
+}
+
+.logiCard__title,
+.logiCard__sub,
+.logiRange,
+.logiTotal,
+.logiMini,
+.logiPill{
+  color:#FFFFFF !important;
+}
+
+/* Overwrites contra estilos inline frecuentes */
+[style*="background:#fff"],
+[style*="background: #fff"],
+[style*="background:#ffffff"],
+[style*="background: #ffffff"],
+[style*="background:#FFFFFF"],
+[style*="background: #FFFFFF"]{
+  background:var(--surface) !important;
+}
+
+[style*="color:#111827"],
+[style*="color: #111827"],
+[style*="color:#0F172A"],
+[style*="color: #0F172A"],
+[style*="color: rgba(17,24,39"],
+[style*="color:rgba(17,24,39"]{
+  color:var(--text-strong) !important;
+}
+
+/* Focus accesible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+  outline:2px solid rgba(96,165,250,.78) !important;
+  outline-offset:2px !important;
+}
