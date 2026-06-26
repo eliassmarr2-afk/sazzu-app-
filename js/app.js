@@ -4,6 +4,8 @@
 
   const PAGE_EVENT = "sazzu:page:load";
   const SIDEBAR_URL = "/partials/sidebar-panel.html";
+  const DARK_MODE_STYLESHEET_ID = "protocolDataDarkModeStylesheet";
+  const DARK_MODE_STYLESHEET_URL = "/css/dark-mode.css";
 
   function getCurrentFile_() {
     return (location.pathname.split("/").pop() || "").toLowerCase();
@@ -11,6 +13,28 @@
 
   function isPanelPage_() {
     return location.pathname.toLowerCase().includes("/panel/");
+  }
+
+  function ensureDarkModeStyles_() {
+    const hrefAbs = new URL(DARK_MODE_STYLESHEET_URL, location.origin).href;
+    const existing = document.getElementById(DARK_MODE_STYLESHEET_ID);
+
+    if (existing) {
+      if (existing.href !== hrefAbs) existing.href = hrefAbs;
+
+      // Lo dejamos al final del head para que gane sobre CSS de módulos cargados después.
+      if (document.head.lastElementChild !== existing) {
+        document.head.appendChild(existing);
+      }
+      return existing;
+    }
+
+    const link = document.createElement("link");
+    link.id = DARK_MODE_STYLESHEET_ID;
+    link.rel = "stylesheet";
+    link.href = hrefAbs;
+    document.head.appendChild(link);
+    return link;
   }
 
   function runPageSpecificInit_() {
@@ -136,6 +160,9 @@
       await ensureStyleLoaded_(hrefAbs);
     }
 
+    // El dark mode debe quedar después de cualquier stylesheet del panel destino.
+    ensureDarkModeStyles_();
+
     const incomingScripts = Array.from(doc.querySelectorAll("script[src]"))
       .map(s => new URL(s.getAttribute("src"), targetUrl).href)
       .filter(Boolean)
@@ -144,6 +171,9 @@
     for (const srcAbs of incomingScripts) {
       await ensureScriptLoaded_(srcAbs);
     }
+
+    // Defensa extra: si algún script de módulo agregó estilos, volvemos a dejar dark-mode al final.
+    ensureDarkModeStyles_();
 
     history.pushState({}, "", href);
 
@@ -159,6 +189,7 @@
     setActiveNav_();
     firePageLoadEvent_();
     runPageSpecificInit_();
+    ensureDarkModeStyles_();
   }
 
   function enableSoftNavigation_() {
@@ -195,11 +226,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
+    ensureDarkModeStyles_();
     await injectSidebarIfNeeded_();
     setActiveNav_();
     enableSoftNavigation_();
     firePageLoadEvent_();
     runPageSpecificInit_();
+    ensureDarkModeStyles_();
   });
 })();
 /* =========================================================
