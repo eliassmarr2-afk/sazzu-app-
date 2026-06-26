@@ -11,6 +11,8 @@
   const PEDIDOS_BADGES_SCRIPT_SRC = '../../js/logistica/logistica-dark-pedidos-badges.js';
   const CONVERSATION_SKIN_SCRIPT_ID = 'logisticaDarkConversationSlideSkinScript';
   const CONVERSATION_SKIN_SCRIPT_SRC = '../../js/logistica/logistica-dark-conversation-slide-skin.js';
+  const CONVERSATION_SAFE_FIX_SCRIPT_ID = 'logisticaDarkConversationSafeFixScript';
+  const CONVERSATION_SAFE_FIX_SCRIPT_SRC = '../../js/logistica/logistica-dark-conversation-safe-fix.js';
 
   function isLogisticaPage() {
     return document.body && document.body.getAttribute('data-page') === 'logistica';
@@ -59,6 +61,10 @@
     ensureScript(CONVERSATION_SKIN_SCRIPT_ID, CONVERSATION_SKIN_SCRIPT_SRC);
   }
 
+  function ensureConversationSafeFixModule() {
+    ensureScript(CONVERSATION_SAFE_FIX_SCRIPT_ID, CONVERSATION_SAFE_FIX_SCRIPT_SRC);
+  }
+
   function scheduleDarkModules() {
     window.setTimeout(ensurePedidosBadgesModule, 0);
     window.setTimeout(ensurePedidosBadgesModule, 180);
@@ -67,6 +73,10 @@
     window.setTimeout(ensureConversationSkinModule, 0);
     window.setTimeout(ensureConversationSkinModule, 180);
     window.setTimeout(ensureConversationSkinModule, 520);
+
+    window.setTimeout(ensureConversationSafeFixModule, 0);
+    window.setTimeout(ensureConversationSafeFixModule, 180);
+    window.setTimeout(ensureConversationSafeFixModule, 520);
   }
 
   function applyTheme(theme) {
