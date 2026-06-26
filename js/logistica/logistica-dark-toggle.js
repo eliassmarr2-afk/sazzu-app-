@@ -9,6 +9,8 @@
   const DARK_CLASS = 'logistica-dark';
   const PEDIDOS_BADGES_SCRIPT_ID = 'logisticaDarkPedidosBadgesScript';
   const PEDIDOS_BADGES_SCRIPT_SRC = '../../js/logistica/logistica-dark-pedidos-badges.js';
+  const CONVERSATION_SKIN_SCRIPT_ID = 'logisticaDarkConversationSlideSkinScript';
+  const CONVERSATION_SKIN_SCRIPT_SRC = '../../js/logistica/logistica-dark-conversation-slide-skin.js';
 
   function isLogisticaPage() {
     return document.body && document.body.getAttribute('data-page') === 'logistica';
@@ -38,21 +40,33 @@
     return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m14.95 6.95 1.42 1.42M3.63 3.63l1.42 1.42m13.9-1.42-1.42 1.42M5.05 18.95l-1.42 1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/></svg>';
   }
 
-  function ensurePedidosBadgesModule() {
+  function ensureScript(id, src) {
     if (!isLogisticaPage()) return;
-    if (document.getElementById(PEDIDOS_BADGES_SCRIPT_ID)) return;
+    if (document.getElementById(id)) return;
 
     const script = document.createElement('script');
-    script.id = PEDIDOS_BADGES_SCRIPT_ID;
-    script.src = PEDIDOS_BADGES_SCRIPT_SRC;
+    script.id = id;
+    script.src = src;
     script.defer = true;
     document.body.appendChild(script);
   }
 
-  function schedulePedidosBadgesModule() {
+  function ensurePedidosBadgesModule() {
+    ensureScript(PEDIDOS_BADGES_SCRIPT_ID, PEDIDOS_BADGES_SCRIPT_SRC);
+  }
+
+  function ensureConversationSkinModule() {
+    ensureScript(CONVERSATION_SKIN_SCRIPT_ID, CONVERSATION_SKIN_SCRIPT_SRC);
+  }
+
+  function scheduleDarkModules() {
     window.setTimeout(ensurePedidosBadgesModule, 0);
     window.setTimeout(ensurePedidosBadgesModule, 180);
     window.setTimeout(ensurePedidosBadgesModule, 520);
+
+    window.setTimeout(ensureConversationSkinModule, 0);
+    window.setTimeout(ensureConversationSkinModule, 180);
+    window.setTimeout(ensureConversationSkinModule, 520);
   }
 
   function applyTheme(theme) {
@@ -67,7 +81,7 @@
     toggle.setAttribute('title', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
     toggle.setAttribute('aria-label', dark ? 'Cambiar Logística a modo claro' : 'Cambiar Logística a modo oscuro');
 
-    if (dark) schedulePedidosBadgesModule();
+    if (dark) scheduleDarkModules();
   }
 
   function ensureToggle() {
@@ -103,7 +117,7 @@
     if (!isLogisticaPage()) return;
     ensureToggle();
     applyTheme(getStoredTheme());
-    schedulePedidosBadgesModule();
+    scheduleDarkModules();
   }
 
   if (document.readyState === 'loading') {
