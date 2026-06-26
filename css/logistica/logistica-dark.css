@@ -1,0 +1,318 @@
+/* ==========================================================
+   Protocol Data · Logística Dark Mode
+   Alcance: solo body[data-page="logistica"].logistica-dark
+   Inspiración visual: superficies oscuras cómodas tipo ChatGPT.
+   ========================================================== */
+
+body[data-page="logistica"].logistica-dark{
+  color-scheme: dark;
+  --log-dark-bg:#212121;
+  --log-dark-bg-soft:#181818;
+  --log-dark-card:#2f2f2f;
+  --log-dark-card-2:#303030;
+  --log-dark-card-3:#383838;
+  --log-dark-input:#2a2a2a;
+  --log-dark-text:#ececec;
+  --log-dark-muted:#b4b4b4;
+  --log-dark-muted-2:#8f8f8f;
+  --log-dark-border:rgba(255,255,255,.10);
+  --log-dark-border-strong:rgba(255,255,255,.16);
+  --log-dark-shadow:0 18px 42px rgba(0,0,0,.32);
+  --log-dark-blue:#2479ff;
+
+  background:var(--log-dark-bg) !important;
+  color:var(--log-dark-text) !important;
+}
+
+body[data-page="logistica"].logistica-dark .appShell,
+body[data-page="logistica"].logistica-dark .bodyGrid,
+body[data-page="logistica"].logistica-dark .logisticsMain{
+  background:var(--log-dark-bg) !important;
+  color:var(--log-dark-text) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logisticsHeader{
+  background:transparent !important;
+  color:var(--log-dark-text) !important;
+}
+
+body[data-page="logistica"].logistica-dark .appHeader__title,
+body[data-page="logistica"].logistica-dark .logCard__head h2,
+body[data-page="logistica"].logistica-dark .logHeroCard strong,
+body[data-page="logistica"].logistica-dark .logStateItem strong,
+body[data-page="logistica"].logistica-dark .logInsightItem strong,
+body[data-page="logistica"].logistica-dark .logRuleItem strong,
+body[data-page="logistica"].logistica-dark .logIssueItem strong,
+body[data-page="logistica"].logistica-dark .logBannerItem strong,
+body[data-page="logistica"].logistica-dark .logLookupExec__head strong,
+body[data-page="logistica"].logistica-dark .logLookupExec__hero strong,
+body[data-page="logistica"].logistica-dark .logLookupExec__grid strong,
+body[data-page="logistica"].logistica-dark .logLookupExec__notice strong,
+body[data-page="logistica"].logistica-dark .logRulePreview strong,
+body[data-page="logistica"].logistica-dark .logPedidosMetric strong,
+body[data-page="logistica"].logistica-dark .logPedidosSlide__title strong,
+body[data-page="logistica"].logistica-dark .logRuleSlide__title strong,
+body[data-page="logistica"].logistica-dark .logPedidosForm__cardHead strong,
+body[data-page="logistica"].logistica-dark .logRuleForm__cardHead strong{
+  color:var(--log-dark-text) !important;
+}
+
+body[data-page="logistica"].logistica-dark .appHeader__sub,
+body[data-page="logistica"].logistica-dark .logHeroCard__label,
+body[data-page="logistica"].logistica-dark .logHeroCard small,
+body[data-page="logistica"].logistica-dark .logStateItem span,
+body[data-page="logistica"].logistica-dark .logInsightItem span,
+body[data-page="logistica"].logistica-dark .logRuleItem span,
+body[data-page="logistica"].logistica-dark .logIssueItem span,
+body[data-page="logistica"].logistica-dark .logBannerItem span,
+body[data-page="logistica"].logistica-dark .logCpNote,
+body[data-page="logistica"].logistica-dark .logPriorityList,
+body[data-page="logistica"].logistica-dark .logTable th,
+body[data-page="logistica"].logistica-dark .logLookupResult,
+body[data-page="logistica"].logistica-dark .logLookupExec__head small,
+body[data-page="logistica"].logistica-dark .logLookupExec__head span,
+body[data-page="logistica"].logistica-dark .logLookupExec__grid span,
+body[data-page="logistica"].logistica-dark .logLookupExec__hero span,
+body[data-page="logistica"].logistica-dark .logLookupExec__notice span,
+body[data-page="logistica"].logistica-dark .logPedidosMetric span,
+body[data-page="logistica"].logistica-dark .logPedidosSlide__title span,
+body[data-page="logistica"].logistica-dark .logRuleSlide__title span,
+body[data-page="logistica"].logistica-dark .logPedidosForm__cardHead span,
+body[data-page="logistica"].logistica-dark .logRuleForm__cardHead span,
+body[data-page="logistica"].logistica-dark .u-sectionLabel{
+  color:var(--log-dark-muted) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logHeroCard,
+body[data-page="logistica"].logistica-dark .logCard,
+body[data-page="logistica"].logistica-dark .logStateItem,
+body[data-page="logistica"].logistica-dark .logInsightItem,
+body[data-page="logistica"].logistica-dark .logRuleItem,
+body[data-page="logistica"].logistica-dark .logIssueItem,
+body[data-page="logistica"].logistica-dark .logBannerItem,
+body[data-page="logistica"].logistica-dark .logLookupResult,
+body[data-page="logistica"].logistica-dark .logLookupExec__head,
+body[data-page="logistica"].logistica-dark .logLookupExec__hero > div,
+body[data-page="logistica"].logistica-dark .logLookupExec__grid > div,
+body[data-page="logistica"].logistica-dark .logLookupExec__badges,
+body[data-page="logistica"].logistica-dark .logLookupExec__notice,
+body[data-page="logistica"].logistica-dark .logPedidosMetric,
+body[data-page="logistica"].logistica-dark .logRulePreview,
+body[data-page="logistica"].logistica-dark .logRulePreview__meta > div,
+body[data-page="logistica"].logistica-dark .logPedidosForm__card,
+body[data-page="logistica"].logistica-dark .logRuleForm__card{
+  background:var(--log-dark-card) !important;
+  border-color:var(--log-dark-border) !important;
+  color:var(--log-dark-text) !important;
+  box-shadow:var(--log-dark-shadow) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logHeroCard--primary{
+  background:linear-gradient(135deg, rgba(36,121,255,.22), var(--log-dark-card) 62%) !important;
+  border-color:rgba(36,121,255,.35) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logCard--soft{
+  background:var(--log-dark-card-2) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logisticsTabs{
+  background:transparent !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTab{
+  background:var(--log-dark-card) !important;
+  color:var(--log-dark-muted) !important;
+  border-color:var(--log-dark-border) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTab:hover{
+  background:var(--log-dark-card-3) !important;
+  color:var(--log-dark-text) !important;
+  border-color:var(--log-dark-border-strong) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTab.is-active{
+  background:var(--log-dark-blue) !important;
+  border-color:var(--log-dark-blue) !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 24px rgba(36,121,255,.26) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logInput,
+body[data-page="logistica"].logistica-dark .logSelect,
+body[data-page="logistica"].logistica-dark .logTextarea,
+body[data-page="logistica"].logistica-dark .logRuleInput,
+body[data-page="logistica"].logistica-dark .logPedidosField input,
+body[data-page="logistica"].logistica-dark .logPedidosField select,
+body[data-page="logistica"].logistica-dark .logPedidosField textarea,
+body[data-page="logistica"].logistica-dark .logRuleField input,
+body[data-page="logistica"].logistica-dark .logRuleField select,
+body[data-page="logistica"].logistica-dark .logRuleField textarea{
+  background:var(--log-dark-input) !important;
+  color:var(--log-dark-text) !important;
+  border-color:var(--log-dark-border-strong) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logInput::placeholder,
+body[data-page="logistica"].logistica-dark .logTextarea::placeholder,
+body[data-page="logistica"].logistica-dark .logRuleInput::placeholder,
+body[data-page="logistica"].logistica-dark .logPedidosField input::placeholder,
+body[data-page="logistica"].logistica-dark .logPedidosField textarea::placeholder{
+  color:rgba(180,180,180,.62) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logInput:focus,
+body[data-page="logistica"].logistica-dark .logSelect:focus,
+body[data-page="logistica"].logistica-dark .logTextarea:focus,
+body[data-page="logistica"].logistica-dark .logRuleInput:focus,
+body[data-page="logistica"].logistica-dark .logPedidosField input:focus,
+body[data-page="logistica"].logistica-dark .logPedidosField select:focus,
+body[data-page="logistica"].logistica-dark .logPedidosField textarea:focus{
+  border-color:rgba(36,121,255,.72) !important;
+  box-shadow:0 0 0 4px rgba(36,121,255,.18) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTableWrap,
+body[data-page="logistica"].logistica-dark .logPedidosTableWrap{
+  background:transparent !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTable th,
+body[data-page="logistica"].logistica-dark .logTable td{
+  border-color:var(--log-dark-border) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTable td{
+  color:var(--log-dark-text) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover td{
+  background:rgba(255,255,255,.035) !important;
+}
+
+body[data-page="logistica"].logistica-dark .btn.btn--secondary,
+body[data-page="logistica"].logistica-dark .logActionBtn,
+body[data-page="logistica"].logistica-dark .logThemeToggle{
+  background:var(--log-dark-card) !important;
+  border:1px solid var(--log-dark-border) !important;
+  color:var(--log-dark-text) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .btn.btn--secondary:hover,
+body[data-page="logistica"].logistica-dark .logActionBtn:hover,
+body[data-page="logistica"].logistica-dark .logThemeToggle:hover{
+  background:var(--log-dark-card-3) !important;
+  border-color:var(--log-dark-border-strong) !important;
+}
+
+body[data-page="logistica"].logistica-dark .btn.btn--primary,
+body[data-page="logistica"].logistica-dark .logRuleForm__submit{
+  background:var(--log-dark-blue) !important;
+  border-color:var(--log-dark-blue) !important;
+  color:#ffffff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConnectionBadge{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid var(--log-dark-border) !important;
+  color:var(--log-dark-muted) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConnectionBadge.is-live{ background:rgba(16,166,106,.16) !important; color:#7ee2b8 !important; }
+body[data-page="logistica"].logistica-dark .logConnectionBadge.is-demo{ background:rgba(245,158,11,.16) !important; color:#f5c56f !important; }
+body[data-page="logistica"].logistica-dark .logConnectionBadge.is-error{ background:rgba(217,48,37,.16) !important; color:#ff9a94 !important; }
+body[data-page="logistica"].logistica-dark .logConnectionBadge.is-loading{ background:rgba(36,121,255,.16) !important; color:#9dc2ff !important; }
+
+body[data-page="logistica"].logistica-dark .logBadge--blue{ background:rgba(36,121,255,.18) !important; color:#9dc2ff !important; }
+body[data-page="logistica"].logistica-dark .logBadge--green{ background:rgba(16,166,106,.18) !important; color:#7ee2b8 !important; }
+body[data-page="logistica"].logistica-dark .logBadge--red{ background:rgba(217,48,37,.18) !important; color:#ff9a94 !important; }
+body[data-page="logistica"].logistica-dark .logBadge--gray{ background:rgba(255,255,255,.08) !important; color:var(--log-dark-muted) !important; }
+body[data-page="logistica"].logistica-dark .logBadge--orange{ background:rgba(245,158,11,.18) !important; color:#f5c56f !important; }
+
+body[data-page="logistica"].logistica-dark .logCpNote{
+  background:rgba(36,121,255,.14) !important;
+  color:#b7d0ff !important;
+  border:1px solid rgba(36,121,255,.20) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logLookupExecStatus--ok{ background:rgba(16,166,106,.18) !important; color:#7ee2b8 !important; }
+body[data-page="logistica"].logistica-dark .logLookupExecStatus--warning{ background:rgba(245,158,11,.18) !important; color:#f5c56f !important; }
+body[data-page="logistica"].logistica-dark .logLookupExecStatus--error{ background:rgba(217,48,37,.18) !important; color:#ff9a94 !important; }
+
+body[data-page="logistica"].logistica-dark .logPedidosSlide__overlay,
+body[data-page="logistica"].logistica-dark .logRuleSlide__overlay{
+  background:rgba(0,0,0,.62) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosSlide__panel,
+body[data-page="logistica"].logistica-dark .logRuleSlide__panel{
+  background:var(--log-dark-bg) !important;
+  color:var(--log-dark-text) !important;
+  box-shadow:-24px 0 54px rgba(0,0,0,.50) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosSlide__header,
+body[data-page="logistica"].logistica-dark .logRuleSlide__header,
+body[data-page="logistica"].logistica-dark .logPedidosForm__footer,
+body[data-page="logistica"].logistica-dark .logRuleForm__footer{
+  background:rgba(33,33,33,.94) !important;
+  border-color:var(--log-dark-border) !important;
+  color:var(--log-dark-text) !important;
+  backdrop-filter:blur(12px);
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosSlide__header button,
+body[data-page="logistica"].logistica-dark .logRuleSlide__header button{
+  background:var(--log-dark-card) !important;
+  color:var(--log-dark-text) !important;
+  border-color:var(--log-dark-border) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosField label,
+body[data-page="logistica"].logistica-dark .logRuleField label,
+body[data-page="logistica"].logistica-dark .logRuleCheck,
+body[data-page="logistica"].logistica-dark .logCheckRow{
+  color:var(--log-dark-muted) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logRuleMessage{
+  background:var(--log-dark-card-2) !important;
+  border-color:var(--log-dark-border) !important;
+  color:var(--log-dark-muted) !important;
+}
+
+.logThemeToggle{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  display:inline-grid;
+  place-items:center;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.10);
+  background:#ffffff;
+  color:#252a32;
+  cursor:pointer;
+  padding:0;
+  transition:background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.logThemeToggle:hover{
+  transform:translateY(-1px);
+  background:#f3f4f6;
+}
+
+.logThemeToggle svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+
+body[data-page="logistica"].logistica-dark .logThemeToggle{
+  background:var(--log-dark-card) !important;
+  color:#f5f5f5 !important;
+  border-color:var(--log-dark-border) !important;
+}
