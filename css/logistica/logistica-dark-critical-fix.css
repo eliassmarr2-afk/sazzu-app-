@@ -1,0 +1,214 @@
+/* ==========================================================
+   Protocol Data · Logística Dark Critical Fix
+   Corrige dos fugas visuales:
+   1) hover/fila seleccionada blanca
+   2) overlay del slide demasiado oscuro
+   Cargar como último CSS del panel Logística.
+   ========================================================== */
+
+/* ==========================================================
+   1) Overlay del slide: sombra, no apagón total
+   ========================================================== */
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__overlay,
+body[data-page="logistica"].logistica-dark .logPedidosSlide__overlay,
+body[data-page="logistica"].logistica-dark .logRuleSlide__overlay,
+body[data-page="logistica"].logistica-dark [class*="Slide__overlay"],
+body[data-page="logistica"].logistica-dark [class*="slide__overlay"],
+body[data-page="logistica"].logistica-dark [id*="Overlay"]{
+  background:rgba(0,0,0,.28) !important;
+  opacity:1 !important;
+  backdrop-filter:none !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide.is-open .logConversationSlide__overlay,
+body[data-page="logistica"].logistica-dark .logPedidosSlide.is-open .logPedidosSlide__overlay,
+body[data-page="logistica"].logistica-dark .logRuleSlide.is-open .logRuleSlide__overlay{
+  background:rgba(0,0,0,.28) !important;
+  opacity:1 !important;
+}
+
+/* Evita capas negras internas demasiado agresivas dentro del slide */
+body[data-page="logistica"].logistica-dark .logConversationSlide::before,
+body[data-page="logistica"].logistica-dark .logConversationSlide::after,
+body[data-page="logistica"].logistica-dark [class*="ConversationSlide"]::before,
+body[data-page="logistica"].logistica-dark [class*="ConversationSlide"]::after{
+  background:transparent !important;
+  opacity:0 !important;
+}
+
+/* ==========================================================
+   2) Hover / fila activa: nunca volver a blanco
+   ========================================================== */
+
+body[data-page="logistica"].logistica-dark .logConversationsTable,
+body[data-page="logistica"].logistica-dark .logPedidosTable,
+body[data-page="logistica"].logistica-dark .logTable{
+  background:#2f2f2f !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr,
+body[data-page="logistica"].logistica-dark .logTable tbody tr{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr > td{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+}
+
+/* Cualquier fondo inline claro en TR o TD se pisa */
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[style] > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[style] > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[style] > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody td[style],
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody td[style],
+body[data-page="logistica"].logistica-dark .logTable tbody td[style]{
+  background:rgba(36,121,255,.075) !important;
+  color:#ececec !important;
+}
+
+/* Estados dinámicos frecuentes */
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-hover > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-hover > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr.is-hover > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-active > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-active > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr.is-active > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr.is-selected > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr.is-selected > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr.is-selected > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[aria-selected="true"] > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[aria-selected="true"] > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[aria-selected="true"] > td,
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr[data-selected="true"] > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr[data-selected="true"] > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr[data-selected="true"] > td{
+  background:#383838 !important;
+  color:#ececec !important;
+}
+
+/* Cuando el criterio operativo genera fila clara, traducir a acento dark */
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--red) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:has(.logBadge--red) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--red) > td{
+  background:rgba(239,68,68,.08) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--orange) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:has(.logBadge--orange) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--orange) > td{
+  background:rgba(245,158,11,.08) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:has(.logBadge--green) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:has(.logBadge--green) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:has(.logBadge--green) > td{
+  background:rgba(34,197,94,.055) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover:has(.logBadge--red) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover:has(.logBadge--red) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover:has(.logBadge--red) > td{
+  background:rgba(239,68,68,.14) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover:has(.logBadge--orange) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover:has(.logBadge--orange) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover:has(.logBadge--orange) > td{
+  background:rgba(245,158,11,.14) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr:hover:has(.logBadge--green) > td,
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr:hover:has(.logBadge--green) > td,
+body[data-page="logistica"].logistica-dark .logTable tbody tr:hover:has(.logBadge--green) > td{
+  background:rgba(34,197,94,.105) !important;
+}
+
+/* Texto dentro de fila hover/activa */
+body[data-page="logistica"].logistica-dark .logConversationsTable tbody tr > td *:not(.logBadge):not(.logPedidosBadge),
+body[data-page="logistica"].logistica-dark .logPedidosTable tbody tr > td *:not(.logBadge):not(.logPedidosBadge),
+body[data-page="logistica"].logistica-dark .logTable tbody tr > td *:not(.logBadge):not(.logPedidosBadge){
+  color:inherit !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationsTable a,
+body[data-page="logistica"].logistica-dark .logPedidosTable a,
+body[data-page="logistica"].logistica-dark .logTable a{
+  color:#9dc2ff !important;
+}
+
+/* ==========================================================
+   3) Slide conversación: bloquear blancos remanentes
+   ========================================================== */
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__panel,
+body[data-page="logistica"].logistica-dark .logConversationSlide__content,
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid,
+body[data-page="logistica"].logistica-dark .logConversationBox,
+body[data-page="logistica"].logistica-dark .logConversationChat,
+body[data-page="logistica"].logistica-dark .logConversationReply,
+body[data-page="logistica"].logistica-dark .logConversationDataList{
+  background:#212121 !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBox,
+body[data-page="logistica"].logistica-dark .logConversationDataItem,
+body[data-page="logistica"].logistica-dark .logConversationReply textarea{
+  background:#2f2f2f !important;
+  border-color:rgba(255,255,255,.10) !important;
+  color:#ececec !important;
+}
+
+/* Elementos genéricos dentro del slide que puedan venir blancos por JS */
+body[data-page="logistica"].logistica-dark .logConversationSlide__panel [style*="background"],
+body[data-page="logistica"].logistica-dark .logConversationSlide__content [style*="background"],
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid [style*="background"]{
+  background:#2f2f2f !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationSlide__panel [style*="color"],
+body[data-page="logistica"].logistica-dark .logConversationSlide__content [style*="color"],
+body[data-page="logistica"].logistica-dark .logConversationDetailGrid [style*="color"]{
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--customer{
+  background:#383838 !important;
+  border-color:rgba(255,255,255,.12) !important;
+  color:#ececec !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--operator{
+  background:#2479ff !important;
+  border-color:#2479ff !important;
+  color:#ffffff !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationBubble--system{
+  background:rgba(255,255,255,.08) !important;
+  border-color:rgba(255,255,255,.12) !important;
+  color:#b4b4b4 !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply textarea,
+body[data-page="logistica"].logistica-dark .logConversationReply input,
+body[data-page="logistica"].logistica-dark .logConversationReply select{
+  background:#2a2a2a !important;
+  color:#ececec !important;
+  border-color:rgba(255,255,255,.14) !important;
+}
+
+body[data-page="logistica"].logistica-dark .logConversationReply textarea::placeholder,
+body[data-page="logistica"].logistica-dark .logConversationReply input::placeholder{
+  color:rgba(180,180,180,.68) !important;
+}
