@@ -23,7 +23,8 @@
     activeConversationId: '',
     listPollTimer: null,
     detailPollTimer: null,
-    detailFingerprint: ''
+    detailFingerprint: '',
+    detailAttachmentsByMessageId: {}
   };
 
   const statusLabels = {
@@ -256,6 +257,38 @@
     document.head.appendChild(style);
   }
 
+
+  function ensureAttachmentStyles() {
+    if (document.getElementById('logConversationAttachmentStyles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'logConversationAttachmentStyles';
+    style.textContent = `
+      .logConversationAttachmentList{display:grid;gap:8px;margin-top:9px}
+      .logConversationAttachmentCard{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:center;border-radius:12px;padding:10px;background:rgba(15,23,42,.06);border:1px solid rgba(148,163,184,.28);box-shadow:0 10px 24px rgba(15,23,42,.08)}
+      .logConversationAttachmentIcon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(36,121,255,.12);color:#2479ff;flex:0 0 auto}
+      .logConversationAttachmentIcon svg{width:21px;height:21px}
+      .logConversationAttachmentBody{min-width:0}
+      .logConversationAttachmentTitle{display:block;font-size:12px;line-height:1.25;font-weight:950;color:inherit;overflow-wrap:anywhere}
+      .logConversationAttachmentMeta{display:block;margin-top:3px;font-size:11px;line-height:1.2;font-weight:850;color:#7a8496}
+      .logConversationAttachmentLink{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;min-height:26px;border-radius:999px;padding:0 10px;background:#2479ff;color:#fff!important;text-decoration:none!important;font-size:11px;font-weight:950;box-shadow:0 8px 18px rgba(36,121,255,.22)}
+      .logConversationAttachmentPhoto{grid-column:1/-1;display:block;width:100%;max-width:320px;max-height:230px;object-fit:cover;border-radius:12px;background:#111827;border:1px solid rgba(148,163,184,.28)}
+      .logConversationBubble--operator .logConversationAttachmentCard{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.24);box-shadow:none}
+      .logConversationBubble--operator .logConversationAttachmentIcon{background:rgba(255,255,255,.18);color:#fff}
+      .logConversationBubble--operator .logConversationAttachmentTitle,
+      .logConversationBubble--operator .logConversationAttachmentMeta{color:#fff!important}
+      .logConversationBubble--operator .logConversationAttachmentLink{background:rgba(255,255,255,.18);color:#fff!important;box-shadow:none}
+      body.logisticsDark .logConversationAttachmentCard,
+      body.logisticaDark .logConversationAttachmentCard,
+      .logisticsMain.is-dark .logConversationAttachmentCard{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);box-shadow:none}
+      body.logisticsDark .logConversationAttachmentMeta,
+      body.logisticaDark .logConversationAttachmentMeta,
+      .logisticsMain.is-dark .logConversationAttachmentMeta{color:#a8b3c4}
+    `;
+    document.head.appendChild(style);
+  }
+
+
   function panel() {
     const main = root();
     return main ? main.querySelector('[data-log-panel="conversaciones"]') : null;
@@ -444,13 +477,132 @@
     slide.setAttribute('aria-hidden', 'true');
     state.activeConversationId = '';
     state.detailFingerprint = '';
+    state.detailAttachmentsByMessageId = {};
     document.documentElement.classList.remove('logSlideLock');
     document.body.classList.remove('logSlideLock');
   }
 
+
+  function supportConversationAttachmentsEndpoint() {
+    const c = cfg();
+    const baseUrl = c?.url ? String(c.url).replace(/\/$/, '') : 'https://cuuzsbhpjmjbbnghtiny.supabase.co';
+    return `${baseUrl}/functions/v1/support-list-conversation-attachments`;
+  }
+
+  function messageId(message) {
+    return String(message?.message_id || message?.id || '').trim();
+  }
+
+  function attachmentsForMessage(message) {
+    const id = messageId(message);
+    const map = state.detailAttachmentsByMessageId || {};
+    const list = id ? map[id] : null;
+    return Array.isArray(list) ? list : [];
+  }
+
+  function isGenericAttachmentMessage(message) {
+    const body = String(message?.message_body || '').trim();
+    return /^Documento adjunto:/i.test(body) || /^Foto enviada desde cámara\.?$/i.test(body);
+  }
+
+  function attachmentKindLabel(attachment) {
+    const type = String(attachment?.attachment_type || '').trim();
+    const mime = String(attachment?.mime_type || '').trim().toLowerCase();
+
+    if (type === 'camera_photo') return 'Foto';
+    if (mime === 'application/pdf') return 'PDF';
+    if (mime.startsWith('text/')) return 'Documento';
+    if (mime.includes('spreadsheet') || mime.includes('excel')) return 'Planilla';
+    if (mime.includes('word')) return 'Documento';
+    return 'Archivo';
+  }
+
+  function attachmentIcon(type) {
+    if (type === 'camera_photo') {
+      return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8.5h2.4L9 6.5h6l1.6 2H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7.5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 17a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" stroke="currentColor" stroke-width="2"/></svg>';
+    }
+
+    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.5 3.5H13l4 4V20a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 6 20V5a1.5 1.5 0 0 1 1.5-1.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13 3.5V8h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.8 13h5.4M8.8 16h5.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  }
+
+  function renderMessageText(message) {
+    const attachments = attachmentsForMessage(message);
+    if (attachments.length && isGenericAttachmentMessage(message)) return '';
+
+    const body = String(message?.message_body || '').trim();
+    return body ? `<p>${esc(body)}</p>` : '';
+  }
+
+  function renderAttachmentCards(message) {
+    const attachments = attachmentsForMessage(message);
+    if (!attachments.length) return '';
+
+    return `<div class="logConversationAttachmentList">${attachments.map(attachment => {
+      const type = String(attachment?.attachment_type || '').trim();
+      const title = attachment?.original_file_name || attachment?.file_name || attachment?.caption || 'Adjunto';
+      const kind = attachmentKindLabel(attachment);
+      const size = attachment?.file_size_label || '';
+      const meta = [kind, size].filter(Boolean).join(' · ');
+      const signedUrl = String(attachment?.signed_url || '').trim();
+      const linkLabel = type === 'camera_photo' ? 'Abrir foto' : 'Abrir documento';
+
+      const photo = type === 'camera_photo' && signedUrl
+        ? `<img class="logConversationAttachmentPhoto" src="${esc(signedUrl)}" alt="Foto enviada por el cliente" loading="lazy">`
+        : '';
+
+      const link = signedUrl
+        ? `<a class="logConversationAttachmentLink" href="${esc(signedUrl)}" target="_blank" rel="noopener noreferrer">${esc(linkLabel)} ↗</a>`
+        : '';
+
+      return `
+        <div class="logConversationAttachmentCard">
+          <span class="logConversationAttachmentIcon">${attachmentIcon(type)}</span>
+          <span class="logConversationAttachmentBody">
+            <strong class="logConversationAttachmentTitle">${esc(title)}</strong>
+            <span class="logConversationAttachmentMeta">${esc(meta)}</span>
+            ${link}
+          </span>
+          ${photo}
+        </div>
+      `;
+    }).join('')}</div>`;
+  }
+
+  async function loadConversationAttachments(conversationId, messages) {
+    const id = String(conversationId || '').trim();
+    const messageIds = (Array.isArray(messages) ? messages : [])
+      .map(messageId)
+      .filter(Boolean);
+
+    if (!id || !messageIds.length) return {};
+
+    try {
+      const response = await fetch(supportConversationAttachmentsEndpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversation_id: id,
+          message_ids: messageIds
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data?.ok !== true) {
+        throw new Error(data?.message || 'No se pudieron leer los adjuntos.');
+      }
+
+      return data.attachments_by_message_id || {};
+    } catch (error) {
+      console.warn('[Conversaciones Supabase · Adjuntos]', error);
+      return {};
+    }
+  }
+
+
   function bubble(message) {
     const type = message.sender_type === 'operator' ? 'operator' : message.sender_type === 'system' ? 'system' : 'customer';
-    return `<div class="logConversationBubble logConversationBubble--${type}"><strong>${esc(message.sender_name || message.sender_type)}</strong><p>${esc(message.message_body)}</p><small>${esc(shortDate(message.created_at))}</small></div>`;
+    return `<div class="logConversationBubble logConversationBubble--${type}"><strong>${esc(message.sender_name || message.sender_type)}</strong>${renderMessageText(message)}${renderAttachmentCards(message)}<small>${esc(shortDate(message.created_at))}</small></div>`;
   }
 
   function dataItem(label, value) {
@@ -486,6 +638,9 @@
 
     const item = payload.conversation;
     const messages = Array.isArray(payload.messages) ? payload.messages : [];
+    state.detailAttachmentsByMessageId = payload.attachments_by_message_id && typeof payload.attachments_by_message_id === 'object'
+      ? payload.attachments_by_message_id
+      : {};
     const shouldStick = config.forceScroll ? true : isChatNearBottom();
 
     main.querySelector('#logConversationSlideTitle').textContent = item.conversation_id;
@@ -533,6 +688,7 @@
       if (options?.silent && fingerprint && fingerprint === state.detailFingerprint) return true;
       if (options?.silent && operatorHasDraft()) return true;
 
+      data.attachments_by_message_id = await loadConversationAttachments(id, data?.messages || []);
       state.detailFingerprint = fingerprint;
       renderDetail(data, options || {});
       return true;
@@ -546,6 +702,7 @@
   async function openConversation(id) {
     state.activeConversationId = id;
     state.detailFingerprint = '';
+    state.detailAttachmentsByMessageId = {};
     openShell(id);
     await loadConversationDetail(id, { forceScroll: true });
   }
@@ -646,6 +803,7 @@
     main.dataset.logisticaConversacionesSupabaseBooted = '1';
 
     ensureStyles();
+    ensureAttachmentStyles();
     ensureToolbarBadge();
     ensureSlide();
     bind();
