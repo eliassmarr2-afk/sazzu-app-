@@ -157,6 +157,23 @@ function fin_callBackend_(action, params){
   });
 }
 
+async function fin_callSupabaseCashflow_(fromIso, toIso){
+  if (!window.SazzuSupabase || typeof window.SazzuSupabase.rpc !== "function") {
+    throw new Error("Supabase no está disponible para Finanzas.");
+  }
+
+  const payload = await window.SazzuSupabase.rpc("rpc_finance_cashflow_legacy_bridge", {
+    input_from: fromIso || null,
+    input_to: toIso || null
+  });
+
+  if (!payload || payload.ok !== true) {
+    throw new Error(payload && payload.error ? payload.error : "Supabase no devolvió cashflow financiero válido.");
+  }
+
+  return payload;
+}
+
 // ================================
 // API: actualizar estado de ingreso (Z) + patch local
 // ================================
@@ -794,15 +811,26 @@ async function loadFinanzas_(fromIso, toIso){
   const host = fin_$id("finCashflowChart");
   if (host) host.innerHTML = FIN_SKELETON_HTML;
 
-  const res = await fin_callBackend_("getCashflow", { from: fromIso, to: toIso });
-  if (!res || !res.ok) throw new Error((res && res.error) ? res.error : "Backend error");
-  fin_enforceBuild_(res);
+  try {
+    const res = await fin_callSupabaseCashflow_(fromIso, toIso);
+    const count = Array.isArray(res.rows) ? res.rows.length : 0;
 
-  const count = Array.isArray(res.rows) ? res.rows.length : 0;
-  console.log("[finanzas] rango solicitado:", fromIso, "→", toIso, "| filas:", count);
+    console.log("[finanzas] Supabase cashflow:", fromIso, "→", toIso, "| filas:", count);
 
-  // En esta fase inicial de UI todavía no usamos res.alerts ni historial.
-  return res;
+    return res;
+  } catch (supabaseError) {
+    console.warn("[finanzas] Supabase falló. Usando fallback Apps Script.", supabaseError);
+
+    const res = await fin_callBackend_("getCashflow", { from: fromIso, to: toIso });
+    if (!res || !res.ok) throw new Error((res && res.error) ? res.error : "Backend error");
+
+    fin_enforceBuild_(res);
+
+    const count = Array.isArray(res.rows) ? res.rows.length : 0;
+    console.log("[finanzas] fallback Apps Script:", fromIso, "→", toIso, "| filas:", count);
+
+    return res;
+  }
 }
 
 async function fin_loadStockCostsSummary_(fromIso, toIso){
