@@ -13,3 +13,109 @@
 body {
   font-family: 'Montserrat', sans-serif;
 }
+
+/* =========================================================
+   FINANZAS · Tabla de pedidos financieros
+   Scope cerrado: solo afecta la tabla del tab Pedidos.
+   ========================================================= */
+
+#finOrdersFinancialSection .u-cardInner {
+  padding: 18px 18px 16px;
+}
+
+#finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"] {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  max-height: 560px !important;
+  margin-top: 18px !important;
+  padding-bottom: 10px;
+  border: 1px solid rgba(148, 163, 184, .22);
+  border-radius: 12px;
+  background: #fff;
+}
+
+#finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"]::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+#finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"]::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 999px;
+}
+
+#finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"]::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, .45);
+  border: 2px solid #F1F5F9;
+  border-radius: 999px;
+}
+
+#finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(51, 65, 85, .58);
+}
+
+#finOrdersFinancialSection table.finHistTable {
+  min-width: 1520px !important;
+  width: max-content !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+#finOrdersFinancialSection table.finHistTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 13px 20px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, .40);
+  background: #FFFFFF;
+  color: #1F2937;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
+  color: #0F172A;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody tr {
+  cursor: pointer;
+  transition: background-color .16s ease, box-shadow .16s ease;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody tr:hover {
+  background: #F8FAFC;
+  box-shadow: inset 3px 0 0 #2479FF;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody td:first-child,
+#finOrdersFinancialSection table.finHistTable thead th:first-child {
+  padding-left: 22px;
+}
+
+#finOrdersFinancialSection table.finHistTable tbody td:last-child,
+#finOrdersFinancialSection table.finHistTable thead th:last-child {
+  padding-right: 26px;
+}
+
+#finOrdersFinancialSection table.finHistTable .u-muted {
+  line-height: 1.35;
+}
+
+#finOrdersFinancialSection #finOrdersMeta {
+  letter-spacing: 0;
+}
+
+#finOrdersFinancialSection #finOrdersEmpty {
+  padding: 12px 0 0;
+}
