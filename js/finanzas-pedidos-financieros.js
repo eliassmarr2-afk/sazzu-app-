@@ -1,7 +1,8 @@
 console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_02";
+  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_03";
+  const VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
   const state = {
     rows: [],
@@ -9,7 +10,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     loading: false,
     error: "",
     limit: 50,
-    offset: 0
+    offset: 0,
+    view: "pedidos"
   };
 
   function $(id) {
@@ -51,18 +53,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     return `${ymd.slice(8, 10)}/${ymd.slice(5, 7)}/${ymd.slice(0, 4)}`;
   }
 
-  function ensureSection() {
-    let section = $("finOrdersFinancialSection");
-    if (section) return section;
-
-    const main = document.querySelector("main.main");
-    if (!main) return null;
-
-    section = document.createElement("section");
-    section.className = "grid";
-    section.id = "finOrdersFinancialSection";
-    section.style.marginTop = "16px";
-    section.innerHTML = `
+  function tableMarkup() {
+    return `
       <div class="u-card">
         <div class="u-cardInner">
           <div class="u-row u-row--between u-row--center" style="gap:12px; flex-wrap:wrap;">
@@ -106,7 +98,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
           <div class="u-muted" id="finOrdersEmpty" style="display:none; margin-top:14px;"></div>
 
-          <div style="margin-top:14px; overflow:auto; max-height:460px;">
+          <div style="margin-top:14px; overflow:auto; max-height:520px;">
             <table class="finHistTable" aria-label="Tabla financiera de pedidos" style="min-width:1180px; width:100%;">
               <thead>
                 <tr>
@@ -135,21 +127,161 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         </div>
       </div>
     `;
+  }
 
-    const stockOverlay = $("finStockOverlay");
-    if (stockOverlay && stockOverlay.parentNode === main) {
-      main.insertBefore(section, stockOverlay);
-      return section;
+  function getMain() {
+    return document.querySelector("main.main");
+  }
+
+  function findLegacyPlaceholderSection(main) {
+    if (!main) return null;
+    const sections = Array.from(main.querySelectorAll(":scope > section"));
+    return sections.find(section => {
+      const label = section.querySelector(".u-sectionLabel");
+      const text = String(label && label.textContent || "").trim().toLowerCase();
+      return text === "pedidos (financiero)" || text === "pedidos financieros";
+    }) || null;
+  }
+
+  function ensureSection() {
+    const main = getMain();
+    if (!main) return null;
+
+    let section = $("finOrdersFinancialSection");
+
+    if (!section) {
+      section = findLegacyPlaceholderSection(main) || document.createElement("section");
+      section.className = "grid";
+      section.id = "finOrdersFinancialSection";
+      section.style.marginTop = "16px";
+      section.innerHTML = tableMarkup();
     }
 
-    const costGrid = main.querySelector(".finCostsGrid");
-    if (costGrid && costGrid.parentNode === main) {
-      costGrid.insertAdjacentElement("afterend", section);
-      return section;
+    section.dataset.finView = "pedidos";
+
+    const header = main.querySelector(".appHeader");
+    if (header && header.nextElementSibling !== section) {
+      header.insertAdjacentElement("afterend", section);
+    } else if (!section.parentNode) {
+      main.insertBefore(section, main.firstChild);
     }
 
-    main.appendChild(section);
     return section;
+  }
+
+  function injectTabStyles() {
+    if ($("finTopTabsStyle")) return;
+    const style = document.createElement("style");
+    style.id = "finTopTabsStyle";
+    style.textContent = `
+      .finTopTabs {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        padding:4px;
+        border:1px solid rgba(148,163,184,.35);
+        border-radius:999px;
+        background:rgba(248,250,252,.88);
+        box-shadow:0 1px 3px rgba(15,23,42,.06);
+      }
+      .finTopTabs__btn {
+        appearance:none;
+        border:0;
+        border-radius:999px;
+        background:transparent;
+        color:#64748B;
+        cursor:pointer;
+        font-size:13px;
+        font-weight:800;
+        line-height:1;
+        padding:9px 16px;
+        white-space:nowrap;
+      }
+      .finTopTabs__btn.is-active {
+        background:#fff;
+        color:#0F172A;
+        box-shadow:0 1px 7px rgba(15,23,42,.12);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureTopTabs() {
+    injectTabStyles();
+
+    let tabs = $("finTopTabs");
+    if (tabs) return tabs;
+
+    const headerRightRow = document.querySelector(".appHeader__right .u-row");
+    if (!headerRightRow) return null;
+
+    tabs = document.createElement("div");
+    tabs.id = "finTopTabs";
+    tabs.className = "finTopTabs";
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Vistas de Finanzas");
+    tabs.innerHTML = `
+      <button class="finTopTabs__btn" type="button" id="finViewPedidos" data-fin-view-btn="pedidos" role="tab">Pedidos</button>
+      <button class="finTopTabs__btn" type="button" id="finViewMovimientos" data-fin-view-btn="movimientos" role="tab">Movimientos</button>
+    `;
+
+    headerRightRow.insertBefore(tabs, headerRightRow.firstChild);
+
+    tabs.addEventListener("click", ev => {
+      const btn = ev.target.closest("[data-fin-view-btn]");
+      if (!btn) return;
+      setView(String(btn.getAttribute("data-fin-view-btn") || "pedidos"));
+    });
+
+    return tabs;
+  }
+
+  function markMovementSections() {
+    const main = getMain();
+    const tableSection = ensureSection();
+    if (!main || !tableSection) return;
+
+    Array.from(main.querySelectorAll(":scope > section")).forEach(section => {
+      if (section === tableSection) return;
+      section.dataset.finView = "movimientos";
+    });
+  }
+
+  function setView(view) {
+    const next = view === "movimientos" ? "movimientos" : "pedidos";
+    state.view = next;
+
+    try {
+      window.localStorage.setItem(VIEW_STORAGE_KEY, next);
+    } catch (e) {}
+
+    const tableSection = ensureSection();
+    markMovementSections();
+
+    document.querySelectorAll("[data-fin-view-btn]").forEach(btn => {
+      const isActive = String(btn.getAttribute("data-fin-view-btn") || "") === next;
+      btn.classList.toggle("is-active", isActive);
+      btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    document.querySelectorAll("main.main > section[data-fin-view]").forEach(section => {
+      const key = String(section.dataset.finView || "");
+      section.style.display = key === next ? "" : "none";
+    });
+
+    if (next === "pedidos") {
+      loadOrdersTable();
+    } else if (tableSection) {
+      tableSection.style.display = "none";
+    }
+  }
+
+  function getInitialView() {
+    try {
+      const saved = window.localStorage.getItem(VIEW_STORAGE_KEY);
+      if (saved === "pedidos" || saved === "movimientos") return saved;
+    } catch (e) {}
+    return "pedidos";
   }
 
   function getRangeParams() {
@@ -274,7 +406,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         <tr>
           <td>
             <div style="font-weight:800; color:#0F172A;">${escapeHtml(orderName)}</div>
-            <div class="u-muted" style="font-size:12px;">${fmtDate(row.sale_date_iso)}</div>
+            <div class="u-muted" style="font-size:12px;">Movimiento: ${fmtDate(row.movement_date_iso || row.expected_payout_date_iso || row.sale_date_iso)}</div>
           </td>
           <td>
             <div style="font-weight:700;">${escapeHtml(customer)}</div>
@@ -297,7 +429,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
           </td>
           <td>
             <div style="font-weight:800;">${fmtMoney(row.net_expected_amount)}</div>
-            <div class="u-muted" style="font-size:12px;">${fmtDate(row.expected_payout_date_iso)}</div>
+            <div class="u-muted" style="font-size:12px;">Ingreso: ${fmtDate(row.expected_payout_date_iso)}</div>
           </td>
           <td>
             <div>${fmtMoney(row.collection_fee_amount)}</div>
@@ -431,10 +563,12 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
   function init() {
     if (!document.body || document.body.getAttribute("data-page") !== "finanzas") return;
+    ensureTopTabs();
+    ensureSection();
     wireOrdersTable();
     observeAlerts();
     cleanLegacyAlertLabels();
-    loadOrdersTable();
+    setView(getInitialView());
   }
 
   document.addEventListener("DOMContentLoaded", init);
@@ -442,6 +576,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
   window.finFinanceOrdersTable = {
     reload: loadOrdersTable,
-    cleanLegacyAlertLabels
+    cleanLegacyAlertLabels,
+    setView
   };
 })();
