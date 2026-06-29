@@ -295,6 +295,17 @@
   padding: 0 16px 14px;
 }
 
+/* Blindaje de tabs:
+   Reglas nunca debe aparecer dentro de Pedidos ni Movimientos. */
+body:has(#finViewPedidos.is-active) #finFinanceRulesSection,
+body:has(#finViewMovimientos.is-active) #finFinanceRulesSection {
+  display: none !important;
+}
+
+body:has(#finViewReglas.is-active) #finFinanceRulesSection {
+  display: block !important;
+}
+
 @media (max-width: 1100px) {
   .finRulesLayout {
     grid-template-columns: 1fr;
