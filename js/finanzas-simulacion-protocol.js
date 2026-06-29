@@ -1,7 +1,7 @@
 console.log("[finanzas-simulacion-protocol.js] cargado OK");
 
 (function () {
-  const BUILD = "PROTOCOL_SIMULATION_UI_2026_06_29_01";
+  const BUILD = "PROTOCOL_SIMULATION_UI_2026_06_29_02";
   const VIEW_KEY = "sazzu_finanzas_active_view";
   const STYLE_ID = "protocolSimulationStylesheet";
   const STYLE_HREF = "/css/finanzas-simulacion-protocol.css?v=20260629_01";
@@ -30,33 +30,28 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
 
   function todayDateValue() {
     const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
 
-  function num(value, fallback) {
+  function parseNumber(value, fallback) {
     const clean = String(value == null ? "" : value).replace(/\./g, "").replace(",", ".");
     const n = Number(clean);
     return Number.isFinite(n) ? n : Number(fallback || 0);
   }
 
-  function fmtMoney(value) {
-    const n = Number(value || 0);
-    return n.toLocaleString("es-AR", {
+  function money(value) {
+    return Number(value || 0).toLocaleString("es-AR", {
       style: "currency",
       currency: "ARS",
       maximumFractionDigits: 2
     });
   }
 
-  function fmtPct(value) {
-    const n = Number(value || 0);
-    return n.toLocaleString("es-AR", { maximumFractionDigits: 3 }) + "%";
+  function pct(value) {
+    return Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 3 }) + "%";
   }
 
-  function sectionMarkup() {
+  function markup() {
     return `
       <div class="u-card protocolSimCard">
         <div class="u-cardInner protocolSimInner">
@@ -71,7 +66,7 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
           </div>
 
           <div class="protocolSimNotice">
-            Esta primera versión impacta solo en Finanzas. El payload ya queda preparado para expandirse a UTM, SKU, variant_id, logística, stock y publicidad.
+            Esta primera versión impacta solo en Finanzas. El payload queda preparado para expandirse a UTM, SKU, variant_id, logística, stock y publicidad.
           </div>
 
           <div class="protocolSimLayout">
@@ -79,25 +74,10 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
               <div class="protocolSimTitle">Venta simulada</div>
 
               <div class="protocolSimGrid">
-                <label class="protocolSimField">
-                  <span>Bruto vendido</span>
-                  <input id="protocolSimGross" class="u-input" type="number" min="1" step="0.01" value="100000" />
-                </label>
-
-                <label class="protocolSimField">
-                  <span>Fecha de venta</span>
-                  <input id="protocolSimSaleDate" class="u-input" type="date" />
-                </label>
-
-                <label class="protocolSimField">
-                  <span>Cliente</span>
-                  <input id="protocolSimCustomerName" class="u-input" placeholder="Cliente Simulado" value="Cliente Simulado" />
-                </label>
-
-                <label class="protocolSimField">
-                  <span>Email</span>
-                  <input id="protocolSimCustomerEmail" class="u-input" type="email" placeholder="simulado@protocol.local" value="simulado@protocol.local" />
-                </label>
+                <label class="protocolSimField"><span>Bruto vendido</span><input id="protocolSimGross" class="u-input" type="number" min="1" step="0.01" value="100000" /></label>
+                <label class="protocolSimField"><span>Fecha de venta</span><input id="protocolSimSaleDate" class="u-input" type="date" /></label>
+                <label class="protocolSimField"><span>Cliente</span><input id="protocolSimCustomerName" class="u-input" placeholder="Cliente Simulado" value="Cliente Simulado" /></label>
+                <label class="protocolSimField"><span>Email</span><input id="protocolSimCustomerEmail" class="u-input" type="email" placeholder="simulado@protocol.local" value="simulado@protocol.local" /></label>
 
                 <label class="protocolSimField">
                   <span>Proveedor</span>
@@ -145,15 +125,8 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
                   </select>
                 </label>
 
-                <label class="protocolSimField">
-                  <span>Cuotas</span>
-                  <input id="protocolSimInstallments" class="u-input" type="number" min="0" step="1" value="3" />
-                </label>
-
-                <label class="protocolSimField">
-                  <span>Acreditación días</span>
-                  <input id="protocolSimPayoutDelay" class="u-input" type="number" min="0" step="1" value="10" />
-                </label>
+                <label class="protocolSimField"><span>Cuotas</span><input id="protocolSimInstallments" class="u-input" type="number" min="0" step="1" value="3" /></label>
+                <label class="protocolSimField"><span>Acreditación días</span><input id="protocolSimPayoutDelay" class="u-input" type="number" min="0" step="1" value="10" /></label>
 
                 <label class="protocolSimField">
                   <span>Estado de pago</span>
@@ -167,30 +140,12 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
 
               <div class="protocolSimTitle protocolSimTitle--sub">Datos futuros del ecosistema</div>
               <div class="protocolSimGrid protocolSimGrid--future">
-                <label class="protocolSimField">
-                  <span>SKU</span>
-                  <input id="protocolSimSku" class="u-input" placeholder="SKU-DEMO-001" />
-                </label>
-                <label class="protocolSimField">
-                  <span>variant_id</span>
-                  <input id="protocolSimVariantId" class="u-input" placeholder="variant_123" />
-                </label>
-                <label class="protocolSimField">
-                  <span>UTM source</span>
-                  <input id="protocolSimUtmSource" class="u-input" placeholder="meta" />
-                </label>
-                <label class="protocolSimField">
-                  <span>UTM campaign</span>
-                  <input id="protocolSimUtmCampaign" class="u-input" placeholder="test_finanzas" />
-                </label>
-                <label class="protocolSimField">
-                  <span>Código postal</span>
-                  <input id="protocolSimZip" class="u-input" placeholder="5000" />
-                </label>
-                <label class="protocolSimField">
-                  <span>Provincia</span>
-                  <input id="protocolSimProvince" class="u-input" placeholder="Córdoba" />
-                </label>
+                <label class="protocolSimField"><span>SKU</span><input id="protocolSimSku" class="u-input" placeholder="SKU-DEMO-001" /></label>
+                <label class="protocolSimField"><span>variant_id</span><input id="protocolSimVariantId" class="u-input" placeholder="variant_123" /></label>
+                <label class="protocolSimField"><span>UTM source</span><input id="protocolSimUtmSource" class="u-input" placeholder="meta" /></label>
+                <label class="protocolSimField"><span>UTM campaign</span><input id="protocolSimUtmCampaign" class="u-input" placeholder="test_finanzas" /></label>
+                <label class="protocolSimField"><span>Código postal</span><input id="protocolSimZip" class="u-input" placeholder="5000" /></label>
+                <label class="protocolSimField"><span>Provincia</span><input id="protocolSimProvince" class="u-input" placeholder="Córdoba" /></label>
               </div>
 
               <div class="protocolSimActions">
@@ -226,7 +181,7 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
     section.dataset.finView = "simulacion";
     section.style.marginTop = "16px";
     section.style.display = "none";
-    section.innerHTML = sectionMarkup();
+    section.innerHTML = markup();
 
     const header = main.querySelector(".appHeader");
     if (header) header.insertAdjacentElement("afterend", section);
@@ -279,10 +234,7 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
     const section = ensureSection();
     if (!section) return;
 
-    try {
-      window.localStorage.setItem(VIEW_KEY, "simulacion");
-    } catch (e) {}
-
+    try { window.localStorage.setItem(VIEW_KEY, "simulacion"); } catch (e) {}
     setTabActive("simulacion");
 
     document.querySelectorAll("main.main > section").forEach(el => {
@@ -299,23 +251,20 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
     const saleDate = getValue("protocolSimSaleDate");
     const provider = getValue("protocolSimProvider") || "mercadopago";
     const gateway = getValue("protocolSimGateway") || provider;
-    const method = getValue("protocolSimMethod") || "credit_card";
-    const channel = getValue("protocolSimChannel") || "checkout";
-    const financing = getValue("protocolSimFinancing") || "none";
 
     return {
       module_scope: "finance",
-      gross_amount: num(getValue("protocolSimGross"), 0),
+      gross_amount: parseNumber(getValue("protocolSimGross"), 0),
       sale_date: saleDate ? `${saleDate}T12:00:00-03:00` : null,
       customer_name: getValue("protocolSimCustomerName") || "Cliente Simulado",
       customer_email: getValue("protocolSimCustomerEmail") || "simulado@protocol.local",
       provider,
       payment_gateway: gateway,
-      payment_method: method,
-      collection_channel: channel,
-      financing_type: financing,
-      installments_count: Math.max(Math.round(num(getValue("protocolSimInstallments"), 1)), 0),
-      payout_delay_days: Math.max(Math.round(num(getValue("protocolSimPayoutDelay"), 0)), 0),
+      payment_method: getValue("protocolSimMethod") || "credit_card",
+      collection_channel: getValue("protocolSimChannel") || "checkout",
+      financing_type: getValue("protocolSimFinancing") || "none",
+      installments_count: Math.max(Math.round(parseNumber(getValue("protocolSimInstallments"), 1)), 0),
+      payout_delay_days: Math.max(Math.round(parseNumber(getValue("protocolSimPayoutDelay"), 0)), 0),
       payment_status: getValue("protocolSimPaymentStatus") || "pending",
       currency: "ARS",
       sku: getValue("protocolSimSku"),
@@ -341,9 +290,9 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
 
   function renderResult(payload) {
     const mount = $("protocolSimResult");
+    const row = payload && payload.row ? payload.row : null;
     if (!mount) return;
 
-    const row = payload && payload.row ? payload.row : null;
     if (!row) {
       mount.className = "protocolSimResultEmpty";
       mount.textContent = "No hay resultado de simulación.";
@@ -363,12 +312,12 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
       </div>
 
       <div class="protocolSimBreakdown">
-        <div><span>Bruto vendido</span><strong>${fmtMoney(row.gross_amount)}</strong></div>
-        <div><span>Costo por cobro</span><strong>${fmtMoney(row.collection_fee_amount)}</strong></div>
-        <div><span>Costo por cuotas</span><strong>${fmtMoney(row.installment_fee_amount)}</strong></div>
-        <div><span>Costo financiero total</span><strong>${fmtMoney(row.total_financial_cost_amount)}</strong></div>
-        <div><span>Tasa total</span><strong>${fmtPct(row.total_financial_cost_rate)}</strong></div>
-        <div><span>Neto esperado</span><strong>${fmtMoney(row.net_expected_amount)}</strong></div>
+        <div><span>Bruto vendido</span><strong>${money(row.gross_amount)}</strong></div>
+        <div><span>Costo por cobro</span><strong>${money(row.collection_fee_amount)}</strong></div>
+        <div><span>Costo por cuotas</span><strong>${money(row.installment_fee_amount)}</strong></div>
+        <div><span>Costo financiero total</span><strong>${money(row.total_financial_cost_amount)}</strong></div>
+        <div><span>Tasa total</span><strong>${pct(row.total_financial_cost_rate)}</strong></div>
+        <div><span>Neto esperado</span><strong>${money(row.net_expected_amount)}</strong></div>
       </div>
 
       <div class="protocolSimRuleBox">
@@ -387,9 +336,7 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
       go.addEventListener("click", () => {
         if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.setView === "function") {
           window.finFinanceOrdersTable.setView("pedidos");
-          if (typeof window.finFinanceOrdersTable.reload === "function") {
-            window.finFinanceOrdersTable.reload();
-          }
+          if (typeof window.finFinanceOrdersTable.reload === "function") window.finFinanceOrdersTable.reload();
         }
       });
     }
@@ -416,8 +363,8 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
       });
 
       if (!result || result.ok !== true) {
-        const details = result && result.lookup ? ` Lookup: ${JSON.stringify(result.lookup)}` : "";
-        throw new Error((result && result.error ? result.error : "No se pudo crear la venta simulada.") + details);
+        const lookup = result && result.lookup ? ` Lookup: ${JSON.stringify(result.lookup)}` : "";
+        throw new Error((result && result.error ? result.error : "No se pudo crear la venta simulada.") + lookup);
       }
 
       setStatus("Venta simulada creada correctamente.");
@@ -432,30 +379,53 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
   }
 
   function resetForm() {
-    const section = ensureSection();
-    if (!section) return;
-    const ids = [
-      "protocolSimGross", "protocolSimCustomerName", "protocolSimCustomerEmail",
-      "protocolSimSku", "protocolSimVariantId", "protocolSimUtmSource",
-      "protocolSimUtmCampaign", "protocolSimZip", "protocolSimProvince"
-    ];
-    ids.forEach(id => {
+    ensureSection();
+    const defaults = {
+      protocolSimGross: "100000",
+      protocolSimSaleDate: todayDateValue(),
+      protocolSimCustomerName: "Cliente Simulado",
+      protocolSimCustomerEmail: "simulado@protocol.local",
+      protocolSimProvider: "mercadopago",
+      protocolSimGateway: "mercadopago",
+      protocolSimMethod: "credit_card",
+      protocolSimChannel: "checkout",
+      protocolSimFinancing: "none",
+      protocolSimInstallments: "3",
+      protocolSimPayoutDelay: "10",
+      protocolSimPaymentStatus: "pending",
+      protocolSimSku: "",
+      protocolSimVariantId: "",
+      protocolSimUtmSource: "",
+      protocolSimUtmCampaign: "",
+      protocolSimZip: "",
+      protocolSimProvince: ""
+    };
+
+    Object.keys(defaults).forEach(id => {
       const el = $(id);
-      if (el) el.value = "";
+      if (el) el.value = defaults[id];
     });
-    const gross = $("protocolSimGross");
-    const date = $("protocolSimSaleDate");
-    const customer = $("protocolSimCustomerName");
-    const email = $("protocolSimCustomerEmail");
-    const installments = $("protocolSimInstallments");
-    const delay = $("protocolSimPayoutDelay");
-    if (gross) gross.value = "100000";
-    if (date) date.value = todayDateValue();
-    if (customer) customer.value = "Cliente Simulado";
-    if (email) email.value = "simulado@protocol.local";
-    if (installments) installments.value = "3";
-    if (delay) delay.value = "10";
+
     setStatus("Formulario reiniciado.");
+  }
+
+  function syncCodFields() {
+    const provider = $("protocolSimProvider");
+    if (!provider || provider.value !== "cod") return;
+
+    const pairs = {
+      protocolSimGateway: "cod",
+      protocolSimMethod: "cash_on_delivery",
+      protocolSimChannel: "manual",
+      protocolSimFinancing: "none",
+      protocolSimInstallments: "1",
+      protocolSimPayoutDelay: "0"
+    };
+
+    Object.keys(pairs).forEach(id => {
+      const el = $(id);
+      if (el) el.value = pairs[id];
+    });
   }
 
   function wire() {
@@ -471,44 +441,34 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
     if (topSubmit) topSubmit.addEventListener("click", createSimulation);
     if (submit) submit.addEventListener("click", createSimulation);
     if (reset) reset.addEventListener("click", resetForm);
-
-    if (provider) {
-      provider.addEventListener("change", () => {
-        if (provider.value === "cod") {
-          const gateway = $("protocolSimGateway");
-          const method = $("protocolSimMethod");
-          const channel = $("protocolSimChannel");
-          const financing = $("protocolSimFinancing");
-          const installments = $("protocolSimInstallments");
-          const delay = $("protocolSimPayoutDelay");
-          if (gateway) gateway.value = "cod";
-          if (method) method.value = "cash_on_delivery";
-          if (channel) channel.value = "manual";
-          if (financing) financing.value = "none";
-          if (installments) installments.value = "1";
-          if (delay) delay.value = "0";
-        }
-      });
-    }
+    if (provider) provider.addEventListener("change", syncCodFields);
   }
 
   function init() {
     if (!document.body || document.body.getAttribute("data-page") !== "finanzas") return;
+
     ensureStyle();
     ensureSection();
     wire();
 
     const ok = ensureTab();
     if (!ok) {
-      window.setTimeout(ensureTab, 150);
-      window.setTimeout(ensureTab, 500);
+      window.setTimeout(ensureTab, 100);
+      window.setTimeout(ensureTab, 300);
+      window.setTimeout(ensureTab, 700);
     }
   }
 
-  document.addEventListener("DOMContentLoaded", init);
-  document.addEventListener("sazzu:page:load", () => setTimeout(init, 0));
+  document.addEventListener("sazzu:page:load", () => window.setTimeout(init, 0));
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    window.setTimeout(init, 0);
+  }
 
   window.protocolFinanceSimulation = {
+    init,
     setView: showSimulationView,
     create: createSimulation
   };
