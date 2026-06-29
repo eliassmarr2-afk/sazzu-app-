@@ -1,7 +1,7 @@
 console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_03";
+  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_04";
   const VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
   const state = {
@@ -11,7 +11,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     error: "",
     limit: 50,
     offset: 0,
-    view: "pedidos"
+    view: "pedidos",
+    selectedRow: null
   };
 
   function $(id) {
@@ -23,7 +24,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
+      .replace(/\"/g, "&quot;")
       .replace(/'/g, "&#39;");
   }
 
@@ -401,9 +402,10 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       const costTotal = Number(row.total_financial_cost_amount || 0);
       const rate = Number(row.total_financial_cost_rate || 0);
       const costClass = row.is_cod ? "color:#16A34A; font-weight:700;" : "font-weight:700;";
+      const rowId = row.finance_order_id || row.shopify_order_id || orderName;
 
       return `
-        <tr>
+        <tr data-fin-order-id="${escapeHtml(rowId)}" tabindex="0" aria-label="Abrir detalle financiero del pedido ${escapeHtml(orderName)}">
           <td>
             <div style="font-weight:800; color:#0F172A;">${escapeHtml(orderName)}</div>
             <div class="u-muted" style="font-size:12px;">Movimiento: ${fmtDate(row.movement_date_iso || row.expected_payout_date_iso || row.sale_date_iso)}</div>
@@ -446,6 +448,190 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         </tr>
       `;
     }).join("");
+  }
+
+  function findRowById(rowId) {
+    const needle = String(rowId || "");
+    return state.rows.find(row => {
+      const keys = [row.finance_order_id, row.shopify_order_id, row.shopify_order_name].map(value => String(value || ""));
+      return keys.includes(needle);
+    }) || null;
+  }
+
+  function safeSnapshot(row) {
+    const snapshot = row && row.applied_rule_snapshot;
+    if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) return {};
+    return snapshot;
+  }
+
+  function renderDetailLine(label, value, opts) {
+    const options = opts || {};
+    const valueClass = options.strong ? "finOrderDetailLine__value is-strong" : "finOrderDetailLine__value";
+    const valueStyle = options.green ? "color:#16A34A;" : options.red ? "color:#DC2626;" : "";
+
+    return `
+      <div class="finOrderDetailLine">
+        <div class="finOrderDetailLine__label">${escapeHtml(label)}</div>
+        <div class="${valueClass}" style="${valueStyle}">${escapeHtml(value)}</div>
+      </div>
+    `;
+  }
+
+  function renderSnapshot(snapshot) {
+    const entries = Object.entries(snapshot || {}).filter(([, value]) => value != null && value !== "");
+    if (!entries.length) {
+      return `<div class="u-muted">Sin snapshot de regla aplicada.</div>`;
+    }
+
+    return entries.map(([key, value]) => {
+      const label = String(key).replace(/_/g, " ");
+      const cleanValue = typeof value === "object" ? JSON.stringify(value) : String(value);
+      return renderDetailLine(label, cleanValue);
+    }).join("");
+  }
+
+  function detailMarkup(row) {
+    const orderName = row.shopify_order_name || row.shopify_order_id || "—";
+    const gateway = normalizeGatewayLabel(row);
+    const method = normalizeMethodLabel(row);
+    const status = statusLabel(row.payment_status);
+    const calcType = calculationLabel(row);
+    const installments = row.is_cod ? "—" : `${Number(row.installments_count || 1)}x`;
+    const gross = Number(row.gross_amount || 0);
+    const collectionFee = Number(row.collection_fee_amount || 0);
+    const installmentFee = Number(row.installment_fee_amount || 0);
+    const totalCost = Number(row.total_financial_cost_amount || 0);
+    const netExpected = Number(row.net_expected_amount || 0);
+    const rate = Number(row.total_financial_cost_rate || 0);
+    const snapshot = safeSnapshot(row);
+    const codNote = row.is_cod
+      ? `<div class="finOrderDetailNote finOrderDetailNote--success">Este pedido fue marcado como <strong>Contra reembolso</strong>. No tiene costos financieros proyectados.</div>`
+      : `<div class="finOrderDetailNote">Este detalle muestra una proyección financiera. Cuando conectemos Mercado Pago real, se podrá comparar contra el dato conciliado.</div>`;
+
+    return `
+      <header class="finOrderDetail__head">
+        <div>
+          <div class="finOrderDetail__kicker">Detalle financiero</div>
+          <h2 class="finOrderDetail__title">Pedido ${escapeHtml(orderName)}</h2>
+          <div class="finOrderDetail__sub">${escapeHtml(row.customer_name || "Cliente sin nombre")} · ${escapeHtml(row.customer_email || "Sin email")}</div>
+        </div>
+        <button class="finOrderDetail__close" id="finOrderDetailClose" type="button" aria-label="Cerrar detalle">×</button>
+      </header>
+
+      <div class="finOrderDetail__body">
+        <section class="finOrderDetailCard finOrderDetailCard--hero">
+          <div>
+            <div class="finOrderDetailCard__label">Neto esperado</div>
+            <div class="finOrderDetailCard__value">${fmtMoney(netExpected)}</div>
+            <div class="finOrderDetailCard__sub">Bruto menos costos financieros proyectados.</div>
+          </div>
+          <div class="finOrderDetailPill">${escapeHtml(calcType)}</div>
+        </section>
+
+        ${codNote}
+
+        <section class="finOrderDetailGrid">
+          <div class="finOrderDetailMini">
+            <div class="finOrderDetailMini__label">Bruto vendido</div>
+            <div class="finOrderDetailMini__value">${fmtMoney(gross)}</div>
+          </div>
+          <div class="finOrderDetailMini">
+            <div class="finOrderDetailMini__label">Costo financiero total</div>
+            <div class="finOrderDetailMini__value ${totalCost === 0 ? "is-green" : ""}">${fmtMoney(totalCost)}</div>
+          </div>
+        </section>
+
+        <section class="finOrderDetailCard">
+          <div class="finOrderDetailSectionTitle">Breakdown financiero</div>
+          ${renderDetailLine("Costo por cobro", fmtMoney(collectionFee), { green: collectionFee === 0 })}
+          ${renderDetailLine("Costo por cuotas", fmtMoney(installmentFee), { green: installmentFee === 0 })}
+          ${renderDetailLine("Costo financiero total", fmtMoney(totalCost), { strong: true, green: totalCost === 0 })}
+          ${renderDetailLine("Tasa financiera total", fmtPct(rate), { strong: true })}
+          ${renderDetailLine("Neto esperado", fmtMoney(netExpected), { strong: true })}
+        </section>
+
+        <section class="finOrderDetailCard">
+          <div class="finOrderDetailSectionTitle">Medio y condiciones</div>
+          ${renderDetailLine("Gateway", gateway)}
+          ${renderDetailLine("Método", method)}
+          ${renderDetailLine("Cuotas", installments)}
+          ${renderDetailLine("Plazo de acreditación", `${Number(row.payout_delay_days || 0)} día${Number(row.payout_delay_days || 0) === 1 ? "" : "s"}`)}
+          ${renderDetailLine("Estado financiero", status)}
+        </section>
+
+        <section class="finOrderDetailCard">
+          <div class="finOrderDetailSectionTitle">Fechas</div>
+          ${renderDetailLine("Fecha de venta", fmtDate(row.sale_date_iso))}
+          ${renderDetailLine("Fecha de movimiento", fmtDate(row.movement_date_iso || row.expected_payout_date_iso || row.sale_date_iso))}
+          ${renderDetailLine("Ingreso esperado", fmtDate(row.expected_payout_date_iso))}
+          ${renderDetailLine("Ingreso real", fmtDate(row.actual_payout_date_iso))}
+        </section>
+
+        <section class="finOrderDetailCard">
+          <div class="finOrderDetailSectionTitle">Regla aplicada</div>
+          ${renderDetailLine("Origen", row.source || "—")}
+          ${renderDetailLine("Tipo de cálculo", calcType)}
+          <div class="finOrderDetailSnapshot">
+            ${renderSnapshot(snapshot)}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function ensureDetailSlide() {
+    let overlay = $("finOrderDetailOverlay");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.id = "finOrderDetailOverlay";
+    overlay.className = "finOrderDetailOverlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="finOrderDetailBackdrop" id="finOrderDetailBackdrop"></div>
+      <aside class="finOrderDetailPanel" role="dialog" aria-modal="false" aria-label="Detalle financiero del pedido">
+        <div class="finOrderDetailMount" id="finOrderDetailMount"></div>
+      </aside>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const backdrop = $("finOrderDetailBackdrop");
+    if (backdrop) backdrop.addEventListener("click", closeOrderDetail);
+
+    overlay.addEventListener("click", ev => {
+      const closeBtn = ev.target.closest && ev.target.closest("#finOrderDetailClose");
+      if (closeBtn) closeOrderDetail();
+    });
+
+    return overlay;
+  }
+
+  function openOrderDetail(row) {
+    if (!row) return;
+
+    state.selectedRow = row;
+    const overlay = ensureDetailSlide();
+    const mount = $("finOrderDetailMount");
+    if (!mount) return;
+
+    mount.innerHTML = detailMarkup(row);
+    overlay.classList.add("is-open");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("finOrderDetailOpen");
+  }
+
+  function closeOrderDetail() {
+    const overlay = $("finOrderDetailOverlay");
+    if (!overlay) return;
+
+    overlay.classList.remove("is-open");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("finOrderDetailOpen");
+  }
+
+  function onGlobalKeydown(ev) {
+    if (ev.key === "Escape") closeOrderDetail();
   }
 
   async function loadOrdersTable() {
@@ -517,6 +703,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     const gatewayEl = $("finOrdersGatewayFilter");
     const statusEl = $("finOrdersStatusFilter");
     const globalApplyBtn = $("btnApplyFin");
+    const body = $("finOrdersTableBody");
 
     if (applyBtn) {
       applyBtn.addEventListener("click", () => {
@@ -539,6 +726,24 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
           state.offset = 0;
           loadOrdersTable();
         }
+      });
+    }
+
+    if (body && !body.__wiredFinanceOrderDetail) {
+      body.__wiredFinanceOrderDetail = true;
+      body.addEventListener("click", ev => {
+        const tr = ev.target.closest && ev.target.closest("tr[data-fin-order-id]");
+        if (!tr) return;
+        const row = findRowById(tr.getAttribute("data-fin-order-id"));
+        openOrderDetail(row);
+      });
+      body.addEventListener("keydown", ev => {
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        const tr = ev.target.closest && ev.target.closest("tr[data-fin-order-id]");
+        if (!tr) return;
+        ev.preventDefault();
+        const row = findRowById(tr.getAttribute("data-fin-order-id"));
+        openOrderDetail(row);
       });
     }
 
@@ -568,6 +773,11 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     wireOrdersTable();
     observeAlerts();
     cleanLegacyAlertLabels();
+    ensureDetailSlide();
+    if (!window.__finOrderDetailEscapeWired) {
+      window.__finOrderDetailEscapeWired = true;
+      document.addEventListener("keydown", onGlobalKeydown);
+    }
     setView(getInitialView());
   }
 
@@ -577,6 +787,10 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   window.finFinanceOrdersTable = {
     reload: loadOrdersTable,
     cleanLegacyAlertLabels,
-    setView
+    setView,
+    openDetailById: function (rowId) {
+      openOrderDetail(findRowById(rowId));
+    },
+    closeDetail: closeOrderDetail
   };
 })();
