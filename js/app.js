@@ -5,6 +5,8 @@
   const PAGE_EVENT = "sazzu:page:load";
   const SIDEBAR_URL = "/partials/sidebar-panel.html";
   const FINANCE_ORDERS_SCRIPT_URL = "/js/finanzas-pedidos-financieros.js";
+  const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_04";
+  const FINANCE_ORDERS_SCRIPT_SRC = FINANCE_ORDERS_SCRIPT_URL + "?v=" + FINANCE_ORDERS_SCRIPT_VERSION;
 
   function getCurrentFile_() {
     return (location.pathname.split("/").pop() || "").toLowerCase();
@@ -21,13 +23,16 @@
 
     if (!isFinancePage) return;
 
-    if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.reload === "function") {
-      window.finFinanceOrdersTable.reload();
+    if (
+      window.finFinanceOrdersTable &&
+      typeof window.finFinanceOrdersTable.setView === "function"
+    ) {
+      window.finFinanceOrdersTable.setView("pedidos");
       return;
     }
 
     const already = Array.from(document.scripts).some((script) => {
-      return String(script.src || "").includes(FINANCE_ORDERS_SCRIPT_URL);
+      return String(script.src || "").includes(FINANCE_ORDERS_SCRIPT_SRC);
     });
 
     if (already || window.__financeOrdersTableScriptLoading) return;
@@ -35,17 +40,25 @@
     window.__financeOrdersTableScriptLoading = true;
 
     const script = document.createElement("script");
-    script.src = FINANCE_ORDERS_SCRIPT_URL;
+    script.src = FINANCE_ORDERS_SCRIPT_SRC;
     script.defer = true;
     script.onload = () => {
       window.__financeOrdersTableScriptLoading = false;
-      if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.reload === "function") {
+      if (
+        window.finFinanceOrdersTable &&
+        typeof window.finFinanceOrdersTable.setView === "function"
+      ) {
+        window.finFinanceOrdersTable.setView("pedidos");
+      } else if (
+        window.finFinanceOrdersTable &&
+        typeof window.finFinanceOrdersTable.reload === "function"
+      ) {
         window.finFinanceOrdersTable.reload();
       }
     };
     script.onerror = () => {
       window.__financeOrdersTableScriptLoading = false;
-      console.error("[app.js] No se pudo cargar:", FINANCE_ORDERS_SCRIPT_URL);
+      console.error("[app.js] No se pudo cargar:", FINANCE_ORDERS_SCRIPT_SRC);
     };
 
     document.body.appendChild(script);
