@@ -5,8 +5,9 @@
   const PAGE_EVENT = "sazzu:page:load";
   const SIDEBAR_URL = "/partials/sidebar-panel.html";
   const FINANCE_ORDERS_SCRIPT_URL = "/js/finanzas-pedidos-financieros.js";
-  const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_04";
+  const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_05";
   const FINANCE_ORDERS_SCRIPT_SRC = FINANCE_ORDERS_SCRIPT_URL + "?v=" + FINANCE_ORDERS_SCRIPT_VERSION;
+  const FINANCE_VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
   function getCurrentFile_() {
     return (location.pathname.split("/").pop() || "").toLowerCase();
@@ -16,18 +17,154 @@
     return location.pathname.toLowerCase().includes("/panel/");
   }
 
-  function ensureFinanceOrdersTableScript_() {
+  function isFinancePage_() {
     const page = (document.body.getAttribute("data-page") || "").toLowerCase();
     const file = getCurrentFile_();
-    const isFinancePage = page === "finanzas" || file === "finanzas.html";
+    return page === "finanzas" || file === "finanzas.html";
+  }
 
-    if (!isFinancePage) return;
+  function injectFinanceTabStyles_() {
+    if (document.getElementById("finTopTabsStyle")) return;
+
+    const style = document.createElement("style");
+    style.id = "finTopTabsStyle";
+    style.textContent = `
+      .finTopTabs {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        padding:4px;
+        border:1px solid rgba(148,163,184,.35);
+        border-radius:999px;
+        background:rgba(248,250,252,.88);
+        box-shadow:0 1px 3px rgba(15,23,42,.06);
+        flex:0 0 auto;
+        margin-left:auto;
+        margin-right:12px;
+      }
+      .finTopTabs__btn {
+        appearance:none;
+        border:0;
+        border-radius:999px;
+        background:transparent;
+        color:#64748B;
+        cursor:pointer;
+        font-size:13px;
+        font-weight:800;
+        line-height:1;
+        padding:9px 16px;
+        white-space:nowrap;
+      }
+      .finTopTabs__btn.is-active {
+        background:#fff;
+        color:#0F172A;
+        box-shadow:0 1px 7px rgba(15,23,42,.12);
+      }
+      .finTopTabsFallbackBar {
+        display:flex;
+        justify-content:flex-end;
+        margin:10px 0 0;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function setFinanceTabVisual_(view) {
+    const cleanView = view === "movimientos" ? "movimientos" : "pedidos";
+
+    document.querySelectorAll("[data-fin-view-btn]").forEach((btn) => {
+      const isActive = String(btn.getAttribute("data-fin-view-btn") || "") === cleanView;
+      btn.classList.toggle("is-active", isActive);
+      btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+  }
+
+  function requestFinanceView_(view) {
+    const cleanView = view === "movimientos" ? "movimientos" : "pedidos";
+
+    try {
+      window.localStorage.setItem(FINANCE_VIEW_STORAGE_KEY, cleanView);
+    } catch (e) {}
+
+    setFinanceTabVisual_(cleanView);
+
+    if (
+      window.finFinanceOrdersTable &&
+      typeof window.finFinanceOrdersTable.setView === "function"
+    ) {
+      window.finFinanceOrdersTable.setView(cleanView);
+    }
+  }
+
+  function ensureFinanceHeaderTabs_() {
+    if (!isFinancePage_()) return null;
+
+    injectFinanceTabStyles_();
+
+    let tabs = document.getElementById("finTopTabs");
+    if (tabs) {
+      setFinanceTabVisual_("pedidos");
+      return tabs;
+    }
+
+    tabs = document.createElement("div");
+    tabs.id = "finTopTabs";
+    tabs.className = "finTopTabs";
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Vistas de Finanzas");
+    tabs.innerHTML = `
+      <button class="finTopTabs__btn" type="button" id="finViewPedidos" data-fin-view-btn="pedidos" role="tab">Pedidos</button>
+      <button class="finTopTabs__btn" type="button" id="finViewMovimientos" data-fin-view-btn="movimientos" role="tab">Movimientos</button>
+    `;
+
+    tabs.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("[data-fin-view-btn]");
+      if (!btn) return;
+      requestFinanceView_(String(btn.getAttribute("data-fin-view-btn") || "pedidos"));
+    });
+
+    const header = document.querySelector(".appHeader");
+    const headerRight = document.querySelector(".appHeader__right");
+
+    if (header && headerRight && headerRight.parentNode === header) {
+      header.insertBefore(tabs, headerRight);
+      setFinanceTabVisual_("pedidos");
+      return tabs;
+    }
+
+    const headerRightRow = document.querySelector(".appHeader__right .u-row");
+    if (headerRightRow) {
+      headerRightRow.insertBefore(tabs, headerRightRow.firstChild);
+      setFinanceTabVisual_("pedidos");
+      return tabs;
+    }
+
+    const main = document.querySelector("main.main");
+    if (main) {
+      const fallbackBar = document.createElement("div");
+      fallbackBar.className = "finTopTabsFallbackBar";
+      fallbackBar.appendChild(tabs);
+      const appHeader = main.querySelector(".appHeader");
+      if (appHeader) appHeader.insertAdjacentElement("afterend", fallbackBar);
+      else main.insertBefore(fallbackBar, main.firstChild);
+    }
+
+    setFinanceTabVisual_("pedidos");
+    return tabs;
+  }
+
+  function ensureFinanceOrdersTableScript_() {
+    if (!isFinancePage_()) return;
+
+    ensureFinanceHeaderTabs_();
 
     if (
       window.finFinanceOrdersTable &&
       typeof window.finFinanceOrdersTable.setView === "function"
     ) {
       window.finFinanceOrdersTable.setView("pedidos");
+      setFinanceTabVisual_("pedidos");
       return;
     }
 
@@ -44,11 +181,13 @@
     script.defer = true;
     script.onload = () => {
       window.__financeOrdersTableScriptLoading = false;
+      ensureFinanceHeaderTabs_();
       if (
         window.finFinanceOrdersTable &&
         typeof window.finFinanceOrdersTable.setView === "function"
       ) {
         window.finFinanceOrdersTable.setView("pedidos");
+        setFinanceTabVisual_("pedidos");
       } else if (
         window.finFinanceOrdersTable &&
         typeof window.finFinanceOrdersTable.reload === "function"
