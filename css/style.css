@@ -19,13 +19,39 @@ body {
    Scope cerrado: solo afecta la tabla del tab Pedidos.
    ========================================================= */
 
+#finOrdersFinancialSection {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#finOrdersFinancialSection .u-card {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 #finOrdersFinancialSection .u-cardInner {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
   padding: 18px 18px 16px;
 }
 
+#finOrdersFinancialSection .u-cardInner > .u-row {
+  max-width: 100%;
+  min-width: 0;
+}
+
 #finOrdersFinancialSection .u-cardInner > div[style*="overflow:auto"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   overflow-x: auto !important;
   overflow-y: auto !important;
+  overscroll-behavior-x: contain;
   max-height: 560px !important;
   margin-top: 18px !important;
   padding-bottom: 10px;
@@ -55,8 +81,9 @@ body {
 }
 
 #finOrdersFinancialSection table.finHistTable {
+  width: 1520px !important;
   min-width: 1520px !important;
-  width: max-content !important;
+  max-width: none !important;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: auto;
