@@ -1,8 +1,10 @@
 console.log("[finanzas-reglas-financieras.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_RULES_UI_2026_06_29_01";
+  const BUILD = "FINANCE_RULES_UI_2026_06_29_02";
   const VIEW_KEY = "sazzu_finanzas_active_view";
+  const STYLE_ID = "finRulesStylesheet";
+  const STYLE_HREF = "/css/finanzas-reglas-financieras.css?v=20260629_01";
 
   const state = {
     rows: [],
@@ -13,6 +15,15 @@ console.log("[finanzas-reglas-financieras.js] cargado OK");
 
   function $(id) {
     return document.getElementById(id);
+  }
+
+  function ensureStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    const link = document.createElement("link");
+    link.id = STYLE_ID;
+    link.rel = "stylesheet";
+    link.href = STYLE_HREF;
+    document.head.appendChild(link);
   }
 
   function escapeHtml(value) {
@@ -567,6 +578,7 @@ console.log("[finanzas-reglas-financieras.js] cargado OK");
 
   function init() {
     if (!document.body || document.body.getAttribute("data-page") !== "finanzas") return;
+    ensureStyle();
     ensureSection();
     wire();
 
