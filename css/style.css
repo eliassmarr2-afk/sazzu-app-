@@ -118,9 +118,11 @@ body {
   transition: background-color .16s ease, box-shadow .16s ease;
 }
 
-#finOrdersFinancialSection table.finHistTable tbody tr:hover {
+#finOrdersFinancialSection table.finHistTable tbody tr:hover,
+#finOrdersFinancialSection table.finHistTable tbody tr:focus {
   background: #F8FAFC;
   box-shadow: inset 3px 0 0 #2479FF;
+  outline: none;
 }
 
 #finOrdersFinancialSection table.finHistTable tbody tr:last-child td {
@@ -148,4 +150,283 @@ body {
 #finOrdersFinancialSection #finOrdersEmpty {
   box-sizing: border-box;
   padding: 12px 18px 0;
+}
+
+/* =========================================================
+   FINANZAS · Slide detalle financiero de pedido
+   ========================================================= */
+
+body.finOrderDetailOpen {
+  overflow: hidden;
+}
+
+.finOrderDetailOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.finOrderDetailOverlay.is-open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.finOrderDetailBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .28);
+  backdrop-filter: blur(2px);
+}
+
+.finOrderDetailPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  min-width: 560px;
+  max-width: 780px;
+  height: 100vh;
+  background: #F8FAFC;
+  border-left: 1px solid rgba(148, 163, 184, .32);
+  box-shadow: -22px 0 50px rgba(15, 23, 42, .18);
+  transform: translateX(105%);
+  transition: transform .22s ease;
+  overflow: hidden;
+}
+
+.finOrderDetailOverlay.is-open .finOrderDetailPanel {
+  transform: translateX(0);
+}
+
+.finOrderDetailMount {
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, .45) transparent;
+}
+
+.finOrderDetail__head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
+  background: rgba(255, 255, 255, .94);
+  backdrop-filter: blur(10px);
+}
+
+.finOrderDetail__kicker {
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.finOrderDetail__title {
+  margin: 5px 0 0;
+  color: #0F172A;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.finOrderDetail__sub {
+  margin-top: 5px;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.finOrderDetail__close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(148, 163, 184, .36);
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: #334155;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.finOrderDetail__close:hover {
+  border-color: rgba(36, 121, 255, .55);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .10);
+  transform: translateY(-1px);
+}
+
+.finOrderDetail__body {
+  padding: 18px 24px 28px;
+}
+
+.finOrderDetailCard,
+.finOrderDetailMini {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, .95);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, .04);
+}
+
+.finOrderDetailCard {
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.finOrderDetailCard--hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 0;
+  border-color: rgba(36, 121, 255, .22);
+}
+
+.finOrderDetailCard__label,
+.finOrderDetailMini__label {
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.finOrderDetailCard__value {
+  margin-top: 4px;
+  color: #0F172A;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.finOrderDetailCard__sub {
+  margin-top: 3px;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.finOrderDetailPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.finOrderDetailNote {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(148, 163, 184, .25);
+  border-radius: 14px;
+  background: #FFFFFF;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.finOrderDetailNote--success {
+  border-color: rgba(22, 163, 74, .20);
+  background: #F0FDF4;
+  color: #166534;
+}
+
+.finOrderDetailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.finOrderDetailMini {
+  padding: 14px;
+}
+
+.finOrderDetailMini__value {
+  margin-top: 4px;
+  color: #0F172A;
+  font-size: 19px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.finOrderDetailMini__value.is-green {
+  color: #16A34A;
+}
+
+.finOrderDetailSectionTitle {
+  margin-bottom: 8px;
+  color: #0F172A;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.finOrderDetailLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(226, 232, 240, .88);
+}
+
+.finOrderDetailLine:first-of-type {
+  border-top: 0;
+}
+
+.finOrderDetailLine__label {
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.finOrderDetailLine__value {
+  max-width: 58%;
+  color: #0F172A;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.finOrderDetailLine__value.is-strong {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.finOrderDetailSnapshot {
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .finOrderDetailPanel {
+    width: 100vw;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .finOrderDetailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .finOrderDetail__body,
+  .finOrderDetail__head {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
 }
