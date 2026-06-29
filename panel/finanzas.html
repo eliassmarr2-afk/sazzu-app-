@@ -32,7 +32,7 @@
         <header class="appHeader" aria-label="Encabezado general">
           <div class="appHeader__left">
             <div class="appHeader__title">Finanzas</div>
-            <div class="appHeader__sub">Estructura inicial</div>
+            <div class="appHeader__sub">Control financiero operativo</div>
           </div>
         
           <div class="appHeader__right">
@@ -104,22 +104,22 @@
               <!-- KPIs arriba -->
               <div class="grid grid--4" style="margin-top:14px;">
                 <div class="u-miniStat">
-                  <div class="u-muted">Cashflow general (Σ N)</div>
+                  <div class="u-muted">Cashflow general</div>
                   <div class="u-bigNum" id="kpiFinBrutoN">$ 0</div>
                 </div>
 
                 <div class="u-miniStat">
-                  <div class="u-muted">Bruto a ingresar (Σ V)</div>
+                  <div class="u-muted">Neto esperado a ingresar</div>
                   <div class="u-bigNum" id="kpiFinNetoV">$ 0</div>
                 </div>
 
                 <div class="u-miniStat">
-                  <div class="u-muted">Retención por cuotas (prom. U)</div>
+                  <div class="u-muted">Costo financiero promedio</div>
                   <div class="u-bigNum" id="kpiFinRetU">0%</div>
                 </div>
 
                 <div class="u-miniStat">
-                  <div class="u-muted">Retención real (prom. W)</div>
+                  <div class="u-muted">Comisión / retención promedio</div>
                   <div class="u-bigNum" id="kpiFinRetW">0%</div>
                 </div>
               </div>
@@ -136,7 +136,7 @@
             <div class="u-legend"><span class="u-dot u-dot--int"></span> Intervenida</div>
           </div>
 
-          <div class="u-muted" style="margin-top:8px;" id="finFootnote"></div>
+          <div class="u-muted" style="margin-top:8px;">Fuente: Supabase Finanzas · Shopify / Mercado Pago / COD.</div>
         </div>
 
       </div>
@@ -237,7 +237,7 @@ aria-label="Abrir slide de costos de stock"
             <div class="finCostFinancial21__value" id="finCostFinancialValue">$ 0</div>
 
             <div class="finCostFinancial21__sub" id="finCostFinancialSub">
-              Retención financiera total del rango activo.
+              Costo financiero total del rango activo.
             </div>
           </div>
 
@@ -321,7 +321,7 @@ aria-label="Abrir slide de costos de stock"
       <div class="u-cardInner">
         <div class="u-sectionLabel">Pedidos (financiero)</div>
         <div class="u-muted" style="margin-top:6px;">
-          (Se agrega luego: tabla + popup de control de ingresos)
+          Próxima etapa: tabla operativa de pagos, conciliación y control de ingresos.
         </div>
       </div>
     </div>
@@ -421,7 +421,7 @@ aria-label="Abrir slide de costos de stock"
                     <div>
                       <div class="u-sectionLabel">Notificaciones financieras</div>
                       <div class="u-muted" style="margin-top:4px;">
-                        Confirmá los cobros basados en la fecha de ingreso (columna Y) y el estado del ingreso (columna Z).
+                        Confirmá los cobros proyectados según fecha esperada de ingreso y estado financiero del pago.
                       </div>
                     </div>
       
@@ -460,7 +460,7 @@ aria-label="Abrir slide de costos de stock"
                       style="display:none;"
                     >
                       <div class="u-muted" style="margin-bottom:8px;">
-                        Historial de cambios de estado de ingresos. Los registros se guardan en la hoja “HistorialFinanzas”.
+                        Historial de cambios de estado financiero. Los registros se guardan en Supabase Finanzas.
                       </div>
       
                       <div class="finAlertsHistoryList" id="finAlertsHistoryList"></div>
@@ -494,7 +494,7 @@ aria-label="Abrir slide de costos de stock"
                     </p>
       
                     <p class="finConfirmModal__note">
-                      Este cambio impacta en el cashflow y quedará registrado en <strong>HistorialFinanzas</strong>.
+                      Este cambio impacta en el cashflow y quedará registrado en <strong>Supabase Finanzas</strong>.
                     </p>
                   </div>
       
