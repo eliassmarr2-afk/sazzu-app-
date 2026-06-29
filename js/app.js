@@ -5,7 +5,7 @@
   const PAGE_EVENT = "sazzu:page:load";
   const SIDEBAR_URL = "/partials/sidebar-panel.html";
   const FINANCE_ORDERS_SCRIPT_URL = "/js/finanzas-pedidos-financieros.js";
-  const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_05";
+  const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_06";
   const FINANCE_ORDERS_SCRIPT_SRC = FINANCE_ORDERS_SCRIPT_URL + "?v=" + FINANCE_ORDERS_SCRIPT_VERSION;
   const FINANCE_VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
@@ -97,6 +97,49 @@
     }
   }
 
+  function ensureFinanceOrderDetailClickFallback_() {
+    if (!isFinancePage_()) return;
+    if (window.__financeOrderDetailClickFallbackWired) return;
+
+    window.__financeOrderDetailClickFallbackWired = true;
+
+    document.addEventListener("click", (ev) => {
+      const tr = ev.target.closest && ev.target.closest("tr[data-fin-order-id]");
+      if (!tr) return;
+
+      const interactive = ev.target.closest && ev.target.closest("button, a, input, select, textarea, label");
+      if (interactive) return;
+
+      const rowId = tr.getAttribute("data-fin-order-id");
+      if (!rowId) return;
+
+      if (
+        window.finFinanceOrdersTable &&
+        typeof window.finFinanceOrdersTable.openDetailById === "function"
+      ) {
+        window.finFinanceOrdersTable.openDetailById(rowId);
+      }
+    });
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+
+      const tr = ev.target.closest && ev.target.closest("tr[data-fin-order-id]");
+      if (!tr) return;
+
+      const rowId = tr.getAttribute("data-fin-order-id");
+      if (!rowId) return;
+
+      if (
+        window.finFinanceOrdersTable &&
+        typeof window.finFinanceOrdersTable.openDetailById === "function"
+      ) {
+        ev.preventDefault();
+        window.finFinanceOrdersTable.openDetailById(rowId);
+      }
+    });
+  }
+
   function ensureFinanceHeaderTabs_() {
     if (!isFinancePage_()) return null;
 
@@ -158,6 +201,7 @@
     if (!isFinancePage_()) return;
 
     ensureFinanceHeaderTabs_();
+    ensureFinanceOrderDetailClickFallback_();
 
     if (
       window.finFinanceOrdersTable &&
@@ -182,6 +226,7 @@
     script.onload = () => {
       window.__financeOrdersTableScriptLoading = false;
       ensureFinanceHeaderTabs_();
+      ensureFinanceOrderDetailClickFallback_();
       if (
         window.finFinanceOrdersTable &&
         typeof window.finFinanceOrdersTable.setView === "function"
