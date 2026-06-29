@@ -1,6 +1,6 @@
 /* =========================================================
    FINANZAS · Reglas financieras configurables
-   Estética operativa: campos siempre visibles, radios chicos.
+   Estética operativa: matriz limpia + editor en slide.
    ========================================================= */
 
 #finFinanceRulesSection {
@@ -58,29 +58,13 @@
   line-height: 1.45;
 }
 
-.finRulesLayout {
-  display: grid;
-  grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
-  gap: 18px;
-  margin-top: 18px;
-  min-width: 0;
-}
-
-.finRulesEditor,
 .finRulesList {
   min-width: 0;
+  margin-top: 18px;
   border: 1px solid rgba(148, 163, 184, .42);
   border-radius: 3px;
   background: #FFFFFF;
   overflow: hidden;
-}
-
-.finRulesEditor {
-  padding: 16px;
-}
-
-.finRulesList {
-  padding: 16px 0 0;
 }
 
 .finRulesEditor__title {
@@ -91,117 +75,12 @@
   text-transform: uppercase;
 }
 
-.finRulesFormGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.finRulesField,
-.finRulesCheck {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.finRulesField span,
-.finRulesCheck span {
-  color: #475569;
-  font-size: 12px;
-  font-weight: 850;
-}
-
-.finRulesField--span2 {
-  grid-column: 1 / -1;
-}
-
-#finFinanceRulesSection .u-input,
-#finFinanceRulesSection input[type="text"],
-#finFinanceRulesSection input[type="search"],
-#finFinanceRulesSection input[type="number"],
-#finFinanceRulesSection select,
-#finFinanceRulesSection textarea {
-  width: 100%;
-  min-height: 38px;
-  box-sizing: border-box;
-  border: 1px solid #CBD5E1 !important;
-  border-radius: 3px !important;
-  background: #FFFFFF !important;
-  color: #0F172A !important;
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.25;
-  padding: 8px 10px;
-  outline: none;
-  box-shadow: inset 0 1px 0 rgba(15, 23, 42, .025);
-  transition: border-color .14s ease, box-shadow .14s ease, background-color .14s ease;
-}
-
-#finFinanceRulesSection select.u-input,
-#finFinanceRulesSection select {
-  cursor: pointer;
-  padding-right: 30px;
-}
-
-#finFinanceRulesSection textarea.u-input,
-#finFinanceRulesSection textarea {
-  min-height: 78px;
-  resize: vertical;
-}
-
-#finFinanceRulesSection .u-input:hover,
-#finFinanceRulesSection input:hover,
-#finFinanceRulesSection select:hover,
-#finFinanceRulesSection textarea:hover {
-  border-color: #94A3B8 !important;
-  background: #FFFFFF !important;
-}
-
-#finFinanceRulesSection .u-input:focus,
-#finFinanceRulesSection input:focus,
-#finFinanceRulesSection select:focus,
-#finFinanceRulesSection textarea:focus {
-  border-color: #2479FF !important;
-  box-shadow: 0 0 0 3px rgba(36, 121, 255, .12);
-}
-
-#finFinanceRulesSection .u-input::placeholder,
-#finFinanceRulesSection input::placeholder,
-#finFinanceRulesSection textarea::placeholder {
-  color: #94A3B8;
-  font-weight: 550;
-}
-
-.finRulesCheck {
-  flex-direction: row;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 0 2px;
-}
-
-.finRulesCheck input {
-  width: 16px !important;
-  height: 16px !important;
-  min-height: 16px !important;
-  flex: 0 0 auto;
-  accent-color: #2479FF;
-}
-
-.finRulesEditorActions {
-  justify-content: flex-end;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(226, 232, 240, .95);
-}
-
 .finRulesList__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 16px 14px;
+  padding: 16px;
   border-bottom: 1px solid rgba(226, 232, 240, .95);
   flex-wrap: wrap;
 }
@@ -256,9 +135,11 @@
   transition: background-color .16s ease, box-shadow .16s ease;
 }
 
-.finRulesTable tbody tr:hover {
+.finRulesTable tbody tr:hover,
+.finRulesTable tbody tr:focus {
   background: #F8FAFC;
   box-shadow: inset 3px 0 0 #2479FF;
+  outline: none;
 }
 
 .finRulesTable tbody tr:last-child td {
@@ -306,9 +187,248 @@ body:has(#finViewReglas.is-active) #finFinanceRulesSection {
   display: block !important;
 }
 
-@media (max-width: 1100px) {
-  .finRulesLayout {
-    grid-template-columns: 1fr;
+/* =========================================================
+   Slide lateral · Crear / editar regla financiera
+   ========================================================= */
+
+body.finRuleEditorOpen {
+  overflow: hidden;
+}
+
+.finRuleEditorOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.finRuleEditorOverlay.is-open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.finRuleEditorBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .28);
+  backdrop-filter: blur(2px);
+}
+
+.finRuleEditorPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  min-width: 560px;
+  max-width: 760px;
+  height: 100vh;
+  background: #FFFFFF;
+  border-left: 1px solid rgba(148, 163, 184, .36);
+  box-shadow: -22px 0 50px rgba(15, 23, 42, .18);
+  transform: translateX(105%);
+  transition: transform .22s ease;
+  overflow: hidden;
+}
+
+.finRuleEditorOverlay.is-open .finRuleEditorPanel {
+  transform: translateX(0);
+}
+
+.finRuleEditorPanel__head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
+  background: rgba(255, 255, 255, .96);
+  backdrop-filter: blur(10px);
+}
+
+.finRuleEditorPanel__kicker {
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.finRuleEditorPanel__title {
+  margin: 5px 0 0;
+  color: #0F172A;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1.15;
+}
+
+.finRuleEditorPanel__sub {
+  margin-top: 5px;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.finRuleEditorPanel__close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(148, 163, 184, .45);
+  border-radius: 3px;
+  background: #FFFFFF;
+  color: #334155;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.finRuleEditorPanel__close:hover {
+  border-color: rgba(36, 121, 255, .62);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .10);
+}
+
+.finRuleEditorPanel__body {
+  height: calc(100vh - 156px);
+  overflow: auto;
+  padding: 18px 24px 22px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, .35) transparent;
+}
+
+.finRuleEditorPanel__foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
+  border-top: 1px solid rgba(226, 232, 240, .95);
+  background: rgba(255, 255, 255, .96);
+  backdrop-filter: blur(10px);
+}
+
+.finRulesFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.finRulesField,
+.finRulesCheck {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.finRulesField span,
+.finRulesCheck span {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.finRulesField--span2 {
+  grid-column: 1 / -1;
+}
+
+.finRuleEditorOverlay .u-input,
+#finFinanceRulesSection .u-input,
+.finRuleEditorOverlay input[type="text"],
+.finRuleEditorOverlay input[type="search"],
+.finRuleEditorOverlay input[type="number"],
+.finRuleEditorOverlay select,
+.finRuleEditorOverlay textarea,
+#finFinanceRulesSection input[type="search"],
+#finFinanceRulesSection select {
+  width: 100%;
+  min-height: 38px;
+  box-sizing: border-box;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 3px !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+  padding: 8px 10px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(15, 23, 42, .025);
+  transition: border-color .14s ease, box-shadow .14s ease, background-color .14s ease;
+}
+
+.finRuleEditorOverlay select.u-input,
+#finFinanceRulesSection select.u-input {
+  cursor: pointer;
+  padding-right: 30px;
+}
+
+.finRuleEditorOverlay textarea.u-input {
+  min-height: 82px;
+  resize: vertical;
+}
+
+.finRuleEditorOverlay .u-input:hover,
+.finRuleEditorOverlay input:hover,
+.finRuleEditorOverlay select:hover,
+.finRuleEditorOverlay textarea:hover,
+#finFinanceRulesSection .u-input:hover,
+#finFinanceRulesSection select:hover {
+  border-color: #94A3B8 !important;
+  background: #FFFFFF !important;
+}
+
+.finRuleEditorOverlay .u-input:focus,
+.finRuleEditorOverlay input:focus,
+.finRuleEditorOverlay select:focus,
+.finRuleEditorOverlay textarea:focus,
+#finFinanceRulesSection .u-input:focus,
+#finFinanceRulesSection select:focus {
+  border-color: #2479FF !important;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .12);
+}
+
+.finRuleEditorOverlay .u-input::placeholder,
+.finRuleEditorOverlay input::placeholder,
+.finRuleEditorOverlay textarea::placeholder,
+#finFinanceRulesSection .u-input::placeholder {
+  color: #94A3B8;
+  font-weight: 550;
+}
+
+.finRulesCheck {
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 0 2px;
+}
+
+.finRulesCheck input {
+  width: 16px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  flex: 0 0 auto;
+  accent-color: #2479FF;
+}
+
+.finRuleEditorPanel__foot .finRulesEditorActions {
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .finRuleEditorPanel {
+    width: 100vw;
+    min-width: 0;
+    max-width: none;
   }
 }
 
@@ -324,5 +444,12 @@ body:has(#finViewReglas.is-active) #finFinanceRulesSection {
   .finRulesFilters .u-input {
     max-width: none;
     width: 100%;
+  }
+
+  .finRuleEditorPanel__body,
+  .finRuleEditorPanel__head,
+  .finRuleEditorPanel__foot {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }
