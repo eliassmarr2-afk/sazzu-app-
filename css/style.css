@@ -154,6 +154,7 @@ body {
 
 /* =========================================================
    FINANZAS · Slide detalle financiero de pedido
+   Layout editorial: fondo blanco, líneas divisorias, sin tarjetas.
    ========================================================= */
 
 body.finOrderDetailOpen {
@@ -189,7 +190,7 @@ body.finOrderDetailOpen {
   min-width: 560px;
   max-width: 780px;
   height: 100vh;
-  background: #F8FAFC;
+  background: #FFFFFF;
   border-left: 1px solid rgba(148, 163, 184, .32);
   box-shadow: -22px 0 50px rgba(15, 23, 42, .18);
   transform: translateX(105%);
@@ -205,7 +206,8 @@ body.finOrderDetailOpen {
   height: 100%;
   overflow: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(100, 116, 139, .45) transparent;
+  scrollbar-color: rgba(100, 116, 139, .35) transparent;
+  background: #FFFFFF;
 }
 
 .finOrderDetail__head {
@@ -216,9 +218,9 @@ body.finOrderDetailOpen {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 22px 24px 18px;
+  padding: 24px 28px 18px;
   border-bottom: 1px solid rgba(226, 232, 240, .95);
-  background: rgba(255, 255, 255, .94);
+  background: rgba(255, 255, 255, .96);
   backdrop-filter: blur(10px);
 }
 
@@ -266,20 +268,23 @@ body.finOrderDetailOpen {
 }
 
 .finOrderDetail__body {
-  padding: 18px 24px 28px;
+  padding: 0 28px 30px;
+  background: #FFFFFF;
 }
 
 .finOrderDetailCard,
-.finOrderDetailMini {
-  background: #FFFFFF;
-  border: 1px solid rgba(226, 232, 240, .95);
-  border-radius: 16px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, .04);
+.finOrderDetailMini,
+.finOrderDetailNote {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .finOrderDetailCard {
-  padding: 16px;
-  margin-top: 12px;
+  padding: 18px 0;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
 }
 
 .finOrderDetailCard--hero {
@@ -287,30 +292,32 @@ body.finOrderDetailOpen {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 0;
-  border-color: rgba(36, 121, 255, .22);
+  padding: 22px 0 20px;
+  border-bottom: 1px solid rgba(203, 213, 225, .95);
 }
 
 .finOrderDetailCard__label,
 .finOrderDetailMini__label {
   color: #64748B;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 850;
 }
 
 .finOrderDetailCard__value {
   margin-top: 4px;
   color: #0F172A;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 950;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
 }
 
 .finOrderDetailCard__sub {
-  margin-top: 3px;
+  max-width: 260px;
+  margin-top: 4px;
   color: #64748B;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.35;
 }
 
 .finOrderDetailPill {
@@ -328,11 +335,9 @@ body.finOrderDetailOpen {
 }
 
 .finOrderDetailNote {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border: 1px solid rgba(148, 163, 184, .25);
-  border-radius: 14px;
-  background: #FFFFFF;
+  margin-top: 0;
+  padding: 14px 0 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
   color: #475569;
   font-size: 13px;
   font-weight: 600;
@@ -340,26 +345,30 @@ body.finOrderDetailOpen {
 }
 
 .finOrderDetailNote--success {
-  border-color: rgba(22, 163, 74, .20);
-  background: #F0FDF4;
   color: #166534;
 }
 
 .finOrderDetailGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
+  gap: 0;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
 }
 
 .finOrderDetailMini {
-  padding: 14px;
+  padding: 16px 0;
+}
+
+.finOrderDetailMini + .finOrderDetailMini {
+  padding-left: 18px;
+  border-left: 1px solid rgba(226, 232, 240, .95);
 }
 
 .finOrderDetailMini__value {
   margin-top: 4px;
   color: #0F172A;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 950;
   letter-spacing: -0.02em;
 }
@@ -369,18 +378,20 @@ body.finOrderDetailOpen {
 }
 
 .finOrderDetailSectionTitle {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #0F172A;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 .finOrderDetailLine {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 9px 0;
+  gap: 18px;
+  padding: 10px 0;
   border-top: 1px solid rgba(226, 232, 240, .88);
 }
 
@@ -392,14 +403,14 @@ body.finOrderDetailOpen {
   color: #64748B;
   font-size: 13px;
   font-weight: 700;
-  text-transform: capitalize;
+  text-transform: none;
 }
 
 .finOrderDetailLine__value {
   max-width: 58%;
   color: #0F172A;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 850;
   text-align: right;
   overflow-wrap: anywhere;
 }
@@ -410,7 +421,7 @@ body.finOrderDetailOpen {
 }
 
 .finOrderDetailSnapshot {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 @media (max-width: 900px) {
@@ -422,6 +433,12 @@ body.finOrderDetailOpen {
 
   .finOrderDetailGrid {
     grid-template-columns: 1fr;
+  }
+
+  .finOrderDetailMini + .finOrderDetailMini {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid rgba(226, 232, 240, .95);
   }
 
   .finOrderDetail__body,
