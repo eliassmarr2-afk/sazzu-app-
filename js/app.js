@@ -4,6 +4,7 @@
 
   const PAGE_EVENT = "sazzu:page:load";
   const SIDEBAR_URL = "/partials/sidebar-panel.html";
+  const FINANCE_ORDERS_SCRIPT_URL = "/js/finanzas-pedidos-financieros.js";
 
   function getCurrentFile_() {
     return (location.pathname.split("/").pop() || "").toLowerCase();
@@ -13,6 +14,43 @@
     return location.pathname.toLowerCase().includes("/panel/");
   }
 
+  function ensureFinanceOrdersTableScript_() {
+    const page = (document.body.getAttribute("data-page") || "").toLowerCase();
+    const file = getCurrentFile_();
+    const isFinancePage = page === "finanzas" || file === "finanzas.html";
+
+    if (!isFinancePage) return;
+
+    if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.reload === "function") {
+      window.finFinanceOrdersTable.reload();
+      return;
+    }
+
+    const already = Array.from(document.scripts).some((script) => {
+      return String(script.src || "").includes(FINANCE_ORDERS_SCRIPT_URL);
+    });
+
+    if (already || window.__financeOrdersTableScriptLoading) return;
+
+    window.__financeOrdersTableScriptLoading = true;
+
+    const script = document.createElement("script");
+    script.src = FINANCE_ORDERS_SCRIPT_URL;
+    script.defer = true;
+    script.onload = () => {
+      window.__financeOrdersTableScriptLoading = false;
+      if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.reload === "function") {
+        window.finFinanceOrdersTable.reload();
+      }
+    };
+    script.onerror = () => {
+      window.__financeOrdersTableScriptLoading = false;
+      console.error("[app.js] No se pudo cargar:", FINANCE_ORDERS_SCRIPT_URL);
+    };
+
+    document.body.appendChild(script);
+  }
+
   function runPageSpecificInit_() {
     const page = (document.body.getAttribute("data-page") || "").toLowerCase();
     const file = getCurrentFile_();
@@ -20,6 +58,8 @@
     if ((page === "logistica" || file === "logistica.html") && typeof window.ProtocolLogisticaInit === "function") {
       window.ProtocolLogisticaInit();
     }
+
+    ensureFinanceOrdersTableScript_();
   }
 
   async function injectSidebarIfNeeded_() {
