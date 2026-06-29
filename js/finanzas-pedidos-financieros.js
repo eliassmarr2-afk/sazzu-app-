@@ -1,7 +1,7 @@
 console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_01";
+  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_02";
 
   const state = {
     rows: [],
@@ -49,6 +49,107 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return "—";
 
     return `${ymd.slice(8, 10)}/${ymd.slice(5, 7)}/${ymd.slice(0, 4)}`;
+  }
+
+  function ensureSection() {
+    let section = $("finOrdersFinancialSection");
+    if (section) return section;
+
+    const main = document.querySelector("main.main");
+    if (!main) return null;
+
+    section = document.createElement("section");
+    section.className = "grid";
+    section.id = "finOrdersFinancialSection";
+    section.style.marginTop = "16px";
+    section.innerHTML = `
+      <div class="u-card">
+        <div class="u-cardInner">
+          <div class="u-row u-row--between u-row--center" style="gap:12px; flex-wrap:wrap;">
+            <div>
+              <div class="u-sectionLabel">Pedidos financieros</div>
+              <div class="u-muted" style="margin-top:6px;" id="finOrdersMeta">
+                Vista operativa de pagos, cuotas, costos financieros y neto esperado.
+              </div>
+            </div>
+
+            <div class="u-row u-row--center" style="gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+              <input
+                id="finOrdersSearch"
+                type="search"
+                class="u-input"
+                placeholder="Buscar pedido, cliente o email"
+                style="min-width:220px; max-width:280px;"
+              />
+
+              <select id="finOrdersGatewayFilter" class="u-input" style="max-width:170px;">
+                <option value="">Todos los medios</option>
+                <option value="mercadopago">Mercado Pago</option>
+                <option value="cod">Contra reembolso</option>
+              </select>
+
+              <select id="finOrdersStatusFilter" class="u-input" style="max-width:170px;">
+                <option value="">Todos los estados</option>
+                <option value="pending">Pendiente</option>
+                <option value="processed">Procesado</option>
+                <option value="intervened">Intervenido</option>
+                <option value="cancelled">Cancelado</option>
+                <option value="refunded">Reembolsado</option>
+                <option value="failed">Fallido</option>
+              </select>
+
+              <button id="finOrdersApplyFilters" class="btn btn--primary" type="button">
+                Actualizar tabla
+              </button>
+            </div>
+          </div>
+
+          <div class="u-muted" id="finOrdersEmpty" style="display:none; margin-top:14px;"></div>
+
+          <div style="margin-top:14px; overflow:auto; max-height:460px;">
+            <table class="finHistTable" aria-label="Tabla financiera de pedidos" style="min-width:1180px; width:100%;">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Medio</th>
+                  <th>Cuotas</th>
+                  <th>Estado</th>
+                  <th>Bruto</th>
+                  <th>Costo financiero</th>
+                  <th>Neto esperado</th>
+                  <th>Costo cobro</th>
+                  <th>Costo cuotas</th>
+                  <th>Origen</th>
+                </tr>
+              </thead>
+              <tbody id="finOrdersTableBody">
+                <tr>
+                  <td colspan="11">
+                    <div class="u-muted" style="padding:14px 0;">Esperando datos financieros...</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const stockOverlay = $("finStockOverlay");
+    if (stockOverlay && stockOverlay.parentNode === main) {
+      main.insertBefore(section, stockOverlay);
+      return section;
+    }
+
+    const costGrid = main.querySelector(".finCostsGrid");
+    if (costGrid && costGrid.parentNode === main) {
+      costGrid.insertAdjacentElement("afterend", section);
+      return section;
+    }
+
+    main.appendChild(section);
+    return section;
   }
 
   function getRangeParams() {
@@ -114,13 +215,13 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     if (meta) meta.textContent = "Cargando pedidos financieros...";
     if (!body) return;
 
-    body.innerHTML = Array.from({ length: 4 }).map(() => `
+    body.innerHTML = `
       <tr>
         <td colspan="11">
           <div class="u-muted" style="padding:14px 0;">Cargando operación financiera...</div>
         </td>
       </tr>
-    `).join("");
+    `;
   }
 
   function renderError(message) {
@@ -216,7 +317,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   }
 
   async function loadOrdersTable() {
-    const section = $("finOrdersFinancialSection");
+    const section = ensureSection();
     if (!section) return;
 
     if (!window.SazzuSupabase || typeof window.SazzuSupabase.rpc !== "function") {
@@ -275,7 +376,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   }
 
   function wireOrdersTable() {
-    const section = $("finOrdersFinancialSection");
+    const section = ensureSection();
     if (!section || section.__wiredFinanceOrders) return;
     section.__wiredFinanceOrders = true;
 
