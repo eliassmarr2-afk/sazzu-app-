@@ -1,12 +1,14 @@
 console.log("[finanzas-dark-mode.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_DARK_MODE_2026_06_30_03";
+  const BUILD = "FINANCE_DARK_MODE_2026_06_30_04";
   const STORAGE_KEY = "sazzu_finanzas_dark_mode";
   const STYLE_ID = "finanzasDarkStylesheet";
   const STYLE_HREF = "/css/finanzas-dark.css?v=20260630_02";
   const POLISH_STYLE_ID = "finanzasDarkPolishStylesheet";
   const POLISH_STYLE_HREF = "/css/finanzas-dark-polish.css?v=20260630_01";
+  const COD_STATUS_SCRIPT_ID = "finanzasCodStatusScript";
+  const COD_STATUS_SCRIPT_SRC = "/js/finanzas-cod-status.js?v=20260630_01";
   const TOGGLE_ID = "finThemeToggle";
 
   const icons = {
@@ -41,6 +43,28 @@ console.log("[finanzas-dark-mode.js] cargado OK");
   function ensureStyle() {
     ensureLink(STYLE_ID, STYLE_HREF);
     ensureLink(POLISH_STYLE_ID, POLISH_STYLE_HREF);
+  }
+
+  function ensureCodStatusScript() {
+    if (!isFinancePage()) return;
+
+    if (window.finanzasCodStatus && typeof window.finanzasCodStatus.init === "function") {
+      window.finanzasCodStatus.init();
+      return;
+    }
+
+    if (document.getElementById(COD_STATUS_SCRIPT_ID)) return;
+
+    const script = document.createElement("script");
+    script.id = COD_STATUS_SCRIPT_ID;
+    script.src = COD_STATUS_SCRIPT_SRC;
+    script.defer = true;
+    script.onload = () => {
+      if (window.finanzasCodStatus && typeof window.finanzasCodStatus.init === "function") {
+        window.finanzasCodStatus.init();
+      }
+    };
+    document.body.appendChild(script);
   }
 
   function readPreference() {
@@ -159,6 +183,7 @@ console.log("[finanzas-dark-mode.js] cargado OK");
 
     ensureStyle();
     ensureToggle();
+    ensureCodStatusScript();
     applyTheme(readPreference(), false);
   }
 
