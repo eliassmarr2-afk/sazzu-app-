@@ -1,58 +1,69 @@
 /* ==========================================================
    Protocol Data · Finanzas Dark Mode
    Alcance: body[data-page="finanzas"].finanzas-dark
-   Estética base tomada de Logística dark.
+   Consistencia visual con Logística dark.
    ========================================================== */
 
-body[data-page="finanzas"].finanzas-dark {
-  color-scheme: dark;
-  --fin-dark-bg: #212121;
-  --fin-dark-bg-soft: #181818;
-  --fin-dark-card: #2f2f2f;
-  --fin-dark-card-2: #303030;
-  --fin-dark-card-3: #383838;
-  --fin-dark-input: #2a2a2a;
-  --fin-dark-text: #ececec;
-  --fin-dark-muted: #b4b4b4;
-  --fin-dark-muted-2: #8f8f8f;
-  --fin-dark-border: rgba(255,255,255,.10);
-  --fin-dark-border-strong: rgba(255,255,255,.16);
-  --fin-dark-shadow: 0 18px 42px rgba(0,0,0,.32);
-  --fin-dark-blue: #2479ff;
-  --fin-dark-danger: #f28b82;
-  --fin-dark-success: #68d391;
+body[data-page="finanzas"].finanzas-dark{
+  color-scheme:dark;
+  --fin-dark-page:#171717;
+  --fin-dark-bg:#1f1f1f;
+  --fin-dark-surface:#262626;
+  --fin-dark-card:#2f2f2f;
+  --fin-dark-card-hover:#383838;
+  --fin-dark-input:#242424;
+  --fin-dark-text:#f4f4f5;
+  --fin-dark-muted:#c9c9c9;
+  --fin-dark-muted-2:#9ca3af;
+  --fin-dark-border:rgba(255,255,255,.12);
+  --fin-dark-border-strong:rgba(255,255,255,.18);
+  --fin-dark-shadow:0 18px 42px rgba(0,0,0,.30);
+  --fin-dark-shadow-soft:0 12px 28px rgba(0,0,0,.22);
+  --fin-dark-blue:#2479ff;
+  --fin-dark-blue-soft:rgba(36,121,255,.16);
+  --fin-dark-green:#65e6a1;
+  --fin-dark-green-soft:rgba(34,197,94,.16);
+  --fin-dark-red:#f28b82;
+  --fin-dark-red-soft:rgba(239,68,68,.15);
+  --fin-dark-orange:#f5b76b;
+  --fin-dark-orange-soft:rgba(245,158,11,.14);
 
-  background: var(--fin-dark-bg) !important;
-  color: var(--fin-dark-text) !important;
+  background:var(--fin-dark-page) !important;
+  color:var(--fin-dark-text) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .appShell,
 body[data-page="finanzas"].finanzas-dark .bodyGrid,
-body[data-page="finanzas"].finanzas-dark .main {
-  background: var(--fin-dark-bg) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .main{
+  background:linear-gradient(180deg,#181818 0%,#1f1f1f 100%) !important;
+  color:var(--fin-dark-text) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .appHeader {
-  background: transparent !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .appHeader{
+  background:transparent !important;
+  color:var(--fin-dark-text) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .appHeader__title,
 body[data-page="finanzas"].finanzas-dark .u-bigNum,
+body[data-page="finanzas"].finanzas-dark h1,
+body[data-page="finanzas"].finanzas-dark h2,
+body[data-page="finanzas"].finanzas-dark h3,
+body[data-page="finanzas"].finanzas-dark strong,
 body[data-page="finanzas"].finanzas-dark .finCostCard__value,
 body[data-page="finanzas"].finanzas-dark .finCostStock21__value,
 body[data-page="finanzas"].finanzas-dark .finCostFinancial21__value,
+body[data-page="finanzas"].finanzas-dark .finRulesEditor__title,
 body[data-page="finanzas"].finanzas-dark .finRulesTable__strong,
 body[data-page="finanzas"].finanzas-dark .protocolSimResultOrder,
 body[data-page="finanzas"].finanzas-dark .protocolSimBreakdown strong,
 body[data-page="finanzas"].finanzas-dark .protocolSimRuleTitle,
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__title,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard__value,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMini__value,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__title,
-body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel strong,
-body[data-page="finanzas"].finanzas-dark .finFinancialPanel strong,
-body[data-page="finanzas"].finanzas-dark .finStockPanel strong,
-body[data-page="finanzas"].finanzas-dark .finAlertsPanel strong {
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .finFinSlide strong{
+  color:var(--fin-dark-text) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .appHeader__sub,
@@ -69,15 +80,19 @@ body[data-page="finanzas"].finanzas-dark .finRulesField span,
 body[data-page="finanzas"].finanzas-dark .finRulesCheck span,
 body[data-page="finanzas"].finanzas-dark .protocolSimField span,
 body[data-page="finanzas"].finanzas-dark .protocolSimResultLabel,
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__kicker,
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__sub,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard__label,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard__sub,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMini__label,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailLine__label,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__kicker,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__sub,
-body[data-page="finanzas"].finanzas-dark .finFinancialPanel span,
-body[data-page="finanzas"].finanzas-dark .finStockPanel span,
-body[data-page="finanzas"].finanzas-dark .finAlertsPanel span,
-body[data-page="finanzas"].finanzas-dark label {
-  color: var(--fin-dark-muted) !important;
+body[data-page="finanzas"].finanzas-dark label{
+  color:var(--fin-dark-muted) !important;
 }
 
+/* Superficies */
 body[data-page="finanzas"].finanzas-dark .u-card,
 body[data-page="finanzas"].finanzas-dark .finCostCard,
 body[data-page="finanzas"].finanzas-dark .finRulesCard,
@@ -85,121 +100,124 @@ body[data-page="finanzas"].finanzas-dark .finRulesList,
 body[data-page="finanzas"].finanzas-dark .protocolSimCard,
 body[data-page="finanzas"].finanzas-dark .protocolSimFormCard,
 body[data-page="finanzas"].finanzas-dark .protocolSimResultCard,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPanel,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMini,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel,
 body[data-page="finanzas"].finanzas-dark .finFinancialPanel,
 body[data-page="finanzas"].finanzas-dark .finStockPanel,
 body[data-page="finanzas"].finanzas-dark .finAlertsPanel,
-body[data-page="finanzas"].finanzas-dark .finConfirmModal__dialog {
-  background: var(--fin-dark-card) !important;
-  border-color: var(--fin-dark-border) !important;
-  color: var(--fin-dark-text) !important;
-  box-shadow: var(--fin-dark-shadow) !important;
+body[data-page="finanzas"].finanzas-dark .finConfirmModal__dialog{
+  background:var(--fin-dark-card) !important;
+  border-color:var(--fin-dark-border) !important;
+  color:var(--fin-dark-text) !important;
+  box-shadow:var(--fin-dark-shadow) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .u-cardInner,
 body[data-page="finanzas"].finanzas-dark .finRulesInner,
-body[data-page="finanzas"].finanzas-dark .protocolSimInner {
-  background: transparent !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .protocolSimInner,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMount{
+  background:transparent !important;
+  color:var(--fin-dark-text) !important;
 }
 
-/* Header tabs */
-body[data-page="finanzas"].finanzas-dark .finTopTabs {
-  background: rgba(47,47,47,.92) !important;
-  border-color: var(--fin-dark-border-strong) !important;
-  box-shadow: 0 18px 42px rgba(0,0,0,.24) !important;
+/* Tabs superiores: misma lógica de botón activo azul, pero dark real */
+body[data-page="finanzas"].finanzas-dark .finTopTabs{
+  background:rgba(47,47,47,.92) !important;
+  border-color:var(--fin-dark-border-strong) !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.24) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finTopTabs__btn {
-  background: transparent !important;
-  color: var(--fin-dark-muted) !important;
-  box-shadow: none !important;
+body[data-page="finanzas"].finanzas-dark .finTopTabs__btn{
+  background:transparent !important;
+  color:var(--fin-dark-muted) !important;
+  box-shadow:none !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finTopTabs__btn:hover {
-  background: var(--fin-dark-card-3) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .finTopTabs__btn:hover{
+  background:var(--fin-dark-card-hover) !important;
+  color:var(--fin-dark-text) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finTopTabs__btn.is-active {
-  background: var(--fin-dark-blue) !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 24px rgba(36,121,255,.28) !important;
+body[data-page="finanzas"].finanzas-dark .finTopTabs__btn.is-active{
+  background:var(--fin-dark-blue) !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 24px rgba(36,121,255,.28) !important;
 }
 
-/* Toggle sol/luna */
-.finThemeToggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  margin-right: 12px;
-  border: 1px solid rgba(148,163,184,.35);
-  border-radius: 999px;
-  background: rgba(248,250,252,.88);
-  color: #334155;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(15,23,42,.06);
-  transition: background-color .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+/* Toggle sol/luna igual al control de Logística */
+.finThemeToggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  margin-right:12px;
+  border:1px solid rgba(148,163,184,.35);
+  border-radius:12px;
+  background:rgba(248,250,252,.88);
+  color:#334155;
+  cursor:pointer;
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
 }
 
-.finThemeToggle:hover {
-  transform: translateY(-1px);
-  border-color: rgba(36,121,255,.45);
+.finThemeToggle:hover{
+  transform:translateY(-1px);
+  border-color:rgba(36,121,255,.45);
 }
 
-.finThemeToggle svg {
-  width: 18px;
-  height: 18px;
-  display: block;
+.finThemeToggle svg{
+  width:18px;
+  height:18px;
+  display:block;
 }
 
-body[data-page="finanzas"].finanzas-dark .finThemeToggle {
-  background: var(--fin-dark-card) !important;
-  border-color: var(--fin-dark-border-strong) !important;
-  color: var(--fin-dark-text) !important;
-  box-shadow: none !important;
+body[data-page="finanzas"].finanzas-dark .finThemeToggle{
+  background:var(--fin-dark-card) !important;
+  border-color:var(--fin-dark-border-strong) !important;
+  color:var(--fin-dark-text) !important;
+  box-shadow:none !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finThemeToggle:hover {
-  background: var(--fin-dark-card-3) !important;
+body[data-page="finanzas"].finanzas-dark .finThemeToggle:hover{
+  background:var(--fin-dark-card-hover) !important;
 }
 
-/* Sidebar */
-body[data-page="finanzas"].finanzas-dark .sidebar {
-  background: linear-gradient(180deg, #171717 0%, #202020 100%) !important;
-  border-right: 1px solid rgba(255,255,255,.08) !important;
-  box-shadow: 18px 0 42px rgba(0,0,0,.38), inset 1px 0 0 rgba(255,255,255,.04) !important;
+/* Sidebar consistente con Logística */
+body[data-page="finanzas"].finanzas-dark .sidebar{
+  background:linear-gradient(180deg,#171717 0%,#202020 100%) !important;
+  border-right:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:18px 0 42px rgba(0,0,0,.38), inset 1px 0 0 rgba(255,255,255,.04) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .sidebar::before,
-body[data-page="finanzas"].finanzas-dark .sidebar::after {
-  opacity: 0 !important;
+body[data-page="finanzas"].finanzas-dark .sidebar::after{
+  opacity:0 !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .sidebar__head,
 body[data-page="finanzas"].finanzas-dark .sidebar__account,
 body[data-page="finanzas"].finanzas-dark .navHero,
 body[data-page="finanzas"].finanzas-dark .navGroup__head,
-body[data-page="finanzas"].finanzas-dark .navSubItem {
-  background: transparent !important;
-  border-color: rgba(255,255,255,.08) !important;
-  color: #ececec !important;
+body[data-page="finanzas"].finanzas-dark .navSubItem{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.08) !important;
+  color:#ececec !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .sidebar__account,
 body[data-page="finanzas"].finanzas-dark .navHero,
-body[data-page="finanzas"].finanzas-dark .navSubItem:hover,
-body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub {
-  background: rgba(255,255,255,.08) !important;
+body[data-page="finanzas"].finanzas-dark .navSubItem:hover{
+  background:rgba(255,255,255,.08) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub {
-  background: #2479ff !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 22px rgba(36,121,255,.26) !important;
+body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub{
+  background:#2479ff !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 22px rgba(36,121,255,.26) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .sidebar__accName,
@@ -209,140 +227,187 @@ body[data-page="finanzas"].finanzas-dark .navGroup__name,
 body[data-page="finanzas"].finanzas-dark .navGroup__caret,
 body[data-page="finanzas"].finanzas-dark .navSubItem__txt,
 body[data-page="finanzas"].finanzas-dark .navSubItem__ico,
-body[data-page="finanzas"].finanzas-dark .navHero__chev {
-  color: #d7d7d7 !important;
+body[data-page="finanzas"].finanzas-dark .navHero__chev{
+  color:#d7d7d7 !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub .navSubItem__txt,
-body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub .navSubItem__ico {
-  color: #ffffff !important;
+body[data-page="finanzas"].finanzas-dark .navSubItem.is-active-sub .navSubItem__ico{
+  color:#ffffff !important;
 }
 
-/* Inputs y selects */
+/* Inputs / selects */
 body[data-page="finanzas"].finanzas-dark .u-input,
 body[data-page="finanzas"].finanzas-dark input,
 body[data-page="finanzas"].finanzas-dark select,
-body[data-page="finanzas"].finanzas-dark textarea,
-body[data-page="finanzas"].finanzas-dark .finRulesField input,
-body[data-page="finanzas"].finanzas-dark .finRulesField select,
-body[data-page="finanzas"].finanzas-dark .finRulesField textarea,
-body[data-page="finanzas"].finanzas-dark .protocolSimField input,
-body[data-page="finanzas"].finanzas-dark .protocolSimField select,
-body[data-page="finanzas"].finanzas-dark .protocolSimField textarea {
-  background: var(--fin-dark-input) !important;
-  color: var(--fin-dark-text) !important;
-  border-color: var(--fin-dark-border-strong) !important;
-  box-shadow: none !important;
+body[data-page="finanzas"].finanzas-dark textarea{
+  background:var(--fin-dark-input) !important;
+  color:var(--fin-dark-text) !important;
+  border-color:var(--fin-dark-border-strong) !important;
+  box-shadow:none !important;
 }
 
 body[data-page="finanzas"].finanzas-dark input::placeholder,
 body[data-page="finanzas"].finanzas-dark textarea::placeholder,
-body[data-page="finanzas"].finanzas-dark .u-input::placeholder {
-  color: rgba(180,180,180,.66) !important;
+body[data-page="finanzas"].finanzas-dark .u-input::placeholder{
+  color:rgba(201,201,201,.64) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .u-input:focus,
 body[data-page="finanzas"].finanzas-dark input:focus,
 body[data-page="finanzas"].finanzas-dark select:focus,
-body[data-page="finanzas"].finanzas-dark textarea:focus {
-  border-color: rgba(36,121,255,.72) !important;
-  box-shadow: 0 0 0 4px rgba(36,121,255,.18) !important;
+body[data-page="finanzas"].finanzas-dark textarea:focus{
+  border-color:rgba(36,121,255,.72) !important;
+  box-shadow:0 0 0 4px rgba(36,121,255,.18) !important;
 }
 
-/* Tablas Finanzas */
-body[data-page="finanzas"].finanzas-dark .finOrdersTableWrap,
-body[data-page="finanzas"].finanzas-dark .finRulesTableWrap,
-body[data-page="finanzas"].finanzas-dark table {
-  background: var(--fin-dark-card) !important;
-  color: var(--fin-dark-text) !important;
+/* Tablas */
+body[data-page="finanzas"].finanzas-dark .finHistTable,
+body[data-page="finanzas"].finanzas-dark .finRulesTable,
+body[data-page="finanzas"].finanzas-dark table{
+  background:var(--fin-dark-card) !important;
+  color:var(--fin-dark-text) !important;
+  border-color:var(--fin-dark-border) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark table th,
-body[data-page="finanzas"].finanzas-dark .finOrdersTable th,
-body[data-page="finanzas"].finanzas-dark .finRulesTable th {
-  background: #262626 !important;
-  color: #bdbdbd !important;
-  border-color: var(--fin-dark-border) !important;
+body[data-page="finanzas"].finanzas-dark .finHistTable th,
+body[data-page="finanzas"].finanzas-dark .finRulesTable th,
+body[data-page="finanzas"].finanzas-dark table th{
+  background:#1f1f1f !important;
+  color:#c9c9c9 !important;
+  border-color:var(--fin-dark-border) !important;
+  letter-spacing:.06em;
+  text-transform:none;
 }
 
-body[data-page="finanzas"].finanzas-dark table td,
-body[data-page="finanzas"].finanzas-dark .finOrdersTable td,
-body[data-page="finanzas"].finanzas-dark .finRulesTable td {
-  background: var(--fin-dark-card) !important;
-  color: var(--fin-dark-text) !important;
-  border-color: var(--fin-dark-border) !important;
+body[data-page="finanzas"].finanzas-dark .finHistTable td,
+body[data-page="finanzas"].finanzas-dark .finRulesTable td,
+body[data-page="finanzas"].finanzas-dark table td{
+  background:var(--fin-dark-card) !important;
+  color:var(--fin-dark-text) !important;
+  border-color:var(--fin-dark-border) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark table tbody tr,
-body[data-page="finanzas"].finanzas-dark .finOrdersTable tbody tr,
-body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr {
-  background: var(--fin-dark-card) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .finHistTable tbody tr,
+body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr,
+body[data-page="finanzas"].finanzas-dark table tbody tr{
+  background:var(--fin-dark-card) !important;
+  color:var(--fin-dark-text) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark table tbody tr:hover td,
-body[data-page="finanzas"].finanzas-dark .finOrdersTable tbody tr:hover td,
+body[data-page="finanzas"].finanzas-dark .finHistTable tbody tr:hover td,
 body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr:hover td,
-body[data-page="finanzas"].finanzas-dark table tbody tr:focus td,
-body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr:focus td {
-  background: var(--fin-dark-card-3) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark table tbody tr:hover td,
+body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr.is-selected td,
+body[data-page="finanzas"].finanzas-dark table tbody tr.is-selected td{
+  background:var(--fin-dark-card-hover) !important;
+  color:var(--fin-dark-text) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark table tbody tr td *:not(.finRulesStatus):not(.finOrdersBadge),
-body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr td *:not(.finRulesStatus),
-body[data-page="finanzas"].finanzas-dark .finOrdersTable tbody tr td * {
-  color: inherit !important;
+body[data-page="finanzas"].finanzas-dark .finHistTable td [style],
+body[data-page="finanzas"].finanzas-dark .finRulesTable td [style],
+body[data-page="finanzas"].finanzas-dark table td [style]{
+  color:inherit !important;
 }
 
-/* Badges y señales */
+body[data-page="finanzas"].finanzas-dark .finHistTable td div[style*="color:#0F172A"],
+body[data-page="finanzas"].finanzas-dark .finHistTable td div[style*="color: #0F172A"],
+body[data-page="finanzas"].finanzas-dark .finHistTable td div[style*="color:rgb(15, 23, 42)"]{
+  color:var(--fin-dark-text) !important;
+}
+
+/* Badges / chips: misma familia visual que Logística */
+body[data-page="finanzas"].finanzas-dark td span[style*="background:#F1F5F9"],
+body[data-page="finanzas"].finanzas-dark td span[style*="background: #F1F5F9"],
+body[data-page="finanzas"].finanzas-dark td span[style*="background:rgb(241, 245, 249)"],
+body[data-page="finanzas"].finanzas-dark .finRulesStatus,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPill,
+body[data-page="finanzas"].finanzas-dark .protocolSimBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  border-radius:8px !important;
+  background:rgba(255,255,255,.08) !important;
+  color:#e5e7eb !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  padding:6px 9px !important;
+  box-shadow:none !important;
+}
+
+body[data-page="finanzas"].finanzas-dark td span[style*="background:#F1F5F9"]::before,
+body[data-page="finanzas"].finanzas-dark .finRulesStatus::before,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPill::before,
+body[data-page="finanzas"].finanzas-dark .protocolSimBadge::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:#9ca3af;
+  box-shadow:0 0 0 3px rgba(156,163,175,.14);
+}
+
 body[data-page="finanzas"].finanzas-dark .finRulesStatus.is-active,
-body[data-page="finanzas"].finanzas-dark .protocolSimBadge {
-  background: rgba(34,197,94,.16) !important;
-  color: #8be6a5 !important;
+body[data-page="finanzas"].finanzas-dark .protocolSimBadge,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailNote--success{
+  background:var(--fin-dark-green-soft) !important;
+  border-color:rgba(101,230,161,.28) !important;
+  color:#c7f9dc !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finRulesStatus.is-inactive {
-  background: rgba(255,255,255,.08) !important;
-  color: var(--fin-dark-muted) !important;
+body[data-page="finanzas"].finanzas-dark .finRulesStatus.is-active::before,
+body[data-page="finanzas"].finanzas-dark .protocolSimBadge::before{
+  background:var(--fin-dark-green);
+  box-shadow:0 0 0 3px rgba(101,230,161,.16);
 }
 
-body[data-page="finanzas"].finanzas-dark .finCostFinancial21__value,
-body[data-page="finanzas"].finanzas-dark [style*="color: rgb(220, 38, 38)"],
-body[data-page="finanzas"].finanzas-dark [style*="color:#DC2626"],
-body[data-page="finanzas"].finanzas-dark [style*="color: #DC2626"] {
-  color: var(--fin-dark-danger) !important;
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPill{
+  background:var(--fin-dark-blue-soft) !important;
+  border-color:rgba(36,121,255,.30) !important;
+  color:#cfe0ff !important;
 }
 
-body[data-page="finanzas"].finanzas-dark [style*="color: rgb(22, 163, 74)"],
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPill::before{
+  background:#7db0ff;
+  box-shadow:0 0 0 3px rgba(36,121,255,.16);
+}
+
+/* Señales de dinero */
 body[data-page="finanzas"].finanzas-dark [style*="color:#16A34A"],
-body[data-page="finanzas"].finanzas-dark [style*="color: #16A34A"] {
-  color: var(--fin-dark-success) !important;
+body[data-page="finanzas"].finanzas-dark [style*="color: #16A34A"],
+body[data-page="finanzas"].finanzas-dark [style*="color:rgb(22, 163, 74)"],
+body[data-page="finanzas"].finanzas-dark .is-green{
+  color:var(--fin-dark-green) !important;
 }
 
-/* Cards específicas */
-body[data-page="finanzas"].finanzas-dark .finCostStock21,
-body[data-page="finanzas"].finanzas-dark .finCostFinancial21 {
-  background: transparent !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark [style*="color:#DC2626"],
+body[data-page="finanzas"].finanzas-dark [style*="color: #DC2626"],
+body[data-page="finanzas"].finanzas-dark [style*="color:rgb(220, 38, 38)"],
+body[data-page="finanzas"].finanzas-dark .is-red{
+  color:var(--fin-dark-red) !important;
 }
 
+/* Cards de costos */
 body[data-page="finanzas"].finanzas-dark .finCostCard__icon,
 body[data-page="finanzas"].finanzas-dark .finCostStock21__chart,
 body[data-page="finanzas"].finanzas-dark .finCostFinancial21__chart,
 body[data-page="finanzas"].finanzas-dark .finCostFinancial21__ctaArrow,
-body[data-page="finanzas"].finanzas-dark .finCostStock21__ctaArrow {
-  background: rgba(255,255,255,.06) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .finCostStock21__ctaArrow{
+  background:rgba(255,255,255,.08) !important;
+  color:var(--fin-dark-text) !important;
+  border-color:var(--fin-dark-border) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .finRulesNotice,
 body[data-page="finanzas"].finanzas-dark .protocolSimNotice,
 body[data-page="finanzas"].finanzas-dark .protocolSimResultEmpty,
-body[data-page="finanzas"].finanzas-dark .protocolSimRuleBox {
-  background: rgba(36,121,255,.08) !important;
-  color: #b7d0ff !important;
-  border-color: rgba(36,121,255,.26) !important;
+body[data-page="finanzas"].finanzas-dark .protocolSimRuleBox,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailNote{
+  background:rgba(255,255,255,.06) !important;
+  color:#d7d7d7 !important;
+  border-color:rgba(255,255,255,.10) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .protocolSimBreakdown,
@@ -351,95 +416,103 @@ body[data-page="finanzas"].finanzas-dark .protocolSimResultHero,
 body[data-page="finanzas"].finanzas-dark .protocolSimTitle--sub,
 body[data-page="finanzas"].finanzas-dark .protocolSimActions,
 body[data-page="finanzas"].finanzas-dark .finRulesList__top,
+body[data-page="finanzas"].finanzas-dark .finRulesTableWrap,
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__head,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailGrid,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailLine,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__head,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__foot,
-body[data-page="finanzas"].finanzas-dark .finRulesEditorActions {
-  border-color: var(--fin-dark-border) !important;
+body[data-page="finanzas"].finanzas-dark .finRulesEditorActions{
+  border-color:var(--fin-dark-border) !important;
 }
 
 /* Gráfico */
 body[data-page="finanzas"].finanzas-dark .u-chartBox,
-body[data-page="finanzas"].finanzas-dark #finCashflowChart {
-  background: transparent !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark #finCashflowChart{
+  background:transparent !important;
+  color:var(--fin-dark-text) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark #finCashflowChart svg text,
-body[data-page="finanzas"].finanzas-dark #finCashflowChart text {
-  fill: var(--fin-dark-muted) !important;
+body[data-page="finanzas"].finanzas-dark #finCashflowChart text{
+  fill:var(--fin-dark-muted) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark #finCashflowChart svg line,
-body[data-page="finanzas"].finanzas-dark #finCashflowChart svg path[stroke="#e5e7eb"],
-body[data-page="finanzas"].finanzas-dark #finCashflowChart line {
-  stroke: rgba(255,255,255,.10) !important;
+body[data-page="finanzas"].finanzas-dark #finCashflowChart line{
+  stroke:rgba(255,255,255,.10) !important;
 }
 
-/* Slides / overlays */
+/* Slides y overlays: sombra liviana como Logística, nunca congelamiento */
+body[data-page="finanzas"].finanzas-dark .finOrderDetailBackdrop,
 body[data-page="finanzas"].finanzas-dark .finRuleEditorBackdrop,
 body[data-page="finanzas"].finanzas-dark .finFinancialBackdrop,
 body[data-page="finanzas"].finanzas-dark .finStockBackdrop,
 body[data-page="finanzas"].finanzas-dark .finAlertsBackdrop,
-body[data-page="finanzas"].finanzas-dark .finConfirmModal__backdrop {
-  background: rgba(0,0,0,.28) !important;
-  opacity: 1 !important;
-  backdrop-filter: none !important;
+body[data-page="finanzas"].finanzas-dark .finConfirmModal__backdrop,
+body[data-page="finanzas"].finanzas-dark [class*="Backdrop"],
+body[data-page="finanzas"].finanzas-dark [class*="backdrop"]{
+  background:rgba(0,0,0,.28) !important;
+  opacity:1 !important;
+  backdrop-filter:none !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__head,
-body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__foot,
-body[data-page="finanzas"].finanzas-dark .finFinancialPanelMount,
-body[data-page="finanzas"].finanzas-dark .finStockPanelMount,
-body[data-page="finanzas"].finanzas-dark .finAlertsTabs,
-body[data-page="finanzas"].finanzas-dark .finAlertsPanel__head,
-body[data-page="finanzas"].finanzas-dark .finAlertsBody {
-  background: var(--fin-dark-card) !important;
-  color: var(--fin-dark-text) !important;
-}
-
-body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__body,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPanel,
+body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel,
 body[data-page="finanzas"].finanzas-dark .finFinancialPanel,
 body[data-page="finanzas"].finanzas-dark .finStockPanel,
 body[data-page="finanzas"].finanzas-dark .finAlertsPanel,
-body[data-page="finanzas"].finanzas-dark .finConfirmModal__body {
-  background: var(--fin-dark-bg) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark [class*="Panel"]{
+  background:var(--fin-dark-bg) !important;
+  color:var(--fin-dark-text) !important;
+  box-shadow:-24px 0 58px rgba(0,0,0,.48) !important;
 }
 
-body[data-page="finanzas"].finanzas-dark .finFinancialPanel [style*="background"],
-body[data-page="finanzas"].finanzas-dark .finStockPanel [style*="background"],
-body[data-page="finanzas"].finanzas-dark .finAlertsPanel [style*="background"],
-body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel [style*="background"] {
-  background: var(--fin-dark-card) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__body,
+body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__body,
+body[data-page="finanzas"].finanzas-dark .finFinancialPanelMount,
+body[data-page="finanzas"].finanzas-dark .finStockPanelMount,
+body[data-page="finanzas"].finanzas-dark .finAlertsBody,
+body[data-page="finanzas"].finanzas-dark [class*="Panel"] [style*="background"]{
+  background:var(--fin-dark-bg) !important;
+  color:var(--fin-dark-text) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__close,
+body[data-page="finanzas"].finanzas-dark .finRuleEditorPanel__close,
+body[data-page="finanzas"].finanzas-dark [class*="close"],
+body[data-page="finanzas"].finanzas-dark [class*="Close"]{
+  background:var(--fin-dark-card-hover) !important;
+  color:#ececec !important;
+  border-color:var(--fin-dark-border) !important;
 }
 
 /* Botones */
 body[data-page="finanzas"].finanzas-dark .btn,
-body[data-page="finanzas"].finanzas-dark button:not(.btn--primary):not(.finTopTabs__btn) {
-  background: var(--fin-dark-card-3) !important;
-  border-color: var(--fin-dark-border-strong) !important;
-  color: var(--fin-dark-text) !important;
+body[data-page="finanzas"].finanzas-dark button:not(.btn--primary):not(.finTopTabs__btn):not(.finThemeToggle){
+  background:var(--fin-dark-card) !important;
+  border-color:var(--fin-dark-border-strong) !important;
+  color:var(--fin-dark-text) !important;
+  box-shadow:none !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .btn:hover,
-body[data-page="finanzas"].finanzas-dark button:not(.btn--primary):not(.finTopTabs__btn):hover {
-  background: #444444 !important;
+body[data-page="finanzas"].finanzas-dark button:not(.btn--primary):not(.finTopTabs__btn):not(.finThemeToggle):hover{
+  background:var(--fin-dark-card-hover) !important;
 }
 
 body[data-page="finanzas"].finanzas-dark .btn.btn--primary,
 body[data-page="finanzas"].finanzas-dark .btn--primary,
 body[data-page="finanzas"].finanzas-dark #btnApplyFin,
+body[data-page="finanzas"].finanzas-dark #finOrdersApplyFilters,
 body[data-page="finanzas"].finanzas-dark #finRulesReloadBtn,
 body[data-page="finanzas"].finanzas-dark #protocolSimSubmit,
-body[data-page="finanzas"].finanzas-dark #protocolSimSubmitTop {
-  background: var(--fin-dark-blue) !important;
-  border-color: var(--fin-dark-blue) !important;
-  color: #ffffff !important;
+body[data-page="finanzas"].finanzas-dark #protocolSimSubmitTop{
+  background:var(--fin-dark-blue) !important;
+  border-color:var(--fin-dark-blue) !important;
+  color:#ffffff !important;
 }
 
-@media (max-width: 980px) {
-  .finThemeToggle {
-    margin-right: 8px;
-  }
+@media (max-width:980px){
+  .finThemeToggle{margin-right:8px;}
 }
