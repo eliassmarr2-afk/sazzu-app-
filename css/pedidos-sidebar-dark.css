@@ -1,0 +1,82 @@
+/* ==========================================================
+   Protocol Data · Pedidos Dark Sidebar
+   Build: PEDIDOS_DARK_SIDEBAR_2026_06_30_01
+   Consistencia con Logística dark.
+   ========================================================== */
+
+body[data-page="pedidos"].pedidos-dark .sidebar{
+  background:linear-gradient(180deg,#171717 0%,#202020 100%) !important;
+  border-right:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:18px 0 42px rgba(0,0,0,.38), inset 1px 0 0 rgba(255,255,255,.04) !important;
+  color:#ececec !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar::before,
+body[data-page="pedidos"].pedidos-dark .sidebar::after{
+  opacity:0 !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar__head,
+body[data-page="pedidos"].pedidos-dark .sidebar__account,
+body[data-page="pedidos"].pedidos-dark .navHero,
+body[data-page="pedidos"].pedidos-dark .navGroup__head,
+body[data-page="pedidos"].pedidos-dark .navSubItem{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.08) !important;
+  color:#ececec !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar__account,
+body[data-page="pedidos"].pedidos-dark .navHero,
+body[data-page="pedidos"].pedidos-dark .navSubItem:hover{
+  background:rgba(255,255,255,.08) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active-sub,
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active,
+body[data-page="pedidos"].pedidos-dark .navItem.is-active,
+body[data-page="pedidos"].pedidos-dark .sidebar a[aria-current="page"]{
+  background:#2479ff !important;
+  color:#ffffff !important;
+  box-shadow:0 10px 22px rgba(36,121,255,.26) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar__accName,
+body[data-page="pedidos"].pedidos-dark .sidebar__accMeta,
+body[data-page="pedidos"].pedidos-dark .navGroup__kicker,
+body[data-page="pedidos"].pedidos-dark .navGroup__name,
+body[data-page="pedidos"].pedidos-dark .navGroup__caret,
+body[data-page="pedidos"].pedidos-dark .navSubItem__txt,
+body[data-page="pedidos"].pedidos-dark .navSubItem__ico,
+body[data-page="pedidos"].pedidos-dark .navHero__chev,
+body[data-page="pedidos"].pedidos-dark .sidebar a,
+body[data-page="pedidos"].pedidos-dark .sidebar button,
+body[data-page="pedidos"].pedidos-dark .sidebar svg{
+  color:#d7d7d7 !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active-sub .navSubItem__txt,
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active-sub .navSubItem__ico,
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active .navSubItem__txt,
+body[data-page="pedidos"].pedidos-dark .navSubItem.is-active .navSubItem__ico,
+body[data-page="pedidos"].pedidos-dark .navItem.is-active,
+body[data-page="pedidos"].pedidos-dark .navItem.is-active svg,
+body[data-page="pedidos"].pedidos-dark .sidebar a[aria-current="page"],
+body[data-page="pedidos"].pedidos-dark .sidebar a[aria-current="page"] svg{
+  color:#ffffff !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar .badge,
+body[data-page="pedidos"].pedidos-dark .sidebar [class*="badge"],
+body[data-page="pedidos"].pedidos-dark .sidebar [class*="Badge"]{
+  background:rgba(239,68,68,.92) !important;
+  color:#ffffff !important;
+  border-color:rgba(255,255,255,.12) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .sidebar hr,
+body[data-page="pedidos"].pedidos-dark .sidebar__divider,
+body[data-page="pedidos"].pedidos-dark .navDivider{
+  border-color:rgba(255,255,255,.10) !important;
+  background:rgba(255,255,255,.10) !important;
+}
