@@ -1,21 +1,22 @@
 console.log("[finanzas-dark-mode.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_DARK_MODE_2026_06_30_01";
+  const BUILD = "FINANCE_DARK_MODE_2026_06_30_02";
   const STORAGE_KEY = "sazzu_finanzas_dark_mode";
   const STYLE_ID = "finanzasDarkStylesheet";
-  const STYLE_HREF = "/css/finanzas-dark.css?v=20260630_01";
+  const STYLE_HREF = "/css/finanzas-dark.css?v=20260630_02";
   const TOGGLE_ID = "finThemeToggle";
 
   const icons = {
     moon: `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path fill="currentColor" d="M21 14.7A8.7 8.7 0 0 1 9.3 3a.75.75 0 0 0-.92-.92A10.2 10.2 0 1 0 21.92 15.62a.75.75 0 0 0-.92-.92ZM12 20.5A8.7 8.7 0 0 1 6.2 5.32 10.2 10.2 0 0 0 18.68 17.8 8.66 8.66 0 0 1 12 20.5Z"/>
+        <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8Z"/>
       </svg>
     `,
     sun: `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path fill="currentColor" d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-1.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM12 2.25a.75.75 0 0 1 .75.75v1.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75Zm0 17.5a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75ZM4.22 4.22a.75.75 0 0 1 1.06 0l.88.88A.75.75 0 1 1 5.1 6.16l-.88-.88a.75.75 0 0 1 0-1.06Zm13.62 13.62a.75.75 0 0 1 1.06 0l.88.88a.75.75 0 1 1-1.06 1.06l-.88-.88a.75.75 0 0 1 0-1.06ZM2.25 12a.75.75 0 0 1 .75-.75h1.25a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75Zm17.5 0a.75.75 0 0 1 .75-.75H21a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM19.78 4.22a.75.75 0 0 1 0 1.06l-.88.88a.75.75 0 1 1-1.06-1.06l.88-.88a.75.75 0 0 1 1.06 0ZM6.16 17.84a.75.75 0 0 1 0 1.06l-.88.88a.75.75 0 1 1-1.06-1.06l.88-.88a.75.75 0 0 1 1.06 0Z"/>
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 2.75v2M12 19.25v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2.75 12h2M19.25 12h2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41"/>
       </svg>
     `
   };
@@ -62,6 +63,45 @@ console.log("[finanzas-dark-mode.js] cargado OK");
     btn.setAttribute("aria-label", enabled ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
   }
 
+  function cleanupFinanceArtifacts() {
+    if (!document.body) return;
+
+    document.body.classList.remove(
+      "finanzas-dark",
+      "finOrderDetailOpen",
+      "finRuleEditorOpen",
+      "finFinancialOpen",
+      "finStockOpen",
+      "finAlertsOpen",
+      "finConfirmModalOpen"
+    );
+    document.documentElement.classList.remove("finanzas-dark");
+
+    const staleSelectors = [
+      "#finOrderDetailOverlay",
+      "#finRuleEditorOverlay",
+      "#finFinancialOverlay",
+      "#finStockOverlay",
+      "#finAlertsOverlay",
+      "#finConfirmModal",
+      ".finOrderDetailOverlay",
+      ".finRuleEditorOverlay",
+      ".finFinancialOverlay",
+      ".finStockOverlay",
+      ".finAlertsOverlay",
+      ".finConfirmModal",
+      "[id^='fin'][id$='Overlay']",
+      "[class^='fin'][class$='Overlay']"
+    ];
+
+    document.querySelectorAll(staleSelectors.join(",")).forEach((node) => {
+      if (node && node.parentNode) node.parentNode.removeChild(node);
+    });
+
+    const btn = getToggle();
+    if (btn && btn.parentNode) btn.parentNode.removeChild(btn);
+  }
+
   function applyTheme(enabled, persist) {
     if (!document.body) return;
     document.body.classList.toggle("finanzas-dark", !!enabled);
@@ -105,7 +145,11 @@ console.log("[finanzas-dark-mode.js] cargado OK");
   }
 
   function init() {
-    if (!isFinancePage()) return;
+    if (!isFinancePage()) {
+      cleanupFinanceArtifacts();
+      return;
+    }
+
     ensureStyle();
     ensureToggle();
     applyTheme(readPreference(), false);
@@ -121,6 +165,7 @@ console.log("[finanzas-dark-mode.js] cargado OK");
 
   window.finanzasDarkMode = {
     init,
+    cleanup: cleanupFinanceArtifacts,
     enable: function () { applyTheme(true, true); },
     disable: function () { applyTheme(false, true); },
     toggle: function () { applyTheme(!document.body.classList.contains("finanzas-dark"), true); },
