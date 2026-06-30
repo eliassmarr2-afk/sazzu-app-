@@ -1,0 +1,486 @@
+/* ==========================================================
+   Protocol Data · Pedidos Panel UI
+   Build: PEDIDOS_PANEL_UI_2026_06_30_01
+   Alcance: body[data-page="pedidos"]
+   ========================================================== */
+
+body[data-page="pedidos"]{
+  --orders-blue:#2479ff;
+  --orders-bg:#f5f7fb;
+  --orders-card:#ffffff;
+  --orders-card-2:#f8fafc;
+  --orders-text:#252A32;
+  --orders-muted:#697386;
+  --orders-border:#e5e7eb;
+  --orders-border-soft:#eef2f7;
+  --orders-shadow:0 10px 24px rgba(15,23,42,.06);
+  --orders-shadow-strong:0 16px 34px rgba(15,23,42,.12);
+}
+
+body[data-page="pedidos"] .ordersMain{
+  background:var(--orders-bg) !important;
+}
+
+body[data-page="pedidos"] .ordersHeader__right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+body[data-page="pedidos"] .ordersConnectionBadge{
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:0 12px;
+  border-radius:5px;
+  background:#eef2ff;
+  color:var(--orders-blue);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.01em;
+}
+
+body[data-page="pedidos"] .ordersConnectionBadge.is-live{background:#e9f9f0;color:#168a50;}
+body[data-page="pedidos"] .ordersConnectionBadge.is-loading{background:#fff4dc;color:#a26100;}
+body[data-page="pedidos"] .ordersConnectionBadge.is-error{background:#fff0f0;color:#b42318;}
+
+body[data-page="pedidos"] .ordersHero{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:14px;
+}
+
+body[data-page="pedidos"] .ordersMetric,
+body[data-page="pedidos"] .u-card,
+body[data-page="pedidos"] .ordersTableShell,
+body[data-page="pedidos"] .ordersDetailCard{
+  border-radius:5px !important;
+  background:var(--orders-card) !important;
+  box-shadow:var(--orders-shadow) !important;
+}
+
+body[data-page="pedidos"] .ordersMetric{
+  padding:16px;
+}
+
+body[data-page="pedidos"] .ordersMetric span,
+body[data-page="pedidos"] .u-sectionLabel,
+body[data-page="pedidos"] .ordersTable th,
+body[data-page="pedidos"] .ordersDetailItem span{
+  color:var(--orders-muted) !important;
+}
+
+body[data-page="pedidos"] .ordersMetric span,
+body[data-page="pedidos"] .ordersDetailItem span{
+  display:block;
+  font-size:12px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.045em;
+}
+
+body[data-page="pedidos"] .ordersMetric strong{
+  display:block;
+  margin-top:8px;
+  color:var(--orders-text) !important;
+  font-size:31px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-.045em;
+}
+
+body[data-page="pedidos"] .ordersMetric small{
+  display:block;
+  margin-top:6px;
+  color:var(--orders-muted) !important;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.25;
+}
+
+body[data-page="pedidos"] .ordersToolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+body[data-page="pedidos"] .ordersToolbar__filters{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  flex:1;
+}
+
+body[data-page="pedidos"] .ordersInput,
+body[data-page="pedidos"] .ordersSelect{
+  height:40px;
+  border-radius:5px;
+  border:1px solid var(--orders-border);
+  background:#fff;
+  color:#111827;
+  padding:0 12px;
+  font:inherit;
+  font-size:13px;
+  font-weight:750;
+  outline:0;
+}
+
+body[data-page="pedidos"] .ordersInput{min-width:280px;flex:1;}
+body[data-page="pedidos"] .ordersSelect{min-width:150px;}
+
+body[data-page="pedidos"] .ordersInput:focus,
+body[data-page="pedidos"] .ordersSelect:focus{
+  border-color:rgba(36,121,255,.72);
+  box-shadow:0 0 0 4px rgba(36,121,255,.14);
+}
+
+body[data-page="pedidos"] .ordersTableShell{
+  margin-top:12px;
+  overflow:hidden;
+  border:1px solid rgba(226,232,240,.76);
+}
+
+body[data-page="pedidos"] .ordersTableWrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+body[data-page="pedidos"] .ordersTable{
+  width:100%;
+  min-width:1120px;
+  border-collapse:collapse;
+}
+
+body[data-page="pedidos"] .ordersTable th,
+body[data-page="pedidos"] .ordersTable td{
+  padding:13px 12px;
+  border-bottom:1px solid var(--orders-border-soft);
+  text-align:left;
+  vertical-align:top;
+  font-size:13px;
+  line-height:1.25;
+}
+
+body[data-page="pedidos"] .ordersTable th{
+  background:#f8fafc;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.045em;
+  white-space:nowrap;
+}
+
+body[data-page="pedidos"] .ordersTable tbody tr{
+  cursor:pointer;
+  transition:background .16s ease, transform .16s ease;
+}
+
+body[data-page="pedidos"] .ordersTable tbody tr:hover td{
+  background:#f8fbff;
+}
+
+body[data-page="pedidos"] .ordersTable th:last-child,
+body[data-page="pedidos"] .ordersTable td:last-child{
+  display:none !important;
+}
+
+body[data-page="pedidos"] .ordersMiniStack strong{
+  display:block;
+  color:var(--orders-text) !important;
+  font-size:13px;
+  font-weight:950;
+  max-width:240px;
+  line-height:1.16;
+}
+
+body[data-page="pedidos"] .ordersMiniStack span{
+  display:block;
+  margin-top:4px;
+  color:var(--orders-muted) !important;
+  font-size:12px;
+  font-weight:700;
+  max-width:260px;
+  line-height:1.25;
+}
+
+body[data-page="pedidos"] .ordersBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:26px;
+  padding:0 9px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+body[data-page="pedidos"] .ordersBadge--blue{background:#eaf2ff;color:#2479FF;}
+body[data-page="pedidos"] .ordersBadge--green{background:#e9f9f0;color:#168a50;}
+body[data-page="pedidos"] .ordersBadge--orange{background:#fff4dc;color:#a26100;}
+body[data-page="pedidos"] .ordersBadge--red{background:#fff0f0;color:#b42318;}
+body[data-page="pedidos"] .ordersBadge--gray{background:#eef2f7;color:#697386;}
+
+body[data-page="pedidos"] .ordersActionBtn{
+  display:none !important;
+}
+
+body[data-page="pedidos"] .ordersMutedBtn,
+body[data-page="pedidos"] .ordersPager__actions button{
+  border:1px solid #d8dee8;
+  border-radius:5px;
+  background:#fff;
+  color:#334155;
+  min-height:38px;
+  padding:0 13px;
+  font:inherit;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+body[data-page="pedidos"] .ordersPager{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border-top:1px solid var(--orders-border-soft);
+  background:#fff;
+}
+
+body[data-page="pedidos"] .ordersPager__meta{
+  color:var(--orders-muted);
+  font-size:12px;
+  font-weight:850;
+}
+
+body[data-page="pedidos"] .ordersPager__actions{display:flex;align-items:center;gap:8px;}
+body[data-page="pedidos"] .ordersPager__actions button:disabled{opacity:.45;cursor:not-allowed;}
+body[data-page="pedidos"] .ordersEmpty{padding:22px;color:var(--orders-muted);font-size:14px;font-weight:800;text-align:center;}
+
+body[data-page="pedidos"] .ordersSlide{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+}
+
+body[data-page="pedidos"] .ordersSlide.is-open{display:block;}
+body[data-page="pedidos"] .ordersSlide__overlay{position:absolute;inset:0;border:0;background:rgba(15,23,42,.38);}
+body[data-page="pedidos"] .ordersSlide__panel{position:absolute;top:0;right:0;width:min(520px,100%);height:100%;overflow:auto;background:#ededed;box-shadow:-18px 0 40px rgba(15,23,42,.18);}
+body[data-page="pedidos"] .ordersSlide__header{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;background:#fff;border-bottom:1px solid #e5e7eb;}
+body[data-page="pedidos"] .ordersSlide__header button{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:5px;background:#eef2ff;color:#2479FF;cursor:pointer;}
+body[data-page="pedidos"] .ordersSlide__title strong{display:block;color:var(--orders-text);font-size:16px;font-weight:950;}
+body[data-page="pedidos"] .ordersSlide__title span{display:block;margin-top:3px;color:var(--orders-muted);font-size:12px;font-weight:800;}
+body[data-page="pedidos"] .ordersDetail{display:grid;gap:10px;padding:12px;}
+body[data-page="pedidos"] .ordersDetailCard{padding:14px;}
+body[data-page="pedidos"] .ordersDetailCard h3{margin:0 0 10px;color:var(--orders-text);font-size:15px;font-weight:950;letter-spacing:-.02em;}
+body[data-page="pedidos"] .ordersDetailGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+body[data-page="pedidos"] .ordersDetailItem strong{display:block;margin-top:4px;color:var(--orders-text);font-size:13px;font-weight:850;line-height:1.25;word-break:break-word;}
+
+.ordersThemeToggle{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  display:inline-grid;
+  place-items:center;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.10);
+  background:#ffffff;
+  color:#252a32;
+  cursor:pointer;
+  padding:0;
+  transition:background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.ordersThemeToggle:hover{transform:translateY(-1px);background:#f3f4f6;}
+.ordersThemeToggle svg{width:18px;height:18px;display:block;}
+
+/* ==========================================================
+   Dark mode · consistente con Logística
+   ========================================================== */
+
+body[data-page="pedidos"].pedidos-dark{
+  color-scheme:dark;
+  --orders-dark-bg:#212121;
+  --orders-dark-bg-soft:#181818;
+  --orders-dark-card:#2f2f2f;
+  --orders-dark-card-2:#303030;
+  --orders-dark-card-3:#383838;
+  --orders-dark-input:#2a2a2a;
+  --orders-dark-text:#ececec;
+  --orders-dark-muted:#b4b4b4;
+  --orders-dark-muted-2:#8f8f8f;
+  --orders-dark-border:rgba(255,255,255,.10);
+  --orders-dark-border-strong:rgba(255,255,255,.16);
+  --orders-dark-shadow:0 18px 42px rgba(0,0,0,.32);
+  --orders-dark-blue:#2479ff;
+  background:var(--orders-dark-bg) !important;
+  color:var(--orders-dark-text) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .appShell,
+body[data-page="pedidos"].pedidos-dark .bodyGrid,
+body[data-page="pedidos"].pedidos-dark .ordersMain{
+  background:var(--orders-dark-bg) !important;
+  color:var(--orders-dark-text) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .appHeader,
+body[data-page="pedidos"].pedidos-dark .ordersHeader__right{
+  background:transparent !important;
+  color:var(--orders-dark-text) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .appHeader__title,
+body[data-page="pedidos"].pedidos-dark .blockTitle h3,
+body[data-page="pedidos"].pedidos-dark .ordersMetric strong,
+body[data-page="pedidos"].pedidos-dark .ordersMiniStack strong,
+body[data-page="pedidos"].pedidos-dark .ordersSlide__title strong,
+body[data-page="pedidos"].pedidos-dark .ordersDetailCard h3,
+body[data-page="pedidos"].pedidos-dark .ordersDetailItem strong{
+  color:var(--orders-dark-text) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .appHeader__sub,
+body[data-page="pedidos"].pedidos-dark .u-muted,
+body[data-page="pedidos"].pedidos-dark .u-sectionLabel,
+body[data-page="pedidos"].pedidos-dark .ordersMetric span,
+body[data-page="pedidos"].pedidos-dark .ordersMetric small,
+body[data-page="pedidos"].pedidos-dark .ordersMiniStack span,
+body[data-page="pedidos"].pedidos-dark .ordersTable th,
+body[data-page="pedidos"].pedidos-dark .ordersSlide__title span,
+body[data-page="pedidos"].pedidos-dark .ordersDetailItem span,
+body[data-page="pedidos"].pedidos-dark .ordersPager__meta{
+  color:var(--orders-dark-muted) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersMetric,
+body[data-page="pedidos"].pedidos-dark .u-card,
+body[data-page="pedidos"].pedidos-dark .ordersTableShell,
+body[data-page="pedidos"].pedidos-dark .ordersDetailCard{
+  background:var(--orders-dark-card) !important;
+  border-color:var(--orders-dark-border) !important;
+  color:var(--orders-dark-text) !important;
+  box-shadow:var(--orders-dark-shadow) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersMetric:first-child{
+  background:linear-gradient(135deg, rgba(36,121,255,.22), var(--orders-dark-card) 62%) !important;
+  border-color:rgba(36,121,255,.35) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersInput,
+body[data-page="pedidos"].pedidos-dark .ordersSelect{
+  background:var(--orders-dark-input) !important;
+  color:var(--orders-dark-text) !important;
+  border-color:var(--orders-dark-border-strong) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersInput::placeholder{color:rgba(180,180,180,.62) !important;}
+
+body[data-page="pedidos"].pedidos-dark .ordersInput:focus,
+body[data-page="pedidos"].pedidos-dark .ordersSelect:focus{
+  border-color:rgba(36,121,255,.72) !important;
+  box-shadow:0 0 0 4px rgba(36,121,255,.18) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersTable th,
+body[data-page="pedidos"].pedidos-dark .ordersTable td{
+  border-color:var(--orders-dark-border) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersTable th{
+  background:rgba(0,0,0,.20) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersTable td{
+  color:var(--orders-dark-text) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersTable tbody tr:hover td{
+  background:rgba(255,255,255,.035) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersPager{
+  background:var(--orders-dark-card) !important;
+  border-color:var(--orders-dark-border) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersMutedBtn,
+body[data-page="pedidos"].pedidos-dark .ordersPager__actions button,
+body[data-page="pedidos"].pedidos-dark .ordersThemeToggle{
+  background:var(--orders-dark-card) !important;
+  border:1px solid var(--orders-dark-border) !important;
+  color:var(--orders-dark-text) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersMutedBtn:hover,
+body[data-page="pedidos"].pedidos-dark .ordersPager__actions button:hover,
+body[data-page="pedidos"].pedidos-dark .ordersThemeToggle:hover{
+  background:var(--orders-dark-card-3) !important;
+  border-color:var(--orders-dark-border-strong) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersConnectionBadge{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid var(--orders-dark-border) !important;
+  color:var(--orders-dark-muted) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersConnectionBadge.is-live{background:rgba(16,166,106,.16) !important;color:#7ee2b8 !important;}
+body[data-page="pedidos"].pedidos-dark .ordersConnectionBadge.is-loading{background:rgba(36,121,255,.16) !important;color:#9dc2ff !important;}
+body[data-page="pedidos"].pedidos-dark .ordersConnectionBadge.is-error{background:rgba(217,48,37,.16) !important;color:#ff9a94 !important;}
+
+body[data-page="pedidos"].pedidos-dark .ordersBadge--blue{background:rgba(36,121,255,.18) !important;color:#9dc2ff !important;}
+body[data-page="pedidos"].pedidos-dark .ordersBadge--green{background:rgba(16,166,106,.18) !important;color:#7ee2b8 !important;}
+body[data-page="pedidos"].pedidos-dark .ordersBadge--red{background:rgba(217,48,37,.18) !important;color:#ff9a94 !important;}
+body[data-page="pedidos"].pedidos-dark .ordersBadge--gray{background:rgba(255,255,255,.08) !important;color:var(--orders-dark-muted) !important;}
+body[data-page="pedidos"].pedidos-dark .ordersBadge--orange{background:rgba(245,158,11,.18) !important;color:#f5c56f !important;}
+
+body[data-page="pedidos"].pedidos-dark .ordersSlide__overlay{
+  background:rgba(0,0,0,.62) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersSlide__panel{
+  background:var(--orders-dark-bg) !important;
+  color:var(--orders-dark-text) !important;
+  box-shadow:-24px 0 54px rgba(0,0,0,.50) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersSlide__header{
+  background:rgba(33,33,33,.94) !important;
+  border-color:var(--orders-dark-border) !important;
+  color:var(--orders-dark-text) !important;
+  backdrop-filter:blur(12px);
+}
+
+body[data-page="pedidos"].pedidos-dark .ordersSlide__header button{
+  background:var(--orders-dark-card) !important;
+  color:var(--orders-dark-text) !important;
+  border:1px solid var(--orders-dark-border) !important;
+}
+
+body[data-page="pedidos"].pedidos-dark #ordersToast{
+  background:var(--orders-dark-card) !important;
+  border:1px solid var(--orders-dark-border) !important;
+  color:var(--orders-dark-text) !important;
+}
+
+@media(max-width:900px){
+  body[data-page="pedidos"] .ordersHero{grid-template-columns:repeat(2,minmax(0,1fr));}
+  body[data-page="pedidos"] .ordersToolbar{align-items:stretch;}
+  body[data-page="pedidos"] .ordersToolbar__filters{width:100%;}
+  body[data-page="pedidos"] .ordersInput,
+  body[data-page="pedidos"] .ordersSelect{min-width:100%;}
+  body[data-page="pedidos"] .ordersHeader__right{justify-content:flex-start;}
+  body[data-page="pedidos"] .ordersDetailGrid{grid-template-columns:1fr;}
+}
