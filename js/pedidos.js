@@ -88,6 +88,71 @@
     return String(value || '').trim().toLowerCase();
   }
 
+  function moneyFromUnknown(value) {
+    if (value == null || value === '') return '';
+
+    const raw = String(value).trim();
+    if (!raw) return '';
+    if (raw.includes('$')) return raw;
+
+    let numeric = raw.replace(/[^0-9,.-]/g, '');
+    if (!numeric) return '';
+
+    if (numeric.includes(',')) {
+      numeric = numeric.replace(/\./g, '').replace(',', '.');
+    }
+
+    const parsed = Number(numeric);
+    if (!Number.isFinite(parsed)) return raw;
+
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(parsed);
+  }
+
+  function firstMoney(...values) {
+    for (const value of values) {
+      const formatted = moneyFromUnknown(value);
+      if (!formatted) continue;
+      if (formatted.replace(/\s/g, '') === '$0,00') continue;
+      return formatted;
+    }
+    return '';
+  }
+
+  function buildPaymentDisplay(order) {
+    const saleTotal = firstMoney(
+      order.total_venta,
+      order.total_venta_pedido,
+      order.monto_total_pedido,
+      order.total_pedido,
+      order.shopify_total_price,
+      order.total_price,
+      order.gross_amount,
+      order.bruto
+    );
+
+    const collectAmount = moneyFromUnknown(order.monto_a_pagar_repartidor) || '$0,00';
+    const isPaid = order.pago_estado === 'pagado';
+
+    if (saleTotal) {
+      return {
+        main: saleTotal,
+        sub: isPaid && collectAmount.replace(/\s/g, '') === '$0,00'
+          ? 'Cobro repartidor: $0,00'
+          : (collectAmount ? 'Cobro repartidor: ' + collectAmount : '')
+      };
+    }
+
+    return {
+      main: collectAmount || '$0,00',
+      sub: ''
+    };
+  }
+
   function setConnection(message, type) {
     const badge = el('ordersConnectionBadge');
     if (!badge) return;
@@ -131,6 +196,16 @@
 
   function normalizeOrder(order) {
     const estado = order.estado_logistico || 'recibido';
+    const totalVenta = firstMoney(
+      order.total_venta,
+      order.total_venta_pedido,
+      order.monto_total_pedido,
+      order.total_pedido,
+      order.shopify_total_price,
+      order.total_price,
+      order.gross_amount,
+      order.bruto
+    );
 
     return {
       tracking_id: String(order.tracking_id || '').toUpperCase(),
@@ -146,6 +221,7 @@
       producto: order.producto || '--',
       pago_estado: order.pago_estado || 'no_pagado',
       monto_a_pagar_repartidor: order.monto_a_pagar_repartidor || '$0,00',
+      total_venta: totalVenta,
       envio_estado: order.envio_estado || 'a_confirmar',
       envio_valor: order.envio_valor || '$0,00',
       issue_active: Boolean(order.issue_active),
@@ -258,7 +334,7 @@
     const start = total ? (state.page - 1) * state.pageSize + 1 : 0;
     const end = total ? Math.min(state.page * state.pageSize, total) : 0;
 
-    if (meta) meta.textContent = total ? `${start}-${end} de ${total}` : '0 de 0';
+    if (meta) meta.textContent = start + '-' + end + ' de ' + total;
     if (prev) prev.disabled = state.page <= 1;
     if (next) next.disabled = state.page >= totalPages;
   }
@@ -292,12 +368,13 @@
     const rows = state.filtered.slice(start, start + state.pageSize);
 
     const body = rows.map((order) => {
+      const payment = buildPaymentDisplay(order);
       return '<tr>' +
         '<td><div class="ordersMiniStack"><strong>' + esc(order.tracking_id) + '</strong><span>' + esc(order.shopify_order_name || 'Sin número Shopify') + '</span></div></td>' +
         '<td><div class="ordersMiniStack"><strong>' + esc(order.cliente) + '</strong><span>' + esc(order.email_cliente || order.telefono_cliente || 'Sin contacto') + '</span></div></td>' +
         '<td><div class="ordersMiniStack"><strong>' + esc(order.domicilio_entrega) + '</strong><span>' + esc(order.telefono_cliente || '') + '</span></div></td>' +
         '<td><div class="ordersMiniStack"><strong>' + esc(order.producto) + '</strong><span>Banner ' + esc(order.banner_id || '--') + '</span></div></td>' +
-        '<td>' + getPaymentBadge(order) + '<br><span>' + esc(order.monto_a_pagar_repartidor || '$0,00') + '</span></td>' +
+        '<td>' + getPaymentBadge(order) + '<br><span>' + esc(payment.main || '$0,00') + '</span>' + (payment.sub ? '<br><span>' + esc(payment.sub) + '</span>' : '') + '</td>' +
         '<td>' + getShippingBadge(order) + '</td>' +
         '<td>' + getStatusBadge(order) + '<br><span>' + esc(order.banda_horaria_estimada || 'A confirmar') + '</span></td>' +
         '<td>' + (order.issue_active ? '<span class="ordersBadge ordersBadge--red">' + esc(order.issue_type || 'Intervenido') + '</span>' : '<span class="ordersBadge ordersBadge--gray">Sin incidencia</span>') + '</td>' +
@@ -366,6 +443,8 @@
 
     if (subtitle) subtitle.textContent = order.tracking_id + ' · ' + order.cliente;
 
+    const payment = buildPaymentDisplay(order);
+
     content.innerHTML = [
       detailCard('Pedido', [
         detailItem('Tracking ID', order.tracking_id),
@@ -388,7 +467,8 @@
       ]),
       detailCard('Pago e incidencias', [
         detailItem('Estado de pago', order.pago_estado),
-        detailItem('Monto a cobrar', order.monto_a_pagar_repartidor),
+        detailItem('Total venta Shopify', payment.main || order.total_venta || '—'),
+        detailItem('Monto a cobrar repartidor', order.monto_a_pagar_repartidor),
         detailItem('Incidencia activa', order.issue_active ? 'Sí' : 'No'),
         detailItem('Tipo de incidencia', order.issue_type),
         detailItem('Mensaje público incidencia', order.issue_message_public),
