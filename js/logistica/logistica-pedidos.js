@@ -163,6 +163,71 @@
       .replace(/'/g, '&#039;');
   }
 
+  function moneyFromUnknown(value) {
+    if (value == null || value === '') return '';
+
+    const raw = String(value).trim();
+    if (!raw) return '';
+    if (raw.includes('$')) return raw;
+
+    let numeric = raw.replace(/[^0-9,.-]/g, '');
+    if (!numeric) return '';
+
+    if (numeric.includes(',')) {
+      numeric = numeric.replace(/\./g, '').replace(',', '.');
+    }
+
+    const parsed = Number(numeric);
+    if (!Number.isFinite(parsed)) return raw;
+
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(parsed);
+  }
+
+  function firstMoney(...values) {
+    for (const value of values) {
+      const formatted = moneyFromUnknown(value);
+      if (!formatted) continue;
+      if (formatted.replace(/\s/g, '') === '$0,00') continue;
+      return formatted;
+    }
+    return '';
+  }
+
+  function buildPaymentDisplay(order) {
+    const saleTotal = firstMoney(
+      order.total_venta,
+      order.total_venta_pedido,
+      order.monto_total_pedido,
+      order.total_pedido,
+      order.shopify_total_price,
+      order.total_price,
+      order.gross_amount,
+      order.bruto
+    );
+
+    const collectAmount = moneyFromUnknown(order.monto_a_pagar_repartidor) || '$0,00';
+    const isPaid = order.pago_estado === 'pagado';
+
+    if (saleTotal) {
+      return {
+        main: saleTotal,
+        sub: isPaid && collectAmount.replace(/\s/g, '') === '$0,00'
+          ? 'Cobro repartidor: $0,00'
+          : (collectAmount ? 'Cobro repartidor: ' + collectAmount : '')
+      };
+    }
+
+    return {
+      main: collectAmount || '$0,00',
+      sub: ''
+    };
+  }
+
   function toast(message, type) {
     let el = document.querySelector('#logToast');
     if (!el) {
@@ -184,6 +249,17 @@
   }
 
   function normalizeOrder(order) {
+    const totalVenta = firstMoney(
+      order.total_venta,
+      order.total_venta_pedido,
+      order.monto_total_pedido,
+      order.total_pedido,
+      order.shopify_total_price,
+      order.total_price,
+      order.gross_amount,
+      order.bruto
+    );
+
     return {
       tracking_id: String(order.tracking_id || '').toUpperCase(),
       shopify_order_name: order.shopify_order_name || '',
@@ -198,6 +274,7 @@
       producto: order.producto || '--',
       pago_estado: order.pago_estado || 'no_pagado',
       monto_a_pagar_repartidor: order.monto_a_pagar_repartidor || '$0,00',
+      total_venta: totalVenta,
       envio_estado: order.envio_estado || 'a_confirmar',
       envio_valor: order.envio_valor || '$0,00',
       issue_active: Boolean(order.issue_active),
@@ -332,12 +409,13 @@
     }
 
     tbody.innerHTML = orders.map((order) => {
+      const payment = buildPaymentDisplay(order);
       return '<tr>' +
         '<td><div class="logPedidosMiniStack"><strong>' + esc(order.tracking_id) + '</strong><span>' + esc(order.shopify_order_name) + '</span></div></td>' +
         '<td><div class="logPedidosMiniStack"><strong>' + esc(order.cliente) + '</strong><span>' + esc(order.email_cliente || order.telefono_cliente || 'Sin contacto') + '</span></div></td>' +
         '<td><div class="logPedidosMiniStack"><strong>' + esc(order.domicilio_entrega) + '</strong><span>' + esc(order.telefono_cliente || '') + '</span></div></td>' +
         '<td><div class="logPedidosMiniStack"><strong>' + esc(order.producto) + '</strong><span>Banner ' + esc(order.banner_id) + '</span></div></td>' +
-        '<td>' + getPaymentBadge(order) + '<br><span>' + esc(order.monto_a_pagar_repartidor || '$0,00') + '</span></td>' +
+        '<td>' + getPaymentBadge(order) + '<br><span>' + esc(payment.main || '$0,00') + '</span>' + (payment.sub ? '<br><span>' + esc(payment.sub) + '</span>' : '') + '</td>' +
         '<td>' + getShippingBadge(order) + '</td>' +
         '<td><span class="logPedidosBadge ' + getStatusClass(order.estado_logistico) + '">' + esc(statusLabels[order.estado_logistico] || order.estado_logistico) + '</span><br><span>' + esc(order.banda_horaria_estimada || 'A confirmar') + '</span></td>' +
         '<td><span>' + esc(order.banner_id || '--') + '</span></td>' +
