@@ -7,6 +7,9 @@
   const FINANCE_ORDERS_SCRIPT_URL = "/js/finanzas-pedidos-financieros.js";
   const FINANCE_ORDERS_SCRIPT_VERSION = "20260629_06";
   const FINANCE_ORDERS_SCRIPT_SRC = FINANCE_ORDERS_SCRIPT_URL + "?v=" + FINANCE_ORDERS_SCRIPT_VERSION;
+  const FINANCE_DARK_SCRIPT_URL = "/js/finanzas-dark-mode.js";
+  const FINANCE_DARK_SCRIPT_VERSION = "20260630_01";
+  const FINANCE_DARK_SCRIPT_SRC = FINANCE_DARK_SCRIPT_URL + "?v=" + FINANCE_DARK_SCRIPT_VERSION;
   const FINANCE_VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
   function getCurrentFile_() {
@@ -197,10 +200,43 @@
     return tabs;
   }
 
+  function ensureFinanceDarkModeScript_() {
+    if (!isFinancePage_()) return;
+    if (window.finanzasDarkMode && typeof window.finanzasDarkMode.init === "function") {
+      window.finanzasDarkMode.init();
+      return;
+    }
+
+    const already = Array.from(document.scripts).some((script) => {
+      return String(script.src || "").includes(FINANCE_DARK_SCRIPT_URL);
+    });
+
+    if (already || window.__financeDarkModeScriptLoading) return;
+
+    window.__financeDarkModeScriptLoading = true;
+
+    const script = document.createElement("script");
+    script.src = FINANCE_DARK_SCRIPT_SRC;
+    script.defer = true;
+    script.onload = () => {
+      window.__financeDarkModeScriptLoading = false;
+      if (window.finanzasDarkMode && typeof window.finanzasDarkMode.init === "function") {
+        window.finanzasDarkMode.init();
+      }
+    };
+    script.onerror = () => {
+      window.__financeDarkModeScriptLoading = false;
+      console.error("[app.js] No se pudo cargar:", FINANCE_DARK_SCRIPT_SRC);
+    };
+
+    document.body.appendChild(script);
+  }
+
   function ensureFinanceOrdersTableScript_() {
     if (!isFinancePage_()) return;
 
     ensureFinanceHeaderTabs_();
+    ensureFinanceDarkModeScript_();
     ensureFinanceOrderDetailClickFallback_();
 
     if (
@@ -209,6 +245,7 @@
     ) {
       window.finFinanceOrdersTable.setView("pedidos");
       setFinanceTabVisual_("pedidos");
+      ensureFinanceDarkModeScript_();
       return;
     }
 
@@ -226,6 +263,7 @@
     script.onload = () => {
       window.__financeOrdersTableScriptLoading = false;
       ensureFinanceHeaderTabs_();
+      ensureFinanceDarkModeScript_();
       ensureFinanceOrderDetailClickFallback_();
       if (
         window.finFinanceOrdersTable &&
@@ -374,37 +412,37 @@
     }
 
     const incomingScripts = Array.from(doc.querySelectorAll("script[src]"))
-  .map(s => new URL(s.getAttribute("src"), targetUrl).href)
-  .filter(Boolean)
-  .filter(srcAbs => !srcAbs.includes("/js/app.js"));
+      .map(s => new URL(s.getAttribute("src"), targetUrl).href)
+      .filter(Boolean)
+      .filter(srcAbs => !srcAbs.includes("/js/app.js"));
 
-history.pushState({}, "", href);
+    history.pushState({}, "", href);
 
-if (doc.title) document.title = doc.title;
+    if (doc.title) document.title = doc.title;
 
-const newBody = doc.querySelector("body");
-if (newBody && newBody.getAttribute("data-page")) {
-  document.body.setAttribute("data-page", newBody.getAttribute("data-page"));
-}
+    const newBody = doc.querySelector("body");
+    if (newBody && newBody.getAttribute("data-page")) {
+      document.body.setAttribute("data-page", newBody.getAttribute("data-page"));
+    }
 
-/*
-  Primero insertamos el nuevo <main>.
-  Después cargamos el JS del módulo.
-  Si cargamos el JS antes, el módulo intenta renderizar sobre elementos que todavía no existen.
-*/
-currentMain.replaceWith(newMain);
+    /*
+      Primero insertamos el nuevo <main>.
+      Después cargamos el JS del módulo.
+      Si cargamos el JS antes, el módulo intenta renderizar sobre elementos que todavía no existen.
+    */
+    currentMain.replaceWith(newMain);
 
-for (const srcAbs of incomingScripts) {
-  await ensureScriptLoaded_(srcAbs);
-}
+    for (const srcAbs of incomingScripts) {
+      await ensureScriptLoaded_(srcAbs);
+    }
 
-setActiveNav_();
-firePageLoadEvent_();
-runPageSpecificInit_();
+    setActiveNav_();
+    firePageLoadEvent_();
+    runPageSpecificInit_();
 
-window.requestAnimationFrame(() => {
-  runPageSpecificInit_();
-});
+    window.requestAnimationFrame(() => {
+      runPageSpecificInit_();
+    });
   }
 
   function enableSoftNavigation_() {
