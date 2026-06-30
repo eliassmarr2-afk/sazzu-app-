@@ -1,10 +1,12 @@
 console.log("[pedidos-dark-mode.js] cargado OK");
 
 (function () {
-  const BUILD = "PEDIDOS_DARK_MODE_2026_06_30_01";
+  const BUILD = "PEDIDOS_DARK_MODE_2026_06_30_02";
   const STORAGE_KEY = "sazzu_pedidos_dark_mode";
   const STYLE_ID = "pedidosPanelStylesheet";
   const STYLE_HREF = "/css/pedidos-panel.css?v=20260630_01";
+  const SIDEBAR_STYLE_ID = "pedidosSidebarDarkStylesheet";
+  const SIDEBAR_STYLE_HREF = "/css/pedidos-sidebar-dark.css?v=20260630_01";
   const TOGGLE_ID = "ordersThemeToggle";
 
   const icons = {
@@ -27,13 +29,18 @@ console.log("[pedidos-dark-mode.js] cargado OK");
     return page === "pedidos" || file === "pedidos.html";
   }
 
-  function ensurePanelStyles() {
-    if (document.getElementById(STYLE_ID)) return;
+  function ensureLink(id, href) {
+    if (document.getElementById(id)) return;
     const link = document.createElement("link");
-    link.id = STYLE_ID;
+    link.id = id;
     link.rel = "stylesheet";
-    link.href = STYLE_HREF;
+    link.href = href;
     document.head.appendChild(link);
+  }
+
+  function ensurePanelStyles() {
+    ensureLink(STYLE_ID, STYLE_HREF);
+    ensureLink(SIDEBAR_STYLE_ID, SIDEBAR_STYLE_HREF);
   }
 
   function readPreference() {
