@@ -1,0 +1,336 @@
+/* ==========================================================
+   Protocol Data · Finanzas Dark Polish
+   Capa final de consistencia visual con Logística dark.
+   No toca lógica. Solo superficies, radios, slides y cards.
+   ========================================================== */
+
+body[data-page="finanzas"].finanzas-dark{
+  --fin-radius-card:5px;
+  --fin-radius-chip:8px;
+}
+
+/* Reset anti-blanco heredado */
+body[data-page="finanzas"].finanzas-dark .main *,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailOverlay *,
+body[data-page="finanzas"].finanzas-dark .finFinancialOverlay *{
+  text-shadow:none;
+}
+
+/* Cards generales como Logística: superficie sólida, borde sutil, radio 5 */
+body[data-page="finanzas"].finanzas-dark .u-card,
+body[data-page="finanzas"].finanzas-dark .u-miniStat,
+body[data-page="finanzas"].finanzas-dark .finCostCard,
+body[data-page="finanzas"].finanzas-dark .finRulesCard,
+body[data-page="finanzas"].finanzas-dark .finRulesList,
+body[data-page="finanzas"].finanzas-dark .protocolSimCard,
+body[data-page="finanzas"].finanzas-dark .protocolSimFormCard,
+body[data-page="finanzas"].finanzas-dark .protocolSimResultCard{
+  background:#2f2f2f !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:var(--fin-radius-card) !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.24) !important;
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .u-cardInner{
+  background:transparent !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+/* Mini KPIs del Cashflow: estaban quedando blancos */
+body[data-page="finanzas"].finanzas-dark .u-miniStat{
+  min-height:74px;
+  padding:14px 14px 13px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .u-miniStat .u-muted{
+  color:#c9c9c9 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .u-miniStat .u-bigNum{
+  color:#f4f4f5 !important;
+  opacity:1 !important;
+}
+
+/* Cashflow card y gráfico */
+body[data-page="finanzas"].finanzas-dark #finCashflowCard{
+  background:#2f2f2f !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark #finCashflowChart,
+body[data-page="finanzas"].finanzas-dark .u-chartBox{
+  background:#2f2f2f !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+/* Cards de movimientos */
+body[data-page="finanzas"].finanzas-dark .finCostsGrid .finCostCard{
+  min-height:154px;
+  background:#2f2f2f !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:var(--fin-radius-card) !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.24) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finCostsGrid .finCostCard:hover,
+body[data-page="finanzas"].finanzas-dark .finCostCard[role="button"]:hover{
+  background:#383838 !important;
+  border-color:rgba(255,255,255,.18) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finCostCard__icon,
+body[data-page="finanzas"].finanzas-dark .finCostStock21__chart,
+body[data-page="finanzas"].finanzas-dark .finCostFinancial21__chart,
+body[data-page="finanzas"].finanzas-dark .finCostStock21__ctaArrow,
+body[data-page="finanzas"].finanzas-dark .finCostFinancial21__ctaArrow{
+  background:rgba(255,255,255,.07) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  border-radius:var(--fin-radius-card) !important;
+  color:#d7d7d7 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finCostStock21__chartEmpty{
+  background:rgba(36,121,255,.80) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finCostStock21__trend,
+body[data-page="finanzas"].finanzas-dark .finCostFinancial21__trend{
+  border-radius:var(--fin-radius-chip) !important;
+  background:rgba(255,255,255,.07) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#c9c9c9 !important;
+}
+
+/* Tabla pedidos y reglas: superficie uniforme */
+body[data-page="finanzas"].finanzas-dark .finHistTable,
+body[data-page="finanzas"].finanzas-dark .finRulesTable{
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  overflow:hidden !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finHistTable th,
+body[data-page="finanzas"].finanzas-dark .finRulesTable th{
+  background:#1f1f1f !important;
+  color:#c9c9c9 !important;
+  border-bottom:1px solid rgba(255,255,255,.14) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finHistTable td,
+body[data-page="finanzas"].finanzas-dark .finRulesTable td{
+  background:#2f2f2f !important;
+  border-bottom:1px solid rgba(255,255,255,.10) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finHistTable tbody tr:hover td,
+body[data-page="finanzas"].finanzas-dark .finRulesTable tbody tr:hover td{
+  background:#383838 !important;
+}
+
+/* =========================
+   Slide Detalle Financiero
+   ========================= */
+body[data-page="finanzas"].finanzas-dark .finOrderDetailOverlay.is-open{
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailBackdrop{
+  background:rgba(0,0,0,.32) !important;
+  backdrop-filter:none !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailPanel{
+  background:#1f1f1f !important;
+  color:#f4f4f5 !important;
+  border-left:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:-24px 0 58px rgba(0,0,0,.50) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMount,
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__body{
+  background:#1f1f1f !important;
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__head{
+  background:#1f1f1f !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+  padding:24px 28px 18px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__body{
+  padding:0 28px 32px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailMini{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  padding:18px 0 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard{
+  border-top:1px solid rgba(255,255,255,.12) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailCard--hero{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  border-top:0 !important;
+  padding-top:22px !important;
+  padding-bottom:22px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailGrid{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:0 !important;
+  border-top:1px solid rgba(255,255,255,.12) !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailGrid .finOrderDetailMini + .finOrderDetailMini{
+  border-left:1px solid rgba(255,255,255,.12) !important;
+  padding-left:18px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailLine{
+  border-bottom:1px solid rgba(255,255,255,.10) !important;
+  padding:11px 0 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailLine__value,
+body[data-page="finanzas"].finanzas-dark .finOrderDetailLine__value.is-strong{
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailSectionTitle{
+  color:#f4f4f5 !important;
+  letter-spacing:.08em;
+  margin-bottom:8px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetailNote{
+  margin:0 0 2px !important;
+  border-radius:var(--fin-radius-card) !important;
+  background:rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#d7d7d7 !important;
+  padding:14px 16px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finOrderDetail__close{
+  background:#2f2f2f !important;
+  color:#f4f4f5 !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+/* =========================
+   Slide Costos Financieros
+   ========================= */
+body[data-page="finanzas"].finanzas-dark .finFinancialBackdrop{
+  background:rgba(0,0,0,.32) !important;
+  backdrop-filter:none !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinancialPanel,
+body[data-page="finanzas"].finanzas-dark .finFinancialPanelMount,
+body[data-page="finanzas"].finanzas-dark .finFinSlide{
+  background:#1f1f1f !important;
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinancialPanel{
+  border-left:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:-24px 0 58px rgba(0,0,0,.50) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinSlide__header{
+  background:#1f1f1f !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinSlide__divider{
+  background:transparent !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinSlide__body{
+  background:#1f1f1f !important;
+  padding:24px 28px 32px !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinCard,
+body[data-page="finanzas"].finanzas-dark .finFinPanelCard,
+body[data-page="finanzas"].finanzas-dark .finFinChartBox,
+body[data-page="finanzas"].finanzas-dark .finFinNotifyList{
+  background:#2f2f2f !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:var(--fin-radius-card) !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.22) !important;
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinChartBox,
+body[data-page="finanzas"].finanzas-dark .finFinNotifyList{
+  background:#262626 !important;
+  border-style:solid !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinCard__label,
+body[data-page="finanzas"].finanzas-dark .finFinCard__sub,
+body[data-page="finanzas"].finanzas-dark .finFinPanelCard__kicker,
+body[data-page="finanzas"].finanzas-dark .finFinChartBox__empty,
+body[data-page="finanzas"].finanzas-dark .finFinNotifyList__empty{
+  color:#c9c9c9 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinSlide__title,
+body[data-page="finanzas"].finanzas-dark .finFinCard__value,
+body[data-page="finanzas"].finanzas-dark .finFinPanelCard__title{
+  color:#f4f4f5 !important;
+}
+
+body[data-page="finanzas"].finanzas-dark .finFinSlide__close{
+  background:#2f2f2f !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  color:#f4f4f5 !important;
+  border-radius:var(--fin-radius-card) !important;
+}
+
+/* Cualquier resto blanco dentro de overlays de finanzas */
+body[data-page="finanzas"].finanzas-dark .finOrderDetailOverlay [style*="background: #fff"],
+body[data-page="finanzas"].finanzas-dark .finOrderDetailOverlay [style*="background:#fff"],
+body[data-page="finanzas"].finanzas-dark .finOrderDetailOverlay [style*="background: white"],
+body[data-page="finanzas"].finanzas-dark .finFinancialOverlay [style*="background: #fff"],
+body[data-page="finanzas"].finanzas-dark .finFinancialOverlay [style*="background:#fff"],
+body[data-page="finanzas"].finanzas-dark .finFinancialOverlay [style*="background: white"]{
+  background:#2f2f2f !important;
+  color:#f4f4f5 !important;
+}
+
+@media (max-width:760px){
+  body[data-page="finanzas"].finanzas-dark .finOrderDetail__head{
+    padding:20px 20px 16px !important;
+  }
+
+  body[data-page="finanzas"].finanzas-dark .finOrderDetail__body{
+    padding:0 20px 28px !important;
+  }
+
+  body[data-page="finanzas"].finanzas-dark .finOrderDetailGrid{
+    grid-template-columns:1fr !important;
+  }
+
+  body[data-page="finanzas"].finanzas-dark .finOrderDetailGrid .finOrderDetailMini + .finOrderDetailMini{
+    border-left:0 !important;
+    border-top:1px solid rgba(255,255,255,.12) !important;
+    padding-left:0 !important;
+  }
+}
