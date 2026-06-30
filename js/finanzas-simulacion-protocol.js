@@ -1,7 +1,7 @@
 console.log("[finanzas-simulacion-protocol.js] cargado OK");
 
 (function () {
-  const BUILD = "PROTOCOL_SIMULATION_UI_2026_06_29_02";
+  const BUILD = "PROTOCOL_SIMULATION_UI_2026_06_30_01";
   const VIEW_KEY = "sazzu_finanzas_active_view";
   const STYLE_ID = "protocolSimulationStylesheet";
   const STYLE_HREF = "/css/finanzas-simulacion-protocol.css?v=20260629_01";
@@ -48,7 +48,7 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
   }
 
   function pct(value) {
-    return Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 3 }) + "%";
+    return Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 2 }) + "%";
   }
 
   function markup() {
@@ -373,6 +373,9 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
       if (window.finFinanceOrdersTable && typeof window.finFinanceOrdersTable.reload === "function") {
         window.finFinanceOrdersTable.reload();
       }
+      if (window.finanzasMovimientosMetricsSync) {
+        window.setTimeout(window.finanzasMovimientosMetricsSync, 250);
+      }
     } catch (err) {
       setStatus(String(err && err.message ? err.message : err), true);
     }
@@ -472,4 +475,180 @@ console.log("[finanzas-simulacion-protocol.js] cargado OK");
     setView: showSimulationView,
     create: createSimulation
   };
+})();
+
+(function () {
+  const BUILD = "FINANCE_MOVEMENT_METRICS_SYNC_2026_06_30_01";
+
+  function number(value) {
+    const n = Number(value || 0);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function money(value) {
+    return number(value).toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      maximumFractionDigits: 2
+    });
+  }
+
+  function percent(value) {
+    return number(value).toLocaleString("es-AR", { maximumFractionDigits: 2 }) + "%";
+  }
+
+  function isElectronic(row) {
+    const provider = String(row && row.provider || "").toLowerCase();
+    const gateway = String(row && row.payment_gateway || "").toLowerCase();
+    const method = String(row && row.payment_method || "").toLowerCase();
+    if (row && row.is_electronic === true) return true;
+    if (row && row.is_cod === true) return false;
+    if (provider === "cod" || gateway === "cod" || method === "cash_on_delivery") return false;
+    return provider === "mercadopago" || gateway === "mercadopago" || method.includes("card") || method === "account_money";
+  }
+
+  function setKpiLabel(valueId, label) {
+    const valueEl = document.getElementById(valueId);
+    const card = valueEl ? valueEl.closest(".u-miniStat") : null;
+    const labelEl = card ? card.querySelector(".u-muted") : null;
+    if (labelEl) labelEl.textContent = label;
+  }
+
+  function calculate(rows) {
+    let grossTotal = 0;
+    let netTotal = 0;
+    let electronicGross = 0;
+    let electronicFinancialCost = 0;
+    let electronicCollectionFee = 0;
+
+    (Array.isArray(rows) ? rows : []).forEach(row => {
+      const gross = number(row.monto_bruto_n || row.gross_amount);
+      const net = number(row.neto_ingreso_v || row.net_expected_amount || gross);
+      const financialCost = number(row.total_financial_cost_amount);
+      const collectionFee = number(row.collection_fee_amount);
+
+      grossTotal += gross;
+      netTotal += net;
+
+      if (isElectronic(row)) {
+        electronicGross += gross;
+        electronicFinancialCost += financialCost;
+        electronicCollectionFee += collectionFee;
+      }
+    });
+
+    const financialAvgPct = electronicGross > 0 ? (electronicFinancialCost / electronicGross) * 100 : 0;
+    const collectionAvgPct = electronicGross > 0 ? (electronicCollectionFee / electronicGross) * 100 : 0;
+
+    return {
+      grossTotal,
+      netTotal,
+      electronicGross,
+      electronicFinancialCost,
+      electronicCollectionFee,
+      financialAvgPct,
+      collectionAvgPct
+    };
+  }
+
+  function renderFinancialCard(summary) {
+    const valueEl = document.getElementById("finCostFinancialValue");
+    const subEl = document.getElementById("finCostFinancialSub");
+    const pctEl = document.getElementById("finCostFinancialTrendPct");
+    const wrapEl = document.getElementById("finCostFinancialTrendWrap");
+    const arrowEl = document.getElementById("finCostFinancialTrendArrow");
+
+    if (valueEl) valueEl.textContent = money(summary.electronicFinancialCost);
+    if (subEl) subEl.textContent = "Costo financiero de pagos electrónicos del rango activo.";
+    if (pctEl) pctEl.textContent = percent(summary.financialAvgPct);
+    if (arrowEl) arrowEl.textContent = summary.electronicFinancialCost > 0 ? "↓" : "→";
+    if (wrapEl) {
+      wrapEl.classList.remove("is-up", "is-down", "is-neutral");
+      wrapEl.classList.add(summary.electronicFinancialCost > 0 ? "is-down" : "is-neutral");
+    }
+  }
+
+  function renderMovementKpis(rows) {
+    const summary = calculate(rows);
+
+    const elGross = document.getElementById("kpiFinBrutoN");
+    const elNet = document.getElementById("kpiFinNetoV");
+    const elFinancialAvg = document.getElementById("kpiFinRetU");
+    const elCollectionAvg = document.getElementById("kpiFinRetW");
+
+    setKpiLabel("kpiFinRetU", "Costo financiero promedio");
+    setKpiLabel("kpiFinRetW", "Costo por cobro promedio");
+
+    if (elGross) elGross.textContent = money(summary.grossTotal);
+    if (elNet) elNet.textContent = money(summary.netTotal);
+    if (elFinancialAvg) elFinancialAvg.textContent = percent(summary.financialAvgPct);
+    if (elCollectionAvg) elCollectionAvg.textContent = percent(summary.collectionAvgPct);
+
+    renderFinancialCard(summary);
+    return summary;
+  }
+
+  function sync() {
+    if (!window.FinanzasState) return null;
+    return renderMovementKpis(window.FinanzasState.rows || []);
+  }
+
+  function installPatch() {
+    if (window.__FINANCE_MOVEMENT_METRICS_PATCHED__) return true;
+    if (!window.FinanzasState) return false;
+
+    window.__FINANCE_MOVEMENT_METRICS_PATCHED__ = true;
+    window.finanzasMovimientosMetricsSync = sync;
+
+    if (typeof window.fin_renderKpis_ === "function") {
+      window.__FINANCE_MOVEMENT_ORIGINAL_RENDER_KPIS__ = window.fin_renderKpis_;
+      window.fin_renderKpis_ = function patchedFinRenderKpis(rows) {
+        return renderMovementKpis(rows);
+      };
+    }
+
+    const previousFinancialSync = window.finFinancialTopCardSync_;
+    window.__FINANCE_MOVEMENT_ORIGINAL_FINANCIAL_SYNC__ = previousFinancialSync;
+    window.finFinancialTopCardSync_ = function patchedFinancialTopCardSync() {
+      return sync();
+    };
+
+    const applyBtn = document.getElementById("btnApplyFin");
+    if (applyBtn && !applyBtn.__wiredMovementMetricsSync) {
+      applyBtn.__wiredMovementMetricsSync = true;
+      applyBtn.addEventListener("click", () => {
+        window.setTimeout(sync, 500);
+        window.setTimeout(sync, 1200);
+      });
+    }
+
+    sync();
+    console.log("[finanzas-movimientos] métricas sincronizadas", BUILD);
+    return true;
+  }
+
+  let attempts = 0;
+  const bootTimer = window.setInterval(() => {
+    attempts += 1;
+    const ok = installPatch();
+    if (ok || attempts > 80) window.clearInterval(bootTimer);
+  }, 150);
+
+  let lastSignature = "";
+  window.setInterval(() => {
+    if (!window.FinanzasState || !Array.isArray(window.FinanzasState.rows)) return;
+    const signature = JSON.stringify(window.FinanzasState.rows.map(row => [
+      row.id,
+      row.monto_bruto_n || row.gross_amount,
+      row.neto_ingreso_v || row.net_expected_amount,
+      row.total_financial_cost_amount,
+      row.collection_fee_amount,
+      row.fecha_ingreso_iso
+    ]));
+
+    if (signature !== lastSignature) {
+      lastSignature = signature;
+      sync();
+    }
+  }, 1200);
 })();
