@@ -61,30 +61,12 @@
     return escapeHtml_(value).replace(/`/g, "&#096;");
   }
 
-  function safeCall_(fnName, args) {
-    try {
-      const fn = window[fnName];
-      if (typeof fn === "function") return fn.apply(window, Array.isArray(args) ? args : []);
-    } catch (err) {
-      console.warn(`[productos-panel-supabase-read] Error ejecutando ${fnName}`, err);
-    }
-    return null;
-  }
-
   function getBootstrapPieces_(payload) {
-    const skus = payload && payload.skus && Array.isArray(payload.skus.items)
-      ? payload.skus.items
-      : [];
-
-    const offers = payload && payload.offers && Array.isArray(payload.offers.items)
-      ? payload.offers.items
-      : [];
-
-    const scenarios = payload && payload.financial_scenarios && Array.isArray(payload.financial_scenarios.items)
-      ? payload.financial_scenarios.items
-      : [];
-
-    return { skus, offers, scenarios };
+    return {
+      skus: payload && payload.skus && Array.isArray(payload.skus.items) ? payload.skus.items : [],
+      offers: payload && payload.offers && Array.isArray(payload.offers.items) ? payload.offers.items : [],
+      scenarios: payload && payload.financial_scenarios && Array.isArray(payload.financial_scenarios.items) ? payload.financial_scenarios.items : []
+    };
   }
 
   function normalizeSkuForLegacyUi_(item) {
@@ -143,7 +125,7 @@
       tipo: isBundle ? "bundle" : (isQuantity ? "equivalencia" : "oferta"),
       estado: safeText_(item && item.estado) || "activo",
       estado_oferta: safeText_(item && item.estado_oferta) || "activo",
-      origen_tabla: isBundle ? "Supabase · product_offer_sets" : "Supabase · product_offer_sets",
+      origen_tabla: "Supabase · product_offer_sets",
       id_variante_shopify: safeText_(item && (item.id_variante_shopify || item.shopify_variant_id || idVariante)),
       id_variante: idVariante,
       tipo_oferta: tipoOferta,
@@ -182,10 +164,7 @@
         ofertas_equivalencias_activas: equivalencias.length,
         ofertas_bundles_activas: bundles.length
       },
-      detalle: {
-        equivalencias,
-        bundles
-      },
+      detalle: { equivalencias, bundles },
       items: normalized
     };
   }
@@ -205,7 +184,9 @@
 
   function renderProductosEmptyTableDirect_() {
     const tbody = document.getElementById("prodResumenTableBody");
-    if (!tbody) return;
+    if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
+
+    tbody.dataset.supabaseEmptyRendered = "1";
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="prodTableEmpty">No se encontraron productos con los filtros actuales.</td>
@@ -218,8 +199,9 @@
     const note = document.getElementById("prodOffersTableNote");
 
     if (note) note.textContent = "No hay ofertas para mostrar.";
-    if (!tbody) return;
+    if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
 
+    tbody.dataset.supabaseEmptyRendered = "1";
     tbody.innerHTML = `
       <tr>
         <td colspan="7" class="prodTableEmpty">No se encontraron ofertas con los filtros actuales.</td>
@@ -232,13 +214,21 @@
     const note = document.getElementById("prodSetsTableNote");
 
     if (note) note.textContent = "No hay conjuntos para mostrar.";
-    if (!tbody) return;
+    if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
 
+    tbody.dataset.supabaseEmptyRendered = "1";
     tbody.innerHTML = `
       <tr>
         <td colspan="9" class="prodSetsTable__empty">No se encontraron conjuntos para mostrar.</td>
       </tr>
     `;
+  }
+
+  function resetEmptyMarkers_() {
+    ["prodResumenTableBody", "prodOffersTableBody", "prodSetsTableBody"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) delete el.dataset.supabaseEmptyRendered;
+    });
   }
 
   function applySnapshotToProductosState_(payload) {
@@ -260,13 +250,11 @@
     if (typeof ProductosState !== "undefined") {
       ProductosState.all = normalizedSkus;
       ProductosState.filtered = [];
-
       ProductosState.offersSummary = buildOffersSummary_(pieces.offers);
       ProductosState.offersAll = normalizedOffers;
       ProductosState.offersFiltered = normalizedOffers.slice();
       ProductosState.offersLoaded = true;
       ProductosState.offersLoading = false;
-
       ProductosState.productSets = normalizedOffers.slice();
       ProductosState.productSetsLoaded = true;
       ProductosState.productSetsLoading = false;
@@ -274,10 +262,8 @@
 
     if (typeof ProductosNuevaOfertaState !== "undefined") {
       ProductosNuevaOfertaState.sets = normalizedOffers.slice();
-
       const selectedId = safeText_(ProductosNuevaOfertaState.selectedId);
       const stillExists = normalizedOffers.some((item) => safeText_(item.id_variante) === selectedId);
-
       if (selectedId && !stillExists) {
         ProductosNuevaOfertaState.selectedId = "";
         ProductosNuevaOfertaState.selectedSet = null;
@@ -292,7 +278,6 @@
           nombre: safeText_(item.nombre || item.nombre_producto),
           costo_producto: toNumber_(item.costo_proveedor_actual || item.costo_proveedor, 0)
         }));
-
       ProductosSetBuilderState.loading = false;
     }
 
@@ -303,7 +288,6 @@
           sku: safeText_(item.sku),
           nombre: safeText_(item.nombre || item.nombre_producto)
         }));
-
       ProductosLoteState.skusLoaded = true;
       ProductosLoteState.skusLoading = false;
     }
@@ -316,31 +300,22 @@
     const pieces = getBootstrapPieces_(payload);
     const normalizedOffers = pieces.offers.map(normalizeOfferForLegacyUi_);
 
+    if (pieces.skus.length || normalizedOffers.length) resetEmptyMarkers_();
+
     if (typeof applyProductosFilters_ === "function") applyProductosFilters_();
     if (typeof renderProductosKpis_ === "function") renderProductosKpis_();
     if (typeof renderProductosTable_ === "function") renderProductosTable_();
     if (typeof wireProductosLocalSwitches_ === "function") wireProductosLocalSwitches_();
-
     if (!pieces.skus.length) renderProductosEmptyTableDirect_();
 
-    if (typeof renderOffersTable_ === "function" && document.getElementById("prodOffersTableBody")) {
-      renderOffersTable_();
-    } else if (document.getElementById("prodOffersTableBody")) {
-      renderOffersEmptyDirect_();
+    if (document.getElementById("prodOffersTableBody")) {
+      if (typeof renderOffersTable_ === "function") renderOffersTable_();
+      if (!normalizedOffers.length) renderOffersEmptyDirect_();
     }
 
-    if (!normalizedOffers.length && document.getElementById("prodOffersTableBody")) {
-      renderOffersEmptyDirect_();
-    }
-
-    if (typeof renderProductSetsTable_ === "function" && document.getElementById("prodSetsTableBody")) {
-      renderProductSetsTable_(normalizedOffers);
-    } else if (document.getElementById("prodSetsTableBody")) {
-      renderProductSetsEmptyDirect_();
-    }
-
-    if (!normalizedOffers.length && document.getElementById("prodSetsTableBody")) {
-      renderProductSetsEmptyDirect_();
+    if (document.getElementById("prodSetsTableBody")) {
+      if (typeof renderProductSetsTable_ === "function") renderProductSetsTable_(normalizedOffers);
+      if (!normalizedOffers.length) renderProductSetsEmptyDirect_();
     }
 
     if (payload.summary) applySummaryDirect_(payload.summary);
@@ -353,7 +328,6 @@
   function enforceSupabaseSnapshot_() {
     const payload = ReadState.lastPayload;
     if (!payload || payload.ok !== true) return;
-
     applySnapshotToProductosState_(payload);
     renderCurrentSnapshot_();
   }
@@ -371,7 +345,6 @@
     }
 
     let html = `<option value="">${offers.length ? "Selecciona un conjunto disponible" : "No hay conjuntos disponibles"}</option>`;
-
     html += offers.map((item) => {
       const tipo = item.tipo_oferta === "cantidad" ? "Cantidad" : "Bundle";
       return `<option value="${escapeHtmlForAttr_(item.id_variante)}">${escapeHtml_(item.id_variante)} · ${escapeHtml_(tipo)}</option>`;
@@ -404,12 +377,7 @@
 
   function populateFinancialScenarioSelects_() {
     const scenarios = ReadState.financialScenarios || [];
-    const selectorIds = [
-      "prodSkuCreateEscenario",
-      "prodSetFinanceScenario"
-    ];
-
-    selectorIds.forEach((id) => {
+    ["prodSkuCreateEscenario", "prodSetFinanceScenario"].forEach((id) => {
       const select = document.getElementById(id);
       if (!select) return;
 
@@ -421,12 +389,7 @@
         return `<option value="${escapeHtmlForAttr_(value)}">${escapeHtml_(scenarioLabel_(item))}</option>`;
       }).join("");
 
-      if (currentValue && validValues.has(currentValue)) {
-        select.value = currentValue;
-      } else {
-        select.value = "";
-      }
-
+      select.value = currentValue && validValues.has(currentValue) ? currentValue : "";
       select.dataset.supabaseScenarioLoaded = "1";
     });
 
@@ -443,7 +406,6 @@
       const sku = safeText_(item && item.sku);
       const name = safeText_(item && (item.nombre_producto || item.nombre));
       const cost = toNumber_(item && (item.costo_proveedor_actual || item.costo_proveedor), 0);
-
       return `<option value="${escapeHtmlForAttr_(sku)}" data-name="${escapeHtmlForAttr_(name)}" data-cost="${escapeHtmlForAttr_(String(cost))}">${escapeHtml_(sku)} — ${escapeHtml_(name)}</option>`;
     }).join("");
 
@@ -453,27 +415,35 @@
 
       const currentValue = safeText_(select.value);
       select.innerHTML = optionsHtml;
-
-      if (currentValue && validSkuValues.has(currentValue)) {
-        select.value = currentValue;
-      } else {
-        select.value = "";
-      }
-
+      select.value = currentValue && validSkuValues.has(currentValue) ? currentValue : "";
       select.dataset.supabaseSkuLoaded = "1";
       select.disabled = false;
     });
 
-    if (typeof refreshAllProductosSetBuilderSkuSelects_ === "function") {
-      refreshAllProductosSetBuilderSkuSelects_();
-    }
+    if (typeof refreshAllProductosSetBuilderSkuSelects_ === "function") refreshAllProductosSetBuilderSkuSelects_();
+    if (typeof syncProductosSetBuilderFieldsFromSelection_ === "function") syncProductosSetBuilderFieldsFromSelection_();
+    if (typeof updateProductosSetBuilderSummary_ === "function") updateProductosSetBuilderSummary_();
+  }
 
-    if (typeof syncProductosSetBuilderFieldsFromSelection_ === "function") {
-      syncProductosSetBuilderFieldsFromSelection_();
-    }
+  function patchFunction_(name, wrapper) {
+    try {
+      const original = window[name];
+      if (typeof original !== "function") return;
+      if (original.__productosSupabase01BPatched === true) return;
 
-    if (typeof updateProductosSetBuilderSummary_ === "function") {
-      updateProductosSetBuilderSummary_();
+      const patched = function () {
+        return wrapper(original, Array.prototype.slice.call(arguments));
+      };
+
+      patched.__productosSupabase01BPatched = true;
+      patched.__productosSupabase01BOriginal = original;
+      window[name] = patched;
+
+      try {
+        window.eval(`${name} = window[${JSON.stringify(name)}];`);
+      } catch (err) {}
+    } catch (err) {
+      console.warn(`[productos-panel-supabase-read] No se pudo parchear ${name}`, err);
     }
   }
 
@@ -499,13 +469,7 @@
 
     patchFunction_("loadOffers_", async function (original, args) {
       if (isSupabaseWinner_()) {
-        if (typeof ProductosState !== "undefined") {
-          ProductosState.offersAll = (ReadState.offers || []).map(normalizeOfferForLegacyUi_);
-          ProductosState.offersFiltered = ProductosState.offersAll.slice();
-          ProductosState.offersLoaded = true;
-          ProductosState.offersLoading = false;
-        }
-        renderCurrentSnapshot_();
+        enforceSupabaseSnapshot_();
         return null;
       }
       return original.apply(window, args || []);
@@ -513,12 +477,7 @@
 
     patchFunction_("loadProductSets_", async function (original, args) {
       if (isSupabaseWinner_()) {
-        if (typeof ProductosState !== "undefined") {
-          ProductosState.productSets = (ReadState.offers || []).map(normalizeOfferForLegacyUi_);
-          ProductosState.productSetsLoaded = true;
-          ProductosState.productSetsLoading = false;
-        }
-        renderCurrentSnapshot_();
+        enforceSupabaseSnapshot_();
         return null;
       }
       return original.apply(window, args || []);
@@ -551,33 +510,6 @@
     });
   }
 
-  function patchFunction_(name, wrapper) {
-    try {
-      const original = window[name];
-      if (typeof original !== "function") return;
-      if (original.__productosSupabase01BPatched === true) return;
-
-      const patched = function () {
-        return wrapper(original, Array.prototype.slice.call(arguments));
-      };
-
-      patched.__productosSupabase01BPatched = true;
-      patched.__productosSupabase01BOriginal = original;
-
-      window[name] = patched;
-
-      try {
-        // En scripts clásicos, las function declarations globales son mutables.
-        // Eval local permite actualizar el binding usado por otras funciones legacy.
-        window.eval(`${name} = window[${JSON.stringify(name)}];`);
-      } catch (err) {
-        // Si el binding no se puede reasignar, igual queda el patch en window.
-      }
-    } catch (err) {
-      console.warn(`[productos-panel-supabase-read] No se pudo parchear ${name}`, err);
-    }
-  }
-
   async function loadBootstrapFromSupabase_() {
     if (!isProductosPage_()) return null;
     if (ReadState.loading) return ReadState.lastPayload;
@@ -593,11 +525,11 @@
 
     try {
       const result = await client.rpc(BOOTSTRAP_RPC, {});
-      const payload = result && result.data && result.error === undefined
+      if (result && result.error) throw result.error;
+
+      const payload = result && Object.prototype.hasOwnProperty.call(result, "data")
         ? result.data
         : result;
-
-      if (result && result.error) throw result.error;
 
       if (!payload || payload.ok !== true) {
         throw new Error("Bootstrap Supabase inválido para Productos.");
@@ -642,20 +574,12 @@
   }
 
   function schedulePostRenderHydration_() {
-    setTimeout(function () {
-      patchLegacyReaders_();
-      enforceSupabaseSnapshot_();
-    }, 80);
-
-    setTimeout(function () {
-      patchLegacyReaders_();
-      enforceSupabaseSnapshot_();
-    }, 350);
-
-    setTimeout(function () {
-      patchLegacyReaders_();
-      enforceSupabaseSnapshot_();
-    }, 900);
+    [80, 350, 900, 1600].forEach((delay) => {
+      setTimeout(function () {
+        patchLegacyReaders_();
+        enforceSupabaseSnapshot_();
+      }, delay);
+    });
   }
 
   function bindHydrationEvents_() {
@@ -663,21 +587,9 @@
       const shouldHydrate = event.target && event.target.closest && event.target.closest(
         "#prodNewProductBtn, #prodNewOfferBtn, [data-action='crear-conjunto'], #prodSetCreateBtn, #prodSlideCreateSetBtn, .prodTab"
       );
+
       if (shouldHydrate) schedulePostRenderHydration_();
     }, true);
-
-    let mutationTimer = null;
-    const observer = new MutationObserver(function () {
-      clearTimeout(mutationTimer);
-      mutationTimer = setTimeout(function () {
-        if (isSupabaseWinner_()) schedulePostRenderHydration_();
-      }, 180);
-    });
-
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true
-    });
   }
 
   function initProductosPanelSupabaseRead_() {
