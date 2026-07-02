@@ -1,8 +1,8 @@
-/* Protocol Data · Offer Detail Drawer Helper · 04E */
+/* Protocol Data · Offer Detail Drawer Helper · 04F */
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_OFFER_DETAIL_DRAWER_2026_07_02_04E";
+  const BUILD = "PRODUCTOS_OFFER_DETAIL_DRAWER_2026_07_02_04F";
   const ATTACH_VARIANT_RPC = "rpc_products_attach_variant_to_commercial_offer";
   const DETACH_VARIANT_RPC = "rpc_products_detach_variant_from_commercial_offer";
   const COMMERCIAL_OFFERS_RPC = "rpc_products_panel_commercial_offers_list";
@@ -74,22 +74,21 @@
   }
 
   function injectCss() {
-    if (document.getElementById("prodOfferDrawerCss04E")) return;
+    if (document.getElementById("prodOfferDrawerCss04F")) return;
     document.getElementById("prodOfferDrawerCss04D")?.remove();
+    document.getElementById("prodOfferDrawerCss04E")?.remove();
 
     const style = document.createElement("style");
-    style.id = "prodOfferDrawerCss04E";
+    style.id = "prodOfferDrawerCss04F";
     style.textContent = `
-      .prodOfferVariantAttachBtn,.prodOfferOpenDetailBtn{border:0;background:#2479ff!important;color:#fff!important;border-radius:8px;padding:8px 11px;font-weight:900;font-size:12px;cursor:pointer;box-shadow:0 6px 14px rgba(36,121,255,.18)}
-      .prodOfferVariantItem{display:inline-flex;padding:5px 8px;border:1px solid #dbe7ff;background:#f5f9ff;color:#1f3763;border-radius:999px;font-size:12px;font-weight:800}.prodOfferVariantEmpty{font-size:12px;color:#667085}.prodOfferVariantsCell{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:160px}
-      .prodOfferDrawerOverlay{position:fixed;inset:0;background:rgba(15,23,42,.50);backdrop-filter:blur(3px);z-index:9998;opacity:0;pointer-events:none;transition:.2s ease}.prodOfferDrawerOverlay.is-open{opacity:1;pointer-events:auto}
-      .prodOfferDrawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,calc(100vw - 24px));background:#f7f9fd;box-shadow:-24px 0 60px rgba(15,23,42,.22);z-index:9999;transform:translateX(104%);transition:.24s ease;display:flex;flex-direction:column;border-left:1px solid #dbe5f5}.prodOfferDrawer.is-open{transform:translateX(0)}
-      .prodOfferDrawer__header{padding:22px 24px;background:#fff;border-bottom:1px solid #e5edf8;display:flex;justify-content:space-between;gap:16px;flex:0 0 auto}.prodOfferDrawer__eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a98ae;font-weight:900}.prodOfferDrawer__title{font-size:20px;font-weight:950;color:#111827;margin-top:5px}.prodOfferDrawer__sub{font-size:13px;color:#667085;margin-top:4px;line-height:1.45}.prodOfferDrawer__close{border:0;background:#f2f6fc;border-radius:10px;width:38px;height:38px;color:#1d2939;font-size:18px;font-weight:950;cursor:pointer}
-      .prodOfferDrawer__body{padding:18px 24px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;min-height:0}.prodOfferDrawerCard{background:#fff;border:1px solid #e5edf8;border-radius:16px;box-shadow:0 10px 26px rgba(15,23,42,.04);padding:16px}.prodOfferDrawerCard--action{border-color:#bfd6ff;box-shadow:0 14px 30px rgba(36,121,255,.10)}.prodOfferDrawerCard__title{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:#8a98ae;font-weight:950;margin-bottom:12px}
-      .prodOfferAttachForm{display:grid;gap:10px}.prodOfferAttachForm label{font-size:12px;font-weight:950;color:#344054}.prodOfferAttachForm input{width:100%;box-sizing:border-box;border:1px solid #d7e0ee;border-radius:12px;padding:13px 14px;font-size:14px;outline:none;background:#fff;color:#111827}.prodOfferAttachForm input:focus{border-color:#2479ff;box-shadow:0 0 0 4px rgba(36,121,255,.12)}.prodOfferAttachSubmit{border:0;background:#2479ff;color:#fff;border-radius:12px;padding:13px 14px;font-weight:950;cursor:pointer;box-shadow:0 10px 22px rgba(36,121,255,.20)}.prodOfferAttachSubmit:disabled{opacity:.65;cursor:not-allowed}.prodOfferDrawerStatus{font-size:13px;line-height:1.4}.prodOfferDrawerStatus.is-error{color:#c91f1f}.prodOfferDrawerStatus.is-success{color:#138a3d}
-      .prodOfferDrawerGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.prodOfferDrawerMetric,.prodOfferPolicyItem{background:#f8fbff;border:1px solid #edf2fa;border-radius:12px;padding:12px}.prodOfferDrawerMetric span,.prodOfferPolicyItem span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8a98ae;font-weight:950}.prodOfferDrawerMetric strong,.prodOfferPolicyItem strong{display:block;margin-top:5px;font-size:14px;color:#111827}.prodOfferPolicyList{display:grid;gap:10px}
-      .prodOfferVariantList{display:flex;flex-direction:column;gap:8px}.prodOfferVariantRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #dbe7ff;background:#f8fbff;border-radius:12px;padding:10px 12px}.prodOfferVariantRow strong{font-size:13px;color:#14213d}.prodOfferVariantRow span{font-size:12px;color:#667085}.prodOfferVariantRemove{border:0;background:#fff1f3;color:#b42318;border-radius:8px;padding:7px 9px;font-weight:900;cursor:pointer}.prodOfferVariantEmptyCard{border:1px dashed #c8d7ee;background:#f8fbff;border-radius:12px;padding:14px;color:#667085;font-size:13px;line-height:1.45}
-      @media(max-width:720px){.prodOfferDrawerGrid{grid-template-columns:1fr}.prodOfferDrawer__header{padding:18px}.prodOfferDrawer__body{padding:16px}}
+      .prodOfferVariantAttachBtn,.prodOfferOpenDetailBtn{border:0;background:#2479ff!important;color:#fff!important;border-radius:5px;padding:8px 11px;font-weight:900;font-size:12px;cursor:pointer;box-shadow:none}.prodOfferOpenDetailBtn{background:#eef4ff!important;color:#2479ff!important;border:1px solid #d8e6ff}.prodOfferVariantItem{display:inline-flex;padding:5px 8px;border:1px solid #dbe7ff;background:#f7fbff;color:#1f3763;border-radius:5px;font-size:12px;font-weight:800}.prodOfferVariantEmpty{font-size:12px;color:#667085}.prodOfferVariantsCell{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:160px}
+      .prodOfferDrawerOverlay{position:fixed;inset:0;background:rgba(15,23,42,.50);backdrop-filter:blur(3px);z-index:9998;opacity:0;pointer-events:none;transition:.2s ease}.prodOfferDrawerOverlay.is-open{opacity:1;pointer-events:auto}.prodOfferDrawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,calc(100vw - 24px));background:#fff;box-shadow:-18px 0 48px rgba(15,23,42,.18);z-index:9999;transform:translateX(104%);transition:.24s ease;display:flex;flex-direction:column;border-left:1px solid #e6edf7;overflow:hidden}.prodOfferDrawer.is-open{transform:translateX(0)}#prodOfferDrawerContent{height:100%;min-height:0;display:flex;flex-direction:column;background:#fff}
+      .prodOfferDrawer__header{padding:22px 24px 18px;background:#fff;border-bottom:1px solid #e6edf7;display:flex;justify-content:space-between;gap:16px;flex:0 0 auto}.prodOfferDrawer__eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a98ae;font-weight:900}.prodOfferDrawer__title{font-size:20px;font-weight:950;color:#111827;margin-top:5px}.prodOfferDrawer__sub{font-size:13px;color:#667085;margin-top:4px;line-height:1.45}.prodOfferDrawer__close{border:1px solid #e6edf7;background:#fff;border-radius:5px;width:36px;height:36px;color:#1d2939;font-size:18px;font-weight:950;cursor:pointer}
+      .prodOfferDrawer__body{flex:1 1 auto;min-height:0;padding:0 24px 26px;overflow-y:auto;overscroll-behavior:contain;background:#fff}.prodOfferDrawerSection{background:#fff;border:0;border-top:1px solid #e6edf7;border-radius:0;box-shadow:none;padding:18px 0}.prodOfferDrawerSection:first-child{border-top:0}.prodOfferDrawerSection__title{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:#8a98ae;font-weight:950;margin-bottom:12px}.prodOfferDrawerSection--action{padding-top:18px}
+      .prodOfferAttachForm{display:grid;gap:10px}.prodOfferAttachForm label{font-size:12px;font-weight:950;color:#344054}.prodOfferAttachForm input{width:100%;box-sizing:border-box;border:1px solid #d7e0ee;border-radius:5px;padding:12px 13px;font-size:14px;outline:none;background:#fff;color:#111827}.prodOfferAttachForm input:focus{border-color:#2479ff;box-shadow:0 0 0 3px rgba(36,121,255,.12)}.prodOfferAttachSubmit{border:0;background:#2479ff;color:#fff;border-radius:5px;padding:13px 14px;font-weight:950;cursor:pointer;box-shadow:none}.prodOfferAttachSubmit:disabled{opacity:.65;cursor:not-allowed}.prodOfferDrawerStatus{font-size:13px;line-height:1.4}.prodOfferDrawerStatus.is-error{color:#c91f1f}.prodOfferDrawerStatus.is-success{color:#138a3d}
+      .prodOfferDrawerGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.prodOfferDrawerMetric{background:#fff;border:1px solid #edf2fa;border-radius:5px;padding:11px 12px}.prodOfferDrawerMetric span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8a98ae;font-weight:950}.prodOfferDrawerMetric strong{display:block;margin-top:5px;font-size:14px;color:#111827}.prodOfferPolicyList{display:grid;gap:0;border-top:1px solid #edf2fa}.prodOfferPolicyItem{display:grid;grid-template-columns:165px 1fr;gap:14px;align-items:start;border-bottom:1px solid #edf2fa;padding:12px 0;background:#fff}.prodOfferPolicyItem span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8a98ae;font-weight:950}.prodOfferPolicyItem strong{font-size:14px;color:#111827;font-weight:800}
+      .prodOfferVariantList{display:flex;flex-direction:column;gap:8px}.prodOfferVariantRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #dbe7ff;background:#fff;border-radius:5px;padding:10px 12px}.prodOfferVariantRow strong{font-size:13px;color:#14213d}.prodOfferVariantRow span{font-size:12px;color:#667085}.prodOfferVariantRemove{border:0;background:#fff1f3;color:#b42318;border-radius:5px;padding:7px 9px;font-weight:900;cursor:pointer}.prodOfferVariantEmptyCard{border:1px dashed #c8d7ee;background:#fff;border-radius:5px;padding:14px;color:#667085;font-size:13px;line-height:1.45}
+      @media(max-width:720px){.prodOfferDrawerGrid{grid-template-columns:1fr}.prodOfferPolicyItem{grid-template-columns:1fr;gap:4px}.prodOfferDrawer__header{padding:18px}.prodOfferDrawer__body{padding:0 16px 22px}}
     `;
     document.head.appendChild(style);
   }
@@ -146,8 +145,8 @@
         <button type="button" class="prodOfferDrawer__close" id="prodOfferDrawerCloseBtn">×</button>
       </div>
       <div class="prodOfferDrawer__body">
-        <section class="prodOfferDrawerCard prodOfferDrawerCard--action">
-          <div class="prodOfferDrawerCard__title">Incluir ID Variante</div>
+        <section class="prodOfferDrawerSection prodOfferDrawerSection--action">
+          <div class="prodOfferDrawerSection__title">Incluir ID Variante</div>
           <div class="prodOfferAttachForm">
             <label for="prodOfferVariantInput">ID Variante Shopify</label>
             <input id="prodOfferVariantInput" type="text" placeholder="Ej: 1234567890" autocomplete="off" inputmode="numeric" />
@@ -158,13 +157,13 @@
           </div>
         </section>
 
-        <section class="prodOfferDrawerCard">
-          <div class="prodOfferDrawerCard__title">IDs Variante Shopify vinculados</div>
+        <section class="prodOfferDrawerSection">
+          <div class="prodOfferDrawerSection__title">IDs Variante Shopify vinculados</div>
           ${variantsHtml(offer)}
         </section>
 
-        <section class="prodOfferDrawerCard">
-          <div class="prodOfferDrawerCard__title">Resumen operativo</div>
+        <section class="prodOfferDrawerSection">
+          <div class="prodOfferDrawerSection__title">Resumen operativo</div>
           <div class="prodOfferDrawerGrid">
             <div class="prodOfferDrawerMetric"><span>Conjunto operativo</span><strong>${escapeHtml(offer.composicion_resumen || offer.offer_set_id || "Sin definir")}</strong></div>
             <div class="prodOfferDrawerMetric"><span>Tipo</span><strong>${escapeHtml(offer.tipo_oferta || "Comercial")}</strong></div>
@@ -173,8 +172,8 @@
           </div>
         </section>
 
-        <section class="prodOfferDrawerCard">
-          <div class="prodOfferDrawerCard__title">Políticas y condiciones</div>
+        <section class="prodOfferDrawerSection">
+          <div class="prodOfferDrawerSection__title">Políticas y condiciones</div>
           <div class="prodOfferPolicyList">
             <div class="prodOfferPolicyItem"><span>Política de compra</span><strong>${escapeHtml(offer.politica_compra)}</strong></div>
             <div class="prodOfferPolicyItem"><span>Política de envío</span><strong>${escapeHtml(offer.politica_envio)}</strong></div>
