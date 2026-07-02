@@ -1,17 +1,18 @@
 /* =========================================================
    Protocol Data · Productos Panel Supabase Bridge
-   Fase: FRONTEND PRODUCTOS 02/03
+   Fase: FRONTEND PRODUCTOS 03B
 
    Alcance:
    - Lectura: Supabase gana cuando rpc_products_panel_bootstrap responde OK.
    - Escritura: Nuevo producto y Conjunto de productos escriben en Supabase.
-   - AppScript queda como fallback solo para lectura si Supabase falla completo.
+   - Constructor de conjuntos: escenarios financieros vienen de Finanzas > Reglas.
+   - AppScript queda como fallback solo si Supabase falla completo.
    - No toca Productos Comestibles.
    ========================================================= */
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_02";
+  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_03B";
   const BOOTSTRAP_RPC = "rpc_products_panel_bootstrap";
   const UPSERT_PRODUCT_RPC = "rpc_products_upsert_product";
   const UPSERT_PRODUCT_SET_RPC = "rpc_products_upsert_product_set";
@@ -39,13 +40,13 @@
     return !!(ReadState.loaded === true && ReadState.lastPayload && ReadState.lastPayload.ok === true);
   }
 
+  function safeText_(value) {
+    return String(value == null ? "" : value).trim();
+  }
+
   function toNumber_(value, fallback) {
     const n = Number(value);
     return Number.isFinite(n) ? n : (fallback || 0);
-  }
-
-  function safeText_(value) {
-    return String(value == null ? "" : value).trim();
   }
 
   function escapeHtml_(value) {
@@ -53,7 +54,7 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
+      .replace(/\"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
 
@@ -111,10 +112,7 @@
     const isBundle = offerKind === "bundle";
     const isQuantity = offerKind === "quantity";
     const components = Array.isArray(item && item.components) ? item.components : [];
-    const skus = Array.isArray(item && item.skus)
-      ? item.skus
-      : components.map(c => c && c.sku).filter(Boolean);
-
+    const skus = Array.isArray(item && item.skus) ? item.skus : components.map(c => c && c.sku).filter(Boolean);
     const idVariante = safeText_(item && (item.id_variante || item.id_variante_shopify || item.shopify_variant_id));
     const tipoOferta = isQuantity ? "cantidad" : (isBundle ? "bundle" : safeText_(item && item.tipo_oferta));
     const costoProductos = toNumber_(item && (item.costo_productos || item.costo_productos_total || item.supplier_cost_total), 0);
@@ -169,6 +167,40 @@
     };
   }
 
+  function scenarioValue_(item) {
+    return safeText_(item && (item.rule_code || item.id || item.id_escenario));
+  }
+
+  function scenarioLabel_(item) {
+    const main = safeText_(item && (item.label || item.descripcion_escenario || item.nombre || item.rule_code || item.id));
+    const provider = safeText_(item && (item.provider || item.payment_gateway || item.proveedor_pago));
+    const installments = toNumber_(item && (item.installments_count || item.cuotas), 0);
+    const payoutDays = toNumber_(item && (item.payout_delay_days || item.plazo_dias), 0);
+    const costRate = toNumber_(item && item.total_financial_cost_rate, 0);
+    const costPct = costRate > 0 ? costRate * 100 : toNumber_(item && item.total_financial_cost_pct, 0);
+    const parts = [];
+
+    if (provider) parts.push(provider);
+    if (installments > 1) parts.push(`${installments} cuotas`);
+    else if (installments === 1) parts.push("1 cuota");
+    if (payoutDays > 0) parts.push(`${payoutDays} días`);
+    if (costPct > 0) parts.push(`costo ${costPct.toFixed(2)}%`);
+
+    return parts.length ? `${main || "Escenario financiero"} · ${parts.join(" · ")}` : (main || "Escenario financiero");
+  }
+
+  function normalizeScenarioForBuilder_(item) {
+    return {
+      id_escenario: scenarioValue_(item),
+      descripcion_escenario: scenarioLabel_(item),
+      proveedor_pago: safeText_(item && (item.provider || item.payment_gateway || item.proveedor_pago)),
+      plazo_dias: toNumber_(item && (item.payout_delay_days || item.plazo_dias), 0),
+      cuotas: toNumber_(item && (item.installments_count || item.cuotas), 0),
+      factor_neto: toNumber_(item && item.net_factor, 0),
+      source_supabase: item || {}
+    };
+  }
+
   function setText_(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = String(value == null ? "" : value);
@@ -182,46 +214,11 @@
     setText_("prodKpiBundles", toNumber_(metrics.bundle_offers_active, 0));
   }
 
-  function renderProductosEmptyTableDirect_() {
-    const tbody = document.getElementById("prodResumenTableBody");
+  function renderEmptyTable_(id, colspan, message, className) {
+    const tbody = document.getElementById(id);
     if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
-
     tbody.dataset.supabaseEmptyRendered = "1";
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6" class="prodTableEmpty">No se encontraron productos con los filtros actuales.</td>
-      </tr>
-    `;
-  }
-
-  function renderOffersEmptyDirect_() {
-    const tbody = document.getElementById("prodOffersTableBody");
-    const note = document.getElementById("prodOffersTableNote");
-
-    if (note) note.textContent = "No hay ofertas para mostrar.";
-    if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
-
-    tbody.dataset.supabaseEmptyRendered = "1";
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="prodTableEmpty">No se encontraron ofertas con los filtros actuales.</td>
-      </tr>
-    `;
-  }
-
-  function renderProductSetsEmptyDirect_() {
-    const tbody = document.getElementById("prodSetsTableBody");
-    const note = document.getElementById("prodSetsTableNote");
-
-    if (note) note.textContent = "No hay conjuntos para mostrar.";
-    if (!tbody || tbody.dataset.supabaseEmptyRendered === "1") return;
-
-    tbody.dataset.supabaseEmptyRendered = "1";
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="9" class="prodSetsTable__empty">No se encontraron conjuntos para mostrar.</td>
-      </tr>
-    `;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="${className}">${escapeHtml_(message)}</td></tr>`;
   }
 
   function resetEmptyMarkers_() {
@@ -237,6 +234,7 @@
     const pieces = getBootstrapPieces_(payload);
     const normalizedSkus = pieces.skus.map(normalizeSkuForLegacyUi_);
     const normalizedOffers = pieces.offers.map(normalizeOfferForLegacyUi_);
+    const normalizedScenarios = pieces.scenarios.map(normalizeScenarioForBuilder_).filter(item => item.id_escenario);
 
     ReadState.skus = pieces.skus;
     ReadState.offers = pieces.offers;
@@ -278,71 +276,82 @@
           nombre: safeText_(item.nombre || item.nombre_producto),
           costo_producto: toNumber_(item.costo_proveedor_actual || item.costo_proveedor, 0)
         }));
+
+      ProductosSetBuilderState.financialScenarios = normalizedScenarios;
       ProductosSetBuilderState.loading = false;
+      ProductosSetBuilderState.loadingFinancialScenarios = false;
     }
 
     if (typeof ProductosLoteState !== "undefined") {
       ProductosLoteState.skusOptions = normalizedSkus
         .filter((item) => item && item.sku)
-        .map((item) => ({
-          sku: safeText_(item.sku),
-          nombre: safeText_(item.nombre || item.nombre_producto)
-        }));
+        .map((item) => ({ sku: safeText_(item.sku), nombre: safeText_(item.nombre || item.nombre_producto) }));
       ProductosLoteState.skusLoaded = true;
       ProductosLoteState.skusLoading = false;
     }
   }
 
-  function renderCurrentSnapshot_() {
-    const payload = ReadState.lastPayload;
-    if (!payload || payload.ok !== true) return;
+  function populateFinancialScenarioSelects_() {
+    const scenarios = ReadState.financialScenarios || [];
+    const validValues = new Set(scenarios.map(scenarioValue_).filter(Boolean));
 
-    const pieces = getBootstrapPieces_(payload);
-    const normalizedOffers = pieces.offers.map(normalizeOfferForLegacyUi_);
+    ["prodSkuCreateEscenario", "prodSetFinanceScenario"].forEach((id) => {
+      const select = document.getElementById(id);
+      if (!select) return;
 
-    if (pieces.skus.length || normalizedOffers.length) resetEmptyMarkers_();
+      const currentValue = safeText_(select.value);
+      select.innerHTML = '<option value="">Seleccionar escenario</option>' + scenarios.map((item) => {
+        const value = scenarioValue_(item);
+        if (!value) return "";
+        return `<option value="${escapeHtmlForAttr_(value)}">${escapeHtml_(scenarioLabel_(item))}</option>`;
+      }).join("");
 
-    if (typeof applyProductosFilters_ === "function") applyProductosFilters_();
-    if (typeof renderProductosKpis_ === "function") renderProductosKpis_();
-    if (typeof renderProductosTable_ === "function") renderProductosTable_();
-    if (typeof wireProductosLocalSwitches_ === "function") wireProductosLocalSwitches_();
-    if (!pieces.skus.length) renderProductosEmptyTableDirect_();
+      select.value = currentValue && validValues.has(currentValue) ? currentValue : "";
+      select.dataset.supabaseScenarioLoaded = "1";
+      select.dataset.source = "supabase_finance_rules";
+    });
 
-    if (document.getElementById("prodOffersTableBody")) {
-      if (typeof renderOffersTable_ === "function") renderOffersTable_();
-      if (!normalizedOffers.length) renderOffersEmptyDirect_();
+    if (typeof ProductosSetBuilderState !== "undefined") {
+      ProductosSetBuilderState.financialScenarios = scenarios.map(normalizeScenarioForBuilder_).filter(item => item.id_escenario);
+      ProductosSetBuilderState.loadingFinancialScenarios = false;
     }
 
-    if (document.getElementById("prodSetsTableBody")) {
-      if (typeof renderProductSetsTable_ === "function") renderProductSetsTable_(normalizedOffers);
-      if (!normalizedOffers.length) renderProductSetsEmptyDirect_();
-    }
-
-    if (payload.summary) applySummaryDirect_(payload.summary);
-
-    populateFinancialScenarioSelects_();
-    populateProductSetSkuSelects_();
-    hydrateNuevaOfertaSelectFromSnapshot_();
+    if (typeof refreshProductosSetBuilderFinanceSelectUi_ === "function") refreshProductosSetBuilderFinanceSelectUi_();
+    if (typeof updateProductosSetBuilderSummary_ === "function") updateProductosSetBuilderSummary_();
   }
 
-  function enforceSupabaseSnapshot_() {
-    const payload = ReadState.lastPayload;
-    if (!payload || payload.ok !== true) return;
-    applySnapshotToProductosState_(payload);
-    renderCurrentSnapshot_();
+  function populateProductSetSkuSelects_() {
+    const skus = ReadState.skus || [];
+    const validSkuValues = new Set(skus.map((item) => safeText_(item && item.sku)).filter(Boolean));
+    const optionsHtml = '<option value="">Seleccionar SKU</option>' + skus.map((item) => {
+      const sku = safeText_(item && item.sku);
+      const name = safeText_(item && (item.nombre_producto || item.nombre));
+      const cost = toNumber_(item && (item.costo_proveedor_actual || item.costo_proveedor), 0);
+      return `<option value="${escapeHtmlForAttr_(sku)}" data-name="${escapeHtmlForAttr_(name)}" data-cost="${escapeHtmlForAttr_(String(cost))}">${escapeHtml_(sku)} — ${escapeHtml_(name)}</option>`;
+    }).join("");
+
+    [1, 2, 3].forEach((index) => {
+      const select = document.getElementById(`prodSetSku${index}`);
+      if (!select) return;
+      const currentValue = safeText_(select.value);
+      select.innerHTML = optionsHtml;
+      select.value = currentValue && validSkuValues.has(currentValue) ? currentValue : "";
+      select.dataset.supabaseSkuLoaded = "1";
+      select.disabled = false;
+    });
+
+    if (typeof refreshAllProductosSetBuilderSkuSelects_ === "function") refreshAllProductosSetBuilderSkuSelects_();
+    if (typeof syncProductosSetBuilderFieldsFromSelection_ === "function") syncProductosSetBuilderFieldsFromSelection_();
+    if (typeof updateProductosSetBuilderSummary_ === "function") updateProductosSetBuilderSummary_();
   }
 
   function hydrateNuevaOfertaSelectFromSnapshot_() {
     if (!isSupabaseWinner_()) return;
-
     const selectEl = document.getElementById("offerSetSelect");
     if (!selectEl) return;
 
     const offers = (ReadState.offers || []).map(normalizeOfferForLegacyUi_);
-
-    if (typeof ProductosNuevaOfertaState !== "undefined") {
-      ProductosNuevaOfertaState.sets = offers.slice();
-    }
+    if (typeof ProductosNuevaOfertaState !== "undefined") ProductosNuevaOfertaState.sets = offers.slice();
 
     let html = `<option value="">${offers.length ? "Selecciona un conjunto disponible" : "No hay conjuntos disponibles"}</option>`;
     html += offers.map((item) => {
@@ -356,9 +365,7 @@
 
     const statusEl = document.getElementById("offerWizardStatus");
     if (statusEl) {
-      statusEl.textContent = offers.length
-        ? "Selecciona un componente para continuar."
-        : "No hay conjuntos disponibles todavía.";
+      statusEl.textContent = offers.length ? "Selecciona un componente para continuar." : "No hay conjuntos disponibles todavía.";
       statusEl.className = "offerWizard__status";
     }
 
@@ -366,76 +373,48 @@
     if (typeof renderProductosNuevaOfertaSelectedSet_ === "function") renderProductosNuevaOfertaSelectedSet_();
   }
 
-  function scenarioLabel_(item) {
-    const label = safeText_(item && (item.label || item.descripcion_escenario || item.nombre));
-    const cost = toNumber_(item && item.total_financial_cost_pct, 0);
-    const factor = toNumber_(item && item.net_factor, 0);
-    if (!label) return "Escenario financiero";
-    if (!cost) return label;
-    return `${label} · costo ${cost.toFixed(2)}% · factor ${factor.toFixed(4)}`;
-  }
+  function renderCurrentSnapshot_() {
+    const payload = ReadState.lastPayload;
+    if (!payload || payload.ok !== true) return;
 
-  function populateFinancialScenarioSelects_() {
-    const scenarios = ReadState.financialScenarios || [];
-    ["prodSkuCreateEscenario", "prodSetFinanceScenario"].forEach((id) => {
-      const select = document.getElementById(id);
-      if (!select) return;
+    const pieces = getBootstrapPieces_(payload);
+    const normalizedOffers = pieces.offers.map(normalizeOfferForLegacyUi_);
+    if (pieces.skus.length || normalizedOffers.length) resetEmptyMarkers_();
 
-      const currentValue = safeText_(select.value);
-      const validValues = new Set(scenarios.map((item) => safeText_(item && (item.rule_code || item.id || item.id_escenario))).filter(Boolean));
+    if (typeof applyProductosFilters_ === "function") applyProductosFilters_();
+    if (typeof renderProductosKpis_ === "function") renderProductosKpis_();
+    if (typeof renderProductosTable_ === "function") renderProductosTable_();
+    if (typeof wireProductosLocalSwitches_ === "function") wireProductosLocalSwitches_();
+    if (!pieces.skus.length) renderEmptyTable_("prodResumenTableBody", 6, "No se encontraron productos con los filtros actuales.", "prodTableEmpty");
 
-      select.innerHTML = '<option value="">Seleccionar escenario</option>' + scenarios.map((item) => {
-        const value = safeText_(item && (item.rule_code || item.id || item.id_escenario));
-        return `<option value="${escapeHtmlForAttr_(value)}">${escapeHtml_(scenarioLabel_(item))}</option>`;
-      }).join("");
-
-      select.value = currentValue && validValues.has(currentValue) ? currentValue : "";
-      select.dataset.supabaseScenarioLoaded = "1";
-    });
-
-    if (typeof refreshProductosSetBuilderFinanceSelectUi_ === "function") {
-      refreshProductosSetBuilderFinanceSelectUi_();
+    if (document.getElementById("prodOffersTableBody")) {
+      if (typeof renderOffersTable_ === "function") renderOffersTable_();
+      if (!normalizedOffers.length) renderEmptyTable_("prodOffersTableBody", 7, "No se encontraron ofertas con los filtros actuales.", "prodTableEmpty");
     }
+
+    if (document.getElementById("prodSetsTableBody")) {
+      if (typeof renderProductSetsTable_ === "function") renderProductSetsTable_(normalizedOffers);
+      if (!normalizedOffers.length) renderEmptyTable_("prodSetsTableBody", 9, "No se encontraron conjuntos para mostrar.", "prodSetsTable__empty");
+    }
+
+    if (payload.summary) applySummaryDirect_(payload.summary);
+    populateFinancialScenarioSelects_();
+    populateProductSetSkuSelects_();
+    hydrateNuevaOfertaSelectFromSnapshot_();
   }
 
-  function populateProductSetSkuSelects_() {
-    const skus = ReadState.skus || [];
-    const validSkuValues = new Set(skus.map((item) => safeText_(item && item.sku)).filter(Boolean));
-
-    const optionsHtml = '<option value="">Seleccionar SKU</option>' + skus.map((item) => {
-      const sku = safeText_(item && item.sku);
-      const name = safeText_(item && (item.nombre_producto || item.nombre));
-      const cost = toNumber_(item && (item.costo_proveedor_actual || item.costo_proveedor), 0);
-      return `<option value="${escapeHtmlForAttr_(sku)}" data-name="${escapeHtmlForAttr_(name)}" data-cost="${escapeHtmlForAttr_(String(cost))}">${escapeHtml_(sku)} — ${escapeHtml_(name)}</option>`;
-    }).join("");
-
-    [1, 2, 3].forEach((index) => {
-      const select = document.getElementById(`prodSetSku${index}`);
-      if (!select) return;
-
-      const currentValue = safeText_(select.value);
-      select.innerHTML = optionsHtml;
-      select.value = currentValue && validSkuValues.has(currentValue) ? currentValue : "";
-      select.dataset.supabaseSkuLoaded = "1";
-      select.disabled = false;
-    });
-
-    if (typeof refreshAllProductosSetBuilderSkuSelects_ === "function") refreshAllProductosSetBuilderSkuSelects_();
-    if (typeof syncProductosSetBuilderFieldsFromSelection_ === "function") syncProductosSetBuilderFieldsFromSelection_();
-    if (typeof updateProductosSetBuilderSummary_ === "function") updateProductosSetBuilderSummary_();
+  function enforceSupabaseSnapshot_() {
+    const payload = ReadState.lastPayload;
+    if (!payload || payload.ok !== true) return;
+    applySnapshotToProductosState_(payload);
+    renderCurrentSnapshot_();
   }
 
   async function rpcWrite_(rpcName, params) {
     const client = getSupabaseClient_();
-    if (!client || typeof client.rpc !== "function") {
-      throw new Error("Supabase no está disponible en el panel.");
-    }
-
+    if (!client || typeof client.rpc !== "function") throw new Error("Supabase no está disponible en el panel.");
     const res = await client.rpc(rpcName, params || {});
-    if (!res || res.ok !== true) {
-      throw new Error(res && res.error ? String(res.error) : `La RPC ${rpcName} no respondió OK.`);
-    }
-
+    if (!res || res.ok !== true) throw new Error(res && res.error ? String(res.error) : `La RPC ${rpcName} no respondió OK.`);
     return res;
   }
 
@@ -445,40 +424,26 @@
   }
 
   async function saveSkuViaSupabase_() {
-    const payload = typeof ProductosCreateSkuState !== "undefined"
-      ? ProductosCreateSkuState.pendingPayload
-      : null;
-
+    const payload = typeof ProductosCreateSkuState !== "undefined" ? ProductosCreateSkuState.pendingPayload : null;
     if (!payload) return null;
 
     const confirmBtn = document.getElementById("prodSkuConfirmSubmitBtn");
     const cancelBtn = document.getElementById("prodSkuConfirmCancelBtn");
-
-    if (confirmBtn) {
-      confirmBtn.disabled = true;
-      confirmBtn.textContent = "Guardando...";
-    }
-
+    if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = "Guardando..."; }
     if (cancelBtn) cancelBtn.disabled = true;
 
     try {
       const res = await rpcWrite_(UPSERT_PRODUCT_RPC, { input_product: payload });
-
       if (typeof closeProductosCreateSkuConfirmModal_ === "function") closeProductosCreateSkuConfirmModal_();
       if (typeof resetProductosCreateProductForm_ === "function") resetProductosCreateProductForm_();
-
       await reloadAfterWrite_();
-
       alert(`SKU guardado correctamente en Supabase: ${safeText_(res.sku || payload.sku)}`);
       return res;
     } catch (err) {
       alert(String(err && err.message ? err.message : err || "Error guardando SKU en Supabase."));
       return null;
     } finally {
-      if (confirmBtn) {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = "Confirmar";
-      }
+      if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = "Confirmar"; }
       if (cancelBtn) cancelBtn.disabled = false;
     }
   }
@@ -490,10 +455,7 @@
     }
 
     const payload = collectProductosSetBuilderPayload_();
-    const error = typeof validateProductosSetBuilderPayload_ === "function"
-      ? validateProductosSetBuilderPayload_(payload)
-      : "";
-
+    const error = typeof validateProductosSetBuilderPayload_ === "function" ? validateProductosSetBuilderPayload_(payload) : "";
     const saveBtn = document.getElementById("prodSetSaveBtn");
     const messageEl = document.getElementById("prodSetSummaryMessage");
 
@@ -503,23 +465,15 @@
       return null;
     }
 
-    if (saveBtn) {
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Guardando...";
-    }
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = "Guardando..."; }
 
     try {
       const res = await rpcWrite_(UPSERT_PRODUCT_SET_RPC, { input_set: payload });
-
       if (typeof ProductosSetBuilderState !== "undefined") ProductosSetBuilderState.saved = true;
       if (typeof showProductosSetSuccessNotice_ === "function") showProductosSetSuccessNotice_();
       if (typeof syncProductosSetBuilderLocks_ === "function") syncProductosSetBuilderLocks_();
       if (typeof syncProductosSetBuilderActionState_ === "function") syncProductosSetBuilderActionState_();
-
-      if (messageEl) {
-        messageEl.textContent = `Conjunto guardado en Supabase. Precio final: ${formatMoneySafe_(res.precio_final_pack)}.`;
-      }
-
+      if (messageEl) messageEl.textContent = `Conjunto guardado en Supabase. Precio final: ${formatMoneySafe_(res.precio_final_pack)}.`;
       await reloadAfterWrite_();
       return res;
     } catch (err) {
@@ -535,11 +489,7 @@
 
   function formatMoneySafe_(value) {
     try {
-      return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        maximumFractionDigits: 2
-      }).format(Number(value || 0));
+      return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(value || 0));
     } catch (err) {
       return `$ ${Number(value || 0).toFixed(2)}`;
     }
@@ -551,17 +501,12 @@
       if (typeof original !== "function") return;
       if (original.__productosSupabasePatched === BUILD) return;
 
-      const patched = function () {
-        return wrapper(original, Array.prototype.slice.call(arguments));
-      };
-
+      const patched = function () { return wrapper(original, Array.prototype.slice.call(arguments)); };
       patched.__productosSupabasePatched = BUILD;
       patched.__productosSupabaseOriginal = original;
       window[name] = patched;
 
-      try {
-        window.eval(`${name} = window[${JSON.stringify(name)}];`);
-      } catch (err) {}
+      try { window.eval(`${name} = window[${JSON.stringify(name)}];`); } catch (err) {}
     } catch (err) {
       console.warn(`[productos-panel-supabase-read] No se pudo parchear ${name}`, err);
     }
@@ -572,51 +517,37 @@
     ReadState.legacyPatched = true;
 
     patchFunction_("loadProductos_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        enforceSupabaseSnapshot_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { enforceSupabaseSnapshot_(); return null; }
       return original.apply(window, args || []);
     });
 
     patchFunction_("loadOffersSummary_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        enforceSupabaseSnapshot_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { enforceSupabaseSnapshot_(); return null; }
       return original.apply(window, args || []);
     });
 
     patchFunction_("loadOffers_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        enforceSupabaseSnapshot_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { enforceSupabaseSnapshot_(); return null; }
       return original.apply(window, args || []);
     });
 
     patchFunction_("loadProductSets_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        enforceSupabaseSnapshot_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { enforceSupabaseSnapshot_(); return null; }
       return original.apply(window, args || []);
     });
 
     patchFunction_("loadProductosNuevaOfertaSets_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        hydrateNuevaOfertaSelectFromSnapshot_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { hydrateNuevaOfertaSelectFromSnapshot_(); return null; }
       return original.apply(window, args || []);
     });
 
     patchFunction_("loadProductosSetBuilderProducts_", async function (original, args) {
-      if (isSupabaseWinner_()) {
-        applySnapshotToProductosState_(ReadState.lastPayload);
-        populateProductSetSkuSelects_();
-        return null;
-      }
+      if (isSupabaseWinner_()) { applySnapshotToProductosState_(ReadState.lastPayload); populateProductSetSkuSelects_(); return null; }
+      return original.apply(window, args || []);
+    });
+
+    patchFunction_("loadProductosSetBuilderFinancialScenarios_", async function (original, args) {
+      if (isSupabaseWinner_()) { applySnapshotToProductosState_(ReadState.lastPayload); populateFinancialScenarioSelects_(); return null; }
       return original.apply(window, args || []);
     });
 
@@ -629,13 +560,8 @@
       return original.apply(window, args || []);
     });
 
-    patchFunction_("confirmProductosCreateSkuSave_", async function () {
-      return saveSkuViaSupabase_();
-    });
-
-    patchFunction_("saveProductosSetBuilder_", async function () {
-      return saveProductSetViaSupabase_();
-    });
+    patchFunction_("confirmProductosCreateSkuSave_", async function () { return saveSkuViaSupabase_(); });
+    patchFunction_("saveProductosSetBuilder_", async function () { return saveProductSetViaSupabase_(); });
   }
 
   async function loadBootstrapFromSupabase_() {
@@ -654,24 +580,15 @@
     try {
       const result = await client.rpc(BOOTSTRAP_RPC, {});
       if (result && result.error) throw result.error;
-
-      const payload = result && Object.prototype.hasOwnProperty.call(result, "data")
-        ? result.data
-        : result;
-
+      const payload = result && Object.prototype.hasOwnProperty.call(result, "data") ? result.data : result;
       if (!payload || payload.ok !== true) throw new Error("Bootstrap Supabase inválido para Productos.");
 
       ReadState.loaded = true;
       applySnapshotToProductosState_(payload);
       patchLegacyReaders_();
       renderCurrentSnapshot_();
-
       console.log("[productos-panel-supabase-read] Lectura Supabase OK", payload);
-
-      [120, 350, 800, 1500, 3000, 5000].forEach((delay) => {
-        setTimeout(enforceSupabaseSnapshot_, delay);
-      });
-
+      [120, 350, 800, 1500, 3000, 5000].forEach((delay) => setTimeout(enforceSupabaseSnapshot_, delay));
       return payload;
     } catch (error) {
       ReadState.lastError = error;
@@ -688,23 +605,18 @@
     document.addEventListener("change", function (event) {
       const select = event.target && event.target.closest ? event.target.closest("#prodSetSku1, #prodSetSku2, #prodSetSku3") : null;
       if (!select) return;
-
       const index = select.id.replace("prodSetSku", "");
       const option = select.options[select.selectedIndex];
       const nameInput = document.getElementById(`prodSetName${index}`);
       const costInput = document.getElementById(`prodSetCost${index}`);
-
       if (nameInput) nameInput.value = option ? (option.dataset.name || "") : "";
       if (costInput) costInput.value = option ? (option.dataset.cost || "") : "";
     }, true);
   }
 
   function schedulePostRenderHydration_() {
-    [80, 350, 900, 1600].forEach((delay) => {
-      setTimeout(function () {
-        patchLegacyReaders_();
-        enforceSupabaseSnapshot_();
-      }, delay);
+    [80, 350, 900, 1600, 3000].forEach((delay) => {
+      setTimeout(function () { patchLegacyReaders_(); enforceSupabaseSnapshot_(); }, delay);
     });
   }
 
@@ -713,23 +625,17 @@
       const shouldHydrate = event.target && event.target.closest && event.target.closest(
         "#prodNewProductBtn, #prodNewOfferBtn, [data-action='crear-conjunto'], #prodSetCreateBtn, #prodSlideCreateSetBtn, .prodTab"
       );
-
       if (shouldHydrate) schedulePostRenderHydration_();
     }, true);
   }
 
   function initProductosPanelSupabaseRead_() {
     if (!isProductosPage_()) return;
-    if (document.body.dataset.productosPanelSupabaseReadReady === "1") {
-      schedulePostRenderHydration_();
-      return;
-    }
-
+    if (document.body.dataset.productosPanelSupabaseReadReady === "1") { schedulePostRenderHydration_(); return; }
     document.body.dataset.productosPanelSupabaseReadReady = "1";
     bindProductSetSkuAutofill_();
     bindHydrationEvents_();
     patchLegacyReaders_();
-
     setTimeout(loadBootstrapFromSupabase_, 80);
     setTimeout(loadBootstrapFromSupabase_, 650);
   }
@@ -746,7 +652,5 @@
   };
 
   document.addEventListener("DOMContentLoaded", initProductosPanelSupabaseRead_);
-  document.addEventListener("sazzu:page:load", function () {
-    setTimeout(initProductosPanelSupabaseRead_, 120);
-  });
+  document.addEventListener("sazzu:page:load", function () { setTimeout(initProductosPanelSupabaseRead_, 120); });
 })();
