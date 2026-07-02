@@ -1,12 +1,12 @@
-/* Protocol Data · Offer Detail Drawer Helper · 04F */
+/* Protocol Data · Offer Detail Drawer Helper · 04G */
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_OFFER_DETAIL_DRAWER_2026_07_02_04F";
+  const BUILD = "PRODUCTOS_OFFER_DETAIL_DRAWER_2026_07_02_04G";
   const ATTACH_VARIANT_RPC = "rpc_products_attach_variant_to_commercial_offer";
   const DETACH_VARIANT_RPC = "rpc_products_detach_variant_from_commercial_offer";
   const COMMERCIAL_OFFERS_RPC = "rpc_products_panel_commercial_offers_list";
-  const State = { currentOfferId: "" };
+  const State = { currentOfferId: "", observerReady: false };
 
   function safeText(value) { return String(value == null ? "" : value).trim(); }
   function escapeHtml(value) {
@@ -74,15 +74,16 @@
   }
 
   function injectCss() {
-    if (document.getElementById("prodOfferDrawerCss04F")) return;
+    if (document.getElementById("prodOfferDrawerCss04G")) return;
     document.getElementById("prodOfferDrawerCss04D")?.remove();
     document.getElementById("prodOfferDrawerCss04E")?.remove();
+    document.getElementById("prodOfferDrawerCss04F")?.remove();
 
     const style = document.createElement("style");
-    style.id = "prodOfferDrawerCss04F";
+    style.id = "prodOfferDrawerCss04G";
     style.textContent = `
-      .prodOfferVariantAttachBtn,.prodOfferOpenDetailBtn{border:0;background:#2479ff!important;color:#fff!important;border-radius:5px;padding:8px 11px;font-weight:900;font-size:12px;cursor:pointer;box-shadow:none}.prodOfferOpenDetailBtn{background:#eef4ff!important;color:#2479ff!important;border:1px solid #d8e6ff}.prodOfferVariantItem{display:inline-flex;padding:5px 8px;border:1px solid #dbe7ff;background:#f7fbff;color:#1f3763;border-radius:5px;font-size:12px;font-weight:800}.prodOfferVariantEmpty{font-size:12px;color:#667085}.prodOfferVariantsCell{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:160px}
-      .prodOfferDrawerOverlay{position:fixed;inset:0;background:rgba(15,23,42,.50);backdrop-filter:blur(3px);z-index:9998;opacity:0;pointer-events:none;transition:.2s ease}.prodOfferDrawerOverlay.is-open{opacity:1;pointer-events:auto}.prodOfferDrawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,calc(100vw - 24px));background:#fff;box-shadow:-18px 0 48px rgba(15,23,42,.18);z-index:9999;transform:translateX(104%);transition:.24s ease;display:flex;flex-direction:column;border-left:1px solid #e6edf7;overflow:hidden}.prodOfferDrawer.is-open{transform:translateX(0)}#prodOfferDrawerContent{height:100%;min-height:0;display:flex;flex-direction:column;background:#fff}
+      .prodOffersTable thead th:first-child,#prodOffersTableBody tr td:first-child{display:none!important}.prodOffersTable thead th{white-space:nowrap}.prodOffersTable tbody tr[data-commercial-offer-id]{cursor:pointer;transition:background .16s ease}.prodOffersTable tbody tr[data-commercial-offer-id]:hover{background:#f8fbff}.prodOffersTable tbody tr[data-commercial-offer-id] td{height:68px;vertical-align:middle}.prodOfferVariantAttachBtn{display:none!important}.prodOfferVariantsCell{display:flex!important;flex-direction:row!important;align-items:center!important;gap:6px!important;min-width:0!important;max-width:290px!important;white-space:nowrap;overflow:hidden}.prodOfferVariantItem{display:inline-flex!important;align-items:center;max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 8px;border:1px solid #b7e4c7!important;background:#ecfdf3!important;color:#067647!important;border-radius:5px!important;font-size:12px;font-weight:900;line-height:1}.prodOfferVariantItem strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prodOfferVariantMore{display:inline-flex;align-items:center;padding:5px 8px;border:1px solid #d0d5dd;background:#fff;color:#667085;border-radius:5px;font-size:12px;font-weight:900;line-height:1}.prodOfferVariantEmpty{font-size:12px;color:#667085}
+      .prodOfferOpenDetailBtn{display:none!important}.prodOfferDrawerOverlay{position:fixed;inset:0;background:rgba(15,23,42,.50);backdrop-filter:blur(3px);z-index:9998;opacity:0;pointer-events:none;transition:.2s ease}.prodOfferDrawerOverlay.is-open{opacity:1;pointer-events:auto}.prodOfferDrawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,calc(100vw - 24px));background:#fff;box-shadow:-18px 0 48px rgba(15,23,42,.18);z-index:9999;transform:translateX(104%);transition:.24s ease;display:flex;flex-direction:column;border-left:1px solid #e6edf7;overflow:hidden}.prodOfferDrawer.is-open{transform:translateX(0)}#prodOfferDrawerContent{height:100%;min-height:0;display:flex;flex-direction:column;background:#fff}
       .prodOfferDrawer__header{padding:22px 24px 18px;background:#fff;border-bottom:1px solid #e6edf7;display:flex;justify-content:space-between;gap:16px;flex:0 0 auto}.prodOfferDrawer__eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a98ae;font-weight:900}.prodOfferDrawer__title{font-size:20px;font-weight:950;color:#111827;margin-top:5px}.prodOfferDrawer__sub{font-size:13px;color:#667085;margin-top:4px;line-height:1.45}.prodOfferDrawer__close{border:1px solid #e6edf7;background:#fff;border-radius:5px;width:36px;height:36px;color:#1d2939;font-size:18px;font-weight:950;cursor:pointer}
       .prodOfferDrawer__body{flex:1 1 auto;min-height:0;padding:0 24px 26px;overflow-y:auto;overscroll-behavior:contain;background:#fff}.prodOfferDrawerSection{background:#fff;border:0;border-top:1px solid #e6edf7;border-radius:0;box-shadow:none;padding:18px 0}.prodOfferDrawerSection:first-child{border-top:0}.prodOfferDrawerSection__title{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:#8a98ae;font-weight:950;margin-bottom:12px}.prodOfferDrawerSection--action{padding-top:18px}
       .prodOfferAttachForm{display:grid;gap:10px}.prodOfferAttachForm label{font-size:12px;font-weight:950;color:#344054}.prodOfferAttachForm input{width:100%;box-sizing:border-box;border:1px solid #d7e0ee;border-radius:5px;padding:12px 13px;font-size:14px;outline:none;background:#fff;color:#111827}.prodOfferAttachForm input:focus{border-color:#2479ff;box-shadow:0 0 0 3px rgba(36,121,255,.12)}.prodOfferAttachSubmit{border:0;background:#2479ff;color:#fff;border-radius:5px;padding:13px 14px;font-weight:950;cursor:pointer;box-shadow:none}.prodOfferAttachSubmit:disabled{opacity:.65;cursor:not-allowed}.prodOfferDrawerStatus{font-size:13px;line-height:1.4}.prodOfferDrawerStatus.is-error{color:#c91f1f}.prodOfferDrawerStatus.is-success{color:#138a3d}
@@ -112,6 +113,53 @@
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
     return drawer;
+  }
+
+  function prettifyOffersTable() {
+    const tbody = document.getElementById("prodOffersTableBody");
+    if (!tbody) return;
+
+    tbody.querySelectorAll("tr[data-commercial-offer-id]").forEach(function (row) {
+      row.setAttribute("title", "Abrir detalle de oferta");
+      row.querySelectorAll(".prodOfferVariantAttachBtn").forEach(btn => btn.remove());
+      row.querySelectorAll(".prodOffersRowToggle, .prodOfferOpenDetailBtn").forEach(btn => btn.remove());
+
+      const items = Array.from(row.querySelectorAll(".prodOfferVariantItem"));
+      const existingMore = row.querySelector(".prodOfferVariantMore");
+      if (existingMore) existingMore.remove();
+
+      items.forEach(function (item, index) {
+        item.style.display = index < 2 ? "inline-flex" : "none";
+        const strong = item.querySelector("strong");
+        const rawText = item.textContent || "";
+        const idText = strong ? strong.textContent : rawText.split("·")[0];
+        const contextText = rawText.includes("·") ? rawText.split("·").slice(1).join("·").trim() : "";
+        item.innerHTML = `<strong>${escapeHtml(idText.trim())}</strong>${contextText ? `<span style="display:none;">${escapeHtml(contextText)}</span>` : ""}`;
+      });
+
+      if (items.length > 2) {
+        const more = document.createElement("span");
+        more.className = "prodOfferVariantMore";
+        more.textContent = `… +${items.length - 2}`;
+        const cell = row.querySelector(".prodOfferVariantsCell");
+        if (cell) cell.appendChild(more);
+      }
+    });
+  }
+
+  function observeOffersTable() {
+    if (State.observerReady) return;
+    State.observerReady = true;
+
+    const run = function () { setTimeout(prettifyOffersTable, 30); };
+    run();
+    [120, 400, 900, 1600].forEach(delay => setTimeout(prettifyOffersTable, delay));
+
+    const tbody = document.getElementById("prodOffersTableBody");
+    if (!tbody || typeof MutationObserver !== "function") return;
+
+    const observer = new MutationObserver(run);
+    observer.observe(tbody, { childList: true, subtree: true });
   }
 
   function variantsHtml(offer) {
@@ -235,6 +283,7 @@
     if (window.ProductosPanelSupabaseRead && typeof window.ProductosPanelSupabaseRead.loadCommercialOffers === "function") {
       await window.ProductosPanelSupabaseRead.loadCommercialOffers();
     }
+    prettifyOffersTable();
     return payload;
   }
 
@@ -322,11 +371,11 @@
         return;
       }
 
-      const openBtn = event.target && event.target.closest ? event.target.closest(".prodOfferVariantAttachBtn, .prodOfferOpenDetailBtn, .prodOffersRowToggle") : null;
-      if (openBtn && openBtn.dataset && openBtn.dataset.commercialOfferId) {
+      const row = event.target && event.target.closest ? event.target.closest("#prodOffersTableBody tr[data-commercial-offer-id]") : null;
+      if (row && row.dataset && row.dataset.commercialOfferId) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        openDrawer(openBtn.dataset.commercialOfferId);
+        openDrawer(row.dataset.commercialOfferId);
       }
     }, true);
 
@@ -340,7 +389,8 @@
     injectCss();
     ensureDrawer();
     bindEvents();
-    window.ProductosOfferDetailDrawer = { build: BUILD, open: openDrawer, close: closeDrawer, reloadCommercialOffers };
+    observeOffersTable();
+    window.ProductosOfferDetailDrawer = { build: BUILD, open: openDrawer, close: closeDrawer, reloadCommercialOffers, prettifyOffersTable };
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
