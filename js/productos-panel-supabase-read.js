@@ -175,6 +175,61 @@
 
     populateFinancialScenarioSelects_();
     populateProductSetSkuSelects_();
+
+    enforceSupabaseSnapshot_();
+
+    [150, 500, 1200, 2500, 5000].forEach((delay) => {
+      setTimeout(enforceSupabaseSnapshot_, delay);
+    });
+  }
+
+  function enforceSupabaseSnapshot_() {
+    const payload = ReadState.lastPayload;
+    if (!payload) return;
+
+    const skus = payload && payload.skus && Array.isArray(payload.skus.items)
+      ? payload.skus.items
+      : [];
+
+    const offers = payload && payload.offers && Array.isArray(payload.offers.items)
+      ? payload.offers.items
+      : [];
+
+    if (typeof ProductosState !== "undefined") {
+      if (skus.length) {
+        ProductosState.all = skus.map(normalizeSkuForLegacyUi_);
+      }
+
+      if (offers.length) {
+        ProductosState.offersSummary = buildOffersSummary_(offers);
+        ProductosState.offersAll = offers.map(normalizeOfferForLegacyUi_);
+        ProductosState.offersFiltered = ProductosState.offersAll.slice();
+        ProductosState.offersLoaded = true;
+        ProductosState.offersLoading = false;
+        ProductosState.productSets = ProductosState.offersAll.slice();
+        ProductosState.productSetsLoaded = true;
+        ProductosState.productSetsLoading = false;
+      }
+    }
+
+    if (typeof applyProductosFilters_ === "function") {
+      applyProductosFilters_();
+    }
+
+    if (typeof renderProductosKpis_ === "function") {
+      renderProductosKpis_();
+    }
+
+    if (typeof renderProductosTable_ === "function") {
+      renderProductosTable_();
+    }
+
+    if (payload.summary) {
+      applySummaryDirect_(payload.summary);
+    }
+
+    populateFinancialScenarioSelects_();
+    populateProductSetSkuSelects_();
   }
 
   async function loadBootstrapFromSupabase_() {
