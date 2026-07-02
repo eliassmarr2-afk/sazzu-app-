@@ -1,20 +1,20 @@
 /* =========================================================
-   Protocol Data · Productos Panel Supabase Read Bridge
-   Fase: FRONTEND PRODUCTOS 01B
+   Protocol Data · Productos Panel Supabase Bridge
+   Fase: FRONTEND PRODUCTOS 02/03
 
    Alcance:
-   - Solo lectura.
-   - Supabase es fuente ganadora cuando rpc_products_panel_bootstrap responde OK.
-   - Si Supabase devuelve arrays vacíos, también limpia estado legacy y DOM.
-   - AppScript queda como fallback únicamente si Supabase falla completo.
-   - No escribe productos, conjuntos ni ofertas.
+   - Lectura: Supabase gana cuando rpc_products_panel_bootstrap responde OK.
+   - Escritura: Nuevo producto y Conjunto de productos escriben en Supabase.
+   - AppScript queda como fallback solo para lectura si Supabase falla completo.
    - No toca Productos Comestibles.
    ========================================================= */
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_PANEL_SUPABASE_READ_2026_07_02_01B";
+  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_02";
   const BOOTSTRAP_RPC = "rpc_products_panel_bootstrap";
+  const UPSERT_PRODUCT_RPC = "rpc_products_upsert_product";
+  const UPSERT_PRODUCT_SET_RPC = "rpc_products_upsert_product_set";
 
   const ReadState = {
     loaded: false,
@@ -425,18 +425,138 @@
     if (typeof updateProductosSetBuilderSummary_ === "function") updateProductosSetBuilderSummary_();
   }
 
+  async function rpcWrite_(rpcName, params) {
+    const client = getSupabaseClient_();
+    if (!client || typeof client.rpc !== "function") {
+      throw new Error("Supabase no está disponible en el panel.");
+    }
+
+    const res = await client.rpc(rpcName, params || {});
+    if (!res || res.ok !== true) {
+      throw new Error(res && res.error ? String(res.error) : `La RPC ${rpcName} no respondió OK.`);
+    }
+
+    return res;
+  }
+
+  async function reloadAfterWrite_() {
+    await loadBootstrapFromSupabase_();
+    [150, 500, 1200].forEach((delay) => setTimeout(enforceSupabaseSnapshot_, delay));
+  }
+
+  async function saveSkuViaSupabase_() {
+    const payload = typeof ProductosCreateSkuState !== "undefined"
+      ? ProductosCreateSkuState.pendingPayload
+      : null;
+
+    if (!payload) return null;
+
+    const confirmBtn = document.getElementById("prodSkuConfirmSubmitBtn");
+    const cancelBtn = document.getElementById("prodSkuConfirmCancelBtn");
+
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "Guardando...";
+    }
+
+    if (cancelBtn) cancelBtn.disabled = true;
+
+    try {
+      const res = await rpcWrite_(UPSERT_PRODUCT_RPC, { input_product: payload });
+
+      if (typeof closeProductosCreateSkuConfirmModal_ === "function") closeProductosCreateSkuConfirmModal_();
+      if (typeof resetProductosCreateProductForm_ === "function") resetProductosCreateProductForm_();
+
+      await reloadAfterWrite_();
+
+      alert(`SKU guardado correctamente en Supabase: ${safeText_(res.sku || payload.sku)}`);
+      return res;
+    } catch (err) {
+      alert(String(err && err.message ? err.message : err || "Error guardando SKU en Supabase."));
+      return null;
+    } finally {
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = "Confirmar";
+      }
+      if (cancelBtn) cancelBtn.disabled = false;
+    }
+  }
+
+  async function saveProductSetViaSupabase_() {
+    if (typeof collectProductosSetBuilderPayload_ !== "function") {
+      alert("No se encontró el payload del constructor de conjuntos.");
+      return null;
+    }
+
+    const payload = collectProductosSetBuilderPayload_();
+    const error = typeof validateProductosSetBuilderPayload_ === "function"
+      ? validateProductosSetBuilderPayload_(payload)
+      : "";
+
+    const saveBtn = document.getElementById("prodSetSaveBtn");
+    const messageEl = document.getElementById("prodSetSummaryMessage");
+
+    if (error) {
+      if (messageEl) messageEl.textContent = error;
+      alert(error);
+      return null;
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Guardando...";
+    }
+
+    try {
+      const res = await rpcWrite_(UPSERT_PRODUCT_SET_RPC, { input_set: payload });
+
+      if (typeof ProductosSetBuilderState !== "undefined") ProductosSetBuilderState.saved = true;
+      if (typeof showProductosSetSuccessNotice_ === "function") showProductosSetSuccessNotice_();
+      if (typeof syncProductosSetBuilderLocks_ === "function") syncProductosSetBuilderLocks_();
+      if (typeof syncProductosSetBuilderActionState_ === "function") syncProductosSetBuilderActionState_();
+
+      if (messageEl) {
+        messageEl.textContent = `Conjunto guardado en Supabase. Precio final: ${formatMoneySafe_(res.precio_final_pack)}.`;
+      }
+
+      await reloadAfterWrite_();
+      return res;
+    } catch (err) {
+      const errMsg = "Error guardando el conjunto en Supabase: " + String(err && err.message ? err.message : err);
+      if (messageEl) messageEl.textContent = errMsg;
+      alert(errMsg);
+      return null;
+    } finally {
+      if (saveBtn) saveBtn.textContent = "Guardar conjunto";
+      if (typeof syncProductosSetBuilderActionState_ === "function") syncProductosSetBuilderActionState_();
+    }
+  }
+
+  function formatMoneySafe_(value) {
+    try {
+      return new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 2
+      }).format(Number(value || 0));
+    } catch (err) {
+      return `$ ${Number(value || 0).toFixed(2)}`;
+    }
+  }
+
   function patchFunction_(name, wrapper) {
     try {
       const original = window[name];
       if (typeof original !== "function") return;
-      if (original.__productosSupabase01BPatched === true) return;
+      if (original.__productosSupabasePatched === BUILD) return;
 
       const patched = function () {
         return wrapper(original, Array.prototype.slice.call(arguments));
       };
 
-      patched.__productosSupabase01BPatched = true;
-      patched.__productosSupabase01BOriginal = original;
+      patched.__productosSupabasePatched = BUILD;
+      patched.__productosSupabaseOriginal = original;
       window[name] = patched;
 
       try {
@@ -508,6 +628,14 @@
       }
       return original.apply(window, args || []);
     });
+
+    patchFunction_("confirmProductosCreateSkuSave_", async function () {
+      return saveSkuViaSupabase_();
+    });
+
+    patchFunction_("saveProductosSetBuilder_", async function () {
+      return saveProductSetViaSupabase_();
+    });
   }
 
   async function loadBootstrapFromSupabase_() {
@@ -516,7 +644,7 @@
 
     const client = getSupabaseClient_();
     if (!client || typeof client.rpc !== "function") {
-      console.warn("[productos-panel-supabase-read] Supabase no disponible. Se mantiene fallback AppScript.");
+      console.warn("[productos-panel-supabase-read] Supabase no disponible. Se mantiene fallback AppScript para lectura.");
       return null;
     }
 
@@ -531,9 +659,7 @@
         ? result.data
         : result;
 
-      if (!payload || payload.ok !== true) {
-        throw new Error("Bootstrap Supabase inválido para Productos.");
-      }
+      if (!payload || payload.ok !== true) throw new Error("Bootstrap Supabase inválido para Productos.");
 
       ReadState.loaded = true;
       applySnapshotToProductosState_(payload);
@@ -551,7 +677,7 @@
       ReadState.lastError = error;
       ReadState.loaded = false;
       window.__PRODUCTOS_SUPABASE_READ_ACTIVE__ = false;
-      console.warn("[productos-panel-supabase-read] Falló Supabase. Se mantiene AppScript fallback:", error);
+      console.warn("[productos-panel-supabase-read] Falló Supabase. Se mantiene AppScript fallback para lectura:", error);
       return null;
     } finally {
       ReadState.loading = false;
@@ -614,7 +740,9 @@
     load: loadBootstrapFromSupabase_,
     enforce: enforceSupabaseSnapshot_,
     hydrate: schedulePostRenderHydration_,
-    patchLegacyReaders: patchLegacyReaders_
+    patchLegacyReaders: patchLegacyReaders_,
+    saveSku: saveSkuViaSupabase_,
+    saveProductSet: saveProductSetViaSupabase_
   };
 
   document.addEventListener("DOMContentLoaded", initProductosPanelSupabaseRead_);
