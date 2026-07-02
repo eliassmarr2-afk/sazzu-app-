@@ -1,10 +1,11 @@
 /* =========================================================
    Protocol Data · Productos Panel Supabase Bridge
-   Fase: FRONTEND PRODUCTOS 03B
+   Fase: FRONTEND PRODUCTOS 04A
 
    Alcance:
    - Lectura: Supabase gana cuando rpc_products_panel_bootstrap responde OK.
-   - Escritura: Nuevo producto y Conjunto de productos escriben en Supabase.
+   - Escritura: Nuevo producto, Conjunto de productos y Oferta comercial escriben en Supabase.
+   - Nueva oferta deja de activar conjuntos por AppScript.
    - Constructor de conjuntos: escenarios financieros vienen de Finanzas > Reglas.
    - AppScript queda como fallback solo si Supabase falla completo.
    - No toca Productos Comestibles.
@@ -12,10 +13,12 @@
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_03B";
+  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_04A";
   const BOOTSTRAP_RPC = "rpc_products_panel_bootstrap";
   const UPSERT_PRODUCT_RPC = "rpc_products_upsert_product";
   const UPSERT_PRODUCT_SET_RPC = "rpc_products_upsert_product_set";
+  const UPSERT_VARIANT_MAPPING_RPC = "rpc_products_upsert_variant_mapping";
+  const UPSERT_COMMERCIAL_OFFER_RPC = "rpc_products_upsert_commercial_offer";
 
   const ReadState = {
     loaded: false,
@@ -119,6 +122,7 @@
 
     return {
       ...item,
+      offer_set_id: safeText_(item && item.offer_set_id),
       row_type: isBundle ? "bundle" : "equivalencia",
       tipo: isBundle ? "bundle" : (isQuantity ? "equivalencia" : "oferta"),
       estado: safeText_(item && item.estado) || "activo",
@@ -373,6 +377,67 @@
     if (typeof renderProductosNuevaOfertaSelectedSet_ === "function") renderProductosNuevaOfertaSelectedSet_();
   }
 
+  function getNuevaOfertaSelectedSet_() {
+    if (typeof ProductosNuevaOfertaState === "undefined") return null;
+    const current = ProductosNuevaOfertaState.selectedSet;
+    if (current && current.offer_set_id) return current;
+
+    const selectedId = safeText_(ProductosNuevaOfertaState.selectedId);
+    if (!selectedId) return null;
+
+    return (ProductosNuevaOfertaState.sets || []).find((item) => safeText_(item.id_variante) === selectedId) || null;
+  }
+
+  function advanceNuevaOfertaWithoutLegacyActivation_() {
+    if (typeof ProductosNuevaOfertaState === "undefined") return null;
+
+    const selectedId = safeText_(ProductosNuevaOfertaState.selectedId);
+    const statusEl = document.getElementById("offerWizardStatus");
+    const nextBtn = document.getElementById("offerSetNextBtn");
+
+    if (!selectedId) {
+      if (statusEl) {
+        statusEl.textContent = "Primero selecciona un conjunto.";
+        statusEl.className = "offerWizard__status offerWizard__status--error";
+      }
+      return null;
+    }
+
+    const selectedSet = getNuevaOfertaSelectedSet_();
+    if (!selectedSet || !selectedSet.offer_set_id) {
+      if (statusEl) {
+        statusEl.textContent = "El conjunto seleccionado no tiene offer_set_id Supabase. Refresca el panel y vuelve a intentar.";
+        statusEl.className = "offerWizard__status offerWizard__status--error";
+      }
+      return null;
+    }
+
+    ProductosNuevaOfertaState.selectedSet = selectedSet;
+    ProductosNuevaOfertaState.activationResult = {
+      ok: true,
+      source: "supabase",
+      skipped_legacy_activation: true,
+      offer_set_id: selectedSet.offer_set_id,
+      id_variante: selectedSet.id_variante
+    };
+
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.textContent = "Siguiente";
+    }
+
+    if (statusEl) {
+      statusEl.textContent = "Conjunto validado. Continuando con identidad comercial.";
+      statusEl.className = "offerWizard__status offerWizard__status--success";
+    }
+
+    if (typeof renderProductosNuevaOfertaStep2_ === "function") {
+      renderProductosNuevaOfertaStep2_();
+    }
+
+    return selectedSet;
+  }
+
   function renderCurrentSnapshot_() {
     const payload = ReadState.lastPayload;
     if (!payload || payload.ok !== true) return;
@@ -487,6 +552,127 @@
     }
   }
 
+  async function saveCommercialOfferViaSupabase_() {
+    if (typeof ProductosNuevaOfertaState === "undefined") return null;
+    if (ProductosNuevaOfertaState.saving) return null;
+
+    if (typeof persistProductosNuevaOfertaStep3Form_ === "function") {
+      persistProductosNuevaOfertaStep3Form_();
+    }
+
+    const set = getNuevaOfertaSelectedSet_();
+    const form = ProductosNuevaOfertaState.form || {};
+    const statusEl = document.getElementById("offerWizardStatus");
+    const saveBtn = document.getElementById("offerSaveBtn");
+
+    if (!set || !set.offer_set_id) {
+      if (statusEl) {
+        statusEl.textContent = "No se encontró el conjunto operativo Supabase para esta oferta.";
+        statusEl.className = "offerWizard__status offerWizard__status--error";
+      }
+      return null;
+    }
+
+    const required = [
+      ["nombre_interno", "Debes completar el nombre interno."],
+      ["nombre_comercial", "Debes completar el nombre comercial."],
+      ["subtitulo_oferta", "Debes completar el subtítulo."],
+      ["descripcion_corta", "Debes completar la descripción corta."]
+    ];
+
+    for (const item of required) {
+      if (!safeText_(form[item[0]])) {
+        if (statusEl) {
+          statusEl.textContent = item[1];
+          statusEl.className = "offerWizard__status offerWizard__status--error";
+        }
+        return null;
+      }
+    }
+
+    ProductosNuevaOfertaState.saving = true;
+
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Guardando...";
+    }
+
+    if (statusEl) {
+      statusEl.textContent = "Guardando oferta comercial en Supabase...";
+      statusEl.className = "offerWizard__status";
+    }
+
+    try {
+      let mappingId = "";
+      const idVariante = safeText_(set.id_variante_shopify || set.id_variante);
+
+      if (idVariante) {
+        const mappingRes = await rpcWrite_(UPSERT_VARIANT_MAPPING_RPC, {
+          input_mapping: {
+            id_variante_shopify: idVariante,
+            offer_set_id: set.offer_set_id,
+            estado: "active",
+            contexto: "auto_from_commercial_offer"
+          }
+        });
+
+        mappingId = safeText_(mappingRes && mappingRes.mapping && mappingRes.mapping.mapping_id);
+      }
+
+      const offerPayload = {
+        offer_set_id: set.offer_set_id,
+        mapping_id: mappingId || undefined,
+        nombre_interno: safeText_(form.nombre_interno),
+        nombre_comercial: safeText_(form.nombre_comercial),
+        subtitulo_oferta: safeText_(form.subtitulo_oferta),
+        descripcion_corta: safeText_(form.descripcion_corta),
+        politica_compra: safeText_(form.politica_compra || "Predeterminado") || "Predeterminado",
+        politica_envio: safeText_(form.politica_envio || "Predeterminado") || "Predeterminado",
+        politica_devolucion: safeText_(form.politica_devolucion || "Predeterminado") || "Predeterminado",
+        condiciones_generales: safeText_(form.condiciones_generales || "Predeterminado") || "Predeterminado",
+        vigencia_desde: safeText_(form.vigencia_desde),
+        vigencia_hasta: safeText_(form.vigencia_hasta),
+        estado_oferta: "active",
+        permite_publicacion: true,
+        canal_previsto: "landing_producto",
+        landing_key: idVariante || safeText_(set.id_variante),
+        campaign_key: safeText_(form.nombre_interno)
+      };
+
+      const res = await rpcWrite_(UPSERT_COMMERCIAL_OFFER_RPC, { input_offer: offerPayload });
+      const codigo = safeText_(res && res.offer && res.offer.codigo_oferta);
+
+      ProductosNuevaOfertaState.savedResult = res;
+
+      if (statusEl) {
+        statusEl.textContent = `Oferta comercial guardada correctamente${codigo ? `: ${codigo}` : ""}.`;
+        statusEl.className = "offerWizard__status offerWizard__status--success";
+      }
+
+      if (saveBtn) {
+        saveBtn.textContent = "Oferta guardada";
+        saveBtn.disabled = true;
+      }
+
+      await reloadAfterWrite_();
+      return res;
+    } catch (err) {
+      if (statusEl) {
+        statusEl.textContent = String(err && err.message ? err.message : err || "Error guardando oferta comercial.");
+        statusEl.className = "offerWizard__status offerWizard__status--error";
+      }
+
+      if (saveBtn) {
+        saveBtn.textContent = "Guardar oferta";
+        saveBtn.disabled = false;
+      }
+
+      return null;
+    } finally {
+      ProductosNuevaOfertaState.saving = false;
+    }
+  }
+
   function formatMoneySafe_(value) {
     try {
       return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(value || 0));
@@ -538,6 +724,16 @@
 
     patchFunction_("loadProductosNuevaOfertaSets_", async function (original, args) {
       if (isSupabaseWinner_()) { hydrateNuevaOfertaSelectFromSnapshot_(); return null; }
+      return original.apply(window, args || []);
+    });
+
+    patchFunction_("handleProductosNuevaOfertaStep1Next_", async function (original, args) {
+      if (isSupabaseWinner_()) return advanceNuevaOfertaWithoutLegacyActivation_();
+      return original.apply(window, args || []);
+    });
+
+    patchFunction_("saveProductosNuevaOferta_", async function (original, args) {
+      if (isSupabaseWinner_()) return saveCommercialOfferViaSupabase_();
       return original.apply(window, args || []);
     });
 
@@ -648,7 +844,9 @@
     hydrate: schedulePostRenderHydration_,
     patchLegacyReaders: patchLegacyReaders_,
     saveSku: saveSkuViaSupabase_,
-    saveProductSet: saveProductSetViaSupabase_
+    saveProductSet: saveProductSetViaSupabase_,
+    saveCommercialOffer: saveCommercialOfferViaSupabase_,
+    advanceOffer: advanceNuevaOfertaWithoutLegacyActivation_
   };
 
   document.addEventListener("DOMContentLoaded", initProductosPanelSupabaseRead_);
