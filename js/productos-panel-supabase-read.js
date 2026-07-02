@@ -1,24 +1,25 @@
 /* =========================================================
    Protocol Data · Productos Panel Supabase Bridge
-   Fase: FRONTEND PRODUCTOS 04B
+   Fase: FRONTEND PRODUCTOS 04C
 
    Modelo correcto:
    - Conjuntos de productos = estructura operativa / SKUs físicos.
    - Ofertas = identidad comercial / campaña / narrativa.
-   - Variante Shopify = mapeo operativo para resolver ventas.
+   - IDs Variante Shopify = identificadores técnicos vinculados a una oferta.
 
    No toca Productos Comestibles.
    ========================================================= */
 (function () {
   "use strict";
 
-  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_04B";
+  const BUILD = "PRODUCTOS_PANEL_SUPABASE_BRIDGE_2026_07_02_04C";
   const BOOTSTRAP_RPC = "rpc_products_panel_bootstrap";
   const COMMERCIAL_OFFERS_RPC = "rpc_products_panel_commercial_offers_list";
   const UPSERT_PRODUCT_RPC = "rpc_products_upsert_product";
   const UPSERT_PRODUCT_SET_RPC = "rpc_products_upsert_product_set";
-  const UPSERT_VARIANT_MAPPING_RPC = "rpc_products_upsert_variant_mapping";
   const UPSERT_COMMERCIAL_OFFER_RPC = "rpc_products_upsert_commercial_offer";
+  const ATTACH_VARIANT_RPC = "rpc_products_attach_variant_to_commercial_offer";
+  const DETACH_VARIANT_RPC = "rpc_products_detach_variant_from_commercial_offer";
 
   const ReadState = {
     loaded: false,
@@ -87,6 +88,27 @@
     };
   }
 
+  function money_(value) {
+    try {
+      return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(value || 0));
+    } catch (err) {
+      return `$ ${Number(value || 0).toFixed(2)}`;
+    }
+  }
+
+  function dateLabel_(from, to) {
+    const f = safeText_(from);
+    const t = safeText_(to);
+    if (!f && !t) return "A definir";
+    if (f && t) return `${f} → ${t}`;
+    return f || t;
+  }
+
+  function setText_(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(value == null ? "" : value);
+  }
+
   function normalizeSku_(item) {
     const sku = safeText_(item && item.sku);
     const nombre = safeText_(item && (item.nombre_producto || item.nombre));
@@ -152,7 +174,21 @@
     };
   }
 
+  function normalizeVariant_(item) {
+    return {
+      mapping_id: safeText_(item && item.mapping_id),
+      id_variante_shopify: safeText_(item && item.id_variante_shopify),
+      estado: safeText_(item && item.estado) || "active",
+      contexto: safeText_(item && item.contexto),
+      created_at: safeText_(item && item.created_at),
+      updated_at: safeText_(item && item.updated_at)
+    };
+  }
+
   function normalizeCommercialOffer_(item) {
+    const variants = Array.isArray(item && item.variants) ? item.variants.map(normalizeVariant_).filter(v => v.id_variante_shopify) : [];
+    const firstVariant = variants.length ? variants[0].id_variante_shopify : safeText_(item && (item.id_variante || item.id_variante_shopify));
+
     return {
       commercial_offer_id: safeText_(item && item.commercial_offer_id),
       codigo_oferta: safeText_(item && item.codigo_oferta),
@@ -168,8 +204,10 @@
       canal_previsto: safeText_(item && item.canal_previsto),
       campaign_key: safeText_(item && item.campaign_key),
       landing_key: safeText_(item && item.landing_key),
-      id_variante: safeText_(item && (item.id_variante || item.id_variante_shopify)),
-      id_variante_shopify: safeText_(item && (item.id_variante_shopify || item.id_variante)),
+      id_variante: firstVariant,
+      id_variante_shopify: firstVariant,
+      variants,
+      variant_count: variants.length || toNumber_(item && item.variant_count, 0),
       tipo_oferta: safeText_(item && item.tipo_oferta) || "comercial",
       fecha_creacion: safeText_(item && (item.fecha_creacion || item.created_at)),
       fecha_actualizacion: safeText_(item && (item.fecha_actualizacion || item.updated_at)),
@@ -211,27 +249,6 @@
     };
   }
 
-  function setText_(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = String(value == null ? "" : value);
-  }
-
-  function money_(value) {
-    try {
-      return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(value || 0));
-    } catch (err) {
-      return `$ ${Number(value || 0).toFixed(2)}`;
-    }
-  }
-
-  function dateLabel_(from, to) {
-    const f = safeText_(from);
-    const t = safeText_(to);
-    if (!f && !t) return "A definir";
-    if (f && t) return `${f} → ${t}`;
-    return f || t;
-  }
-
   function buildSetSummary_(sets) {
     const normalized = (sets || []).map(normalizeSet_);
     const bundles = normalized.filter(item => item.row_type === "bundle");
@@ -266,6 +283,19 @@
     tbody.innerHTML = `<tr><td colspan="${colspan}" class="${className || "prodTableEmpty"}">${escapeHtml_(message)}</td></tr>`;
   }
 
+  function renderVariantList_(item) {
+    const variants = item.variants || [];
+
+    if (!variants.length) {
+      return `<span class="prodOfferVariantEmpty">Sin IDs variante</span>`;
+    }
+
+    return variants.map(v => {
+      const ctx = v.contexto ? ` · ${escapeHtml_(v.contexto)}` : "";
+      return `<div class="prodOfferVariantItem"><strong>${escapeHtml_(v.id_variante_shopify)}</strong>${ctx}</div>`;
+    }).join("");
+  }
+
   function renderCommercialOffersTable_() {
     const tbody = document.getElementById("prodOffersTableBody");
     const note = document.getElementById("prodOffersTableNote");
@@ -284,8 +314,8 @@
       const offerName = item.nombre_comercial || item.nombre_interno || "Oferta comercial";
       const sub = item.subtitulo_oferta || item.descripcion_corta || "Sin subtítulo";
       const type = item.tipo_oferta === "cantidad" ? "Cantidad" : (item.tipo_oferta === "bundle" ? "Bundle" : "Comercial");
-      const variant = item.id_variante_shopify || "Sin variant_id";
       const created = item.fecha_creacion ? item.fecha_creacion.slice(0, 10) : "—";
+      const variantLabel = renderVariantList_(item);
 
       return `
         <tr data-commercial-offer-id="${escapeAttr_(item.commercial_offer_id)}">
@@ -293,7 +323,15 @@
           <td>${escapeHtml_(offerCode)}</td>
           <td><strong>${escapeHtml_(offerName)}</strong><br><span>${escapeHtml_(sub)}</span></td>
           <td><span class="prodOfferTypeBadge">${escapeHtml_(type)}</span></td>
-          <td>${escapeHtml_(variant)}</td>
+          <td>
+            <div class="prodOfferVariantsCell">${variantLabel}</div>
+            <button
+              type="button"
+              class="prodOfferVariantAttachBtn"
+              data-commercial-offer-id="${escapeAttr_(item.commercial_offer_id)}"
+              data-offer-label="${escapeAttr_(offerCode + ' · ' + offerName)}"
+            >+ ID Variante</button>
+          </td>
           <td>${escapeHtml_(dateLabel_(item.vigencia_desde, item.vigencia_hasta))}</td>
           <td>${escapeHtml_(created)}</td>
         </tr>
@@ -691,24 +729,8 @@
     if (status) { status.textContent = "Guardando oferta comercial en Supabase..."; status.className = "offerWizard__status"; }
 
     try {
-      let mappingId = "";
-      const idVariante = safeText_(set.id_variante_shopify || set.id_variante);
-
-      if (idVariante) {
-        const mappingRes = await rpc_(UPSERT_VARIANT_MAPPING_RPC, {
-          input_mapping: {
-            id_variante_shopify: idVariante,
-            offer_set_id: set.offer_set_id,
-            estado: "active",
-            contexto: "auto_from_commercial_offer"
-          }
-        });
-        mappingId = safeText_(mappingRes && mappingRes.mapping && mappingRes.mapping.mapping_id);
-      }
-
       const offerPayload = {
         offer_set_id: set.offer_set_id,
-        mapping_id: mappingId || undefined,
         nombre_interno: safeText_(form.nombre_interno),
         nombre_comercial: safeText_(form.nombre_comercial),
         subtitulo_oferta: safeText_(form.subtitulo_oferta),
@@ -722,7 +744,7 @@
         estado_oferta: "active",
         permite_publicacion: true,
         canal_previsto: "landing_producto",
-        landing_key: idVariante || safeText_(set.id_variante),
+        landing_key: safeText_(set.id_variante),
         campaign_key: safeText_(form.nombre_interno)
       };
 
@@ -734,7 +756,7 @@
       await reloadAfterWrite_();
 
       if (status) {
-        status.textContent = `Oferta comercial guardada correctamente${code ? `: ${code}` : ""}.`;
+        status.textContent = `Oferta comercial guardada correctamente${code ? `: ${code}` : ""}. Ahora puedes vincular IDs Variante desde la tabla Ofertas.`;
         status.className = "offerWizard__status offerWizard__status--success";
       }
       if (saveBtn) { saveBtn.textContent = "Oferta guardada"; saveBtn.disabled = true; }
@@ -747,6 +769,60 @@
       return null;
     } finally {
       ProductosNuevaOfertaState.saving = false;
+    }
+  }
+
+  async function attachVariantToOffer_(commercialOfferId, label) {
+    const offerId = safeText_(commercialOfferId);
+    if (!offerId) {
+      alert("No se encontró el ID de la oferta comercial.");
+      return null;
+    }
+
+    const variantId = safeText_(window.prompt(`Pegá el ID Variante Shopify para vincular a:\n${label || offerId}`, ""));
+    if (!variantId) return null;
+
+    const contexto = safeText_(window.prompt("Contexto opcional para este ID Variante. Ej: Landing A, Test Meta, Público frío", ""));
+
+    try {
+      const res = await rpc_(ATTACH_VARIANT_RPC, {
+        input_mapping: {
+          commercial_offer_id: offerId,
+          id_variante_shopify: variantId,
+          contexto: contexto || undefined,
+          estado: "active"
+        }
+      });
+
+      await loadCommercialOffers_();
+      await reloadAfterWrite_();
+
+      alert(`ID Variante vinculado correctamente: ${variantId}`);
+      return res;
+    } catch (err) {
+      alert("Error vinculando ID Variante: " + String(err && err.message ? err.message : err));
+      return null;
+    }
+  }
+
+  async function detachVariantFromOffer_(mappingId, variantId) {
+    const ok = window.confirm(`¿Desactivar el ID Variante ${variantId || mappingId}?`);
+    if (!ok) return null;
+
+    try {
+      const res = await rpc_(DETACH_VARIANT_RPC, {
+        input_mapping: {
+          mapping_id: mappingId || undefined,
+          id_variante_shopify: variantId || undefined
+        }
+      });
+
+      await loadCommercialOffers_();
+      await reloadAfterWrite_();
+      return res;
+    } catch (err) {
+      alert("Error desactivando ID Variante: " + String(err && err.message ? err.message : err));
+      return null;
     }
   }
 
@@ -858,6 +934,14 @@
 
   function bindEvents_() {
     document.addEventListener("click", function (event) {
+      const attachBtn = event.target && event.target.closest ? event.target.closest(".prodOfferVariantAttachBtn") : null;
+      if (attachBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        attachVariantToOffer_(attachBtn.dataset.commercialOfferId, attachBtn.dataset.offerLabel);
+        return;
+      }
+
       const shouldHydrate = event.target && event.target.closest && event.target.closest(
         "#prodNewProductBtn, #prodNewOfferBtn, [data-action='crear-conjunto'], #prodSetCreateBtn, #prodSlideCreateSetBtn, .prodTab"
       );
@@ -888,6 +972,8 @@
     saveSku: saveSku_,
     saveProductSet: saveProductSet_,
     saveCommercialOffer: saveCommercialOffer_,
+    attachVariantToOffer: attachVariantToOffer_,
+    detachVariantFromOffer: detachVariantFromOffer_,
     advanceOffer: advanceOffer_
   };
 
