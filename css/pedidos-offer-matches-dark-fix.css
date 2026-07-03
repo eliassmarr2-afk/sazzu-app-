@@ -1,0 +1,40 @@
+/* Pedidos · Cruce de oferta · contraste modo oscuro */
+body[data-page="pedidos"] .ordersDetail .ordersOfferMatchCard,
+body[data-page="pedidos"] .ordersDetailCard.ordersOfferMatchCard {
+  background: #303030 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard h3,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferHeader__text strong,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferMetric strong,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferSku {
+  color: #ffffff !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferHeader__text span,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferName {
+  color: rgba(255,255,255,.76) !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferMetric span,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferComponentsTitle {
+  color: rgba(255,255,255,.64) !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferHeader,
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferGrid {
+  border-bottom-color: rgba(255,255,255,.22) !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferComponent {
+  border-bottom-color: rgba(255,255,255,.16) !important;
+}
+
+body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferEmpty {
+  background: rgba(255,255,255,.03) !important;
+  border-color: rgba(255,255,255,.30) !important;
+  color: rgba(255,255,255,.74) !important;
+}
