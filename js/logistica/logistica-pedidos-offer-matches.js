@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const BUILD = 'LOGISTICA_PEDIDOS_OFFER_MATCHES_20260703_01';
+  const BUILD = 'LOGISTICA_PEDIDOS_OFFER_MATCHES_20260703_02';
   const RPC = 'rpc_products_order_offer_matches_lookup';
   const state = { loading: false, loadedKey: '', items: [], byName: new Map(), currentTracking: '' };
 
@@ -100,7 +100,7 @@
 
   function cardHtml(match) {
     if (!match) {
-      return '<section class="logOfferCard" data-log-offer-card="1"><h3>Cruce de oferta</h3><div class="logOfferEmpty">Este pedido no tiene coincidencias de oferta registradas todavía.</div></section>';
+      return '';
     }
     return '<section class="logOfferCard" data-log-offer-card="1"><h3>Cruce de oferta</h3><div class="logOfferHeader"><div><strong>' + esc(match.codigo_oferta || 'Oferta') + '</strong><span>' + esc(match.nombre_comercial || '') + '</span></div>' + badge(match) + '</div><div class="logOfferGrid"><div class="logOfferMetric"><span>Tipo</span><strong>' + esc(match.classification_badge || match.tipo_oferta || 'Oferta') + '</strong></div><div class="logOfferMetric"><span>Variant ID</span><strong>' + esc(match.id_variante_shopify || '') + '</strong></div><div class="logOfferMetric"><span>Contexto</span><strong>' + esc(match.variant_contexto || '—') + '</strong></div><div class="logOfferMetric"><span>Estado match</span><strong>' + esc(match.match_status || '—') + '</strong></div></div>' + componentsHtml(match) + '</section>';
   }
@@ -112,7 +112,17 @@
     form.querySelector('[data-log-offer-card="1"]')?.remove();
     const order = orders().find(item => text(item.tracking_id) === text(trackingId));
     if (!order) return;
-    form.insertAdjacentHTML('afterbegin', cardHtml(primary(order)));
+    const html = cardHtml(primary(order));
+    if (html) form.insertAdjacentHTML('afterbegin', html);
+  }
+
+  function loadProductInfoHelper() {
+    if (window.ProtocolLogisticaPedidosProductInfo || document.querySelector('script[data-logistica-product-info="1"]')) return;
+    const script = document.createElement('script');
+    script.src = '../../js/logistica/logistica-pedidos-product-info.js?v=20260703_01';
+    script.async = true;
+    script.dataset.logisticaProductInfo = '1';
+    document.body.appendChild(script);
   }
 
   function bind() {
@@ -123,7 +133,10 @@
       if (!btn) return;
       state.currentTracking = text(btn.dataset.logPedidoEdit);
       setTimeout(function () {
-        hydrate().then(function () { injectForTracking(state.currentTracking); });
+        hydrate().then(function () {
+          injectForTracking(state.currentTracking);
+          if (window.ProtocolLogisticaPedidosProductInfo) window.ProtocolLogisticaPedidosProductInfo.injectForTracking(state.currentTracking);
+        });
       }, 120);
     }, true);
   }
@@ -131,6 +144,7 @@
   function init() {
     if (!page()) return;
     injectCss();
+    loadProductInfoHelper();
     bind();
     setTimeout(hydrate, 800);
     window.ProtocolLogisticaPedidosOfferMatches = { build: BUILD, hydrate, injectForTracking, state };
