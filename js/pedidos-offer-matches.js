@@ -1,10 +1,11 @@
-/* Protocol Data · Pedidos Offer Matches · Fase 05C */
+/* Protocol Data · Pedidos Offer Matches · Fase 05C.2 */
 (function () {
   'use strict';
 
-  const BUILD = 'PEDIDOS_OFFER_MATCHES_05C_20260703';
+  const BUILD = 'PEDIDOS_OFFER_MATCHES_05C2_20260703';
   const RPC = 'rpc_products_order_offer_matches_lookup';
-  const state = { loading: false, loadedKey: '', items: [], byName: new Map(), lastTracking: '' };
+  const SYNC_FUNCTION = 'shopify-resolve-order-offers';
+  const state = { loading: false, syncing: false, loadedKey: '', syncKey: '', items: [], byName: new Map(), lastTracking: '' };
 
   function page() { return !!document.querySelector('body[data-page="pedidos"]'); }
   function st() { return window.__protocolSidebarPedidosState || { all: [], filtered: [], page: 1, pageSize: 12 }; }
@@ -47,15 +48,46 @@
     });
   }
 
-  async function hydrate() {
+  async function syncVisibleOrders() {
+    const c = client();
+    if (!c || !c.functions || typeof c.functions.invoke !== 'function') return null;
+    if (state.syncing) return null;
+
+    const names = uniq(visibleOrders().map(orderName)).slice(0, 12);
+    const key = names.join('|');
+    if (!names.length || key === state.syncKey) return null;
+
+    state.syncing = true;
+    try {
+      const res = await c.functions.invoke(SYNC_FUNCTION, { body: { order_names: names } });
+      if (res.error) throw res.error;
+      state.syncKey = key;
+      state.loadedKey = '';
+      window.__PEDIDOS_OFFER_SYNC_LAST__ = res.data;
+      return res.data;
+    } catch (err) {
+      console.warn('[Pedidos Offer Sync]', err);
+      return null;
+    } finally {
+      state.syncing = false;
+    }
+  }
+
+  async function hydrate(options) {
     if (!page() || state.loading) return;
+    const opts = options || {};
     const orders = Array.isArray(st().all) ? st().all : [];
     const names = uniq(orders.map(orderName));
     const key = names.join('|');
     if (!names.length) return;
-    if (key === state.loadedKey && state.items.length) { decorate(); return; }
+
     const c = client();
     if (!c) return;
+
+    if (opts.syncFirst) await syncVisibleOrders();
+
+    if (key === state.loadedKey && state.items.length) { decorate(); return; }
+
     state.loading = true;
     try {
       const res = await c.rpc(RPC, { input_lookup: { order_ids: [], order_names: names } });
@@ -140,11 +172,11 @@
       const btn = event.target.closest('[data-order-detail]');
       if (!btn) return;
       state.lastTracking = text(btn.dataset.orderDetail);
-      setTimeout(function () { hydrate().then(function () { injectDetail(state.lastTracking); }); }, 100);
+      setTimeout(function () { hydrate({ syncFirst: true }).then(function () { injectDetail(state.lastTracking); }); }, 100);
     }, true);
     const list = document.getElementById('ordersList');
     if (list && typeof MutationObserver === 'function') {
-      new MutationObserver(function () { setTimeout(function () { hydrate(); decorate(); }, 120); }).observe(list, { childList: true, subtree: true });
+      new MutationObserver(function () { setTimeout(function () { hydrate({ syncFirst: false }); decorate(); }, 120); }).observe(list, { childList: true, subtree: true });
     }
   }
 
@@ -152,8 +184,8 @@
     if (!page()) return;
     injectCss();
     bind();
-    [300, 900, 1800, 3200].forEach(function (t) { setTimeout(function () { hydrate(); decorate(); }, t); });
-    window.ProtocolPedidosOfferMatches = { build: BUILD, hydrate: hydrate, decorate: decorate, state: state };
+    [300, 900, 1800, 3200].forEach(function (t) { setTimeout(function () { hydrate({ syncFirst: t === 900 }); decorate(); }, t); });
+    window.ProtocolPedidosOfferMatches = { build: BUILD, hydrate: hydrate, syncVisibleOrders: syncVisibleOrders, decorate: decorate, state: state };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
