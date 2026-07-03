@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const BUILD = 'PEDIDOS_PRODUCT_INFO_20260703_03';
+  const BUILD = 'PEDIDOS_PRODUCT_INFO_20260703_04';
   const LINE_RPC = 'rpc_shopify_order_line_snapshots_lookup';
   const SYNC_FUNCTION = 'shopify-resolve-order-offers';
   const lineState = { loading: false, syncing: false, loadedKey: '', syncKey: '', items: [], byName: new Map() };
@@ -128,12 +128,19 @@
   }
 
   function directSku(order) {
-    const snapshots = lineItems(order).map(item => text(item.sku)).filter(Boolean);
+    const snapshots = lineItems(order).map(function (item) {
+      return text(item.sku_operativo || item.linked_sku || item.inferred_sku || item.sku);
+    }).filter(Boolean);
     if (snapshots.length) return uniq(snapshots).join(' + ');
     return pick(order, [
-      'sku', 'sku_producto', 'producto_sku', 'shopify_sku', 'variant_sku', 'line_item_sku',
-      'sku_shopify', 'codigo_sku', 'sku_operativo', 'sku_principal', 'product_sku'
+      'sku_operativo', 'sku', 'sku_producto', 'producto_sku', 'shopify_sku', 'variant_sku', 'line_item_sku',
+      'sku_shopify', 'codigo_sku', 'sku_principal', 'product_sku'
     ]);
+  }
+
+  function skuSource(order) {
+    const sources = uniq(lineItems(order).map(item => text(item.sku_source)).filter(Boolean));
+    return sources[0] || '';
   }
 
   function directVariant(order) {
@@ -157,7 +164,7 @@
   function skuLabel(order, match) {
     const skus = componentSkus(match);
     if (skus.length) return skus.join(' + ');
-    return directSku(order) || 'SKU no informado por Shopify';
+    return directSku(order) || 'Sin SKU operativo vinculado';
   }
 
   function injectCss() {
@@ -165,7 +172,7 @@
     const css = document.createElement('style');
     css.id = 'pedidosProductInfoCss';
     css.textContent = `
-      .orderSkuLine{display:inline-flex;align-items:center;min-height:22px;margin-top:6px;padding:0 7px;border-radius:5px;background:#eef2ff;color:#1d4ed8;border:1px solid #dbe7ff;font-size:11px;font-weight:950;line-height:1.2}.orderProductInfoCard{background:#303030!important;color:#fff!important;border:1px solid rgba(255,255,255,.08)!important;box-shadow:none!important}.orderProductInfoCard h3{margin-bottom:12px!important;color:#fff!important}.orderProductInfoHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.22)}.orderProductInfoHead strong{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.orderProductInfoHead span{display:block;margin-top:4px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.orderProductInfoBadge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 8px;border-radius:5px;font-size:11px;font-weight:950;white-space:nowrap;background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff}.orderProductInfoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}.orderProductMetric span{display:block;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.orderProductMetric strong{display:block;margin-top:4px;color:#fff!important;font-size:13px;font-weight:900;line-height:1.25;word-break:break-word}.orderProductComponentsTitle{padding-top:12px;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.orderProductComponent{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.16)}.orderProductComponent:last-child{border-bottom:0}.orderProductQty{display:flex;align-items:center;justify-content:center;min-height:28px;border-radius:5px;background:#ecfdf3;color:#067647;font-size:12px;font-weight:950}.orderProductSku{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.orderProductName{display:block;margin-top:3px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.orderProductNoSku{color:#fbbf24!important}@media(max-width:640px){.orderProductInfoGrid{grid-template-columns:1fr}.orderProductInfoHead{display:block}.orderProductInfoBadge{margin-top:8px}}
+      .orderSkuLine{display:inline-flex;align-items:center;min-height:22px;margin-top:6px;padding:0 7px;border-radius:5px;background:#eef2ff;color:#1d4ed8;border:1px solid #dbe7ff;font-size:11px;font-weight:950;line-height:1.2}.orderProductInfoCard{background:#303030!important;color:#fff!important;border:1px solid rgba(255,255,255,.08)!important;box-shadow:none!important}.orderProductInfoCard h3{margin-bottom:12px!important;color:#fff!important}.orderProductInfoHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.22)}.orderProductInfoHead strong{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.orderProductInfoHead span{display:block;margin-top:4px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.orderProductInfoBadge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 8px;border-radius:5px;font-size:11px;font-weight:950;white-space:nowrap;background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff}.orderProductInfoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}.orderProductMetric span{display:block;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.orderProductMetric strong{display:block;margin-top:4px;color:#fff!important;font-size:13px;font-weight:900;line-height:1.25;word-break:break-word}.orderProductComponentsTitle{padding-top:12px;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.orderProductComponent{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.16)}.orderProductComponent:last-child{border-bottom:0}.orderProductQty{display:flex;align-items:center;justify-content:center;min-height:28px;border-radius:5px;background:#ecfdf3;color:#067647;font-size:12px;font-weight:950}.orderProductSku{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.orderProductName{display:block;margin-top:3px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.orderProductNoSku{color:#fbbf24!important}.orderProductSkuSource{display:block;margin-top:4px;color:rgba(255,255,255,.58)!important;font-size:11px;font-weight:800}.orderSkuLine.orderProductNoSku{background:#3b3020!important;color:#fbbf24!important;border-color:rgba(251,191,36,.35)!important}@media(max-width:640px){.orderProductInfoGrid{grid-template-columns:1fr}.orderProductInfoHead{display:block}.orderProductInfoBadge{margin-top:8px}}
     `;
     document.head.appendChild(css);
   }
@@ -183,7 +190,7 @@
       const match = primaryMatch(order);
       const sku = skuLabel(order, match);
       const line = document.createElement('span');
-      line.className = 'orderSkuLine' + (sku.includes('no informado') ? ' orderProductNoSku' : '');
+      line.className = 'orderSkuLine' + (sku.includes('Sin SKU') ? ' orderProductNoSku' : '');
       line.textContent = 'SKU: ' + sku;
       productCell.querySelector('.ordersMiniStack')?.appendChild(line);
     });
@@ -201,13 +208,15 @@
   function cardHtml(order, match) {
     const product = productTitle(order);
     const sku = skuLabel(order, match);
+    const source = skuSource(order);
     const variant = (match && text(match.id_variante_shopify)) || directVariant(order) || 'Sin variant ID';
     const hasOffer = !!match;
     const offerBadge = hasOffer ? '<span class="orderProductInfoBadge">' + esc(match.classification_badge || 'Oferta') + '</span>' : '';
     const title = hasOffer ? (match.codigo_oferta || 'Oferta detectada') : 'SKU directo';
     const subtitle = hasOffer ? (match.nombre_comercial || product) : product;
+    const sourceHtml = !hasOffer && source ? '<span class="orderProductSkuSource">Fuente SKU: ' + esc(source) + '</span>' : '';
 
-    return '<article class="ordersDetailCard orderProductInfoCard" data-product-info-card="1"><h3>Producto del pedido</h3><div class="orderProductInfoHead"><div><strong>' + esc(title) + '</strong><span>' + esc(subtitle) + '</span></div>' + offerBadge + '</div><div class="orderProductInfoGrid"><div class="orderProductMetric"><span>SKU operativo</span><strong class="' + (sku.includes('no informado') ? 'orderProductNoSku' : '') + '">' + esc(sku) + '</strong></div><div class="orderProductMetric"><span>Variant ID</span><strong>' + esc(variant) + '</strong></div><div class="orderProductMetric"><span>Tipo</span><strong>' + esc(hasOffer ? (match.classification_badge || match.tipo_oferta || 'Oferta') : 'Producto simple') + '</strong></div><div class="orderProductMetric"><span>Contexto</span><strong>' + esc(hasOffer ? (match.variant_contexto || '—') : 'Compra directa / sin oferta') + '</strong></div></div>' + componentsHtml(match) + '</article>';
+    return '<article class="ordersDetailCard orderProductInfoCard" data-product-info-card="1"><h3>Producto del pedido</h3><div class="orderProductInfoHead"><div><strong>' + esc(title) + '</strong><span>' + esc(subtitle) + '</span></div>' + offerBadge + '</div><div class="orderProductInfoGrid"><div class="orderProductMetric"><span>SKU operativo</span><strong class="' + (sku.includes('Sin SKU') ? 'orderProductNoSku' : '') + '">' + esc(sku) + '</strong>' + sourceHtml + '</div><div class="orderProductMetric"><span>Variant ID</span><strong>' + esc(variant) + '</strong></div><div class="orderProductMetric"><span>Tipo</span><strong>' + esc(hasOffer ? (match.classification_badge || match.tipo_oferta || 'Oferta') : 'Producto simple') + '</strong></div><div class="orderProductMetric"><span>Contexto</span><strong>' + esc(hasOffer ? (match.variant_contexto || '—') : 'Compra directa / sin oferta') + '</strong></div></div>' + componentsHtml(match) + '</article>';
   }
 
   async function injectDetail(tracking, options) {
