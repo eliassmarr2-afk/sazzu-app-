@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const BUILD = 'LOGISTICA_PEDIDOS_PRODUCT_INFO_20260703_03';
+  const BUILD = 'LOGISTICA_PEDIDOS_PRODUCT_INFO_20260703_04';
   const LINE_RPC = 'rpc_shopify_order_line_snapshots_lookup';
   const SYNC_FUNCTION = 'shopify-resolve-order-offers';
   const lineState = { loading: false, syncing: false, loadedKey: '', syncKey: '', items: [], byName: new Map() };
@@ -136,12 +136,19 @@
   }
 
   function directSku(order) {
-    const snapshots = lineItems(order).map(item => text(item.sku)).filter(Boolean);
+    const snapshots = lineItems(order).map(function (item) {
+      return text(item.sku_operativo || item.linked_sku || item.inferred_sku || item.sku);
+    }).filter(Boolean);
     if (snapshots.length) return uniq(snapshots).join(' + ');
     return pick(order, [
-      'sku', 'sku_producto', 'producto_sku', 'shopify_sku', 'variant_sku', 'line_item_sku',
-      'sku_shopify', 'codigo_sku', 'sku_operativo', 'sku_principal', 'product_sku'
+      'sku_operativo', 'sku', 'sku_producto', 'producto_sku', 'shopify_sku', 'variant_sku', 'line_item_sku',
+      'sku_shopify', 'codigo_sku', 'sku_principal', 'product_sku'
     ]);
+  }
+
+  function skuSource(order) {
+    const sources = uniq(lineItems(order).map(item => text(item.sku_source)).filter(Boolean));
+    return sources[0] || '';
   }
 
   function directVariant(order) {
@@ -165,7 +172,7 @@
   function skuLabel(order, match) {
     const skus = componentSkus(match);
     if (skus.length) return skus.join(' + ');
-    return directSku(order) || 'SKU no informado por Shopify';
+    return directSku(order) || 'Sin SKU operativo vinculado';
   }
 
   function injectCss() {
@@ -173,7 +180,7 @@
     const css = document.createElement('style');
     css.id = 'logisticaProductInfoCss';
     css.textContent = `
-      .logSkuLine{display:inline-flex;align-items:center;min-height:22px;margin-top:6px;padding:0 7px;border-radius:5px;background:#eef2ff;color:#1d4ed8;border:1px solid #dbe7ff;font-size:11px;font-weight:950;line-height:1.2}.logProductInfoCard{border-radius:5px;background:#303030!important;border:1px solid rgba(255,255,255,.10)!important;padding:14px;margin:0 0 12px;color:#fff!important}.logProductInfoCard h3{margin:0 0 12px;color:#fff!important;font-size:15px;font-weight:950}.logProductInfoHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.22)}.logProductInfoHead strong{display:block;color:#fff!important;font-size:13px;font-weight:950}.logProductInfoHead span{display:block;margin-top:4px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.logProductInfoBadge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 8px;border-radius:5px;font-size:11px;font-weight:950;white-space:nowrap;background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff}.logProductInfoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}.logProductMetric span{display:block;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.logProductMetric strong{display:block;margin-top:4px;color:#fff!important;font-size:13px;font-weight:900;line-height:1.25;word-break:break-word}.logProductComponentsTitle{padding-top:12px;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.logProductComponent{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.16)}.logProductComponent:last-child{border-bottom:0}.logProductQty{display:flex;align-items:center;justify-content:center;min-height:28px;border-radius:5px;background:#ecfdf3;color:#067647;font-size:12px;font-weight:950}.logProductSku{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.logProductName{display:block;margin-top:3px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.logProductNoSku{color:#fbbf24!important}@media(max-width:640px){.logProductInfoGrid{grid-template-columns:1fr}.logProductInfoHead{display:block}.logProductInfoBadge{margin-top:8px}}
+      .logSkuLine{display:inline-flex;align-items:center;min-height:22px;margin-top:6px;padding:0 7px;border-radius:5px;background:#eef2ff;color:#1d4ed8;border:1px solid #dbe7ff;font-size:11px;font-weight:950;line-height:1.2}.logProductInfoCard{border-radius:5px;background:#303030!important;border:1px solid rgba(255,255,255,.10)!important;padding:14px;margin:0 0 12px;color:#fff!important}.logProductInfoCard h3{margin:0 0 12px;color:#fff!important;font-size:15px;font-weight:950}.logProductInfoHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.22)}.logProductInfoHead strong{display:block;color:#fff!important;font-size:13px;font-weight:950}.logProductInfoHead span{display:block;margin-top:4px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.logProductInfoBadge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:0 8px;border-radius:5px;font-size:11px;font-weight:950;white-space:nowrap;background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff}.logProductInfoGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.22)}.logProductMetric span{display:block;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.logProductMetric strong{display:block;margin-top:4px;color:#fff!important;font-size:13px;font-weight:900;line-height:1.25;word-break:break-word}.logProductComponentsTitle{padding-top:12px;color:rgba(255,255,255,.62)!important;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.055em}.logProductComponent{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.16)}.logProductComponent:last-child{border-bottom:0}.logProductQty{display:flex;align-items:center;justify-content:center;min-height:28px;border-radius:5px;background:#ecfdf3;color:#067647;font-size:12px;font-weight:950}.logProductSku{display:block;color:#fff!important;font-size:13px;font-weight:950;line-height:1.25}.logProductName{display:block;margin-top:3px;color:rgba(255,255,255,.74)!important;font-size:12px;font-weight:750;line-height:1.35}.logProductNoSku{color:#fbbf24!important}.logProductSkuSource{display:block;margin-top:4px;color:rgba(255,255,255,.58)!important;font-size:11px;font-weight:800}.logSkuLine.logProductNoSku{background:#3b3020!important;color:#fbbf24!important;border-color:rgba(251,191,36,.35)!important}@media(max-width:640px){.logProductInfoGrid{grid-template-columns:1fr}.logProductInfoHead{display:block}.logProductInfoBadge{margin-top:8px}}
     `;
     document.head.appendChild(css);
   }
@@ -191,7 +198,7 @@
       const match = primaryMatch(order);
       const sku = skuLabel(order, match);
       const line = document.createElement('span');
-      line.className = 'logSkuLine' + (sku.includes('no informado') ? ' logProductNoSku' : '');
+      line.className = 'logSkuLine' + (sku.includes('Sin SKU') ? ' logProductNoSku' : '');
       line.textContent = 'SKU: ' + sku;
       productCell.querySelector('.logPedidosMiniStack')?.appendChild(line);
     });
@@ -209,13 +216,15 @@
   function cardHtml(order, match) {
     const product = productTitle(order);
     const sku = skuLabel(order, match);
+    const source = skuSource(order);
     const variant = (match && text(match.id_variante_shopify)) || directVariant(order) || 'Sin variant ID';
     const hasOffer = !!match;
     const offerBadge = hasOffer ? '<span class="logProductInfoBadge">' + esc(match.classification_badge || 'Oferta') + '</span>' : '';
     const title = hasOffer ? (match.codigo_oferta || 'Oferta detectada') : 'SKU directo';
     const subtitle = hasOffer ? (match.nombre_comercial || product) : product;
+    const sourceHtml = !hasOffer && source ? '<span class="logProductSkuSource">Fuente SKU: ' + esc(source) + '</span>' : '';
 
-    return '<section class="logProductInfoCard" data-log-product-info-card="1"><h3>Producto del pedido</h3><div class="logProductInfoHead"><div><strong>' + esc(title) + '</strong><span>' + esc(subtitle) + '</span></div>' + offerBadge + '</div><div class="logProductInfoGrid"><div class="logProductMetric"><span>SKU operativo</span><strong class="' + (sku.includes('no informado') ? 'logProductNoSku' : '') + '">' + esc(sku) + '</strong></div><div class="logProductMetric"><span>Variant ID</span><strong>' + esc(variant) + '</strong></div><div class="logProductMetric"><span>Tipo</span><strong>' + esc(hasOffer ? (match.classification_badge || match.tipo_oferta || 'Oferta') : 'Producto simple') + '</strong></div><div class="logProductMetric"><span>Contexto</span><strong>' + esc(hasOffer ? (match.variant_contexto || '—') : 'Compra directa / sin oferta') + '</strong></div></div>' + componentsHtml(match) + '</section>';
+    return '<section class="logProductInfoCard" data-log-product-info-card="1"><h3>Producto del pedido</h3><div class="logProductInfoHead"><div><strong>' + esc(title) + '</strong><span>' + esc(subtitle) + '</span></div>' + offerBadge + '</div><div class="logProductInfoGrid"><div class="logProductMetric"><span>SKU operativo</span><strong class="' + (sku.includes('Sin SKU') ? 'logProductNoSku' : '') + '">' + esc(sku) + '</strong>' + sourceHtml + '</div><div class="logProductMetric"><span>Variant ID</span><strong>' + esc(variant) + '</strong></div><div class="logProductMetric"><span>Tipo</span><strong>' + esc(hasOffer ? (match.classification_badge || match.tipo_oferta || 'Oferta') : 'Producto simple') + '</strong></div><div class="logProductMetric"><span>Contexto</span><strong>' + esc(hasOffer ? (match.variant_contexto || '—') : 'Compra directa / sin oferta') + '</strong></div></div>' + componentsHtml(match) + '</section>';
   }
 
   async function injectForTracking(trackingId, options) {
