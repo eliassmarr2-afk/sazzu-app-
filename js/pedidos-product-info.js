@@ -2,13 +2,12 @@
 (function () {
   'use strict';
 
-  const BUILD = 'PEDIDOS_PRODUCT_INFO_20260703_01';
+  const BUILD = 'PEDIDOS_PRODUCT_INFO_20260703_02';
 
   function page() { return !!document.querySelector('body[data-page="pedidos"]'); }
   function state() { return window.__protocolSidebarPedidosState || { all: [], filtered: [], page: 1, pageSize: 12 }; }
   function text(v) { return String(v == null ? '' : v).trim(); }
   function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-  function norm(v) { return text(v).toLowerCase(); }
 
   function visibleOrders() {
     const s = state();
@@ -116,8 +115,10 @@
     const order = (Array.isArray(s.all) ? s.all : []).find(x => text(x.tracking_id) === text(tracking));
     if (!order) return;
     content.querySelector('[data-offer-match-card="1"]')?.remove();
-    content.querySelector('[data-product-info-card="1"]')?.remove();
-    content.insertAdjacentHTML('afterbegin', cardHtml(order, primaryMatch(order)));
+    const existing = content.querySelector('[data-product-info-card="1"]');
+    const html = cardHtml(order, primaryMatch(order));
+    if (existing) existing.outerHTML = html;
+    else content.insertAdjacentHTML('afterbegin', html);
   }
 
   function bind() {
@@ -133,13 +134,6 @@
     const list = document.getElementById('ordersList');
     if (list && typeof MutationObserver === 'function') {
       new MutationObserver(function () { setTimeout(decorateTable, 180); }).observe(list, { childList: true, subtree: true });
-    }
-    const detail = document.getElementById('ordersDetailContent');
-    if (detail && typeof MutationObserver === 'function') {
-      new MutationObserver(function () {
-        const tracking = text(document.getElementById('ordersDetailSubtitle')?.textContent || '').split('·')[0].trim();
-        if (tracking) setTimeout(function () { injectDetail(tracking); }, 50);
-      }).observe(detail, { childList: true });
     }
   }
 
