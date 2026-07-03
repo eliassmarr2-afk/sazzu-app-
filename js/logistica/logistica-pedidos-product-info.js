@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const BUILD = 'LOGISTICA_PEDIDOS_PRODUCT_INFO_20260703_01';
+  const BUILD = 'LOGISTICA_PEDIDOS_PRODUCT_INFO_20260703_02';
 
   function page() { return !!document.querySelector('body[data-page="logistica"]'); }
   function root() { return document.querySelector('main.logisticsMain') || document; }
@@ -126,8 +126,10 @@
     const order = (Array.isArray(state().orders) ? state().orders : []).find(item => text(item.tracking_id) === text(trackingId));
     if (!order) return;
     form.querySelector('[data-log-offer-card="1"]')?.remove();
-    form.querySelector('[data-log-product-info-card="1"]')?.remove();
-    form.insertAdjacentHTML('afterbegin', cardHtml(order, primaryMatch(order)));
+    const existing = form.querySelector('[data-log-product-info-card="1"]');
+    const html = cardHtml(order, primaryMatch(order));
+    if (existing) existing.outerHTML = html;
+    else form.insertAdjacentHTML('afterbegin', html);
   }
 
   function bind() {
@@ -143,13 +145,6 @@
     const tbody = root().querySelector('#logPedidosTbody');
     if (tbody && typeof MutationObserver === 'function') {
       new MutationObserver(function () { setTimeout(decorateTable, 180); }).observe(tbody, { childList: true, subtree: true });
-    }
-    const form = root().querySelector('#logPedidosForm');
-    if (form && typeof MutationObserver === 'function') {
-      new MutationObserver(function () {
-        const tracking = text(root().querySelector('#logPedidoEditTrackingId')?.value || '');
-        if (tracking) setTimeout(function () { injectForTracking(tracking); }, 50);
-      }).observe(form, { childList: true });
     }
   }
 
