@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const BUILD = 'LOGISTICA_PEDIDOS_OFFER_MATCHES_20260703_03';
+  const BUILD = 'LOGISTICA_PEDIDOS_OFFER_MATCHES_20260703_04';
   const RPC = 'rpc_products_order_offer_matches_lookup';
   const state = { loading: false, loadedKey: '', items: [], byName: new Map(), currentTracking: '' };
 
@@ -117,7 +117,7 @@
   function loadProductInfoHelper() {
     if (window.ProtocolLogisticaPedidosProductInfo || document.querySelector('script[data-logistica-product-info="1"]')) return;
     const script = document.createElement('script');
-    script.src = '../../js/logistica/logistica-pedidos-product-info.js?v=20260703_03';
+    script.src = '../../js/logistica/logistica-pedidos-product-info.js?v=20260703_04';
     script.async = true;
     script.dataset.logisticaProductInfo = '1';
     document.body.appendChild(script);
