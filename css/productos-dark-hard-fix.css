@@ -1,0 +1,272 @@
+/* =========================================================
+   PRODUCTOS · Dark hard fix
+   Segunda capa visual para matar fondos blancos residuales.
+   No toca lógica, IDs ni estructura.
+   ========================================================= */
+
+body[data-page="productos"] {
+  background: #151515 !important;
+  color: #f4f4f5 !important;
+}
+
+body[data-page="productos"] .prodShell,
+body[data-page="productos"] .prodPanelTab,
+body[data-page="productos"] .prodPanelTab.is-active,
+body[data-page="productos"] .prodMainBoard,
+body[data-page="productos"] .prodMainBoard__stack,
+body[data-page="productos"] .prodSideColumn,
+body[data-page="productos"] .prodBoardCard,
+body[data-page="productos"] .prodBoardCard__inner,
+body[data-page="productos"] .prodTableShell,
+body[data-page="productos"] .prodTableTopbar,
+body[data-page="productos"] .prodTableWrap,
+body[data-page="productos"] .prodDecisionHeader,
+body[data-page="productos"] .prodSkuDonutCard,
+body[data-page="productos"] .prodSkuDonutCard__body,
+body[data-page="productos"] .prodSkuRanking,
+body[data-page="productos"] .prodSkuSummaryGrid,
+body[data-page="productos"] .prodSkuSummaryMini,
+body[data-page="productos"] .prodOffersPanel,
+body[data-page="productos"] .prodOffersShell,
+body[data-page="productos"] .prodOffersTableWrap,
+body[data-page="productos"] .prodCombosPanel,
+body[data-page="productos"] .prodCombosShell,
+body[data-page="productos"] .prodRentabilidadPanel,
+body[data-page="productos"] .prodRentabilidadShell {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .prodKpiGrid,
+body[data-page="productos"] .prodKpiCard,
+body[data-page="productos"] .prodKpiCard__head21,
+body[data-page="productos"] .prodKpiCard__title21,
+body[data-page="productos"] .prodKpiCard__value21Wrap,
+body[data-page="productos"] .prodKpiCard__sparkline21 {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .prodKpiCard {
+  box-shadow: 0 16px 34px rgba(0,0,0,.26) !important;
+}
+
+body[data-page="productos"] .prodKpiCard__label,
+body[data-page="productos"] .prodKpiCard__ticker21,
+body[data-page="productos"] .prodKpiCard__hint21,
+body[data-page="productos"] .prodKpiCard__delta21,
+body[data-page="productos"] .prodKpiCard__deltaValue21,
+body[data-page="productos"] .prodKpiCard__deltaPct21 {
+  background: transparent !important;
+  color: rgba(244,244,245,.72) !important;
+}
+
+body[data-page="productos"] .prodKpiCard__value,
+body[data-page="productos"] #prodKpiSkus,
+body[data-page="productos"] #prodKpiOfertas,
+body[data-page="productos"] #prodKpiPacks,
+body[data-page="productos"] #prodKpiBundles {
+  background: transparent !important;
+  color: #2479ff !important;
+}
+
+body[data-page="productos"] .prodKpiCard__sparkline21::before,
+body[data-page="productos"] .prodKpiCard__sparkline21::after {
+  opacity: .45 !important;
+}
+
+body[data-page="productos"] .prodTable,
+body[data-page="productos"] .prodTable thead,
+body[data-page="productos"] .prodTable tbody,
+body[data-page="productos"] .prodTable tr,
+body[data-page="productos"] .prodTable th,
+body[data-page="productos"] .prodTable td,
+body[data-page="productos"] table,
+body[data-page="productos"] thead,
+body[data-page="productos"] tbody,
+body[data-page="productos"] tr,
+body[data-page="productos"] th,
+body[data-page="productos"] td {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+body[data-page="productos"] .prodTable thead th,
+body[data-page="productos"] table thead th,
+body[data-page="productos"] th {
+  background: #1d1d1d !important;
+  color: rgba(244,244,245,.62) !important;
+}
+
+body[data-page="productos"] .prodTable tbody tr:hover,
+body[data-page="productos"] tbody tr:hover {
+  background: #353535 !important;
+}
+
+body[data-page="productos"] .prodTableSearchWrap,
+body[data-page="productos"] .prodSearchWrap,
+body[data-page="productos"] .prodFilterWrap,
+body[data-page="productos"] .prodTableTopbar__left,
+body[data-page="productos"] .prodTableTopbar__note {
+  background: transparent !important;
+  color: rgba(244,244,245,.65) !important;
+}
+
+body[data-page="productos"] input,
+body[data-page="productos"] select,
+body[data-page="productos"] textarea,
+body[data-page="productos"] .u-input {
+  background: #262626 !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+body[data-page="productos"] .prodMiniPill,
+body[data-page="productos"] .prodMetricToggle,
+body[data-page="productos"] .prodRelationBadge,
+body[data-page="productos"] .prodStatusBadge,
+body[data-page="productos"] .prodBadge,
+body[data-page="productos"] .prodOfferVariantBadge,
+body[data-page="productos"] .prodOfferTypeBadge,
+body[data-page="productos"] .prodSkuBadge,
+body[data-page="productos"] .badge,
+body[data-page="productos"] [class*="Badge"],
+body[data-page="productos"] [class*="badge"],
+body[data-page="productos"] [class*="Pill"],
+body[data-page="productos"] [class*="pill"] {
+  background: #252525 !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .prodMetricToggle.is-active,
+body[data-page="productos"] .prodTab.is-active,
+body[data-page="productos"] .prodTab[aria-selected="true"] {
+  background: #2479ff !important;
+  color: #ffffff !important;
+  border-color: #2479ff !important;
+}
+
+/* Ranking, barras y cards de rentabilidad que seguían blancas */
+body[data-page="productos"] .prodSkuRankItem,
+body[data-page="productos"] .prodSkuRankRow,
+body[data-page="productos"] .prodSkuRankBar,
+body[data-page="productos"] .prodSkuRankBarTrack,
+body[data-page="productos"] .prodSkuRankBarFill,
+body[data-page="productos"] .prodSkuChartCard,
+body[data-page="productos"] .prodSkuChartShell,
+body[data-page="productos"] .prodChartCard,
+body[data-page="productos"] .prodChartShell,
+body[data-page="productos"] .prodRankingItem,
+body[data-page="productos"] .prodRankingRow,
+body[data-page="productos"] .prodRankingBar,
+body[data-page="productos"] .prodRankingBarTrack,
+body[data-page="productos"] .prodRankingBarFill,
+body[data-page="productos"] .prodRentCard,
+body[data-page="productos"] .prodRentItem,
+body[data-page="productos"] .prodRentRow,
+body[data-page="productos"] .prodSummaryBox,
+body[data-page="productos"] .prodMiniMetric,
+body[data-page="productos"] .prodMetricBox {
+  background: #252525 !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .prodSkuRankItem *,
+body[data-page="productos"] .prodRankingItem *,
+body[data-page="productos"] .prodRentCard *,
+body[data-page="productos"] .prodMetricBox * {
+  background-color: transparent !important;
+}
+
+/* Slides: tarjetas internas que aún quedaban blancas */
+body[data-page="productos"] .prodCreateProductPanel__card,
+body[data-page="productos"] .prodCreateProductPanel__section,
+body[data-page="productos"] .prodCreateProductPanel__resultCard,
+body[data-page="productos"] .prodCreateProductPanel__resultGrid,
+body[data-page="productos"] .prodCreateProductPanel__autoResult,
+body[data-page="productos"] .prodCreateProductPanel__summary,
+body[data-page="productos"] .prodCreateProductPanel__field,
+body[data-page="productos"] .prodCreateProductPanel__fieldGroup,
+body[data-page="productos"] .prodCreateProductPanel__body,
+body[data-page="productos"] .prodCreateProductPanel__footer,
+body[data-page="productos"] .prodCreateProductSubSlide__content,
+body[data-page="productos"] .prodCreateProductSubSlide__main,
+body[data-page="productos"] .prodSubSlide,
+body[data-page="productos"] .prodSubSlide__body,
+body[data-page="productos"] .prodSubSlide__content {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .prodCreateProductPanel__cardHeader,
+body[data-page="productos"] .prodCreateProductPanel__sectionHead,
+body[data-page="productos"] .prodCreateProductPanel__sectionTitle,
+body[data-page="productos"] .prodCreateProductPanel__sectionSub,
+body[data-page="productos"] .prodCreateProductPanel__number,
+body[data-page="productos"] .prodCreateProductPanel__step {
+  background: transparent !important;
+  color: #f4f4f5 !important;
+}
+
+/* Selectores Shopify */
+body[data-page="productos"] .prodShopifyLink__body,
+body[data-page="productos"] .prodShopifyLink__list,
+body[data-page="productos"] .prodShopifyLink__row,
+body[data-page="productos"] .prodShopifyLink__toolbar,
+body[data-page="productos"] .prodShopifyLink__intro,
+body[data-page="productos"] .prodOfferShopifySelector__body,
+body[data-page="productos"] .prodOfferShopifySelector__list,
+body[data-page="productos"] .prodOfferShopifySelector__row,
+body[data-page="productos"] .prodOfferShopifySelector__toolbar,
+body[data-page="productos"] .prodOfferShopifySelector__intro,
+body[data-page="productos"] .prodOfferShopifySelector__footer {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .prodShopifyLink__row.is-linked,
+body[data-page="productos"] .prodOfferShopifySelector__row.is-linked {
+  background: #252525 !important;
+  opacity: .72 !important;
+}
+
+body[data-page="productos"] .prodShopifyLink__row:hover,
+body[data-page="productos"] .prodOfferShopifySelector__row:hover {
+  background: #343434 !important;
+}
+
+body[data-page="productos"] .prodShopifyLink__linkedBadge,
+body[data-page="productos"] .prodOfferShopifySelector__badge {
+  background: rgba(47,191,122,.16) !important;
+  color: #8ff0bd !important;
+  border-color: rgba(47,191,122,.32) !important;
+}
+
+body[data-page="productos"] .prodShopifyLink__useBtn,
+body[data-page="productos"] .prodOfferShopifySelector__toggle,
+body[data-page="productos"] .prodOfferShopifySelector__primary {
+  background: #2479ff !important;
+  color: #ffffff !important;
+  border-color: #2479ff !important;
+}
+
+/* Evita paneles blancos genéricos dentro del módulo */
+body[data-page="productos"] .prodShell div[style*="background: white"],
+body[data-page="productos"] .prodShell div[style*="background:#fff"],
+body[data-page="productos"] .prodShell div[style*="background: #fff"],
+body[data-page="productos"] .prodShell section[style*="background: white"],
+body[data-page="productos"] .prodShell section[style*="background:#fff"],
+body[data-page="productos"] .prodShell article[style*="background: white"],
+body[data-page="productos"] .prodShell article[style*="background:#fff"] {
+  background: #2f2f2f !important;
+  color: #f4f4f5 !important;
+}
