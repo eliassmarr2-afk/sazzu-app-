@@ -1,0 +1,161 @@
+/* =========================================================
+   PRODUCTOS · Ofertas dark final
+   Corrige blancos residuales y barras/artefactos verdes en ID Variante.
+   Solo CSS. No toca lógica.
+   ========================================================= */
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersShell,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableCard,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableCard__topbar,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFiltersWrap,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableWrap {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFiltersWrap {
+  border-top: 1px solid rgba(255,255,255,.10) !important;
+  border-bottom: 1px solid rgba(255,255,255,.10) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters__item,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters__label {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: rgba(255,255,255,.64) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersSearchInput,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersDateInput,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersSort,
+body[data-page="productos"] .main #prodPanelOfertas input,
+body[data-page="productos"] .main #prodPanelOfertas select {
+  background: #2a2a2a !important;
+  background-color: #2a2a2a !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tr,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable th,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable td {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead tr,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead th {
+  background: #171717 !important;
+  background-color: #171717 !important;
+  color: rgba(255,255,255,.64) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody tr,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody td {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  color: #f5f5f5 !important;
+}
+
+/* El bug verde era el selector amplio [class*="Variant"] aplicado al CONTENEDOR de los badges. */
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantsCell {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantItem {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: max-content !important;
+  min-height: 24px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  border-radius: 5px !important;
+  background: rgba(47,191,122,.18) !important;
+  background-color: rgba(47,191,122,.18) !important;
+  background-image: none !important;
+  border: 1px solid rgba(47,191,122,.34) !important;
+  color: #8ff0bd !important;
+  box-shadow: none !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantItem strong {
+  display: inline !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantEmpty {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: max-content !important;
+  min-height: 24px !important;
+  align-items: center !important;
+  padding: 0 10px !important;
+  border-radius: 5px !important;
+  background: #262626 !important;
+  background-color: #262626 !important;
+  color: rgba(255,255,255,.72) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+  white-space: nowrap !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferTypeBadge {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: max-content !important;
+  min-height: 22px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 8px !important;
+  border-radius: 5px !important;
+  background: #262626 !important;
+  background-color: #262626 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantAttachBtn {
+  display: none !important;
+}
