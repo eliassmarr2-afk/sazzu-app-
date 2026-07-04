@@ -10,14 +10,19 @@
     return clean_(value).toUpperCase();
   }
 
-  function ensureDarkPolish_() {
-    if (document.getElementById('productosDarkPolishCss')) return;
+  function appendCss_(id, href) {
+    if (document.getElementById(id)) return;
 
     const link = document.createElement('link');
-    link.id = 'productosDarkPolishCss';
+    link.id = id;
     link.rel = 'stylesheet';
-    link.href = '../css/productos-dark-polish.css';
+    link.href = href;
     document.head.appendChild(link);
+  }
+
+  function ensureDarkPolish_() {
+    appendCss_('productosDarkPolishCss', '../css/productos-dark-polish.css');
+    appendCss_('productosDarkHardFixCss', '../css/productos-dark-hard-fix.css');
   }
 
   function readStore_() {
