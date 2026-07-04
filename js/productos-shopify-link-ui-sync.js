@@ -25,6 +25,7 @@
     appendCss_('productosDarkHardFixCss', '../css/productos-dark-hard-fix.css');
     appendCss_('productosDarkLayoutFixCss', '../css/productos-dark-layout-fix.css');
     appendCss_('productosDarkContainerCleanupCss', '../css/productos-dark-container-cleanup.css');
+    appendCss_('productosOffersDarkFinalCss', '../css/productos-offers-dark-final.css');
   }
 
   function readStore_() {
