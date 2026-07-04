@@ -6,6 +6,10 @@
     return String(value == null ? '' : value).trim();
   }
 
+  function normSku_(value) {
+    return clean_(value).toUpperCase();
+  }
+
   function readStore_() {
     try {
       return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {};
@@ -40,10 +44,31 @@
     }
   }
 
-  function applyAll_() {
+  function collectExistingSkuSet_() {
+    const set = new Set();
+
+    document.querySelectorAll('#prodResumenTableBody tr').forEach(function (row) {
+      const byData = clean_(row.dataset && (row.dataset.sku || row.dataset.productSku));
+      if (byData) set.add(normSku_(byData));
+
+      const skuCell = row.querySelector('td:nth-child(2)');
+      const byCell = clean_(skuCell && skuCell.textContent);
+      if (byCell && byCell !== '—' && !byCell.toLowerCase().includes('cargando')) {
+        set.add(normSku_(byCell));
+      }
+    });
+
+    document.querySelectorAll('[data-sku], [data-product-sku]').forEach(function (el) {
+      const sku = clean_(el.dataset && (el.dataset.sku || el.dataset.productSku));
+      if (sku) set.add(normSku_(sku));
+    });
+
+    return set;
+  }
+
+  function applyStoredVariantLinks_() {
     const store = readStore_();
     const ids = Object.keys(store);
-    if (!ids.length) return;
 
     ids.forEach(function (variantId) {
       const safeId = String(variantId).replace(/"/g, '\\"');
@@ -52,6 +77,27 @@
         applyToRow_(row, store[variantId] && store[variantId].sku);
       });
     });
+  }
+
+  function applyExistingSkuLinks_() {
+    const existingSkus = collectExistingSkuSet_();
+    if (!existingSkus.size) return;
+
+    document.querySelectorAll('.prodShopifyLink__row').forEach(function (row) {
+      if (row.dataset.shopifyLinked === '1') return;
+
+      const shopifySku = normSku_(row.dataset && row.dataset.shopifySku);
+      if (!shopifySku || shopifySku === 'SKU NO INFORMADO EN SHOPIFY') return;
+
+      if (existingSkus.has(shopifySku)) {
+        applyToRow_(row, shopifySku);
+      }
+    });
+  }
+
+  function applyAll_() {
+    applyStoredVariantLinks_();
+    applyExistingSkuLinks_();
   }
 
   function bind_() {
