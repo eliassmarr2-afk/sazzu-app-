@@ -10,6 +10,16 @@
     return clean_(value).toUpperCase();
   }
 
+  function ensureDarkPolish_() {
+    if (document.getElementById('productosDarkPolishCss')) return;
+
+    const link = document.createElement('link');
+    link.id = 'productosDarkPolishCss';
+    link.rel = 'stylesheet';
+    link.href = '../css/productos-dark-polish.css';
+    document.head.appendChild(link);
+  }
+
   function readStore_() {
     try {
       return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {};
@@ -120,6 +130,7 @@
 
   function init_() {
     if (!document.querySelector('body[data-page="productos"]')) return;
+    ensureDarkPolish_();
     bind_();
   }
 
