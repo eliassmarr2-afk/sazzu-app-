@@ -40,12 +40,22 @@
     };
   }
 
+  function notifyCatalog_(payload) {
+    window.dispatchEvent(new CustomEvent('productos:shopify-sku-linked', {
+      detail: {
+        shopify_variant_id: clean_(payload && payload.shopify_variant_id),
+        sku_operativo: clean_(payload && payload.sku_operativo)
+      }
+    }));
+  }
+
   async function persist_(payload) {
     if (!payload || typeof window.productosShopifySkuLinkUpsert !== 'function') return;
 
     const result = await window.productosShopifySkuLinkUpsert(payload);
     if (result && result.ok === true) {
       window.__PRODUCTOS_CREATE_SKU_SHOPIFY_LINK_DRAFT__ = null;
+      notifyCatalog_(payload);
       console.log('[productos-shopify-link-after-save] vínculo Shopify ↔ SKU guardado OK', result);
       return;
     }
