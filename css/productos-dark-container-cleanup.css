@@ -126,6 +126,118 @@ body[data-page="productos"] .main .prodRentabilidadShell {
   box-shadow: none !important;
 }
 
+/* TAB OFERTAS · cero blanco residual */
+body[data-page="productos"] .main #prodPanelOfertas,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersShell,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableWrap,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableTopbar,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable,
+body[data-page="productos"] .main #prodPanelOfertas table {
+  background: #2b2b2b !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersShell {
+  overflow: hidden !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableWrap,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTableTopbar {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas thead,
+body[data-page="productos"] .main #prodPanelOfertas thead tr,
+body[data-page="productos"] .main #prodPanelOfertas thead th,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead tr,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable thead th {
+  background: #171717 !important;
+  color: rgba(255,255,255,.64) !important;
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas tbody,
+body[data-page="productos"] .main #prodPanelOfertas tbody tr,
+body[data-page="productos"] .main #prodPanelOfertas tbody td,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody tr,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersTable tbody td {
+  background: #2b2b2b !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas tbody tr:hover,
+body[data-page="productos"] .main #prodPanelOfertas tbody tr:hover td {
+  background: #303030 !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas input,
+body[data-page="productos"] .main #prodPanelOfertas select,
+body[data-page="productos"] .main #prodPanelOfertas textarea {
+  background: #2a2a2a !important;
+  color: #f5f5f5 !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas input::placeholder,
+body[data-page="productos"] .main #prodPanelOfertas textarea::placeholder {
+  color: rgba(255,255,255,.42) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantBadge,
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferTypeBadge,
+body[data-page="productos"] .main #prodPanelOfertas .prodBadge,
+body[data-page="productos"] .main #prodPanelOfertas .badge,
+body[data-page="productos"] .main #prodPanelOfertas [class*="Badge"],
+body[data-page="productos"] .main #prodPanelOfertas [class*="badge"],
+body[data-page="productos"] .main #prodPanelOfertas [class*="Pill"],
+body[data-page="productos"] .main #prodPanelOfertas [class*="pill"] {
+  background: #262626 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantBadge,
+body[data-page="productos"] .main #prodPanelOfertas [class*="Variant"] {
+  background: rgba(47,191,122,.18) !important;
+  color: #8ff0bd !important;
+  border-color: rgba(47,191,122,.34) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOfferTypeBadge,
+body[data-page="productos"] .main #prodPanelOfertas [class*="Type"] {
+  background: #262626 !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,.16) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters *,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar * {
+  color: rgba(255,255,255,.70) !important;
+}
+
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters input,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersFilters select,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar input,
+body[data-page="productos"] .main #prodPanelOfertas .prodOffersToolbar select {
+  color: #f5f5f5 !important;
+}
+
 body[data-page="productos"] .main .prodMainBoard::before,
 body[data-page="productos"] .main .prodMainBoard::after,
 body[data-page="productos"] .main .prodPanelTab::before,
