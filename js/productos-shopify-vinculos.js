@@ -71,6 +71,8 @@
         'data-shopify-sku="' + esc_(sku) + '" ' +
         'data-shopify-product-id="' + esc_(productId) + '" ' +
         'data-shopify-variant-id="' + esc_(variantId) + '" ' +
+        'data-shopify-price="' + esc_(variant.price) + '" ' +
+        'data-shopify-status="' + esc_(variant.status || '') + '" ' +
         'data-shopify-linked="' + (linked ? '1' : '0') + '">' +
         '<div class="prodShopifyLink__main">' +
           '<div class="prodShopifyLink__name">' + esc_(title) + '</div>' +
@@ -139,12 +141,23 @@
     });
   }
 
-  function setProductFormValue_(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return;
+  function resolveProductFormEl_(candidates) {
+    for (const id of candidates) {
+      const el = document.getElementById(id);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function setProductFormValue_(candidateIds, value) {
+    const ids = Array.isArray(candidateIds) ? candidateIds : [candidateIds];
+    const el = resolveProductFormEl_(ids);
+    if (!el) return false;
+
     el.value = value == null ? '' : value;
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
+    return true;
   }
 
   function useVariant_(row) {
@@ -154,16 +167,37 @@
     const title = clean_(row.dataset.shopifyTitle || row.dataset.shopifyProductTitle);
     const safeSku = sku && sku !== 'SKU no informado en Shopify' ? sku : '';
 
-    setProductFormValue_('prodCreateProductSku', safeSku);
-    setProductFormValue_('prodCreateProductName', title);
+    const skuOk = setProductFormValue_([
+      'prodSkuCreateSku',
+      'prodCreateProductSku',
+      'prodSkuInput',
+      'sku'
+    ], safeSku);
+
+    const nameOk = setProductFormValue_([
+      'prodSkuCreateNombre',
+      'prodCreateProductName',
+      'prodCreateProductNombre',
+      'nombre_producto'
+    ], title);
 
     window.__PRODUCTOS_CREATE_SKU_SHOPIFY_LINK_DRAFT__ = {
       product_id: clean_(row.dataset.shopifyProductId),
       variant_id: clean_(row.dataset.shopifyVariantId),
       sku_shopify: safeSku,
       title_shopify: title,
+      price_shopify: clean_(row.dataset.shopifyPrice),
+      status_shopify: clean_(row.dataset.shopifyStatus),
       selected_at: new Date().toISOString()
     };
+
+    if (!skuOk || !nameOk) {
+      console.warn('[productos-shopify-vinculos] No se pudieron completar todos los campos del formulario SKU.', {
+        skuOk,
+        nameOk,
+        draft: window.__PRODUCTOS_CREATE_SKU_SHOPIFY_LINK_DRAFT__
+      });
+    }
 
     const backBtn = document.getElementById('prodCreateProductSubSlideBackBtn');
     if (backBtn) backBtn.click();
