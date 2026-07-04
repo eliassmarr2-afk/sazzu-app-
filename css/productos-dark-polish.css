@@ -1,0 +1,429 @@
+/* =========================================================
+   PRODUCTOS · Dark polish global
+   Capa puramente visual. No toca lógica, IDs ni estructura.
+   ========================================================= */
+
+body[data-page="productos"] {
+  --pd-bg: #151515;
+  --pd-bg-deep: #101010;
+  --pd-surface: #2f2f2f;
+  --pd-surface-2: #262626;
+  --pd-surface-3: #1d1d1d;
+  --pd-line: rgba(255, 255, 255, .12);
+  --pd-line-soft: rgba(255, 255, 255, .08);
+  --pd-text: #f4f4f5;
+  --pd-muted: rgba(244, 244, 245, .66);
+  --pd-faint: rgba(244, 244, 245, .42);
+  --pd-blue: #2479ff;
+  --pd-green: #2fbf7a;
+  --pd-yellow: #d99a27;
+  --pd-purple: #c9a7ff;
+  --pd-danger: #ef4444;
+  background: var(--pd-bg) !important;
+  color: var(--pd-text) !important;
+}
+
+body[data-page="productos"] .appShell,
+body[data-page="productos"] .bodyGrid,
+body[data-page="productos"] .main,
+body[data-page="productos"] .prodShell {
+  background: radial-gradient(circle at top left, rgba(36, 121, 255, .08), transparent 34%), var(--pd-bg) !important;
+  color: var(--pd-text) !important;
+}
+
+/* Sidebar del panel */
+body[data-page="productos"] .sidebar,
+body[data-page="productos"] aside.sidebar {
+  background: linear-gradient(180deg, #181818 0%, #121212 100%) !important;
+  border-right: 1px solid var(--pd-line-soft) !important;
+  box-shadow: 12px 0 32px rgba(0, 0, 0, .18) !important;
+}
+
+body[data-page="productos"] .sidebar *,
+body[data-page="productos"] aside.sidebar * {
+  color: var(--pd-muted);
+}
+
+body[data-page="productos"] .sidebar .is-active,
+body[data-page="productos"] .sidebar [aria-current="page"],
+body[data-page="productos"] aside.sidebar .is-active,
+body[data-page="productos"] aside.sidebar [aria-current="page"] {
+  color: #ffffff !important;
+  background: rgba(36, 121, 255, .18) !important;
+}
+
+/* Header, acciones y tabs */
+body[data-page="productos"] .prodHero,
+body[data-page="productos"] .prodTabsSection,
+body[data-page="productos"] .prodTabsBar {
+  background: transparent !important;
+  color: var(--pd-text) !important;
+}
+
+body[data-page="productos"] .prodHero__eyebrow,
+body[data-page="productos"] .prodSectionHead__eyebrow,
+body[data-page="productos"] .prodCreateProductPanel__eyebrow,
+body[data-page="productos"] .prodOfferDrawerEyebrow,
+body[data-page="productos"] [class*="eyebrow"] {
+  color: var(--pd-faint) !important;
+}
+
+body[data-page="productos"] .prodHero__title,
+body[data-page="productos"] .prodSectionHead__title,
+body[data-page="productos"] .prodCreateProductPanel__title,
+body[data-page="productos"] .prodOfferDrawerTitle,
+body[data-page="productos"] h1,
+body[data-page="productos"] h2,
+body[data-page="productos"] h3,
+body[data-page="productos"] h4 {
+  color: var(--pd-text) !important;
+}
+
+body[data-page="productos"] .prodHero__sub,
+body[data-page="productos"] .prodSectionHead__sub,
+body[data-page="productos"] p,
+body[data-page="productos"] small,
+body[data-page="productos"] .prodTableTopbar__note {
+  color: var(--pd-muted) !important;
+}
+
+body[data-page="productos"] .prodTabs {
+  background: var(--pd-surface-2) !important;
+  border: 1px solid var(--pd-line) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .22) !important;
+}
+
+body[data-page="productos"] .prodTab {
+  color: var(--pd-muted) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+body[data-page="productos"] .prodTab:hover {
+  background: rgba(255, 255, 255, .05) !important;
+  color: var(--pd-text) !important;
+}
+
+body[data-page="productos"] .prodTab.is-active,
+body[data-page="productos"] .prodTab[aria-selected="true"] {
+  background: var(--pd-blue) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(36, 121, 255, .28) !important;
+}
+
+body[data-page="productos"] .prodPrimaryAction,
+body[data-page="productos"] .prodPrimaryAction--tabsCta,
+body[data-page="productos"] button[id*="Btn"] {
+  border-radius: 6px;
+}
+
+/* Superficies generales */
+body[data-page="productos"] .prodKpiCard,
+body[data-page="productos"] .prodBoardCard,
+body[data-page="productos"] .prodMainBoard,
+body[data-page="productos"] .prodTableShell,
+body[data-page="productos"] .prodTableWrap,
+body[data-page="productos"] .prodSkuSummaryMini,
+body[data-page="productos"] .prodSkuDonutCard,
+body[data-page="productos"] .prodOfferTableCard,
+body[data-page="productos"] .prodPanelCard,
+body[data-page="productos"] .prodComboCard,
+body[data-page="productos"] .prodBundleCard,
+body[data-page="productos"] .prodCommercialOfferCard,
+body[data-page="productos"] [class*="Card"] {
+  background: var(--pd-surface) !important;
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .22) !important;
+}
+
+body[data-page="productos"] .prodKpiCard__label,
+body[data-page="productos"] .prodKpiCard__ticker21,
+body[data-page="productos"] .prodKpiCard__hint21,
+body[data-page="productos"] .prodKpiCard__delta21,
+body[data-page="productos"] .prodKpiCard__deltaPct21,
+body[data-page="productos"] [class*="__label"],
+body[data-page="productos"] [class*="__hint"],
+body[data-page="productos"] [class*="__sub"] {
+  color: var(--pd-muted) !important;
+}
+
+body[data-page="productos"] .prodKpiCard__value,
+body[data-page="productos"] .prodKpiCard__value21Wrap,
+body[data-page="productos"] [class*="__value"] {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .prodKpiCard__sparkline21 {
+  opacity: .35 !important;
+  filter: saturate(1.2) brightness(1.15);
+}
+
+/* Formularios */
+body[data-page="productos"] input,
+body[data-page="productos"] select,
+body[data-page="productos"] textarea,
+body[data-page="productos"] .u-input,
+body[data-page="productos"] .prodSearchInput,
+body[data-page="productos"] .prodTableSearchInput,
+body[data-page="productos"] .prodTypeFilter {
+  background: var(--pd-surface-2) !important;
+  color: var(--pd-text) !important;
+  border: 1px solid var(--pd-line) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] input::placeholder,
+body[data-page="productos"] textarea::placeholder {
+  color: rgba(244, 244, 245, .42) !important;
+}
+
+body[data-page="productos"] input:focus,
+body[data-page="productos"] select:focus,
+body[data-page="productos"] textarea:focus,
+body[data-page="productos"] .u-input:focus {
+  border-color: rgba(36, 121, 255, .75) !important;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .16) !important;
+  outline: none !important;
+}
+
+body[data-page="productos"] label,
+body[data-page="productos"] .formLabel,
+body[data-page="productos"] [class*="Label"],
+body[data-page="productos"] [class*="label"] {
+  color: var(--pd-muted) !important;
+}
+
+/* Tablas */
+body[data-page="productos"] table,
+body[data-page="productos"] .prodTable,
+body[data-page="productos"] .prodOffersTable,
+body[data-page="productos"] .prodCombosTable {
+  background: var(--pd-surface) !important;
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line) !important;
+}
+
+body[data-page="productos"] thead,
+body[data-page="productos"] .prodTable thead,
+body[data-page="productos"] .prodOffersTable thead {
+  background: var(--pd-surface-3) !important;
+}
+
+body[data-page="productos"] th,
+body[data-page="productos"] td,
+body[data-page="productos"] .prodTable th,
+body[data-page="productos"] .prodTable td {
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line-soft) !important;
+}
+
+body[data-page="productos"] th,
+body[data-page="productos"] .prodTable th {
+  color: rgba(244, 244, 245, .58) !important;
+  background: var(--pd-surface-3) !important;
+}
+
+body[data-page="productos"] tbody tr,
+body[data-page="productos"] .prodTable tbody tr {
+  background: var(--pd-surface) !important;
+}
+
+body[data-page="productos"] tbody tr:hover,
+body[data-page="productos"] .prodTable tbody tr:hover {
+  background: #343434 !important;
+}
+
+body[data-page="productos"] .prodTableEmpty,
+body[data-page="productos"] .emptyState,
+body[data-page="productos"] [class*="Empty"] {
+  color: var(--pd-muted) !important;
+  background: var(--pd-surface-2) !important;
+}
+
+/* Badges y pills */
+body[data-page="productos"] .prodMiniPill,
+body[data-page="productos"] .prodMiniPill--soft,
+body[data-page="productos"] .prodMetricToggle,
+body[data-page="productos"] .prodBadge,
+body[data-page="productos"] .badge,
+body[data-page="productos"] [class*="Badge"],
+body[data-page="productos"] [class*="badge"],
+body[data-page="productos"] [class*="Pill"],
+body[data-page="productos"] [class*="pill"] {
+  background: var(--pd-surface-2) !important;
+  color: var(--pd-text) !important;
+  border: 1px solid var(--pd-line) !important;
+}
+
+body[data-page="productos"] .prodMetricToggle.is-active,
+body[data-page="productos"] .is-active[class*="Toggle"],
+body[data-page="productos"] .is-active[class*="Pill"] {
+  background: rgba(36, 121, 255, .22) !important;
+  color: #ffffff !important;
+  border-color: rgba(36, 121, 255, .42) !important;
+}
+
+body[data-page="productos"] [class*="green"],
+body[data-page="productos"] [class*="Green"] {
+  border-color: rgba(47, 191, 122, .35) !important;
+}
+
+/* Drawers, slides y subslides */
+body[data-page="productos"] .prodOfferDrawer,
+body[data-page="productos"] .prodOfferDrawerPanel,
+body[data-page="productos"] .prodOfferDetailDrawer,
+body[data-page="productos"] .prodCreateProductPanel,
+body[data-page="productos"] .prodCreateProductPanel__dialog,
+body[data-page="productos"] .prodCreateProductPanel__mainShell,
+body[data-page="productos"] .prodCreateProductSubSlide,
+body[data-page="productos"] .prodCreateProductSubSlide__body,
+body[data-page="productos"] .prodOfferShopifySelector,
+body[data-page="productos"] [class*="Drawer"],
+body[data-page="productos"] [class*="drawer"],
+body[data-page="productos"] [class*="Slide"],
+body[data-page="productos"] [class*="slide"] {
+  background: #222222 !important;
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line) !important;
+}
+
+body[data-page="productos"] .prodCreateProductPanel__header,
+body[data-page="productos"] .prodCreateProductSubSlide__header,
+body[data-page="productos"] .prodOfferShopifySelector__header,
+body[data-page="productos"] [class*="DrawerHeader"],
+body[data-page="productos"] [class*="__header"] {
+  background: #1c1c1c !important;
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line) !important;
+}
+
+body[data-page="productos"] .prodCreateProductPanel__card,
+body[data-page="productos"] .prodCreateProductPanel__section,
+body[data-page="productos"] .prodOfferDrawerSection,
+body[data-page="productos"] .prodOfferDrawerCard,
+body[data-page="productos"] .prodOfferShopifySelector__intro,
+body[data-page="productos"] .prodOfferShopifySelector__toolbar,
+body[data-page="productos"] .prodOfferShopifySelector__footer,
+body[data-page="productos"] .prodOfferShopifySelector__row,
+body[data-page="productos"] .prodShopifyLink,
+body[data-page="productos"] .prodShopifyLink__intro,
+body[data-page="productos"] .prodShopifyLink__toolbar,
+body[data-page="productos"] .prodShopifyLink__row,
+body[data-page="productos"] .prodShopifyLink__list {
+  background: var(--pd-surface) !important;
+  color: var(--pd-text) !important;
+  border-color: var(--pd-line) !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__row:hover,
+body[data-page="productos"] .prodShopifyLink__row:not(.is-linked):hover {
+  background: #343434 !important;
+  box-shadow: inset 3px 0 0 var(--pd-blue) !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__row.is-selected {
+  background: rgba(36, 121, 255, .16) !important;
+  box-shadow: inset 3px 0 0 var(--pd-blue) !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__row.is-linked,
+body[data-page="productos"] .prodShopifyLink__row.is-linked {
+  background: #252525 !important;
+  opacity: .66 !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__name,
+body[data-page="productos"] .prodShopifyLink__name,
+body[data-page="productos"] .prodOfferShopifySelector__price strong,
+body[data-page="productos"] .prodShopifyLink__price strong {
+  color: var(--pd-text) !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__sku,
+body[data-page="productos"] .prodOfferShopifySelector__meta,
+body[data-page="productos"] .prodOfferShopifySelector__price span,
+body[data-page="productos"] .prodShopifyLink__sku,
+body[data-page="productos"] .prodShopifyLink__meta,
+body[data-page="productos"] .prodShopifyLink__price span {
+  color: var(--pd-muted) !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelector__back,
+body[data-page="productos"] .prodOfferShopifySelector__close,
+body[data-page="productos"] .prodCreateProductPanel__close,
+body[data-page="productos"] .prodCreateProductSubSlide__back,
+body[data-page="productos"] .prodCreateProductSubSlide__close,
+body[data-page="productos"] [aria-label*="Cerrar"],
+body[data-page="productos"] [aria-label*="Volver"] {
+  background: #303030 !important;
+  color: #ffffff !important;
+  border: 1px solid var(--pd-line) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .prodCreateProductPanel__info,
+body[data-page="productos"] .prodCreateProductPanel__notice,
+body[data-page="productos"] .prodOfferShopifySelector__status,
+body[data-page="productos"] .prodShopifyLink__status {
+  background: #2a2f3a !important;
+  color: var(--pd-muted) !important;
+  border-color: rgba(36, 121, 255, .22) !important;
+}
+
+/* Overlays */
+body[data-page="productos"] .prodCreateProductPanel__overlay,
+body[data-page="productos"] .prodOfferDrawerOverlay,
+body[data-page="productos"] .prodOfferShopifySelectorOverlay,
+body[data-page="productos"] [class*="Overlay"],
+body[data-page="productos"] [class*="overlay"] {
+  background: rgba(0, 0, 0, .58) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* Botones semánticos */
+body[data-page="productos"] .prodOfferShopifySelectBtn,
+body[data-page="productos"] .prodCreateProductPanel__shopifyLinkBtn,
+body[data-page="productos"] #prodCreateProductShopifyLinkBtn {
+  background: #14b8a6 !important;
+  color: #ffffff !important;
+  border-color: #14b8a6 !important;
+}
+
+body[data-page="productos"] .prodOfferShopifySelectBtn:hover,
+body[data-page="productos"] #prodCreateProductShopifyLinkBtn:hover {
+  background: #0f9f90 !important;
+}
+
+body[data-page="productos"] button,
+body[data-page="productos"] .prodOfferShopifySelector__primary,
+body[data-page="productos"] .prodOfferShopifySelector__toggle,
+body[data-page="productos"] .prodShopifyLink__useBtn {
+  font-weight: 850;
+}
+
+body[data-page="productos"] button:disabled,
+body[data-page="productos"] .is-disabled {
+  opacity: .52 !important;
+  cursor: not-allowed !important;
+}
+
+/* Scrollbars suaves */
+body[data-page="productos"] *::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+body[data-page="productos"] *::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+body[data-page="productos"] *::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 999px;
+  border: 2px solid #1a1a1a;
+}
+
+body[data-page="productos"] *::-webkit-scrollbar-thumb:hover {
+  background: #6b6b6b;
+}
