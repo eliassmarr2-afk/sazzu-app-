@@ -1,7 +1,7 @@
 /* =========================================================
    PRODUCTOS · Dark container cleanup
-   Objetivo: eliminar el contenedor fantasma que unía KPIs + tabla.
-   Solo quedan contenedores visibles: 4 KPI cards + módulo de tabla.
+   Objetivo: eliminar contenedores fantasmas.
+   Solo quedan contenedores visibles: 4 KPI cards + 1 módulo de tabla.
    Solo CSS. No toca lógica.
    ========================================================= */
 
@@ -18,7 +18,9 @@ body[data-page="productos"] .main #prodPanelResumen,
 body[data-page="productos"] .main #prodPanelSkus,
 body[data-page="productos"] .main #prodPanelOfertas,
 body[data-page="productos"] .main #prodPanelRentabilidad,
-body[data-page="productos"] .main #prodPanelConjuntos {
+body[data-page="productos"] .main #prodPanelConjuntos,
+body[data-page="productos"] .main .prodMainBoard,
+body[data-page="productos"] .main .prodMainBoard__stack {
   background: transparent !important;
   background-image: none !important;
   border: 0 !important;
@@ -29,7 +31,9 @@ body[data-page="productos"] .main #prodPanelConjuntos {
 
 body[data-page="productos"] .main .prodPanelTab,
 body[data-page="productos"] .main .prodPanelTab.is-active,
-body[data-page="productos"] .main #prodPanelResumen {
+body[data-page="productos"] .main #prodPanelResumen,
+body[data-page="productos"] .main .prodMainBoard,
+body[data-page="productos"] .main .prodMainBoard__stack {
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -52,8 +56,67 @@ body[data-page="productos"] .main .prodKpiCard {
   box-shadow: none !important;
 }
 
-body[data-page="productos"] .main .prodMainBoard,
+/* ÚNICO contenedor visible del módulo de tabla */
+body[data-page="productos"] .main .prodBoardCard--table {
+  background: #2b2b2b !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body[data-page="productos"] .main .prodBoardCard--table .prodBoardCard__inner {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Sin subcontenedor de tabla: toolbar + filas apoyan sobre el contenedor principal */
 body[data-page="productos"] .main .prodTableShell,
+body[data-page="productos"] .main .prodTableTopbar,
+body[data-page="productos"] .main .prodTableWrap {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main .prodTableShell {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body[data-page="productos"] .main .prodTableTopbar {
+  padding: 16px 16px 14px !important;
+  margin: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.10) !important;
+}
+
+body[data-page="productos"] .main .prodTableWrap {
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: auto !important;
+}
+
+body[data-page="productos"] .main .prodTable {
+  width: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+body[data-page="productos"] .main .prodTable thead th:first-child,
+body[data-page="productos"] .main .prodTable tbody td:first-child {
+  padding-left: 16px !important;
+}
+
+body[data-page="productos"] .main .prodTable thead th:last-child,
+body[data-page="productos"] .main .prodTable tbody td:last-child {
+  padding-right: 16px !important;
+}
+
 body[data-page="productos"] .main .prodOffersShell,
 body[data-page="productos"] .main .prodCombosShell,
 body[data-page="productos"] .main .prodRentabilidadShell {
@@ -70,16 +133,18 @@ body[data-page="productos"] .main .prodPanelTab::after,
 body[data-page="productos"] .main #prodPanelResumen::before,
 body[data-page="productos"] .main #prodPanelResumen::after,
 body[data-page="productos"] .main .prodKpiGrid::before,
-body[data-page="productos"] .main .prodKpiGrid::after {
+body[data-page="productos"] .main .prodKpiGrid::after,
+body[data-page="productos"] .main .prodTableShell::before,
+body[data-page="productos"] .main .prodTableShell::after,
+body[data-page="productos"] .main .prodTableWrap::before,
+body[data-page="productos"] .main .prodTableWrap::after {
   display: none !important;
   content: none !important;
   border: 0 !important;
   box-shadow: none !important;
 }
 
-body[data-page="productos"] .main .prodSectionHead,
-body[data-page="productos"] .main .prodTableTopbar,
-body[data-page="productos"] .main .prodTableWrap {
+body[data-page="productos"] .main .prodSectionHead {
   background: transparent !important;
   background-image: none !important;
   box-shadow: none !important;
