@@ -23,6 +23,7 @@
   function ensureDarkPolish_() {
     appendCss_('productosDarkPolishCss', '../css/productos-dark-polish.css');
     appendCss_('productosDarkHardFixCss', '../css/productos-dark-hard-fix.css');
+    appendCss_('productosDarkLayoutFixCss', '../css/productos-dark-layout-fix.css');
   }
 
   function readStore_() {
