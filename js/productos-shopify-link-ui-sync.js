@@ -19,6 +19,15 @@
     document.head.appendChild(link);
   }
 
+  function appendScript_(id, src) {
+    if (document.getElementById(id)) return;
+    const script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
   function ensureDarkPolish_() {
     appendCss_('productosDarkPolishCss', '../css/productos-dark-polish.css');
     appendCss_('productosDarkHardFixCss', '../css/productos-dark-hard-fix.css');
@@ -26,6 +35,10 @@
     appendCss_('productosDarkContainerCleanupCss', '../css/productos-dark-container-cleanup.css');
     appendCss_('productosOffersDarkFinalCss', '../css/productos-offers-dark-final.css');
     appendCss_('productosOfferShopifySelectorDarkFixCss', '../css/productos-offer-shopify-selector-dark-fix.css');
+
+    /* TAB Resumen · tabla limpia + detalle lateral seguro */
+    appendCss_('productosResumenRowDetailCss', '../css/productos-resumen-row-detail.css');
+    appendScript_('productosResumenRowDetailJs', '../js/productos-resumen-row-detail.js');
   }
 
   function readStore_() {
@@ -66,7 +79,8 @@
     document.querySelectorAll('#prodResumenTableBody tr').forEach(function (row) {
       const byData = clean_(row.dataset && (row.dataset.sku || row.dataset.productSku));
       if (byData) set.add(normSku_(byData));
-      const skuCell = row.querySelector('td:nth-child(2)');
+
+      const skuCell = row.querySelector('td:nth-child(1)') || row.querySelector('td:nth-child(2)');
       const byCell = clean_(skuCell && skuCell.textContent);
       if (byCell && byCell !== '—' && !byCell.toLowerCase().includes('cargando')) {
         set.add(normSku_(byCell));
