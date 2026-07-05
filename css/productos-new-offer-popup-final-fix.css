@@ -62,13 +62,29 @@ body[data-page="productos"] .main .offerWizardSelect__trigger * {
 body[data-page="productos"] .main .offerWizardPreview,
 body[data-page="productos"] .main .offerWizardPreview__card,
 body[data-page="productos"] .main .offerWizardPreview__selected,
-body[data-page="productos"] .main .offerWizardPreview__selectedHeader,
 body[data-page="productos"] .main .offerWizardPreview__selectedBody,
 body[data-page="productos"] .main .offerWizardPreview__grid,
 body[data-page="productos"] .main .offerWizardPreview__composition {
   background: #2b2b2b !important;
   background-image: none !important;
   box-shadow: none !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__header,
+body[data-page="productos"] .main .offerWizardPreview__header > div,
+body[data-page="productos"] .main .offerWizardPreview__header > div > div,
+body[data-page="productos"] .main .offerWizardPreview__header *:not(.offerWizardPreview__type) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__header {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 0 14px 0 !important;
 }
 
 body[data-page="productos"] .main .offerWizardPreview__selected,
@@ -79,6 +95,8 @@ body[data-page="productos"] .main .offerWizardPreview__selectedBody {
 
 body[data-page="productos"] .main .offerWizardPreview__selectedHeader::before,
 body[data-page="productos"] .main .offerWizardPreview__selectedHeader::after,
+body[data-page="productos"] .main .offerWizardPreview__header::before,
+body[data-page="productos"] .main .offerWizardPreview__header::after,
 body[data-page="productos"] .main .offerWizardPreview__card::before,
 body[data-page="productos"] .main .offerWizardPreview__card::after {
   display: none !important;
