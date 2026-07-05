@@ -1,0 +1,270 @@
+/* =========================================================
+   PRODUCTOS · Slide + Nuevo producto · Dark final
+   Solo visual. No toca lógica, IDs ni eventos.
+   ========================================================= */
+
+body[data-page="productos"] #prodCreateProductPanel,
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__dialog,
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__mainShell,
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__body,
+body[data-page="productos"] #prodCreateProductPanel #prodCreateProductContent,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder {
+  background: #202020 !important;
+  background-color: #202020 !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel {
+  border-left: 1px solid rgba(255,255,255,.16) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__header {
+  background: #202020 !important;
+  background-color: #202020 !important;
+  background-image: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__eyebrow {
+  color: rgba(255,255,255,.58) !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__title {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__close {
+  width: 34px !important;
+  height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #242424 !important;
+  background-color: #242424 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__volumeBtn {
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+/* Bloque informativo superior */
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoCard {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoIcon {
+  background: #353535 !important;
+  background-color: #353535 !important;
+  color: #2479ff !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoTitle {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoDesc {
+  color: rgba(255,255,255,.68) !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoText,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoText * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Tarjetas: un solo tono liso, sin sub-contenedores en headers */
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard--results {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  color: #f5f5f5 !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header *,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header::before,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header::after,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading::before,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading::after,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard::before,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__icon {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__eyebrow {
+  color: rgba(255,255,255,.56) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__title {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__desc {
+  color: rgba(255,255,255,.70) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuFields {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__label {
+  color: #f3f3f3 !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__hint {
+  color: rgba(255,255,255,.62) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__input,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__select,
+body[data-page="productos"] #prodCreateProductPanel input,
+body[data-page="productos"] #prodCreateProductPanel select,
+body[data-page="productos"] #prodCreateProductPanel textarea {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__input::placeholder,
+body[data-page="productos"] #prodCreateProductPanel input::placeholder,
+body[data-page="productos"] #prodCreateProductPanel textarea::placeholder {
+  color: rgba(255,255,255,.38) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__input:focus,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuField__select:focus,
+body[data-page="productos"] #prodCreateProductPanel input:focus,
+body[data-page="productos"] #prodCreateProductPanel select:focus,
+body[data-page="productos"] #prodCreateProductPanel textarea:focus {
+  border-color: rgba(36,121,255,.85) !important;
+  box-shadow: 0 0 0 3px rgba(36,121,255,.16) !important;
+  outline: none !important;
+}
+
+/* Resultados automáticos: fuera blanco */
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResults {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult--wide {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult *,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult--wide * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__label {
+  color: rgba(255,255,255,.58) !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__value,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__value--text {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__hint {
+  color: rgba(255,255,255,.50) !important;
+}
+
+/* Footer */
+body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter,
+body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__actions {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__secondaryBtn {
+  background: #e9edf3 !important;
+  background-color: #e9edf3 !important;
+  color: #334155 !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__primaryBtn {
+  background: #2479ff !important;
+  background-color: #2479ff !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodCreateProductPanel * {
+  text-shadow: none !important;
+}
