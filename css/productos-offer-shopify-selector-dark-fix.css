@@ -1,0 +1,112 @@
+/* =========================================================
+   PRODUCTOS · Selector Shopify de Ofertas · Dark text fix
+   Solo visual. No toca lógica ni eventos.
+   ========================================================= */
+
+body[data-page="productos"] #prodOfferShopifySelector,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__header,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__body,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__intro,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__toolbar,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__list,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__footer {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__title,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__headline,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__name,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__price strong {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__eyebrow,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__desc,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__sku,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__meta,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__price span,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__count,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__status {
+  color: rgba(255,255,255,.68) !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__eyebrow {
+  color: rgba(255,255,255,.76) !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__row {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__row:not(.is-linked):hover {
+  background: #303030 !important;
+  background-color: #303030 !important;
+  box-shadow: inset 3px 0 0 #2479ff !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__row.is-selected {
+  background: #283244 !important;
+  background-color: #283244 !important;
+  box-shadow: inset 3px 0 0 #2479ff !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__row.is-linked {
+  background: #262626 !important;
+  background-color: #262626 !important;
+  opacity: .72 !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__input {
+  background: #262626 !important;
+  background-color: #262626 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__input::placeholder {
+  color: rgba(255,255,255,.44) !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__back,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__close {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__toggle,
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__primary {
+  color: #ffffff !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector__badge {
+  background: rgba(47,191,122,.16) !important;
+  background-color: rgba(47,191,122,.16) !important;
+  color: #8ff0bd !important;
+  border: 1px solid rgba(47,191,122,.34) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
