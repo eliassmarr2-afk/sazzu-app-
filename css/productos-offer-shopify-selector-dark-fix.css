@@ -1,6 +1,9 @@
+@import url("./productos-conjuntos-dark-final.css");
+@import url("./productos-create-product-dark-final.css");
+
 /* =========================================================
    PRODUCTOS · Dark fixes cargados por productos-shopify-link-ui-sync.js
-   Alcance: selector variantes oferta + conjuntos + nuevo producto.
+   Alcance: selector variantes oferta + conjuntos + nuevo producto + popup nueva oferta.
    Solo visual. No toca lógica.
    ========================================================= */
 
@@ -95,284 +98,294 @@ body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector_
   box-shadow:none !important;
 }
 
-/* ---------- Tab Conjuntos de productos ---------- */
-body[data-page="productos"] .main #prodPanelConjuntos,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsShell,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard__topbar,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableWrap,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tbody,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tr,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable td {
-  background:#2b2b2b !important;
-  background-image:none !important;
-  color:#f5f5f5 !important;
-  border-color:rgba(255,255,255,.12) !important;
-  box-shadow:none !important;
+/* ---------- Popup Nueva oferta ---------- */
+body[data-page="productos"] .main .prodOfferModal {
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px !important;
+  overflow:visible !important;
 }
 
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard {
+body[data-page="productos"] .main .prodOfferModalOverlay {
+  background:rgba(0,0,0,.70) !important;
+  backdrop-filter:blur(5px) !important;
+}
+
+body[data-page="productos"] .main .prodOfferModal__dialog {
+  width:min(1180px, calc(100vw - 48px)) !important;
+  max-width:1180px !important;
+  height:min(86vh, 860px) !important;
+  max-height:calc(100vh - 48px) !important;
+  background:#202020 !important;
+  background-image:none !important;
   border:1px solid rgba(255,255,255,.16) !important;
-  border-radius:6px !important;
+  border-radius:8px !important;
+  box-shadow:0 28px 80px rgba(0,0,0,.42) !important;
   overflow:hidden !important;
 }
 
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead tr,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead th {
-  background:#171717 !important;
-  color:rgba(255,255,255,.66) !important;
-  border-color:rgba(255,255,255,.10) !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__id,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__money {
-  color:#fff !important;
-  background:transparent !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__composition,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__scenario {
-  color:rgba(255,255,255,.72) !important;
-  background:transparent !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--bundle,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--cantidad {
-  display:inline-flex !important;
-  align-items:center !important;
-  min-height:24px !important;
-  padding:0 10px !important;
-  border-radius:5px !important;
-  background-image:none !important;
-  box-shadow:none !important;
-  border:1px solid rgba(255,255,255,.16) !important;
-  font-size:12px !important;
-  font-weight:850 !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--bundle {
-  background:rgba(150,107,255,.18) !important;
-  color:#d8c7ff !important;
-  border-color:rgba(150,107,255,.36) !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--cantidad {
-  background:rgba(245,158,11,.16) !important;
-  color:#ffd48a !important;
-  border-color:rgba(245,158,11,.34) !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--detail,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--detail td,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__grid,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__item,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__block {
-  background:#242424 !important;
-  background-image:none !important;
-  color:#f5f5f5 !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__label {
-  color:rgba(255,255,255,.62) !important;
-  background:transparent !important;
-}
-
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__value,
-body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__value--composition {
-  color:#fff !important;
-  background:transparent !important;
-}
-
-/* ---------- Slide + Nuevo producto ---------- */
-body[data-page="productos"] #prodCreateProductPanel,
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__dialog,
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__mainShell,
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__body,
-body[data-page="productos"] #prodCreateProductPanel #prodCreateProductContent,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder {
-  background:#202020 !important;
-  background-color:#202020 !important;
-  background-image:none !important;
-  color:#f5f5f5 !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel {
-  border-left:1px solid rgba(255,255,255,.16) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__header {
+body[data-page="productos"] .main .prodOfferModal__content {
+  padding:0 !important;
   background:#202020 !important;
   background-image:none !important;
-  border-bottom:1px solid rgba(255,255,255,.12) !important;
-  box-shadow:none !important;
+  color:#f5f5f5 !important;
+  overflow-y:auto !important;
+  overflow-x:visible !important;
 }
 
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__eyebrow {
-  color:rgba(255,255,255,.58) !important;
-  background:transparent !important;
+body[data-page="productos"] .main .prodOfferModal__content::-webkit-scrollbar {
+  width:8px !important;
 }
 
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__title {
-  color:#fff !important;
-  background:transparent !important;
+body[data-page="productos"] .main .prodOfferModal__content::-webkit-scrollbar-thumb {
+  background:rgba(255,255,255,.24) !important;
+  border-radius:999px !important;
 }
 
-body[data-page="productos"] #prodCreateProductPanel .prodCreateProductPanel__close {
-  width:34px !important;
-  height:34px !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  background:#242424 !important;
-  color:#fff !important;
-  border:1px solid rgba(255,255,255,.20) !important;
+body[data-page="productos"] .main .prodOfferModal__close {
+  position:absolute !important;
+  top:14px !important;
+  right:14px !important;
+  z-index:20 !important;
+  width:38px !important;
+  height:38px !important;
   border-radius:5px !important;
+  background:rgba(0,0,0,.28) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.30) !important;
   box-shadow:none !important;
 }
 
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoCard,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard--results {
-  background:#2b2b2b !important;
-  background-color:#2b2b2b !important;
+body[data-page="productos"] .main .offerWizard,
+body[data-page="productos"] .main .offerWizard * {
+  box-sizing:border-box !important;
+}
+
+body[data-page="productos"] .main .offerWizard {
+  min-height:100% !important;
+  gap:18px !important;
+  padding:0 20px 20px !important;
+  background:#202020 !important;
   background-image:none !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  border-radius:6px !important;
-  box-shadow:none !important;
   color:#f5f5f5 !important;
 }
 
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoText,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoText *,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header *,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading * {
-  background:transparent !important;
-  background-color:transparent !important;
-  background-image:none !important;
-  border-color:transparent !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header::before,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__header::after,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading::before,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__heading::after,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard::before,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard::after {
-  content:none !important;
-  display:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoIcon,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__icon {
-  background:#242424 !important;
-  color:#fff !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  border-radius:5px !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoTitle,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__title {
-  color:#fff !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuBuilder__infoDesc,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__desc {
-  color:rgba(255,255,255,.70) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuCard__eyebrow {
-  color:rgba(255,255,255,.56) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuFields,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResults,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__actions {
-  background:transparent !important;
-  background-image:none !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField__label {
-  color:#f3f3f3 !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField__hint {
-  color:rgba(255,255,255,.62) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField__input,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField__select,
-body[data-page="productos"] #prodCreateProductPanel input,
-body[data-page="productos"] #prodCreateProductPanel select,
-body[data-page="productos"] #prodCreateProductPanel textarea {
-  background:#242424 !important;
-  background-image:none !important;
-  color:#fff !important;
-  border:1px solid rgba(255,255,255,.16) !important;
-  border-radius:5px !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuField__input::placeholder,
-body[data-page="productos"] #prodCreateProductPanel input::placeholder,
-body[data-page="productos"] #prodCreateProductPanel textarea::placeholder {
-  color:rgba(255,255,255,.38) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult--wide {
-  background:#242424 !important;
-  background-image:none !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  border-radius:6px !important;
-  box-shadow:none !important;
-  color:#fff !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult *,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult--wide * {
-  background:transparent !important;
-  background-image:none !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__label {
-  color:rgba(255,255,255,.58) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__value,
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__value--text {
-  color:#fff !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuResult__hint {
-  color:rgba(255,255,255,.50) !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__secondaryBtn {
-  background:#e9edf3 !important;
-  color:#334155 !important;
-  border:0 !important;
-  border-radius:5px !important;
-  box-shadow:none !important;
-}
-
-body[data-page="productos"] #prodCreateProductPanel .prodSkuFooter__primaryBtn {
+body[data-page="productos"] .main .offerWizard__hero {
+  position:sticky !important;
+  top:0 !important;
+  z-index:12 !important;
+  margin:0 -20px 18px !important;
+  padding:18px 54px 18px 20px !important;
   background:#2479ff !important;
   color:#fff !important;
-  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.12), 0 14px 30px rgba(0,0,0,.20) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__heroTitle {
+  color:#fff !important;
+  font-size:22px !important;
+  font-weight:850 !important;
+  letter-spacing:-.02em !important;
+}
+
+body[data-page="productos"] .main .offerWizard__timeline {
+  background:#2b2b2b !important;
+  background-image:none !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:6px !important;
+  box-shadow:none !important;
+  padding:14px 16px !important;
+}
+
+body[data-page="productos"] .main .offerWizard__stepDot {
+  background:#383838 !important;
+  color:rgba(255,255,255,.70) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__step--active .offerWizard__stepDot {
+  background:#2479ff !important;
+  color:#fff !important;
+  border-color:#2479ff !important;
+}
+
+body[data-page="productos"] .main .offerWizard__stepText {
+  color:rgba(255,255,255,.66) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__step--active .offerWizard__stepText {
+  color:#fff !important;
+}
+
+body[data-page="productos"] .main .offerWizard__line {
+  background:rgba(255,255,255,.14) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__section,
+body[data-page="productos"] .main .offerWizardPreview,
+body[data-page="productos"] .main .offerWizardPreview__card {
+  background:#2b2b2b !important;
+  background-image:none !important;
+  color:#f5f5f5 !important;
+  border:1px solid rgba(255,255,255,.11) !important;
+  border-radius:6px !important;
+  box-shadow:none !important;
+}
+
+body[data-page="productos"] .main .offerWizard__eyebrow,
+body[data-page="productos"] .main .offerWizardPreview__eyebrow,
+body[data-page="productos"] .main .offerWizardPreview__label {
+  color:rgba(255,255,255,.56) !important;
+  background:transparent !important;
+}
+
+body[data-page="productos"] .main .offerWizard__title,
+body[data-page="productos"] .main .offerWizard__label,
+body[data-page="productos"] .main .offerWizardPreview__id,
+body[data-page="productos"] .main .offerWizardPreview__value {
+  color:#fff !important;
+  background:transparent !important;
+}
+
+body[data-page="productos"] .main .offerWizard__hint,
+body[data-page="productos"] .main .offerWizardPreview__empty,
+body[data-page="productos"] .main .offerWizardPreview__value--composition,
+body[data-page="productos"] .main .offerWizard__status {
+  color:rgba(255,255,255,.66) !important;
+  background:transparent !important;
+}
+
+body[data-page="productos"] .main .offerWizard__select,
+body[data-page="productos"] .main .offerWizardSelect__trigger,
+body[data-page="productos"] .main .offerWizard input,
+body[data-page="productos"] .main .offerWizard select,
+body[data-page="productos"] .main .offerWizard textarea {
+  background:#242424 !important;
+  background-image:none !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.16) !important;
   border-radius:5px !important;
   box-shadow:none !important;
+}
+
+body[data-page="productos"] .main .offerWizard input::placeholder,
+body[data-page="productos"] .main .offerWizard textarea::placeholder {
+  color:rgba(255,255,255,.42) !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect {
+  position:relative !important;
+  z-index:50 !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect.is-open {
+  z-index:200 !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__trigger {
+  min-height:48px !important;
+  padding:0 14px !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__value {
+  color:#fff !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__chevron {
+  border-color:rgba(255,255,255,.72) !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__dropdown {
+  top:calc(100% + 8px) !important;
+  max-height:360px !important;
+  overflow-y:auto !important;
+  background:#242424 !important;
+  background-image:none !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  border-radius:6px !important;
+  box-shadow:0 18px 44px rgba(0,0,0,.46) !important;
+  z-index:300 !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__dropdown::-webkit-scrollbar {
+  width:8px !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__dropdown::-webkit-scrollbar-thumb {
+  background:rgba(255,255,255,.24) !important;
+  border:0 !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__option {
+  background:transparent !important;
+  color:#f5f5f5 !important;
+  border-radius:5px !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__option:hover,
+body[data-page="productos"] .main .offerWizardSelect__option.is-selected {
+  background:rgba(36,121,255,.16) !important;
+  color:#fff !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__type,
+body[data-page="productos"] .main .offerWizardPreview__type--bundle,
+body[data-page="productos"] .main .offerWizardPreview__type--cantidad {
+  border-radius:5px !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__type--bundle {
+  background:rgba(150,107,255,.18) !important;
+  color:#d8c7ff !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__type--cantidad {
+  background:rgba(245,158,11,.16) !important;
+  color:#ffd48a !important;
+}
+
+body[data-page="productos"] .main .offerWizard__backBtn,
+body[data-page="productos"] .main .offerWizard__nextBtn,
+body[data-page="productos"] .main .offerWizard__submitBtn {
+  border-radius:5px !important;
+  box-shadow:none !important;
+}
+
+body[data-page="productos"] .main .offerWizard__nextBtn,
+body[data-page="productos"] .main .offerWizard__submitBtn {
+  background:#2479ff !important;
+  color:#fff !important;
+  border:1px solid #2479ff !important;
+}
+
+body[data-page="productos"] .main .offerWizard__backBtn {
+  background:#242424 !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__nextBtn:disabled,
+body[data-page="productos"] .main .offerWizard__submitBtn:disabled {
+  background:#3a5d99 !important;
+  border-color:#3a5d99 !important;
+  color:rgba(255,255,255,.58) !important;
+}
+
+@media (max-width:900px) {
+  body[data-page="productos"] .main .prodOfferModal {
+    padding:12px !important;
+  }
+
+  body[data-page="productos"] .main .prodOfferModal__dialog {
+    width:calc(100vw - 24px) !important;
+    height:calc(100vh - 24px) !important;
+    max-height:calc(100vh - 24px) !important;
+  }
+
+  body[data-page="productos"] .main .offerWizard__timeline {
+    overflow-x:auto !important;
+  }
 }
