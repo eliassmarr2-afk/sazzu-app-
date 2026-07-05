@@ -159,3 +159,274 @@ body[data-page="productos"] .main #prodPanelOfertas .prodOfferTypeBadge {
 body[data-page="productos"] .main #prodPanelOfertas .prodOfferVariantAttachBtn {
   display: none !important;
 }
+
+/* =========================================================
+   PRODUCTOS · Drawer Ofertas · Dark reset final
+   Objetivo: un solo fondo, sin micro-contenedores ni blancos residuales.
+   ========================================================= */
+
+body[data-page="productos"] #prodOfferDrawer,
+body[data-page="productos"] #prodOfferDrawerContent,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__header,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__body,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerSection {
+  background: #202020 !important;
+  background-color: #202020 !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer {
+  border-left: 1px solid rgba(255,255,255,.18) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawerContent,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__body {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__header {
+  padding: 22px 24px 18px !important;
+  border-bottom: 1px solid rgba(255,255,255,.16) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__body {
+  padding: 0 24px 30px !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerSection {
+  margin: 0 -24px !important;
+  padding: 18px 24px !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerSection:first-child {
+  border-top: 0 !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__header > div,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__eyebrow,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__title,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__sub,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerSection__title,
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm,
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm label,
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyList,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerStatus,
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantList {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__eyebrow,
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerSection__title {
+  color: #f5f5f5 !important;
+  font-weight: 950 !important;
+  letter-spacing: .12em !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__title {
+  color: #ffffff !important;
+  line-height: 1.12 !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__sub {
+  color: rgba(255,255,255,.72) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawer__close {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm label {
+  color: rgba(255,255,255,.78) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm input,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantInput,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantContextInput {
+  background: #262626 !important;
+  background-color: #262626 !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm input::placeholder,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantInput::placeholder,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantContextInput::placeholder {
+  color: rgba(255,255,255,.42) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachForm input:focus,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantInput:focus,
+body[data-page="productos"] #prodOfferDrawer #prodOfferVariantContextInput:focus {
+  border-color: rgba(36,121,255,.90) !important;
+  box-shadow: 0 0 0 3px rgba(36,121,255,.18) !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferShopifySelectBtn {
+  background: #14a88d !important;
+  background-color: #14a88d !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferShopifySelectBtn:hover {
+  background: #11977f !important;
+  background-color: #11977f !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferAttachSubmit {
+  background: #2479ff !important;
+  background-color: #2479ff !important;
+  color: #ffffff !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRow {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRow > div {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRow strong {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRow span {
+  color: rgba(255,255,255,.62) !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRemove {
+  background: #d96060 !important;
+  background-color: #d96060 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantRemove:hover {
+  background: #c94d4d !important;
+  background-color: #c94d4d !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferVariantEmptyCard {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  color: rgba(255,255,255,.70) !important;
+  border: 1px dashed rgba(255,255,255,.22) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerGrid {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerMetric {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerMetric span {
+  color: #9aa7bd !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerMetric strong {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyList {
+  display: grid !important;
+  gap: 0 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyItem {
+  display: grid !important;
+  grid-template-columns: 170px minmax(0,1fr) !important;
+  gap: 14px !important;
+  align-items: center !important;
+  padding: 13px 14px !important;
+  margin: 0 !important;
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyItem:last-child {
+  border-bottom: 0 !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyItem span {
+  color: #9aa7bd !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferPolicyItem strong {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerStatus.is-error {
+  color: #ff8a8a !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer .prodOfferDrawerStatus.is-success {
+  color: #8ff0bd !important;
+}
+
+body[data-page="productos"] #prodOfferDrawer ::before,
+body[data-page="productos"] #prodOfferDrawer ::after {
+  box-shadow: none !important;
+}
