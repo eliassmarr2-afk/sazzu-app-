@@ -78,15 +78,16 @@
     >
       + Nueva oferta
     </button>
-
+  
     <button
       type="button"
-      class="prodPrimaryAction prodPrimaryAction--tabsCta"
+      class="prodPrimaryAction prodPrimaryAction--tabsCta prodPrimaryAction--newProduct"
       id="prodNewProductBtn"
+      aria-label="Crear nuevo producto"
     >
       + Nuevo producto
     </button>
-
+  
     <div class="prodTabs" role="tablist" aria-label="Secciones del módulo Productos">
       <button
         type="button"
@@ -387,81 +388,161 @@
             <div class="prodPlaceholderCard">
               <div class="prodPlaceholderCard__eyebrow">Próxima capa operativa</div>
               <h3 class="prodPlaceholderCard__title">SKUs</h3>
-              <p class="prodPlaceholderCard__text">Inventario profundo, stock crítico, lotes y proveedores por SKU.</p>
+              <p class="prodPlaceholderCard__text">
+                Aquí va a vivir la estructura de costos, lectura individual, detalle por SKU y futuras acciones de análisis profundo.
+              </p>
             </div>
           </section>
       
-          <!-- PANEL: OFERTAS -->
-          <section
-            id="prodPanelOfertas"
-            class="prodPanelTab"
-            role="tabpanel"
-            aria-labelledby="prodTabOfertas"
-            style="display:none;"
+         <!-- PANEL: OFERTAS -->
+<section
+id="prodPanelOfertas"
+class="prodPanelTab"
+role="tabpanel"
+aria-labelledby="prodTabOfertas"
+style="display:none;"
+>
+<div class="prodOffersShell">
+
+  <div class="prodOffersTableCard">
+    <div class="prodOffersTableCard__topbar">
+      <div class="prodOffersTableCard__title">Tabla de ofertas</div>
+      <div class="prodOffersTableCard__note" id="prodOffersTableNote">Cargando ofertas...</div>
+    </div>
+
+    <div class="prodOffersFiltersWrap">
+      <div class="prodOffersFilters">
+        <div class="prodOffersFilters__item prodOffersFilters__item--search">
+          <label for="prodOffersSearchInput" class="prodOffersFilters__label">Buscador</label>
+          <input
+            type="text"
+            id="prodOffersSearchInput"
+            class="u-input prodOffersSearchInput"
+            placeholder="Buscar por oferta, ID, variante o nombre comercial..."
+            aria-label="Buscar ofertas"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersDateFrom" class="prodOffersFilters__label">Desde</label>
+          <input
+            type="date"
+            id="prodOffersDateFrom"
+            class="u-input prodOffersDateInput"
+            aria-label="Filtrar ofertas desde fecha"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersDateTo" class="prodOffersFilters__label">Hasta</label>
+          <input
+            type="date"
+            id="prodOffersDateTo"
+            class="u-input prodOffersDateInput"
+            aria-label="Filtrar ofertas hasta fecha"
+          />
+        </div>
+
+        <div class="prodOffersFilters__item">
+          <label for="prodOffersSort" class="prodOffersFilters__label">Orden</label>
+          <select
+            id="prodOffersSort"
+            class="u-input prodOffersSort"
+            aria-label="Ordenar ofertas"
           >
-            <section class="prodOffersShell">
-              <div class="prodOffersHeader">
-                <div>
-                  <h3>Tabla de ofertas</h3>
-                  <p>Gestión comercial conectada a conjuntos operativos y variantes Shopify.</p>
-                </div>
-                <div class="prodOffersHeader__meta" id="prodOffersHeaderMeta">0 ofertas encontradas</div>
-              </div>
+            <option value="fecha_desc">Más recientes primero</option>
+            <option value="fecha_asc">Más antiguas primero</option>
+            <option value="nombre_asc">Nombre comercial A-Z</option>
+            <option value="tipo_asc">Tipo de oferta</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-              <div class="prodOffersFilters">
-                <label class="prodOffersFilterField prodOffersFilterField--search">
-                  <span>Buscador</span>
-                  <input
-                    id="prodOffersSearchInput"
-                    type="search"
-                    placeholder="Buscar por oferta, ID, variante o nombre comercial..."
-                    autocomplete="off"
-                  />
-                </label>
+    <div class="prodOffersTableWrap">
+      <table class="prodOffersTable">
+        <thead>
+          <tr>
+            <th style="width: 52px;"></th>
+            <th>Oferta ID</th>
+            <th>Oferta</th>
+            <th>Tipo</th>
+            <th>ID Variante</th>
+            <th>Vigencia</th>
+            <th>Fecha creación</th>
+          </tr>
+        </thead>
+        <tbody id="prodOffersTableBody">
+          <tr>
+            <td colspan="7" class="prodOffersTable__empty">Cargando ofertas...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-                <label class="prodOffersFilterField">
-                  <span>Desde</span>
-                  <input id="prodOffersDateFrom" type="date" />
-                </label>
+</div>
+</section>
+      
 
-                <label class="prodOffersFilterField">
-                  <span>Hasta</span>
-                  <input id="prodOffersDateTo" type="date" />
-                </label>
+<!-- ========================================================= -->
+<!-- INICIO · PANEL CONJUNTOS DE PRODUCTOS -->
+<!-- ========================================================= -->
+<section
+  id="prodPanelConjuntos"
+  class="prodPanelTab"
+  role="tabpanel"
+  aria-labelledby="prodTabConjuntos"
+  style="display:none;"
+>
 
-                <label class="prodOffersFilterField">
-                  <span>Orden</span>
-                  <select id="prodOffersSortSelect">
-                    <option value="fecha_desc">Más recientes primero</option>
-                    <option value="fecha_asc">Más antiguas primero</option>
-                    <option value="nombre_asc">Nombre A-Z</option>
-                    <option value="nombre_desc">Nombre Z-A</option>
-                  </select>
-                </label>
-              </div>
+  <!-- ======= INICIO · SHELL PANEL CONJUNTOS ======= -->
+  <div class="prodSetsShell">
 
-              <div class="prodOffersTableWrap">
-                <table class="prodOffersTable">
-                  <thead>
-                    <tr>
-                      <th>Oferta ID</th>
-                      <th>Oferta</th>
-                      <th>Tipo</th>
-                      <th>ID variante</th>
-                      <th>Vigencia</th>
-                      <th>Fecha creación</th>
-                    </tr>
-                  </thead>
-                  <tbody id="prodOffersTableBody">
-                    <tr>
-                      <td colspan="6" class="prodOffersEmpty">Cargando ofertas comerciales...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </section>
+   
 
+    <!-- ======= INICIO · TABLA PANEL CONJUNTOS ======= -->
+    <div class="prodSetsTableCard">
+      <div class="prodSetsTableCard__topbar">
+        <div class="prodSetsTableCard__title">Tabla de conjuntos</div>
+        <div class="prodSetsTableCard__note" id="prodSetsTableNote">Cargando conjuntos...</div>
+      </div>
+
+      <div class="prodSetsTableWrap">
+        <table class="prodSetsTable">
+          <thead>
+            <tr>
+              <th>ID variante</th>
+              <th>Tipo</th>
+              <th>Composición</th>
+              <th>Costo productos</th>
+              <th>Base operativa</th>
+              <th>Precio final pack</th>
+              <th>Escenario</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="prodSetsTableBody">
+            <tr>
+              <td colspan="9" class="prodSetsTable__empty">Cargando conjuntos...</td>
+            </tr>
+          </tbody>
+          <tbody id="prodSetsTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- ======= FIN · TABLA PANEL CONJUNTOS ======= -->
+
+  </div>
+  <!-- ======= FIN · SHELL PANEL CONJUNTOS ======= -->
+
+</section>
+<!-- ========================================================= -->
+<!-- FIN · PANEL CONJUNTOS DE PRODUCTOS -->
+<!-- ========================================================= -->
+          
           <!-- PANEL: RENTABILIDAD -->
           <section
             id="prodPanelRentabilidad"
@@ -470,288 +551,120 @@
             aria-labelledby="prodTabRentabilidad"
             style="display:none;"
           >
-            <section class="prodRentabilidadShell">
-              <div class="prodPlaceholderCard">
-                <div class="prodPlaceholderCard__eyebrow">Próxima capa financiera</div>
-                <h3 class="prodPlaceholderCard__title">Rentabilidad</h3>
-                <p class="prodPlaceholderCard__text">Márgenes por SKU, escenarios financieros y estructura de precio real.</p>
-              </div>
-            </section>
-          </section>
-
-          <!-- PANEL: CONJUNTOS -->
-          <section
-            id="prodPanelConjuntos"
-            class="prodPanelTab"
-            role="tabpanel"
-            aria-labelledby="prodTabConjuntos"
-            style="display:none;"
-          >
-            <section class="prodCombosShell">
-              <div class="prodCombosHeader">
-                <div>
-                  <h3>Tabla de conjuntos</h3>
-                  <p>Bundles y ofertas en cantidad construidos con SKUs operativos y escenarios financieros.</p>
-                </div>
-                <div class="prodCombosHeader__meta" id="prodCombosHeaderMeta">0 conjuntos cargados</div>
-              </div>
-
-              <div class="prodCombosTableWrap">
-                <table class="prodCombosTable">
-                  <thead>
-                    <tr>
-                      <th>ID variante</th>
-                      <th>Tipo</th>
-                      <th>Composición</th>
-                      <th>Costo productos</th>
-                      <th>Base operativa</th>
-                      <th>Precio final pack</th>
-                      <th>Escenario</th>
-                      <th>Estado</th>
-                      <th>Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody id="prodCombosTableBody">
-                    <tr>
-                      <td colspan="9" class="prodCombosEmpty">Cargando conjuntos de productos...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+            <div class="prodPlaceholderCard">
+              <div class="prodPlaceholderCard__eyebrow">Próxima capa operativa</div>
+              <h3 class="prodPlaceholderCard__title">Rentabilidad</h3>
+              <p class="prodPlaceholderCard__text">
+                Aquí vamos a cruzar estructura de costos, márgenes, ofertas y escenarios reales por tipo de venta.
+              </p>
+            </div>
           </section>
       
+
+          
         </section>
+        <!-- ======= INICIO · MODAL NUEVA OFERTA ======= -->
+<div class="prodOfferModalOverlay" id="prodOfferModalOverlay"></div>
 
-        <!-- ======= SLIDE PRINCIPAL PRODUCTOS ======= -->
-        <div class="prodSlideOverlay" id="prodSlideOverlay" aria-hidden="true">
-          <aside class="prodSlidePanel" id="prodSlidePanel" role="dialog" aria-modal="true" aria-labelledby="prodSlideTitle">
-            <div class="prodSlidePanel__main">
-              <header class="prodSlidePanel__header">
-                <button type="button" class="prodSlidePanel__back" id="prodSlideBackBtn" aria-label="Volver">‹</button>
-                <h2 id="prodSlideTitle">Detalle</h2>
-                <button type="button" class="prodSlidePanel__close" id="prodSlideCloseBtn" aria-label="Cerrar">×</button>
-              </header>
+<div class="prodOfferModal" id="prodOfferModal" aria-hidden="true">
+  <div class="prodOfferModal__dialog">
+    <button
+      type="button"
+      class="prodOfferModal__close"
+      id="prodOfferModalCloseBtn"
+      aria-label="Cerrar nueva oferta"
+    >
+      ✕
+    </button>
 
-              <div class="prodSlidePanel__content" id="prodSlideContent"></div>
-            </div>
+    <div class="prodOfferModal__content" id="prodOfferModalContent">
+      <!-- Acá se inyecta conj-productos-popup-nuevaoferta.html -->
+    </div>
+  </div>
+</div>
+<!-- ======= FIN · MODAL NUEVA OFERTA ======= -->
+        <!-- ======= INICIO · SLIDE LATERAL PRODUCTOS ======= -->
+        <div class="prodSlideOverlay" id="prodSlideOverlay"></div>
 
-            <aside class="prodSubSlide" id="prodSubSlide" aria-hidden="true">
-              <header class="prodSubSlide__header">
-                <button type="button" class="prodSubSlide__back" id="prodSubSlideBackBtn" aria-label="Volver">‹</button>
-                <h3 id="prodSubSlideTitle">Detalle</h3>
-                <button type="button" class="prodSubSlide__close" id="prodSubSlideCloseBtn" aria-label="Cerrar">×</button>
-              </header>
-              <div class="prodSubSlide__content" id="prodSubSlideContent"></div>
-            </aside>
-          </aside>
-        </div>
-
-        <!-- ======= FIN · SLIDE PRINCIPAL PRODUCTOS ======= -->
-
-        <!-- ======= POPUP NUEVA OFERTA ======= -->
-        <div class="prodOfferModal" id="prodNewOfferModal" aria-hidden="true">
-          <div class="prodOfferModal__backdrop" data-prod-offer-close></div>
-
-          <section
-            class="prodOfferModal__dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="prodNewOfferModalTitle"
-          >
-            <header class="prodOfferModal__header">
-              <h2 id="prodNewOfferModalTitle">Nueva oferta</h2>
-              <button
-                type="button"
-                class="prodOfferModal__close"
-                id="prodNewOfferCloseBtn"
-                aria-label="Cerrar nueva oferta"
-              >
-                ×
-              </button>
-            </header>
-
-            <div class="prodOfferModal__body">
-              <div class="offerWizard" id="prodOfferWizard">
-                <!-- Stepper -->
-                <nav class="offerWizard__steps" aria-label="Pasos para crear oferta">
-                  <button type="button" class="offerWizard__step is-active" data-step="1">
-                    <span class="offerWizard__stepNumber">1</span>
-                    <span>Componente de la oferta</span>
-                  </button>
-                  <button type="button" class="offerWizard__step" data-step="2">
-                    <span class="offerWizard__stepNumber">2</span>
-                    <span>Identidad comercial</span>
-                  </button>
-                  <button type="button" class="offerWizard__step" data-step="3">
-                    <span class="offerWizard__stepNumber">3</span>
-                    <span>Condiciones y publicación</span>
-                  </button>
-                </nav>
-
-                <!-- Paso 1 -->
-                <section class="offerWizard__panel is-active" data-step-panel="1">
-                  <div class="offerWizard__card">
-                    <div class="offerWizard__eyebrow">Paso 1</div>
-                    <h3>Componente de la oferta</h3>
-
-                    <label class="offerWizard__field">
-                      <span>Conjunto disponible</span>
-                      <button type="button" class="offerSetSelect" id="prodOfferSetSelectBtn" aria-expanded="false">
-                        <span class="offerSetSelect__icon" aria-hidden="true">◇</span>
-                        <span class="offerSetSelect__label" id="prodOfferSetSelectLabel">Selecciona un conjunto disponible</span>
-                        <span class="offerSetSelect__chevron" aria-hidden="true">⌄</span>
-                      </button>
-                      <small>Selecciona un id_variante ya creado en Conjuntos de productos.</small>
-                    </label>
-
-                    <div class="offerSetSelect__menu" id="prodOfferSetSelectMenu" aria-hidden="true">
-                      <div class="offerSetSelect__option is-placeholder">Selecciona un conjunto disponible</div>
-                    </div>
-
-                    <div class="offerWizard__selectedSet" id="prodOfferSelectedSetBox">
-                      Selecciona un conjunto para visualizar todos sus componentes y parámetros operativos.
-                    </div>
-
-                    <div class="offerWizard__hint" id="prodOfferStep1Hint">
-                      Selecciona un conjunto para crear una oferta comercial.
-                    </div>
-
-                    <div class="offerWizard__actions">
-                      <button type="button" class="offerWizard__next" id="prodOfferStep1Next" disabled>Siguiente</button>
-                    </div>
-                  </div>
-                </section>
-
-                <!-- Paso 2 -->
-                <section class="offerWizard__panel" data-step-panel="2">
-                  <div class="offerWizard__card">
-                    <div class="offerWizard__eyebrow">Paso 2</div>
-                    <h3>Identidad comercial</h3>
-
-                    <label class="offerWizard__field">
-                      <span>Nombre comercial</span>
-                      <input id="prodOfferNameInput" type="text" placeholder="Ej: Oferta Cocina Express 2x1" />
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Subtítulo / bajada</span>
-                      <input id="prodOfferSubtitleInput" type="text" placeholder="Ej: Pack armado para campaña de tráfico frío" />
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Contexto comercial</span>
-                      <input id="prodOfferContextInput" type="text" placeholder="Ej: Landing A · Meta Ads · Público frío" />
-                    </label>
-
-                    <div class="offerWizard__selectedSet" id="prodOfferStep2Summary">
-                      La oferta tomará el conjunto seleccionado en el paso anterior.
-                    </div>
-
-                    <div class="offerWizard__actions offerWizard__actions--split">
-                      <button type="button" class="offerWizard__back" data-offer-back="1">Volver</button>
-                      <button type="button" class="offerWizard__next" id="prodOfferStep2Next">Siguiente</button>
-                    </div>
-                  </div>
-                </section>
-
-                <!-- Paso 3 -->
-                <section class="offerWizard__panel" data-step-panel="3">
-                  <div class="offerWizard__card">
-                    <div class="offerWizard__eyebrow">Paso 3</div>
-                    <h3>Condiciones y publicación</h3>
-
-                    <label class="offerWizard__field">
-                      <span>Política de compra</span>
-                      <select id="prodOfferPurchasePolicy">
-                        <option value="predeterminado">Predeterminado</option>
-                        <option value="estricto">Estricto</option>
-                        <option value="flexible">Flexible</option>
-                      </select>
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Política de envío</span>
-                      <select id="prodOfferShippingPolicy">
-                        <option value="predeterminado">Predeterminado</option>
-                        <option value="absorbe_envio">Absorbe envío</option>
-                        <option value="cliente_paga">Cliente paga envío</option>
-                      </select>
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Política de devolución</span>
-                      <select id="prodOfferReturnPolicy">
-                        <option value="predeterminado">Predeterminado</option>
-                        <option value="sin_devolucion">Sin devolución comercial</option>
-                        <option value="devolucion_estandar">Devolución estándar</option>
-                      </select>
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Condiciones generales</span>
-                      <select id="prodOfferGeneralConditions">
-                        <option value="predeterminado">Predeterminado</option>
-                        <option value="stock_limitado">Stock limitado</option>
-                        <option value="campania_temporal">Campaña temporal</option>
-                      </select>
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Fecha de vigencia desde</span>
-                      <input id="prodOfferValidFrom" type="date" />
-                      <small>Si no defines una fecha, en la hoja se guardará como “A definir”.</small>
-                    </label>
-
-                    <label class="offerWizard__field">
-                      <span>Fecha de vigencia hasta</span>
-                      <input id="prodOfferValidTo" type="date" />
-                      <small>Si no defines una fecha, en la hoja se guardará como “A definir”.</small>
-                    </label>
-
-                    <div class="offerWizard__hint" id="prodOfferSubmitHint">
-                      Completa condiciones y vigencias. Si no defines fechas, se guardarán como A definir.
-                    </div>
-
-                    <div class="offerWizard__actions offerWizard__actions--split">
-                      <button type="button" class="offerWizard__back" data-offer-back="2">Volver</button>
-                      <button type="button" class="offerWizard__submit" id="prodOfferSubmitBtn">Guardar oferta</button>
-                    </div>
-                  </div>
-                </section>
+        <div class="prodSlidePanel" id="prodSlidePanel" aria-hidden="true">
+        
+          <div class="prodSlidePanel__main" id="prodSlideMain">
+            <div class="prodSlidePanel__header">
+              <div class="prodSlidePanel__title" id="prodSlideTitle">Detalle</div>
+        
+              <div class="prodSlidePanel__actions">
+                <button
+                  type="button"
+                  class="prodSlidePanel__createBtn"
+                  id="prodSlideCreateSetBtn"
+                  aria-label="Crear conjunto de productos"
+                >
+                  Crear conjunto de productos
+                </button>
+        
+                <button class="prodSlidePanel__close" id="prodSlideCloseBtn" aria-label="Cerrar">✕</button>
               </div>
             </div>
-          </section>
+        
+            <div class="prodSlidePanel__body" id="prodSlideContent">
+              <!-- Acá se inyectan los partials del slide principal -->
+            </div>
+          </div>
+        
+          <div class="prodSubSlide" id="prodSubSlide" aria-hidden="true">
+            <div class="prodSubSlide__header">
+              <button
+                type="button"
+                class="prodSubSlide__back"
+                id="prodSubSlideBackBtn"
+                aria-label="Volver al slide anterior"
+              >
+                ←
+              </button>
+        
+              <div class="prodSubSlide__title" id="prodSubSlideTitle">Detalle</div>
+        
+              <button
+                type="button"
+                class="prodSubSlide__close"
+                id="prodSubSlideCloseBtn"
+                aria-label="Cerrar sub-slide"
+              >
+                ✕
+              </button>
+            </div>
+        
+            <div class="prodSubSlide__body" id="prodSubSlideContent">
+              <!-- Acá se inyecta el partial del sub-slide -->
+            </div>
+          </div>
+        
         </div>
-        <!-- ======= FIN · POPUP NUEVA OFERTA ======= -->
-
+<!-- ======= FIN · SLIDE LATERAL PRODUCTOS ======= -->
 <!-- ======= INICIO · SLIDE NUEVO PRODUCTO ======= -->
-<div class="prodCreateProductOverlay" id="prodCreateProductOverlay" aria-hidden="true">
-  <aside
-    class="prodCreateProductPanel"
-    id="prodCreateProductPanel"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="prodCreateProductTitle"
-  >
-    <div class="prodCreateProductPanel__main">
-      <header class="prodCreateProductPanel__header">
-        <div>
-          <div class="prodCreateProductPanel__eyebrow">Alta operativa</div>
-          <h2 id="prodCreateProductTitle">Nuevo producto</h2>
-        </div>
+<div class="prodCreateProductOverlay" id="prodCreateProductOverlay"></div>
 
+<div class="prodCreateProductPanel" id="prodCreateProductPanel" aria-hidden="true">
+  <div class="prodCreateProductPanel__dialog">
+ 
+    <div class="prodCreateProductPanel__mainShell">
+      <div class="prodCreateProductPanel__header">
+        <div class="prodCreateProductPanel__titleWrap">
+          <div class="prodCreateProductPanel__eyebrow">Alta operativa</div>
+          <div class="prodCreateProductPanel__title">Nuevo producto</div>
+        </div>
+ 
         <div class="prodCreateProductPanel__actions">
           <button
             type="button"
-            class="prodCreateProductPanel__shopifyBtn"
+            class="prodCreateProductPanel__volumeBtn"
             id="prodCreateProductShopifyLinkBtn"
             aria-label="Vincular producto desde Shopify"
             style="background:#14b8a6;color:#ffffff;border-color:#14b8a6;"
           >
             Vincular desde Shopify
           </button>
-
+        
           <button
             type="button"
             class="prodCreateProductPanel__volumeBtn"
@@ -760,75 +673,86 @@
           >
             Cargar en volumen por lote
           </button>
-
+        
           <button
             type="button"
             class="prodCreateProductPanel__close"
             id="prodCreateProductCloseBtn"
             aria-label="Cerrar creación de producto"
           >
-            ×
+            ✕
           </button>
         </div>
-      </header>
-
-      <div class="prodCreateProductPanel__content" id="prodCreateProductContent"></div>
+      </div>
+ 
+      <div class="prodCreateProductPanel__body" id="prodCreateProductContent">
+        <!-- Acá se inyecta /partials/prod-slide-crear-producto.html -->
+      </div>
     </div>
-
-    <aside class="prodCreateProductSubSlide" id="prodCreateProductSubSlide" aria-hidden="true">
-      <header class="prodCreateProductSubSlide__header">
+ 
+    <!-- ======= INICIO · SUB-SLIDE CARGA LOTE ======= -->
+    <div
+      class="prodCreateProductSubSlide"
+      id="prodCreateProductSubSlide"
+      aria-hidden="true"
+    >
+      <div class="prodCreateProductSubSlide__header">
         <button
           type="button"
           class="prodCreateProductSubSlide__back"
           id="prodCreateProductSubSlideBackBtn"
-          aria-label="Volver"
+          aria-label="Volver al slide de producto"
         >
-          ‹
+          ←
         </button>
-        <h3 id="prodCreateProductSubSlideTitle">Detalle</h3>
+ 
+        <div
+          class="prodCreateProductSubSlide__title"
+          id="prodCreateProductSubSlideTitle"
+        >
+          Carga de lote
+        </div>
+ 
         <button
           type="button"
           class="prodCreateProductSubSlide__close"
           id="prodCreateProductSubSlideCloseBtn"
-          aria-label="Cerrar"
+          aria-label="Cerrar carga por lote"
         >
-          ×
+          ✕
         </button>
-      </header>
-
-      <div class="prodCreateProductSubSlide__content" id="prodCreateProductSubSlideContent"></div>
-    </aside>
-  </aside>
-</div>
+      </div>
+ 
+      <div
+        class="prodCreateProductSubSlide__body"
+        id="prodCreateProductSubSlideContent"
+      >
+        <!-- Acá se inyecta /partials/prod-subslide-cargar-lote.html -->
+      </div>
+    </div>
+    <!-- ======= FIN · SUB-SLIDE CARGA LOTE ======= -->
+ 
+  </div>
+ </div>
+ 
+  </div>
+ </div>
 <!-- ======= FIN · SLIDE NUEVO PRODUCTO ======= -->
 
 <!-- ======= INICIO · MODAL CONFIRMACIÓN SKU ======= -->
+<div class="prodSkuConfirmOverlay" id="prodSkuConfirmOverlay"></div>
+
 <div class="prodSkuConfirmModal" id="prodSkuConfirmModal" aria-hidden="true">
-  <div class="prodSkuConfirmModal__backdrop" id="prodSkuConfirmBackdrop"></div>
+  <div class="prodSkuConfirmModal__dialog">
+    <div class="prodSkuConfirmModal__header">
+      <div class="prodSkuConfirmModal__icon" aria-hidden="true">i</div>
 
-  <div
-    class="prodSkuConfirmModal__dialog"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="prodSkuConfirmTitle"
-  >
-    <div class="prodSkuConfirmModal__head">
-      <div>
-        <p class="prodSkuConfirmModal__eyebrow">Confirmación operativa</p>
-        <h3 id="prodSkuConfirmTitle">Crear SKU en Protocol Data</h3>
+      <div class="prodSkuConfirmModal__heading">
+        <div class="prodSkuConfirmModal__title">Confirma el alta del SKU</div>
+        <div class="prodSkuConfirmModal__desc">
+          Confirmas la generación de un nuevo SKU en el sistema. Este ID se dará de alta para distintas operaciones dentro del sistema de Protocol Data.
+        </div>
       </div>
-      <button
-        type="button"
-        class="prodSkuConfirmModal__close"
-        id="prodSkuConfirmCloseBtn"
-        aria-label="Cerrar confirmación"
-      >
-        ×
-      </button>
-    </div>
-
-    <div class="prodSkuConfirmModal__body" id="prodSkuConfirmBody">
-      Revisá los datos antes de confirmar el alta.
     </div>
 
     <div class="prodSkuConfirmModal__actions">
@@ -892,8 +816,5 @@
 
 <!-- Productos · Sincronización visual de variantes Shopify vinculadas -->
 <script src="../js/productos-shopify-link-ui-sync.js"></script>
-
-<!-- Productos · Resumen detalle lateral seguro -->
-<script src="../js/productos-resumen-detail-safe.js"></script>
   </body>
   </html>
