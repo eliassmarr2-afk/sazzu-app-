@@ -26,6 +26,7 @@
     appendCss_('productosDarkLayoutFixCss', '../css/productos-dark-layout-fix.css');
     appendCss_('productosDarkContainerCleanupCss', '../css/productos-dark-container-cleanup.css');
     appendCss_('productosOffersDarkFinalCss', '../css/productos-offers-dark-final.css');
+    appendCss_('productosOfferShopifySelectorDarkFixCss', '../css/productos-offer-shopify-selector-dark-fix.css');
   }
 
   function readStore_() {
