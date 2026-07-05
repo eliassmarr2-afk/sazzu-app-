@@ -495,3 +495,486 @@ body[data-page="productos"] .prodShell article[style*="background:#fff"] {
   background: var(--pd-panel) !important;
   color: var(--pd-text) !important;
 }
+/* =========================================================
+   PRODUCTOS · Slide "+ Nuevo producto" · Dark cleanup final
+   Solo visual. NO toca lógica.
+   ========================================================= */
+
+   body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) {
+    background: #1f1f1f !important;
+    background-color: #1f1f1f !important;
+    background-image: none !important;
+    color: #f5f5f5 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Fondo general del contenido del slide */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .drawer__content,
+    .prodCreateDrawer__content,
+    .prodCreateContent,
+    .prodSlideBody,
+    .prodCreateBody,
+    .sheet__content
+  ) {
+    background: #1f1f1f !important;
+    background-color: #1f1f1f !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Header superior del slide */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .drawer__header,
+    .prodCreateDrawer__header,
+    .prodSlideHeader,
+    .sheet__header
+  ) {
+    background: #1f1f1f !important;
+    background-color: #1f1f1f !important;
+    background-image: none !important;
+    border-bottom: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .drawer__eyebrow,
+    .prodCreateDrawer__eyebrow,
+    .prodSlideEyebrow,
+    .sheet__eyebrow
+  ) {
+    color: rgba(255,255,255,.62) !important;
+    background: transparent !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .drawer__title,
+    .prodCreateDrawer__title,
+    .prodSlideTitle,
+    .sheet__title
+  ) {
+    color: #ffffff !important;
+    background: transparent !important;
+  }
+  
+  /* Tarjetas internas */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard,
+    .prod-card,
+    .prodFormCard,
+    .form-card,
+    .card,
+    .sheet-card
+  ) {
+    background: #2b2b2b !important;
+    background-color: #2b2b2b !important;
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+  }
+  
+  /* ELIMINA los “bloques negros” o tonos duplicados en headers de tarjeta */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__head,
+    .prodCreateCard__header,
+    .prodFormCard__head,
+    .prodFormCard__header,
+    .card__head,
+    .card__header,
+    .sheet-card__header,
+    .prodCreateHero,
+    .prodCreateIntro
+  ),
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__head,
+    .prodCreateCard__header,
+    .prodFormCard__head,
+    .prodFormCard__header,
+    .card__head,
+    .card__header,
+    .sheet-card__header,
+    .prodCreateHero,
+    .prodCreateIntro
+  ) * {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Títulos de tarjetas */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__kicker,
+    .prodFormCard__kicker,
+    .card__kicker,
+    .prodCreateCard__eyebrow
+  ) {
+    color: rgba(255,255,255,.62) !important;
+    background: transparent !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__title,
+    .prodFormCard__title,
+    .card__title,
+    .prodCreateTitle
+  ) {
+    color: #ffffff !important;
+    background: transparent !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__desc,
+    .prodFormCard__desc,
+    .card__desc,
+    .prodCreateSubtitle
+  ) {
+    color: rgba(255,255,255,.72) !important;
+    background: transparent !important;
+  }
+  
+  /* Cuadrito numérico de Tarjeta 1 / Tarjeta 2 / etc */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateCard__index,
+    .prodFormCard__index,
+    .card__index,
+    .step-index
+  ) {
+    background: #242424 !important;
+    background-color: #242424 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    box-shadow: none !important;
+  }
+  
+  /* Inputs / selects */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    input,
+    select,
+    textarea
+  ) {
+    background: #2a2a2a !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.16) !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    input,
+    textarea
+  )::placeholder {
+    color: rgba(255,255,255,.42) !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    label,
+    .field-label,
+    .prodFieldLabel
+  ) {
+    color: #f1f1f1 !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .field-help,
+    .prodFieldHelp,
+    small,
+    .hint
+  ) {
+    color: rgba(255,255,255,.64) !important;
+  }
+  
+  /* Bloque info superior "Crea un producto..." */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodCreateIntro,
+    .prodCreateInfo,
+    .hero-card,
+    .intro-card
+  ) {
+    background: #2b2b2b !important;
+    background-color: #2b2b2b !important;
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: none !important;
+  }
+  
+  /* Tarjetas de resultados automáticos: sacar el blanco */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultCard,
+    .prodResultCard,
+    .metric-card,
+    .result-card,
+    .summary-card,
+    .auto-card
+  ) {
+    background: #252525 !important;
+    background-color: #252525 !important;
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultCard *,
+    .prodResultCard *,
+    .metric-card *,
+    .result-card *,
+    .summary-card *,
+    .auto-card *
+  ) {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultCard__label,
+    .prodResultCard__label,
+    .metric-card__label,
+    .result-card__label
+  ) {
+    color: rgba(255,255,255,.60) !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultCard__value,
+    .prodResultCard__value,
+    .metric-card__value,
+    .result-card__value
+  ) {
+    color: #ffffff !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultSummary,
+    .prodScenarioSummary,
+    .summary-box,
+    .scenario-summary
+  ) {
+    background: #252525 !important;
+    background-color: #252525 !important;
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .prodAutoResultSummary *,
+    .prodScenarioSummary *,
+    .summary-box *,
+    .scenario-summary *
+  ) {
+    background: transparent !important;
+    background-image: none !important;
+    color: inherit !important;
+    box-shadow: none !important;
+  }
+  
+  /* Divisores */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) hr,
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .divider,
+    .card-divider,
+    .section-divider
+  ) {
+    border-color: rgba(255,255,255,.10) !important;
+    background: rgba(255,255,255,.10) !important;
+  }
+  
+  /* Botones secundarios del footer */
+  body[data-page="productos"] :is(
+    #prodSlideCrearProducto,
+    #prodCreateDrawer,
+    .prodCreateDrawer,
+    .prod-create-drawer,
+    [data-prod-create-drawer],
+    [data-product-create-drawer]
+  ) :is(
+    .btn-secondary,
+    .button-secondary,
+    .ghost-btn
+  ) {
+    background: #d9dee7 !important;
+    color: #334155 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }

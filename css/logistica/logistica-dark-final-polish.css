@@ -233,3 +233,76 @@ body[data-page="logistica"].logistica-dark [class*="Conversation"] .btn--primary
   color:#ffffff !important;
   border-color:#2479ff !important;
 }
+/* ==========================================================
+   LOGÍSTICA · PEDIDOS · Badges/SKU dark mode final polish
+   Corrige pills claros en tabla y slide de pedido.
+   ========================================================== */
+
+/* SKU operativo en tabla Logística > Pedidos */
+body[data-page="logistica"].logistica-dark .logPedidosTable .logSkuLine,
+body[data-page="logistica"].logistica-dark .logPedidosMiniStack .logSkuLine {
+  background: rgba(36,121,255,.14) !important;
+  color: #dbeafe !important;
+  border: 1px solid rgba(96,165,250,.34) !important;
+  box-shadow: none !important;
+}
+
+/* Badge de tipo de oferta en Producto del pedido */
+body[data-page="logistica"].logistica-dark .logProductInfoBadge,
+body[data-page="logistica"].logistica-dark .logOfferBadge--purple {
+  background: rgba(168,85,247,.18) !important;
+  color: #e9d5ff !important;
+  border: 1px solid rgba(216,180,254,.30) !important;
+  box-shadow: none !important;
+}
+
+/* Oferta cantidad / badges verdes */
+body[data-page="logistica"].logistica-dark .logProductQty,
+body[data-page="logistica"].logistica-dark .logOfferQty,
+body[data-page="logistica"].logistica-dark .logOfferBadge--green {
+  background: rgba(34,197,94,.14) !important;
+  color: #bbf7d0 !important;
+  border: 1px solid rgba(74,222,128,.28) !important;
+  box-shadow: none !important;
+}
+
+/* Badges azules */
+body[data-page="logistica"].logistica-dark .logOfferBadge--blue {
+  background: rgba(36,121,255,.16) !important;
+  color: #bfdbfe !important;
+  border: 1px solid rgba(96,165,250,.34) !important;
+  box-shadow: none !important;
+}
+
+/* Badges neutros / SKU directo */
+body[data-page="logistica"].logistica-dark .logOfferBadge--gray {
+  background: rgba(148,163,184,.14) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(203,213,225,.22) !important;
+  box-shadow: none !important;
+}
+
+/* Caso sin SKU */
+body[data-page="logistica"].logistica-dark .logSkuLine.logProductNoSku,
+body[data-page="logistica"].logistica-dark .logProductNoSku {
+  background: rgba(245,158,11,.14) !important;
+  color: #fde68a !important;
+  border-color: rgba(251,191,36,.32) !important;
+}
+
+/* Fila/checkbox de incidencia, para que no quede blanco/rosado plano */
+body[data-page="logistica"].logistica-dark .logPedidosCheck {
+  background: rgba(239,68,68,.08) !important;
+  color: #fecaca !important;
+  border: 1px solid rgba(248,113,113,.24) !important;
+  border-radius: 5px !important;
+  padding: 10px 12px !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosCheck span {
+  color: #fecaca !important;
+}
+
+body[data-page="logistica"].logistica-dark .logPedidosCheck input {
+  accent-color: #ef4444;
+}

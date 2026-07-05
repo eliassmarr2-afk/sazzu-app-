@@ -38,3 +38,60 @@ body[data-page="pedidos"] .ordersOfferMatchCard .ordersOfferEmpty {
   border-color: rgba(255,255,255,.30) !important;
   color: rgba(255,255,255,.74) !important;
 }
+/* =========================================================
+   PEDIDOS · Badges/SKU dark mode final polish
+   Corrige badges claros en tabla y slide.
+   ========================================================= */
+
+   body[data-page="pedidos"] .ordersMiniStack .orderSkuLine,
+   body[data-page="pedidos"] .ordersTable .orderSkuLine {
+     background: rgba(36,121,255,.14) !important;
+     color: #dbeafe !important;
+     border: 1px solid rgba(96,165,250,.34) !important;
+     box-shadow: none !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferBadges .ordersOfferBadge,
+   body[data-page="pedidos"] .ordersOfferHeader .ordersOfferBadge,
+   body[data-page="pedidos"] .orderProductInfoBadge {
+     border-radius: 5px !important;
+     box-shadow: none !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferBadge--gray {
+     background: rgba(148,163,184,.14) !important;
+     color: #cbd5e1 !important;
+     border: 1px solid rgba(203,213,225,.22) !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferBadge--blue {
+     background: rgba(36,121,255,.16) !important;
+     color: #bfdbfe !important;
+     border: 1px solid rgba(96,165,250,.34) !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferBadge--purple,
+   body[data-page="pedidos"] .orderProductInfoBadge {
+     background: rgba(168,85,247,.18) !important;
+     color: #e9d5ff !important;
+     border: 1px solid rgba(216,180,254,.30) !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferBadge--green {
+     background: rgba(34,197,94,.14) !important;
+     color: #bbf7d0 !important;
+     border: 1px solid rgba(74,222,128,.28) !important;
+   }
+   
+   body[data-page="pedidos"] .ordersOfferQty,
+   body[data-page="pedidos"] .orderProductQty {
+     background: rgba(34,197,94,.14) !important;
+     color: #bbf7d0 !important;
+     border: 1px solid rgba(74,222,128,.26) !important;
+   }
+   
+   body[data-page="pedidos"] .orderSkuLine.orderProductNoSku {
+     background: rgba(245,158,11,.14) !important;
+     color: #fde68a !important;
+     border-color: rgba(251,191,36,.32) !important;
+   }
