@@ -1,0 +1,187 @@
+/* PRODUCTOS · Resumen · ajustes seguros de tabla
+   Scope cerrado al tab Resumen. No toca lógica ni módulos Shopify. */
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 22px !important;
+  border-bottom: 0 !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 0 !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead::before,
+body[data-page="productos"] #prodPanelResumen .prodSectionHead::after {
+  display: none !important;
+  content: none !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead__eyebrow,
+body[data-page="productos"] #prodPanelResumen .prodMiniPills {
+  display: none !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead__left {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead__right {
+  min-width: min(420px, 36vw) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodSectionHead__right .prodTableSearchWrap,
+body[data-page="productos"] #prodPanelResumen .prodSectionHead__right .prodTableSearchInput {
+  width: 100% !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTableTopbar {
+  display: none !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTableShell {
+  border-top: 0 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTableWrap {
+  border-top: 0 !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTable tbody tr.prodResumenRowClickable {
+  cursor: pointer !important;
+  transition: background .16s ease, box-shadow .16s ease !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTable tbody tr.prodResumenRowClickable:hover td {
+  background: rgba(36,121,255,.08) !important;
+}
+
+body[data-page="productos"] #prodPanelResumen .prodTable tbody tr.prodResumenRowClickable:focus-visible {
+  outline: 2px solid rgba(36,121,255,.85) !important;
+  outline-offset: -2px !important;
+}
+
+body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] {
+  width: 50vw !important;
+  max-width: 50vw !important;
+  min-width: min(720px, 50vw) !important;
+  background: #202020 !important;
+  border-left: 1px solid rgba(255,255,255,.14) !important;
+}
+
+body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] .prodSlidePanel__header,
+body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] .prodSlidePanel__main,
+body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] .prodSlidePanel__body,
+body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] #prodSlideContent {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+}
+
+body[data-page="productos"] .prodProductDetail {
+  padding: 18px 18px 32px !important;
+  color: #f5f5f5 !important;
+}
+
+body[data-page="productos"] .prodProductDetail__hero {
+  padding-bottom: 18px !important;
+  margin-bottom: 18px !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .prodProductDetail__eyebrow {
+  color: rgba(255,255,255,.56) !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__title {
+  color: #fff !important;
+  font-size: 24px !important;
+  line-height: 1.08 !important;
+  font-weight: 900 !important;
+  margin: 0 !important;
+}
+
+body[data-page="productos"] .prodProductDetail__skuLine {
+  color: rgba(255,255,255,.66) !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  margin-top: 8px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__section {
+  background: #2b2b2b !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 6px !important;
+  padding: 14px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__section--wide {
+  grid-column: 1 / -1 !important;
+}
+
+body[data-page="productos"] .prodProductDetail__sectionTitle {
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  margin: 0 0 12px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__kvGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__label {
+  color: rgba(255,255,255,.55) !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .08em !important;
+  font-weight: 850 !important;
+  margin-bottom: 5px !important;
+}
+
+body[data-page="productos"] .prodProductDetail__value {
+  color: #fff !important;
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  word-break: break-word !important;
+}
+
+body[data-page="productos"] .prodProductDetail__value--muted {
+  color: rgba(255,255,255,.58) !important;
+}
+
+@media (max-width: 1100px) {
+  body[data-page="productos"] .prodSlidePanel[data-main-layout="product-detail"] {
+    width: 72vw !important;
+    max-width: 72vw !important;
+  }
+
+  body[data-page="productos"] #prodPanelResumen .prodSectionHead {
+    flex-direction: column !important;
+  }
+
+  body[data-page="productos"] #prodPanelResumen .prodSectionHead__right {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
