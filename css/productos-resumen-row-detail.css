@@ -1,0 +1,214 @@
+/* =========================================================
+   PRODUCTOS · TAB RESUMEN · tabla limpia + detalle lateral
+   Solo visual. No toca lógica de creación, ofertas ni conjuntos.
+   ========================================================= */
+
+body[data-page="productos"] .prodSectionHead--resumenTable {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
+
+body[data-page="productos"] .prodSectionHead--resumenTable::before,
+body[data-page="productos"] .prodSectionHead--resumenTable::after {
+  display: none !important;
+  content: none !important;
+}
+
+body[data-page="productos"] .prodSectionHead--resumenTable .prodSectionHead__left {
+  min-width: 0 !important;
+}
+
+body[data-page="productos"] .prodSectionHead__right--search {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  width: min(360px, 38vw) !important;
+  min-width: 280px !important;
+}
+
+body[data-page="productos"] .prodTableSearchWrap--head {
+  width: 100% !important;
+}
+
+body[data-page="productos"] .prodTableSearchWrap--head .prodTableSearchInput {
+  width: 100% !important;
+}
+
+body[data-page="productos"] .prodTableShell {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
+}
+
+body[data-page="productos"] .prodTableTopbar {
+  display: none !important;
+}
+
+body[data-page="productos"] .prodTableWrap {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+}
+
+body[data-page="productos"] .prodTable tr.prodTableRow--clickable {
+  cursor: pointer !important;
+}
+
+body[data-page="productos"] .prodTable tr.prodTableRow--clickable:hover td {
+  background: rgba(255,255,255,.035) !important;
+}
+
+body[data-page="productos"] .prodTable tr.prodTableRow--clickable:focus-visible {
+  outline: 1px solid rgba(36,121,255,.8) !important;
+  outline-offset: -1px !important;
+}
+
+body[data-page="productos"] #prodSlidePanel[data-slide-kind="product-detail"] {
+  width: 50vw !important;
+  max-width: 50vw !important;
+  min-width: 560px !important;
+}
+
+body[data-page="productos"] #prodSlidePanel[data-slide-kind="product-detail"] #prodSlideCreateSetBtn {
+  display: none !important;
+}
+
+body[data-page="productos"] #prodSlidePanel[data-slide-kind="product-detail"] .prodSlidePanel__body {
+  overflow-y: auto !important;
+}
+
+body[data-page="productos"] .prodResumenDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+}
+
+body[data-page="productos"] .prodResumenDetail__hero {
+  border: 1px solid rgba(255,255,255,.10);
+  background: #242424;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+body[data-page="productos"] .prodResumenDetail__eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 8px;
+}
+
+body[data-page="productos"] .prodResumenDetail__title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+body[data-page="productos"] .prodResumenDetail__sku {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid rgba(36,121,255,.45);
+  background: rgba(36,121,255,.14);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body[data-page="productos"] .prodResumenDetail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body[data-page="productos"] .prodResumenDetail__card {
+  border: 1px solid rgba(255,255,255,.10);
+  background: #262626;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+body[data-page="productos"] .prodResumenDetail__card--wide {
+  grid-column: 1 / -1;
+}
+
+body[data-page="productos"] .prodResumenDetail__cardTitle {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+body[data-page="productos"] .prodResumenDetail__items {
+  display: grid;
+  gap: 10px;
+}
+
+body[data-page="productos"] .prodResumenDetail__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+
+body[data-page="productos"] .prodResumenDetail__item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+body[data-page="productos"] .prodResumenDetail__label {
+  color: rgba(255,255,255,.58);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+body[data-page="productos"] .prodResumenDetail__value {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 850;
+  text-align: right;
+  word-break: break-word;
+}
+
+body[data-page="productos"] .prodResumenDetail__empty {
+  color: rgba(255,255,255,.62);
+  font-size: 13px;
+  line-height: 1.45;
+  border: 1px dashed rgba(255,255,255,.14);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255,255,255,.03);
+}
+
+@media (max-width: 980px) {
+  body[data-page="productos"] .prodSectionHead--resumenTable {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  body[data-page="productos"] .prodSectionHead__right--search {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body[data-page="productos"] #prodSlidePanel[data-slide-kind="product-detail"] {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    min-width: 0 !important;
+  }
+
+  body[data-page="productos"] .prodResumenDetail__grid {
+    grid-template-columns: 1fr;
+  }
+}
