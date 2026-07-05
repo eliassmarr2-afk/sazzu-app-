@@ -478,6 +478,8 @@
     bind_();
   }
 
+  init_();
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init_);
   } else {
