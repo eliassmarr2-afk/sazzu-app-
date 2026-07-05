@@ -1,0 +1,131 @@
+/* PRODUCTOS · Nueva oferta · ajustes visuales finales */
+
+body[data-page="productos"] .main .offerWizard__hero {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+  margin: 0 -20px 22px -20px !important;
+  width: calc(100% + 40px) !important;
+  min-width: calc(100% + 40px) !important;
+  border-radius: 0 !important;
+  background: #2479ff !important;
+  background-image: none !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.10), 0 10px 26px rgba(0,0,0,.22) !important;
+}
+
+body[data-page="productos"] .main .offerWizard__heroTitle,
+body[data-page="productos"] .main .offerWizard__hero * {
+  color: #fff !important;
+}
+
+body[data-page="productos"] .main .prodOfferModal__close {
+  z-index: 30 !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__option,
+body[data-page="productos"] .main .offerWizardSelect__option * {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__option {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__optionTitle,
+body[data-page="productos"] .main .offerWizardSelect__optionLabel,
+body[data-page="productos"] .main .offerWizardSelect__optionName,
+body[data-page="productos"] .main .offerWizardSelect__option strong {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__optionMeta,
+body[data-page="productos"] .main .offerWizardSelect__optionSub,
+body[data-page="productos"] .main .offerWizardSelect__optionType,
+body[data-page="productos"] .main .offerWizardSelect__option small,
+body[data-page="productos"] .main .offerWizardSelect__option span {
+  color: rgba(255,255,255,.68) !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__option:hover,
+body[data-page="productos"] .main .offerWizardSelect__option.is-selected {
+  background: rgba(36,121,255,.16) !important;
+}
+
+body[data-page="productos"] .main .offerWizardSelect__value,
+body[data-page="productos"] .main .offerWizardSelect__trigger,
+body[data-page="productos"] .main .offerWizardSelect__trigger * {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview,
+body[data-page="productos"] .main .offerWizardPreview__card,
+body[data-page="productos"] .main .offerWizardPreview__selected,
+body[data-page="productos"] .main .offerWizardPreview__selectedHeader,
+body[data-page="productos"] .main .offerWizardPreview__selectedBody,
+body[data-page="productos"] .main .offerWizardPreview__grid,
+body[data-page="productos"] .main .offerWizardPreview__composition {
+  background: #2b2b2b !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__selected,
+body[data-page="productos"] .main .offerWizardPreview__selectedHeader,
+body[data-page="productos"] .main .offerWizardPreview__selectedBody {
+  border: 0 !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__selectedHeader::before,
+body[data-page="productos"] .main .offerWizardPreview__selectedHeader::after,
+body[data-page="productos"] .main .offerWizardPreview__card::before,
+body[data-page="productos"] .main .offerWizardPreview__card::after {
+  display: none !important;
+  content: none !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__title,
+body[data-page="productos"] .main .offerWizardPreview__id,
+body[data-page="productos"] .main .offerWizardPreview__value {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__eyebrow,
+body[data-page="productos"] .main .offerWizardPreview__label,
+body[data-page="productos"] .main .offerWizardPreview__value--composition,
+body[data-page="productos"] .main .offerWizardPreview__empty {
+  color: rgba(255,255,255,.68) !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__type--bundle {
+  background: rgba(150,107,255,.18) !important;
+  color: #d8c7ff !important;
+  border: 1px solid rgba(150,107,255,.28) !important;
+}
+
+body[data-page="productos"] .main .offerWizardPreview__type--cantidad {
+  background: rgba(245,158,11,.16) !important;
+  color: #ffd48a !important;
+  border: 1px solid rgba(245,158,11,.28) !important;
+}
+
+body[data-page="productos"] .main .offerWizard,
+body[data-page="productos"] .main .offerWizard input,
+body[data-page="productos"] .main .offerWizard select,
+body[data-page="productos"] .main .offerWizard textarea,
+body[data-page="productos"] .main .prodOfferModal__dialog {
+  color-scheme: dark !important;
+}
+
+body[data-page="productos"] .main .offerWizard input[type="date"] {
+  position: relative !important;
+  z-index: 2 !important;
+  color-scheme: dark !important;
+}
+
+body[data-page="productos"] .main .prodOfferModal__dialog,
+body[data-page="productos"] .main .prodOfferModal__content,
+body[data-page="productos"] .main .offerWizard {
+  overflow-x: visible !important;
+}
