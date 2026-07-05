@@ -110,3 +110,198 @@ body[data-page="productos"] #prodOfferShopifySelector .prodOfferShopifySelector_
   border-radius: 5px !important;
   box-shadow: none !important;
 }
+
+/* =========================================================
+   PRODUCTOS · Conjuntos de productos · Dark final
+   ========================================================= */
+
+body[data-page="productos"] .main #prodPanelConjuntos,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsShell,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard__topbar,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableWrap,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tbody,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tr,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable td {
+  background: #2b2b2b !important;
+  background-color: #2b2b2b !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsShell {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard {
+  border: 1px solid rgba(255,255,255,.16) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard__topbar {
+  border-bottom: 1px solid rgba(255,255,255,.14) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard__title {
+  color: #ffffff !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTableCard__note {
+  color: rgba(255,255,255,.68) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead tr,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable thead th {
+  background: #171717 !important;
+  background-color: #171717 !important;
+  color: rgba(255,255,255,.66) !important;
+  border-color: rgba(255,255,255,.10) !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tbody tr:hover,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable tbody tr:hover td,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--main.is-open,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--main.is-open td {
+  background: #303030 !important;
+  background-color: #303030 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__id,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__composition,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__money,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__scenario {
+  color: #f5f5f5 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__composition,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__scenario {
+  color: rgba(255,255,255,.72) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__id {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--bundle,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--cantidad {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 24px !important;
+  padding: 0 10px !important;
+  border-radius: 5px !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--bundle {
+  background: rgba(150,107,255,.18) !important;
+  color: #d8c7ff !important;
+  border-color: rgba(150,107,255,.36) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__type--cantidad {
+  background: rgba(245,158,11,.16) !important;
+  color: #ffd48a !important;
+  border-color: rgba(245,158,11,.34) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsCell__caret {
+  border-color: rgba(255,255,255,.70) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--main.is-open .prodSetsCell__caret {
+  border-color: #2479ff !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--detail,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--detail td,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__grid,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__item,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__block {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+  color: #f5f5f5 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsRow--detail td {
+  padding: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand {
+  margin: 0 !important;
+  padding: 16px !important;
+  border-top: 1px solid rgba(255,255,255,.12) !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__item {
+  padding: 14px !important;
+  border-right: 1px solid rgba(255,255,255,.12) !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__item:nth-child(3n) {
+  border-right: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__item:nth-last-child(-n+3) {
+  border-bottom: 0 !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__block {
+  margin-top: 14px !important;
+  padding: 14px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 5px !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__label {
+  color: rgba(255,255,255,.62) !important;
+  background: transparent !important;
+  font-weight: 850 !important;
+  letter-spacing: .08em !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__value,
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsExpand__value--composition {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .main #prodPanelConjuntos .prodSetsTable__empty {
+  background: #2b2b2b !important;
+  color: rgba(255,255,255,.72) !important;
+}
