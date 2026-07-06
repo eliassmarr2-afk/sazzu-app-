@@ -1,0 +1,264 @@
+/* =========================================================
+   PRODUCTOS · CONJUNTOS · DARK FIX
+   Oscurece el constructor de conjuntos y agrega CTA del tab.
+   ========================================================= */
+
+   body[data-page="productos"] #prodSubSlide {
+    background: #171717 !important;
+  }
+  
+  body[data-page="productos"] #prodSubSlideContent {
+    background: #171717 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Root del constructor */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder {
+    background: transparent !important;
+    color: #ffffff !important;
+  }
+  
+  /* Todo el texto en blanco por defecto */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder,
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder * {
+    color: #ffffff !important;
+  }
+  
+  /* Subtextos / hints / descripciones en gris suave */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    p,
+    small,
+    .hint,
+    .desc,
+    .sub,
+    .eyebrow,
+    .helper,
+    .muted,
+    [class*="hint"],
+    [class*="desc"],
+    [class*="sub"],
+    [class*="eyebrow"],
+    [class*="helper"],
+    [class*="muted"]
+  ) {
+    color: rgba(255,255,255,.68) !important;
+  }
+  
+  /* Tarjetas / bloques del constructor */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetBuilder__infoCard,
+    .prodSetIdentity,
+    .prodSetComposition,
+    .prodSetEconomics,
+    .prodSetFinancial,
+    .prodSetSummary,
+    .prodSetOperationalNote,
+    .prodSetFooter,
+    .prodSetCard,
+    [class*="prodSet"][class*="Card"],
+    [class*="prodSet"][class*="Section"],
+    [class*="prodSet"][class*="Block"],
+    [class*="prodSet"][class*="Summary"]
+  ) {
+    background: #242424 !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+  }
+  
+  /* Quitar sub-fondos blancos/negros feos dentro de tarjetas */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetBuilder__infoAccent,
+    .prodSetBuilder__infoIcon,
+    .prodSetBuilder__ruleTag,
+    .prodSetIdentity__status,
+    .prodSetSummary__status,
+    [class*="strip"],
+    [class*="banner"],
+    [class*="headerBar"]
+  ) {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  
+  /* Labels */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder label,
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    [class*="label"],
+    [class*="Label"]
+  ) {
+    color: rgba(255,255,255,.82) !important;
+  }
+  
+  /* Inputs / selects / textarea / campos readonly */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    input,
+    select,
+    textarea,
+    .prodSetFinanceSelect__trigger,
+    .prodSetSkuSelect__trigger,
+    .prodSetSelect__trigger,
+    .prodSetInputLike,
+    .prodSetReadOnly
+  ) {
+    background: #2c2c2c !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    input,
+    select,
+    textarea
+  )::placeholder {
+    color: rgba(255,255,255,.45) !important;
+  }
+  
+  /* Inputs disabled */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    input[disabled],
+    select[disabled],
+    textarea[disabled]
+  ) {
+    background: #303030 !important;
+    color: rgba(255,255,255,.68) !important;
+    opacity: 1 !important;
+  }
+  
+  /* Dropdowns custom */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetFinanceSelect,
+    .prodSetSkuSelect,
+    .prodSetSelect
+  ) {
+    background: transparent !important;
+  }
+  
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetFinanceSelect__dropdown,
+    .prodSetSkuSelect__dropdown,
+    .prodSetSelect__dropdown
+  ) {
+    background: #232323 !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: none !important;
+  }
+  
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetFinanceSelect__option,
+    .prodSetSkuSelect__option,
+    .prodSetSelect__option
+  ) {
+    background: transparent !important;
+    color: #ffffff !important;
+  }
+  
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetFinanceSelect__option:hover,
+    .prodSetSkuSelect__option:hover,
+    .prodSetSelect__option:hover
+  ) {
+    background: rgba(255,255,255,.06) !important;
+  }
+  
+  /* Botones SIEMPRE con texto blanco */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder button {
+    color: #ffffff !important;
+  }
+  
+  /* Botones secundarios dark */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .prodSetIdentity__typeBtn,
+    .prodSetFooter__secondaryBtn,
+    .prodSetFooter__ghostBtn,
+    .btn-secondary,
+    .button-secondary,
+    .ghost-btn,
+    #prodSetCreateAnotherBtn
+  ) {
+    background: #2a2a2a !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  /* Tipo seleccionado */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder .prodSetIdentity__typeBtn.is-active {
+    background: rgba(36,121,255,.18) !important;
+    border-color: rgba(36,121,255,.55) !important;
+    color: #ffffff !important;
+  }
+  
+  /* CTA principal */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    #prodSetSaveBtn,
+    .prodSetFooter__primaryBtn,
+    .btn-primary,
+    .button-primary
+  ) {
+    background: #2479FF !important;
+    border: 1px solid #2479FF !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  /* Badges / chips */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    .badge,
+    .chip,
+    .tag,
+    [class*="badge"],
+    [class*="Badge"],
+    [class*="tag"],
+    [class*="Tag"],
+    [class*="status"],
+    [class*="Status"]
+  ) {
+    background: rgba(255,255,255,.08) !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+  
+  /* Divisores */
+  body[data-page="productos"] #prodSubSlideContent .prodSetBuilder :is(
+    hr,
+    .divider,
+    .card-divider,
+    .section-divider,
+    [class*="divider"]
+  ) {
+    border-color: rgba(255,255,255,.08) !important;
+    background: rgba(255,255,255,.08) !important;
+  }
+  
+  /* Toolbar del TAB Conjuntos */
+  body[data-page="productos"] .prodConjuntosToolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0 0 14px 0;
+  }
+  
+  body[data-page="productos"] .prodConjuntosCreateBtn {
+    appearance: none;
+    border: 1px solid #2479FF;
+    background: #2479FF;
+    color: #ffffff !important;
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: none;
+  }
+  
+  body[data-page="productos"] .prodConjuntosCreateBtn:hover {
+    filter: brightness(1.04);
+  }
+  
+  body[data-page="productos"] .prodConjuntosCreateBtn:active {
+    transform: translateY(1px);
+  }
