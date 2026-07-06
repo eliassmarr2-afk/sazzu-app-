@@ -1,7 +1,9 @@
 console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
 (function () {
-  const BUILD = "FINANCE_ORDERS_TABLE_UI_2026_06_29_04";
+  "use strict";
+
+  const BUILD = "FINANCE_ORDERS_TABLE_ALL_2026_07_06_01";
   const VIEW_STORAGE_KEY = "sazzu_finanzas_active_view";
 
   const state = {
@@ -9,7 +11,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     total: 0,
     loading: false,
     error: "",
-    limit: 50,
+    limit: 10,
     offset: 0,
     view: "pedidos",
     selectedRow: null
@@ -47,10 +49,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   function fmtDate(value) {
     const s = String(value || "");
     if (!s) return "—";
-
     const ymd = s.slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return "—";
-
     return `${ymd.slice(8, 10)}/${ymd.slice(5, 7)}/${ymd.slice(0, 4)}`;
   }
 
@@ -62,7 +62,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
             <div>
               <div class="u-sectionLabel">Pedidos financieros</div>
               <div class="u-muted" style="margin-top:6px;" id="finOrdersMeta">
-                Vista operativa de pagos, cuotas, costos financieros y neto esperado.
+                Vista completa de pedidos financieros. No depende del selector de fechas del cashflow.
               </div>
             </div>
 
@@ -83,8 +83,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
               <select id="finOrdersStatusFilter" class="u-input" style="max-width:170px;">
                 <option value="">Todos los estados</option>
-                <option value="pending">Pendiente</option>
-                <option value="processed">Procesado</option>
+                <option value="pending">Pendiente / por pagar</option>
+                <option value="processed">Procesado / pagado</option>
                 <option value="intervened">Intervenido</option>
                 <option value="cancelled">Cancelado</option>
                 <option value="refunded">Reembolsado</option>
@@ -124,6 +124,19 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div
+            id="finOrdersPager"
+            class="u-row u-row--between u-row--center"
+            style="gap:12px; margin-top:14px; flex-wrap:wrap;"
+          >
+            <div class="u-muted" id="finOrdersPageInfo">—</div>
+
+            <div class="u-row u-row--center" style="gap:8px; justify-content:flex-end;">
+              <button id="finOrdersPrev" class="btn" type="button" aria-label="Página anterior">‹</button>
+              <button id="finOrdersNext" class="btn" type="button" aria-label="Página siguiente">›</button>
+            </div>
           </div>
         </div>
       </div>
@@ -170,51 +183,13 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     return section;
   }
 
-  function injectTabStyles() {
-    if ($("finTopTabsStyle")) return;
-    const style = document.createElement("style");
-    style.id = "finTopTabsStyle";
-    style.textContent = `
-      .finTopTabs {
-        display:inline-flex;
-        align-items:center;
-        gap:4px;
-        padding:4px;
-        border:1px solid rgba(148,163,184,.35);
-        border-radius:999px;
-        background:rgba(248,250,252,.88);
-        box-shadow:0 1px 3px rgba(15,23,42,.06);
-      }
-      .finTopTabs__btn {
-        appearance:none;
-        border:0;
-        border-radius:999px;
-        background:transparent;
-        color:#64748B;
-        cursor:pointer;
-        font-size:13px;
-        font-weight:800;
-        line-height:1;
-        padding:9px 16px;
-        white-space:nowrap;
-      }
-      .finTopTabs__btn.is-active {
-        background:#fff;
-        color:#0F172A;
-        box-shadow:0 1px 7px rgba(15,23,42,.12);
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
   function ensureTopTabs() {
-    injectTabStyles();
-
     let tabs = $("finTopTabs");
     if (tabs) return tabs;
 
-    const headerRightRow = document.querySelector(".appHeader__right .u-row");
-    if (!headerRightRow) return null;
+    const header = document.querySelector(".appHeader");
+    const headerRight = document.querySelector(".appHeader__right");
+    if (!header) return null;
 
     tabs = document.createElement("div");
     tabs.id = "finTopTabs";
@@ -226,13 +201,17 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       <button class="finTopTabs__btn" type="button" id="finViewMovimientos" data-fin-view-btn="movimientos" role="tab">Movimientos</button>
     `;
 
-    headerRightRow.insertBefore(tabs, headerRightRow.firstChild);
-
     tabs.addEventListener("click", ev => {
       const btn = ev.target.closest("[data-fin-view-btn]");
       if (!btn) return;
       setView(String(btn.getAttribute("data-fin-view-btn") || "pedidos"));
     });
+
+    if (headerRight && headerRight.parentNode === header) {
+      header.insertBefore(tabs, headerRight);
+    } else {
+      header.appendChild(tabs);
+    }
 
     return tabs;
   }
@@ -246,6 +225,12 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       if (section === tableSection) return;
       section.dataset.finView = "movimientos";
     });
+  }
+
+  function setHeaderDateControlsVisible(isVisible) {
+    const headerRight = document.querySelector(".appHeader__right");
+    if (!headerRight) return;
+    headerRight.style.display = isVisible ? "" : "none";
   }
 
   function setView(view) {
@@ -270,6 +255,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       section.style.display = key === next ? "" : "none";
     });
 
+    setHeaderDateControlsVisible(next === "movimientos");
+
     if (next === "pedidos") {
       loadOrdersTable();
     } else if (tableSection) {
@@ -283,14 +270,6 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       if (saved === "pedidos" || saved === "movimientos") return saved;
     } catch (e) {}
     return "pedidos";
-  }
-
-  function getRangeParams() {
-    const fromEl = $("finDtFrom");
-    const toEl = $("finDtTo");
-    const from = fromEl && fromEl.value ? `${fromEl.value}T00:00:00-03:00` : null;
-    const to = toEl && toEl.value ? `${toEl.value}T23:59:59-03:00` : null;
-    return { from, to };
   }
 
   function getFilters() {
@@ -307,7 +286,6 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
   function normalizeGatewayLabel(row) {
     if (row && row.is_cod) return "Contra reembolso";
-
     const raw = String(row && (row.payment_gateway || row.provider) || "").trim().toLowerCase();
     if (!raw) return "—";
     if (raw === "mercadopago" || raw === "mercado_pago") return "Mercado Pago";
@@ -344,8 +322,10 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     const body = $("finOrdersTableBody");
     const empty = $("finOrdersEmpty");
     const meta = $("finOrdersMeta");
+    const pageInfo = $("finOrdersPageInfo");
     if (empty) empty.style.display = "none";
-    if (meta) meta.textContent = "Cargando pedidos financieros...";
+    if (meta) meta.textContent = "Cargando todos los pedidos financieros...";
+    if (pageInfo) pageInfo.textContent = "Cargando...";
     if (!body) return;
 
     body.innerHTML = `
@@ -361,13 +341,41 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     const body = $("finOrdersTableBody");
     const empty = $("finOrdersEmpty");
     const meta = $("finOrdersMeta");
+    const pageInfo = $("finOrdersPageInfo");
 
     if (meta) meta.textContent = "No se pudo cargar la tabla financiera.";
+    if (pageInfo) pageInfo.textContent = "—";
     if (empty) {
       empty.style.display = "";
       empty.textContent = message || "No se pudo cargar la tabla financiera.";
     }
     if (body) body.innerHTML = "";
+    renderPager();
+  }
+
+  function renderPager() {
+    const pageInfo = $("finOrdersPageInfo");
+    const prev = $("finOrdersPrev");
+    const next = $("finOrdersNext");
+
+    const total = Number(state.total || 0);
+    const limit = Number(state.limit || 10);
+    const offset = Number(state.offset || 0);
+    const currentCount = Array.isArray(state.rows) ? state.rows.length : 0;
+
+    const from = total && currentCount ? offset + 1 : 0;
+    const to = total && currentCount ? Math.min(offset + currentCount, total) : 0;
+    const page = limit ? Math.floor(offset / limit) + 1 : 1;
+    const totalPages = limit ? Math.max(1, Math.ceil(total / limit)) : 1;
+
+    if (pageInfo) {
+      pageInfo.textContent = total
+        ? `Mostrando ${from}-${to} de ${total.toLocaleString("es-AR")} · Página ${page} de ${totalPages}`
+        : "Sin pedidos para mostrar";
+    }
+
+    if (prev) prev.disabled = offset <= 0 || state.loading;
+    if (next) next.disabled = (offset + limit) >= total || state.loading;
   }
 
   function renderTable() {
@@ -377,7 +385,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     if (!body) return;
 
     if (meta) {
-      meta.textContent = `${state.total.toLocaleString("es-AR")} pedido${state.total === 1 ? "" : "s"} financiero${state.total === 1 ? "" : "s"} en el rango activo.`;
+      meta.textContent = `${state.total.toLocaleString("es-AR")} pedido${state.total === 1 ? "" : "s"} financiero${state.total === 1 ? "" : "s"} en total. Sin filtro de fecha.`;
     }
 
     if (!state.rows.length) {
@@ -386,6 +394,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         empty.style.display = "";
         empty.textContent = "No hay pedidos financieros para los filtros activos.";
       }
+      renderPager();
       return;
     }
 
@@ -448,6 +457,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         </tr>
       `;
     }).join("");
+
+    renderPager();
   }
 
   function findRowById(rowId) {
@@ -479,9 +490,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
   function renderSnapshot(snapshot) {
     const entries = Object.entries(snapshot || {}).filter(([, value]) => value != null && value !== "");
-    if (!entries.length) {
-      return `<div class="u-muted">Sin snapshot de regla aplicada.</div>`;
-    }
+    if (!entries.length) return `<div class="u-muted">Sin snapshot de regla aplicada.</div>`;
 
     return entries.map(([key, value]) => {
       const label = String(key).replace(/_/g, " ");
@@ -531,14 +540,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         ${codNote}
 
         <section class="finOrderDetailGrid">
-          <div class="finOrderDetailMini">
-            <div class="finOrderDetailMini__label">Bruto vendido</div>
-            <div class="finOrderDetailMini__value">${fmtMoney(gross)}</div>
-          </div>
-          <div class="finOrderDetailMini">
-            <div class="finOrderDetailMini__label">Costo financiero total</div>
-            <div class="finOrderDetailMini__value ${totalCost === 0 ? "is-green" : ""}">${fmtMoney(totalCost)}</div>
-          </div>
+          <div class="finOrderDetailMini"><div class="finOrderDetailMini__label">Bruto vendido</div><div class="finOrderDetailMini__value">${fmtMoney(gross)}</div></div>
+          <div class="finOrderDetailMini"><div class="finOrderDetailMini__label">Costo financiero total</div><div class="finOrderDetailMini__value ${totalCost === 0 ? "is-green" : ""}">${fmtMoney(totalCost)}</div></div>
         </section>
 
         <section class="finOrderDetailCard">
@@ -571,9 +574,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
           <div class="finOrderDetailSectionTitle">Regla aplicada</div>
           ${renderDetailLine("Origen", row.source || "—")}
           ${renderDetailLine("Tipo de cálculo", calcType)}
-          <div class="finOrderDetailSnapshot">
-            ${renderSnapshot(snapshot)}
-          </div>
+          <div class="finOrderDetailSnapshot">${renderSnapshot(snapshot)}</div>
         </section>
       </div>
     `;
@@ -595,7 +596,6 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     `;
 
     document.body.appendChild(overlay);
-
     const backdrop = $("finOrderDetailBackdrop");
     if (backdrop) backdrop.addEventListener("click", closeOrderDetail);
 
@@ -609,12 +609,10 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
 
   function openOrderDetail(row) {
     if (!row) return;
-
     state.selectedRow = row;
     const overlay = ensureDetailSlide();
     const mount = $("finOrderDetailMount");
     if (!mount) return;
-
     mount.innerHTML = detailMarkup(row);
     overlay.classList.add("is-open");
     overlay.setAttribute("aria-hidden", "false");
@@ -624,7 +622,6 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   function closeOrderDetail() {
     const overlay = $("finOrderDetailOverlay");
     if (!overlay) return;
-
     overlay.classList.remove("is-open");
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("finOrderDetailOpen");
@@ -643,17 +640,17 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       return;
     }
 
-    const range = getRangeParams();
     const filters = getFilters();
 
     state.loading = true;
     state.error = "";
     renderSkeleton();
+    renderPager();
 
     try {
       const payload = await window.SazzuSupabase.rpc("rpc_finance_orders_table", {
-        input_from: range.from,
-        input_to: range.to,
+        input_from: null,
+        input_to: null,
         input_gateway: filters.gateway || null,
         input_status: filters.status || null,
         input_q: filters.q || null,
@@ -669,7 +666,7 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       state.total = Number(payload.total || state.rows.length || 0);
       state.error = "";
 
-      console.log("[finanzas-pedidos] tabla financiera", BUILD, payload.build, state.rows.length);
+      console.log("[finanzas-pedidos] tabla financiera sin fecha", BUILD, payload.build, state.rows.length);
       renderTable();
     } catch (err) {
       state.rows = [];
@@ -679,13 +676,13 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       renderError(state.error);
     } finally {
       state.loading = false;
+      renderPager();
     }
   }
 
   function cleanLegacyAlertLabels() {
     const list = $("finAlertsList");
     if (!list) return;
-
     list.querySelectorAll(".finAlertCard__label").forEach(label => {
       const text = String(label.textContent || "").trim();
       if (text === "Bruto N") label.textContent = "Bruto vendido";
@@ -702,7 +699,8 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
     const searchEl = $("finOrdersSearch");
     const gatewayEl = $("finOrdersGatewayFilter");
     const statusEl = $("finOrdersStatusFilter");
-    const globalApplyBtn = $("btnApplyFin");
+    const prevBtn = $("finOrdersPrev");
+    const nextBtn = $("finOrdersNext");
     const body = $("finOrdersTableBody");
 
     if (applyBtn) {
@@ -729,6 +727,22 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
       });
     }
 
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (state.offset <= 0) return;
+        state.offset = Math.max(0, state.offset - state.limit);
+        loadOrdersTable();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (state.offset + state.limit >= state.total) return;
+        state.offset += state.limit;
+        loadOrdersTable();
+      });
+    }
+
     if (body && !body.__wiredFinanceOrderDetail) {
       body.__wiredFinanceOrderDetail = true;
       body.addEventListener("click", ev => {
@@ -746,21 +760,12 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
         openOrderDetail(row);
       });
     }
-
-    if (globalApplyBtn && !globalApplyBtn.__wiredFinanceOrdersTable) {
-      globalApplyBtn.__wiredFinanceOrdersTable = true;
-      globalApplyBtn.addEventListener("click", () => {
-        state.offset = 0;
-        setTimeout(loadOrdersTable, 150);
-      });
-    }
   }
 
   function observeAlerts() {
     const list = $("finAlertsList");
     if (!list || list.__financeOrdersCleanObserver) return;
     list.__financeOrdersCleanObserver = true;
-
     const observer = new MutationObserver(() => cleanLegacyAlertLabels());
     observer.observe(list, { childList: true, subtree: true });
     cleanLegacyAlertLabels();
