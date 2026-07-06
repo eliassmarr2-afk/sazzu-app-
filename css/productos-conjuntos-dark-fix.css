@@ -30,20 +30,21 @@ body[data-page="productos"] #prodSubSlideContent {
 }
 
 /* Root REAL del partial */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers {
+body[data-page="productos"] #prodSubSlideContent .prodSlideOffers,
+body[data-page="productos"] #prodSlideContent .prodSlideOffers {
   background: var(--prod-set-bg) !important;
   color: var(--prod-set-text) !important;
 }
 
 /* Limpieza brutal de fondos blancos dentro del constructor */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers * {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers * {
   color: var(--prod-set-text) !important;
   box-shadow: none !important;
 }
 
 /* Tarjetas principales: único fondo de tarjeta */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSlideOffers__heroCardInfo,
   .prodSetIdentity__card,
   .prodSetCompose__card,
@@ -62,7 +63,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Contenedores internos: sin bloques negros/grises/claros */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSlideOffers__hero,
   .prodSlideOffers__heroAccent,
   .prodSlideOffers__heroCardBody,
@@ -98,10 +99,10 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Módulos de producto: no más tarjetas blancas; se integran a la tarjeta madre */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem__body,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem__top,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem__field {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetItem,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetItem__body,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetItem__top,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetItem__field {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -109,13 +110,13 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem__
   box-shadow: none !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetItem {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetItem {
   border: 1px solid var(--prod-set-border-soft) !important;
   border-radius: 8px !important;
 }
 
 /* Barras de header grises/claras: transparentes */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetCompose__header,
   .prodSetSummary__header,
   .prodSetEconomics__header,
@@ -125,7 +126,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Títulos */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSlideOffers__heroTitle,
   .prodSetIdentity__title,
   .prodSetCompose__title,
@@ -138,7 +139,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Subtextos / hints / labels secundarios */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSlideOffers__heroDesc,
   .prodSetIdentity__hint,
   .prodSetCompose__subtitle,
@@ -161,7 +162,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Labels */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   label,
   .prodSetIdentity__label,
   .prodSetItem__label,
@@ -172,7 +173,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Valores del resumen */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSummary__factValue,
   .prodSetSummary__resultValue,
   .prodSetSummary__statusValue
@@ -181,7 +182,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Inputs/selects nativos y readonly */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   input,
   select,
   textarea,
@@ -200,12 +201,12 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   box-shadow: none !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(input, textarea)::placeholder {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(input, textarea)::placeholder {
   color: rgba(255,255,255,.42) !important;
   -webkit-text-fill-color: rgba(255,255,255,.42) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(input[readonly], input[disabled], select[disabled], textarea[disabled]) {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(input[readonly], input[disabled], select[disabled], textarea[disabled]) {
   background: var(--prod-set-bg) !important;
   color: rgba(255,255,255,.70) !important;
   -webkit-text-fill-color: rgba(255,255,255,.70) !important;
@@ -213,7 +214,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(input[read
 }
 
 /* Dropdowns custom generados por JS */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSkuSelect,
   .prodSetFinanceSelect
 ) {
@@ -221,7 +222,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   color: var(--prod-set-text) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSkuSelect__trigger,
   .prodSetFinanceSelect__trigger
 ) {
@@ -230,7 +231,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   color: var(--prod-set-text) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSkuSelect__dropdown,
   .prodSetFinanceSelect__dropdown
 ) {
@@ -239,7 +240,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   color: var(--prod-set-text) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSkuSelect__option,
   .prodSetFinanceSelect__option
 ) {
@@ -247,7 +248,7 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   color: var(--prod-set-text) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetSkuSelect__option:hover,
   .prodSetFinanceSelect__option:hover,
   .prodSetSkuSelect__option.is-selected,
@@ -258,15 +259,15 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Iconos */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers svg,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers path,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers circle {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers svg,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers path,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers circle {
   color: var(--prod-set-text) !important;
   stroke: currentColor !important;
 }
 
 /* Badges / estados */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetIdentity__status,
   .prodSetCompose__ruleTag,
   .prodSetItem__badge,
@@ -280,14 +281,14 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
 }
 
 /* Botones: nunca texto oscuro */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers button,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetActions__btn {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers button,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetActions__btn {
   color: var(--prod-set-text) !important;
   -webkit-text-fill-color: var(--prod-set-text) !important;
   box-shadow: none !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers :is(
   .prodSetIdentity__typeBtn,
   .prodSetActions__btn--ghost,
   .prodSetActions__btn--dark,
@@ -301,16 +302,16 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers :is(
   color: var(--prod-set-text) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetIdentity__typeBtn.is-active,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers #prodSetSaveBtn,
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetActions__btn--primary {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetIdentity__typeBtn.is-active,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers #prodSetSaveBtn,
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetActions__btn--primary {
   background: var(--prod-set-blue) !important;
   border-color: var(--prod-set-blue) !important;
   color: var(--prod-set-text) !important;
 }
 
 /* Acciones inferiores sin franja blanca */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetActions {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers .prodSetActions {
   display: flex !important;
   justify-content: flex-end !important;
   gap: 10px !important;
@@ -320,29 +321,48 @@ body[data-page="productos"] #prodSubSlideContent .prodSlideOffers .prodSetAction
 }
 
 /* Cualquier inline blanco residual dentro del constructor */
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="background: #ffffff"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="background:#ffffff"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="background: white"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="background:white"] {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="background: #ffffff"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="background:#ffffff"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="background: white"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="background:white"] {
   background: var(--prod-set-card) !important;
   background-color: var(--prod-set-card) !important;
   color: var(--prod-set-text) !important;
   border-color: var(--prod-set-border) !important;
 }
 
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="color: #172033"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="color:#172033"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="color: #61708b"],
-body[data-page="productos"] #prodSubSlideContent .prodSlideOffers [style*="color:#61708b"] {
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="color: #172033"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="color:#172033"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="color: #61708b"],
+body[data-page="productos"] :is(#prodSubSlideContent, #prodSlideContent) .prodSlideOffers [style*="color:#61708b"] {
   color: var(--prod-set-text) !important;
 }
 
-/* Toolbar del TAB Conjuntos */
+/* Slide directo del constructor: sin botón extra del header */
+body[data-page="productos"] #prodSlidePanel[data-main-layout="create-set-direct"] #prodSlideCreateSetBtn {
+  display: none !important;
+}
+
+/* Toolbar del TAB Conjuntos: no debe crear contenedor visible */
 body[data-page="productos"] .prodConjuntosToolbar {
   display: flex !important;
   justify-content: flex-end !important;
   align-items: center !important;
   margin: 0 0 14px 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="productos"] .prodConjuntosToolbar::before,
+body[data-page="productos"] .prodConjuntosToolbar::after {
+  display: none !important;
+  content: none !important;
 }
 
 body[data-page="productos"] .prodConjuntosCreateBtn {
