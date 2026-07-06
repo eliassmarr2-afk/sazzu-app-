@@ -39,6 +39,10 @@
     /* TAB Resumen · tabla limpia + detalle lateral seguro */
     appendCss_('productosResumenRowDetailCss', '../css/productos-resumen-row-detail.css');
     appendScript_('productosResumenRowDetailJs', '../js/productos-resumen-row-detail.js');
+
+    /* TAB Conjuntos · constructor dark + CTA seguro */
+    appendCss_('productosConjuntosDarkFixCss', '../css/productos-conjuntos-dark-fix.css');
+    appendScript_('productosConjuntosTabCtaJs', '../js/productos-conjuntos-tab-cta.js');
   }
 
   function readStore_() {
