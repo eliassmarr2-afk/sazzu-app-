@@ -52,6 +52,9 @@ appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archi
     /* TAB Conjuntos · constructor dark + CTA seguro */
     appendCss_('productosConjuntosDarkFixCss', '../css/productos-conjuntos-dark-fix.css');
     appendScript_('productosConjuntosTabCtaJs', '../js/productos-conjuntos-tab-cta.js');
+
+    /* TAB Conjuntos · archivado seguro */
+    appendScript_('productosConjuntosArchiveActionsJs', '../js/productos-conjuntos-archive-actions.js');
   }
 
   function readStore_() {
