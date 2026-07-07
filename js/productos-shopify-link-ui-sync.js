@@ -43,6 +43,9 @@ appendScript_('productosResumenRowDetailJs', '../js/productos-resumen-row-detail
 /* TAB Resumen · archivado seguro de SKU */
 appendScript_('productosResumenArchiveActionsJs', '../js/productos-resumen-archive-actions.js');
 
+/* TAB Ofertas · archivado seguro */
+appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archive-actions.js');
+
     /* TAB Conjuntos · constructor dark + CTA seguro */
     appendCss_('productosConjuntosDarkFixCss', '../css/productos-conjuntos-dark-fix.css');
     appendScript_('productosConjuntosTabCtaJs', '../js/productos-conjuntos-tab-cta.js');

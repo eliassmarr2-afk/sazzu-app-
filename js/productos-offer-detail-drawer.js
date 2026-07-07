@@ -347,6 +347,16 @@
     document.body.dataset.productosOfferDrawerBound = BUILD;
 
     window.addEventListener("click", function (event) {
+      const archiveTarget = event.target && event.target.closest
+        ? event.target.closest(
+            "[data-prod-offer-archive-id], .prodOfferArchiveBtn, .prodOfferArchiveActionCell, #prodOfferArchiveOverlay, #prodOfferArchiveDialog"
+          )
+        : null;
+    
+      if (archiveTarget) {
+        return;
+      }
+    
       const closeTarget = event.target && event.target.closest ? event.target.closest("#prodOfferDrawerCloseBtn, #prodOfferDrawerOverlay") : null;
       if (closeTarget) {
         event.preventDefault();
