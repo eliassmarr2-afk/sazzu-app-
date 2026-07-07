@@ -37,8 +37,11 @@
     appendCss_('productosOfferShopifySelectorDarkFixCss', '../css/productos-offer-shopify-selector-dark-fix.css');
 
     /* TAB Resumen · tabla limpia + detalle lateral seguro */
-    appendCss_('productosResumenRowDetailCss', '../css/productos-resumen-row-detail.css');
-    appendScript_('productosResumenRowDetailJs', '../js/productos-resumen-row-detail.js');
+appendCss_('productosResumenRowDetailCss', '../css/productos-resumen-row-detail.css');
+appendScript_('productosResumenRowDetailJs', '../js/productos-resumen-row-detail.js');
+
+/* TAB Resumen · archivado seguro de SKU */
+appendScript_('productosResumenArchiveActionsJs', '../js/productos-resumen-archive-actions.js');
 
     /* TAB Conjuntos · constructor dark + CTA seguro */
     appendCss_('productosConjuntosDarkFixCss', '../css/productos-conjuntos-dark-fix.css');
