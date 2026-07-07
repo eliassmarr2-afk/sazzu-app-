@@ -46,6 +46,9 @@ appendScript_('productosResumenArchiveActionsJs', '../js/productos-resumen-archi
 /* TAB Ofertas · archivado seguro */
 appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archive-actions.js');
 
+    /* TAB Ofertas · badge estado archivado */
+    appendScript_('productosOfertasArchivedBadgeJs', '../js/productos-ofertas-archived-badge.js');
+
     /* TAB Conjuntos · constructor dark + CTA seguro */
     appendCss_('productosConjuntosDarkFixCss', '../css/productos-conjuntos-dark-fix.css');
     appendScript_('productosConjuntosTabCtaJs', '../js/productos-conjuntos-tab-cta.js');
