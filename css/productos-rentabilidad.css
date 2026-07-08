@@ -1,0 +1,613 @@
+/* =========================================================
+   PRODUCTOS · RENTABILIDAD / PERFORMANCE COMERCIAL
+   UI dark aislada
+   ========================================================= */
+
+.prodRentPanel {
+  color: rgba(255,255,255,.86);
+}
+
+.prodRentShell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prodRentHeader {
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(135deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+  border-radius: 5px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.prodRentHeader__eyebrow {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.48);
+  margin-bottom: 6px;
+}
+
+.prodRentHeader__title {
+  margin: 0;
+  color: #fff;
+  font-size: 21px;
+  font-weight: 850;
+}
+
+.prodRentHeader__sub {
+  margin: 7px 0 0;
+  color: rgba(255,255,255,.62);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.prodRentHeader__badge {
+  flex: 0 0 auto;
+  border: 1px solid rgba(36,121,255,.28);
+  background: rgba(36,121,255,.12);
+  color: #8fb8ff;
+  border-radius: 5px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.prodRentFilters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.035);
+  border-radius: 5px;
+  padding: 14px;
+}
+
+.prodRentFilter label {
+  display: block;
+  margin-bottom: 7px;
+  color: rgba(255,255,255,.48);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.prodRentFilter select {
+  width: 100%;
+  height: 38px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #242424;
+  color: rgba(255,255,255,.84);
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.prodRentKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.prodRentKpiCard,
+.prodRentCard {
+  border: 1px solid rgba(255,255,255,.08);
+  background: #242424;
+  border-radius: 5px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.18);
+}
+
+.prodRentKpiCard {
+  padding: 15px;
+  min-height: 112px;
+}
+
+.prodRentKpiCard__label {
+  color: rgba(255,255,255,.52);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.prodRentKpiCard__value {
+  margin-top: 12px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.prodRentKpiCard__hint {
+  margin-top: 10px;
+  color: rgba(255,255,255,.58);
+  font-size: 12px;
+}
+
+.prodRentKpiCard--unit { box-shadow: inset 3px 0 0 rgba(36,121,255,.74); }
+.prodRentKpiCard--qty { box-shadow: inset 3px 0 0 rgba(245,158,11,.74); }
+.prodRentKpiCard--bundle { box-shadow: inset 3px 0 0 rgba(126,87,194,.80); }
+
+.prodRentGrid,
+.prodRentTwoCols {
+  display: grid;
+  grid-template-columns: 1.35fr .65fr;
+  gap: 12px;
+}
+
+.prodRentCard {
+  padding: 15px;
+}
+
+.prodRentCard__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.prodRentCard__top h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.prodRentCard__top p {
+  margin: 5px 0 0;
+  color: rgba(255,255,255,.52);
+  font-size: 12px;
+}
+
+.prodRentMiniSwitch {
+  display: inline-flex;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(0,0,0,.16);
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.prodRentMiniSwitch button {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.54);
+  border-radius: 4px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.prodRentMiniSwitch button.is-active {
+  background: rgba(36,121,255,.18);
+  color: #9fc0ff;
+}
+
+.prodRentBars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.prodRentBar__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+}
+
+.prodRentBar__head strong {
+  color: #fff;
+}
+
+.prodRentBar__track {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,.07);
+}
+
+.prodRentBar__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(36,121,255,.85), rgba(126,87,194,.85));
+}
+
+.prodRentTicketList,
+.prodRentSourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prodRentTicketList div,
+.prodRentSourceList div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.035);
+  color: rgba(255,255,255,.66);
+  font-size: 12px;
+}
+
+.prodRentTicketList strong,
+.prodRentSourceList strong {
+  color: #fff;
+}
+
+.prodRentOfferRank {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prodRentRankItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.035);
+}
+
+.prodRentRankItem strong {
+  display: block;
+  color: #fff;
+  font-size: 12px;
+}
+
+.prodRentRankItem span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255,255,255,.50);
+  font-size: 11px;
+}
+
+.prodRentRankItem b {
+  color: #8fb8ff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.prodRentSalesCard {
+  padding-bottom: 0;
+}
+
+.prodRentTableWrap {
+  max-height: 255px;
+  overflow: auto;
+  border-top: 1px solid rgba(255,255,255,.08);
+  margin: 0 -15px;
+}
+
+.prodRentTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prodRentTable th,
+.prodRentTable td {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: 12px;
+}
+
+.prodRentTable th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #1f1f1f;
+  color: rgba(255,255,255,.52);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.prodRentTable td {
+  color: rgba(255,255,255,.72);
+}
+
+.prodRentTable tbody tr {
+  cursor: pointer;
+}
+
+.prodRentTable tbody tr:hover {
+  background: rgba(36,121,255,.06);
+}
+
+.prodRentBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.055);
+  color: rgba(255,255,255,.70);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.prodRentBadge--bundle {
+  border-color: rgba(126,87,194,.38);
+  background: rgba(126,87,194,.15);
+  color: #c5b5ff;
+}
+
+.prodRentBadge--qty {
+  border-color: rgba(245,158,11,.38);
+  background: rgba(245,158,11,.14);
+  color: #ffd28a;
+}
+
+.prodRentBadge--unit {
+  border-color: rgba(36,121,255,.38);
+  background: rgba(36,121,255,.14);
+  color: #9fc0ff;
+}
+
+.prodRentViewBtn {
+  border: 1px solid rgba(36,121,255,.38);
+  background: rgba(36,121,255,.12);
+  color: #9fc0ff;
+  border-radius: 5px;
+  padding: 6px 9px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.prodRentDrawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99970;
+  display: none;
+  background: rgba(0,0,0,.42);
+  backdrop-filter: blur(2px);
+}
+
+.prodRentDrawerOverlay.is-open {
+  display: block;
+}
+
+.prodRentDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 99971;
+  width: min(50vw, 720px);
+  min-width: 520px;
+  height: 100vh;
+  background: #242424;
+  border-left: 1px solid rgba(255,255,255,.10);
+  box-shadow: -24px 0 80px rgba(0,0,0,.42);
+  transform: translateX(104%);
+  transition: transform .22s ease;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.prodRentDrawer.is-open {
+  transform: translateX(0);
+}
+
+.prodRentDrawer__head {
+  min-height: 74px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prodRentDrawer__eyebrow {
+  color: rgba(255,255,255,.46);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.prodRentDrawer__head h3 {
+  margin: 5px 0 0;
+  font-size: 17px;
+}
+
+.prodRentDrawer__close {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.72);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.prodRentDrawer__body {
+  padding: 16px 18px 26px;
+  overflow: auto;
+}
+
+.prodRentDrawer__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.prodRentDrawerBlock {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.035);
+  border-radius: 5px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.prodRentDrawerBlock h4 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.prodRentInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.prodRentInfoGrid div,
+.prodRentCodeList div {
+  border-radius: 5px;
+  background: rgba(0,0,0,.18);
+  padding: 10px;
+}
+
+.prodRentInfoGrid span,
+.prodRentCodeList span {
+  display: block;
+  color: rgba(255,255,255,.46);
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+
+.prodRentInfoGrid strong {
+  color: rgba(255,255,255,.86);
+  font-size: 12px;
+}
+
+.prodRentCodeList {
+  display: grid;
+  gap: 8px;
+}
+
+.prodRentCodeList code {
+  color: #9fc0ff;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.prodRentMiniTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prodRentMiniTable th,
+.prodRentMiniTable td {
+  text-align: left;
+  padding: 9px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  font-size: 11px;
+}
+
+.prodRentMiniTable th {
+  color: rgba(255,255,255,.46);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.prodRentDrawerBlock--diagnostic p {
+  margin: 0;
+  color: rgba(255,255,255,.64);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1080px) {
+  .prodRentKpiGrid,
+  .prodRentGrid,
+  .prodRentTwoCols,
+  .prodRentFilters {
+    grid-template-columns: 1fr;
+  }
+
+  .prodRentDrawer {
+    width: min(92vw, 720px);
+    min-width: 0;
+  }
+}
+
+
+/* Tooltips KPI Rentabilidad */
+.prodRentKpiCard__label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prodRentTooltipIcon {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.72);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: help;
+}
+
+.prodRentTooltipText {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 9px);
+  z-index: 30;
+  width: min(260px, 70vw);
+  display: none;
+  padding: 10px 11px;
+  border-radius: 5px;
+  background: #050505;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,.42);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.prodRentTooltipText::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 14px;
+  width: 9px;
+  height: 9px;
+  background: #050505;
+  border-left: 1px solid rgba(255,255,255,.12);
+  border-top: 1px solid rgba(255,255,255,.12);
+  transform: rotate(45deg);
+}
+
+.prodRentTooltipIcon:hover + .prodRentTooltipText,
+.prodRentTooltipIcon:focus + .prodRentTooltipText {
+  display: block;
+}
