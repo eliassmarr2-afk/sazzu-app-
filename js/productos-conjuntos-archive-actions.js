@@ -257,6 +257,35 @@
         font-weight: 800;
       }
 
+      .prodSetArchiveDialog__mappingItem {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .prodSetArchiveInlineBtn {
+        appearance: none;
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.055);
+        color: rgba(255,255,255,.82);
+        border-radius: 5px;
+        min-height: 28px;
+        padding: 0 9px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .prodSetArchiveInlineBtn:hover,
+      .prodSetArchiveInlineBtn:focus-visible {
+        background: rgba(36,121,255,.16);
+        border-color: rgba(36,121,255,.34);
+        color: #9fc0ff;
+        outline: none;
+      }
+
       .prodSetArchiveDialog__actions {
         padding: 12px 16px 16px;
         display: flex;
@@ -388,7 +417,26 @@
 
     const mappingList = mappings.length
       ? `<ul class="prodSetArchiveDialog__list">${mappings.map(function (item) {
-          return `<li><strong>${esc(item.id_variante_shopify || item.mapping_id)}</strong>${item.contexto ? " · " + esc(item.contexto) : ""}</li>`;
+          const mappingId = clean(item && item.mapping_id);
+          const variantId = clean(item && item.id_variante_shopify);
+          const context = clean(item && item.contexto);
+
+          return `
+            <li class="prodSetArchiveDialog__mappingItem">
+              <div>
+                <strong>${esc(variantId || mappingId || "Mapping")}</strong>${context ? " · " + esc(context) : ""}
+              </div>
+
+              ${mappingId ? `
+                <button
+                  type="button"
+                  class="prodSetArchiveInlineBtn"
+                  data-prod-set-mapping-deactivate="${esc(mappingId)}"
+                  data-prod-set-mapping-offer-set-id="${esc(payload && payload.offer_set_id)}"
+                >Desactivar vínculo</button>
+              ` : ""}
+            </li>
+          `;
         }).join("")}</ul>`
       : "";
 
@@ -426,6 +474,50 @@
       const btn = row.querySelector(".prodSetArchiveBtn");
       if (btn) btn.remove();
     });
+  }
+
+  async function deactivateMapping(mappingId, offerSetId) {
+    const id = clean(mappingId);
+    const setId = clean(offerSetId);
+
+    if (!id) return;
+
+    showModal(
+      "loading",
+      "Desactivando vínculo",
+      "<p>Desactivando el vínculo técnico Shopify para que el conjunto pueda archivarse.</p>",
+      button("Procesando...", "secondary", "disabled")
+    );
+
+    try {
+      const payload = await rpc("rpc_product_shopify_variant_mapping_deactivate", {
+        input_mapping_id: id,
+        input_reason: "Desactivado desde Productos > Conjuntos"
+      });
+
+      if (!payload || payload.ok !== true) {
+        throw new Error((payload && payload.message) || "No se pudo desactivar el vínculo técnico.");
+      }
+
+      showModal(
+        "success",
+        "Vínculo desactivado",
+        `<p>${esc(payload.message || "Vínculo técnico desactivado correctamente.")}</p>
+         <div class="prodSetArchiveDialog__meta">Revalidando el conjunto...</div>`,
+        button("Procesando...", "secondary", "disabled")
+      );
+
+      setTimeout(function () {
+        if (setId) openFlow(setId);
+      }, 450);
+    } catch (err) {
+      showModal(
+        "error",
+        "No se pudo desactivar",
+        `<p>${esc(err && err.message ? err.message : err)}</p>`,
+        button("Entendido", "primary", "data-prod-set-archive-close")
+      );
+    }
   }
 
   async function runArchive(offerSetId) {
@@ -603,6 +695,19 @@
     window.__PRODUCTOS_CONJUNTOS_ARCHIVE_BOUND__ = true;
 
     document.addEventListener("click", function (event) {
+      const deactivateBtn = event.target.closest && event.target.closest("[data-prod-set-mapping-deactivate]");
+      if (deactivateBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+
+        deactivateMapping(
+          deactivateBtn.getAttribute("data-prod-set-mapping-deactivate"),
+          deactivateBtn.getAttribute("data-prod-set-mapping-offer-set-id")
+        );
+        return;
+      }
+
       const confirmBtn = event.target.closest && event.target.closest("[data-prod-set-archive-confirm]");
       if (confirmBtn) {
         event.preventDefault();
