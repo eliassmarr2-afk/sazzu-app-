@@ -24,7 +24,8 @@
     listPollTimer: null,
     detailPollTimer: null,
     detailFingerprint: '',
-    detailAttachmentsByMessageId: {}
+    detailAttachmentsByMessageId: {},
+    detailConversation: null
   };
 
   const statusLabels = {
@@ -53,6 +54,35 @@
     media: 'Media',
     baja: 'Baja'
   };
+
+  const QUICK_REPLY_CUSTOM_STORAGE_KEY = 'protocol_logistica_conversaciones_quick_replies_v1';
+
+  const DEFAULT_QUICK_REPLIES = [
+    {
+      title: 'Pedir más detalle',
+      body: 'Hola, {nombre}. Entiendo que tuviste un inconveniente con tu compra. Vamos a revisarlo y solucionarlo lo antes posible. ¿Podrías contarnos un poco más sobre lo ocurrido?'
+    },
+    {
+      title: 'Pedido en camino',
+      body: 'Hola, {nombre}. Tu pedido {pedido} ya se encuentra en camino. En principio debería llegar dentro del plazo informado. Te mantenemos al tanto por este mismo chat.'
+    },
+    {
+      title: 'Disculpa por demora',
+      body: 'Te pedimos disculpas por la demora, {nombre}. Estamos revisando el estado de tu pedido {pedido} con logística para darte una respuesta concreta cuanto antes.'
+    },
+    {
+      title: 'Verificar con logística',
+      body: 'Gracias por la información, {nombre}. Vamos a verificarlo con logística y te responderemos por este mismo chat apenas tengamos una actualización.'
+    },
+    {
+      title: 'Confirmar domicilio',
+      body: 'Para avanzar con la revisión, ¿podrías confirmarnos si el domicilio de entrega sigue siendo {domicilio_entrega}?'
+    },
+    {
+      title: 'Cierre cordial',
+      body: 'Perfecto, {nombre}. Dejamos registrada tu consulta y vamos a continuar el seguimiento de tu caso. Cualquier novedad te respondemos por este mismo chat.'
+    }
+  ];
 
   function root() {
     return document.querySelector('main.logisticsMain');
@@ -284,6 +314,383 @@
       body.logisticsDark .logConversationAttachmentMeta,
       body.logisticaDark .logConversationAttachmentMeta,
       .logisticsMain.is-dark .logConversationAttachmentMeta{color:#a8b3c4}
+    `;
+    document.head.appendChild(style);
+  }
+
+
+  function ensureQuickReplyStyles() {
+    const previousQuickReplyStyles = document.getElementById('logConversationQuickReplyStyles');
+    if (previousQuickReplyStyles) previousQuickReplyStyles.remove();
+
+    const style = document.createElement('style');
+    style.id = 'logConversationQuickReplyStyles';
+    style.textContent = `
+      .logConversationReply{
+        flex:0 0 auto!important;
+        border-top:1px solid rgba(255,255,255,.08)!important;
+        padding-top:10px!important;
+        margin-top:10px!important;
+      }
+
+      .logConversationReplyBar{
+        width:100%;
+        display:grid;
+        grid-template-columns:44px minmax(0,1fr)48px;
+        gap:10px;
+        align-items:center;
+        min-height:64px;
+        padding:8px;
+        border-radius:999px;
+        background:#262626;
+        border:1px solid rgba(255,255,255,.12);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 12px 28px rgba(0,0,0,.22);
+      }
+
+      .logConversationReplyBar textarea{
+        width:100%!important;
+        min-width:0!important;
+        min-height:44px!important;
+        max-height:110px!important;
+        resize:none!important;
+        border:0!important;
+        outline:none!important;
+        box-shadow:none!important;
+        background:transparent!important;
+        color:#f8fafc!important;
+        padding:12px 4px!important;
+        font:inherit!important;
+        font-size:14px!important;
+        line-height:1.3!important;
+        font-weight:800!important;
+      }
+
+      .logConversationReplyBar textarea::placeholder{
+        color:rgba(248,250,252,.58)!important;
+      }
+
+      .logQuickReplyToggle,
+      .logConversationReplySend{
+        width:44px!important;
+        height:44px!important;
+        min-width:44px!important;
+        border-radius:999px!important;
+        display:grid!important;
+        place-items:center!important;
+        cursor:pointer!important;
+        padding:0!important;
+      }
+
+      .logQuickReplyToggle{
+        border:1px solid rgba(255,255,255,.14)!important;
+        background:#303030!important;
+        color:#ffffff!important;
+      }
+
+      .logConversationReplySend{
+        border:0!important;
+        background:#2479ff!important;
+        color:#ffffff!important;
+        box-shadow:0 10px 22px rgba(36,121,255,.25)!important;
+      }
+
+      .logQuickReplyToggle svg,
+      .logConversationReplySend svg{
+        width:21px;
+        height:21px;
+      }
+
+      .logQuickReplyOverlay[hidden]{
+        display:none!important;
+      }
+
+      .logQuickReplyOverlay{
+        position:fixed;
+        inset:0;
+        z-index:999999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:28px;
+        background:transparent!important;
+        border:0!important;
+        box-shadow:none!important;
+        pointer-events:auto;
+      }
+
+      .logQuickReplyOverlay__scrim{
+        position:absolute;
+        inset:0;
+        border:0!important;
+        background:rgba(0,0,0,.10)!important;
+        background-color:rgba(0,0,0,.10)!important;
+        backdrop-filter:blur(7px) brightness(.88)!important;
+        -webkit-backdrop-filter:blur(7px) brightness(.88)!important;
+        box-shadow:none!important;
+        cursor:pointer;
+      }
+
+      .logQuickReplyOverlay__dialog{
+        position:relative;
+        z-index:1;
+        width:min(640px,calc(100vw - 56px));
+        max-height:min(78vh,720px);
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+        border-radius:16px;
+        background:#1f1f1f;
+        color:#ffffff;
+        border:1px solid rgba(255,255,255,.14);
+        box-shadow:0 30px 90px rgba(0,0,0,.42);
+      }
+
+      .logQuickReplyOverlay__head{
+        flex:0 0 auto;
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:16px;
+        padding:16px 16px 12px;
+        border-bottom:1px solid rgba(255,255,255,.10);
+      }
+
+      .logQuickReplyOverlay__head strong{
+        display:block;
+        color:#ffffff;
+        font-size:17px;
+        line-height:1.1;
+        font-weight:950;
+        letter-spacing:-.03em;
+      }
+
+      .logQuickReplyOverlay__head span{
+        display:block;
+        margin-top:5px;
+        color:rgba(255,255,255,.62);
+        font-size:12px;
+        line-height:1.25;
+        font-weight:750;
+      }
+
+      .logQuickReplyOverlay__actions{
+        display:flex;
+        gap:8px;
+        align-items:center;
+        flex:0 0 auto;
+      }
+
+      .logQuickReplyMiniBtn{
+        min-height:34px;
+        border-radius:999px;
+        border:1px solid rgba(255,255,255,.14);
+        background:#303030;
+        color:#ffffff;
+        padding:0 12px;
+        font-size:12px;
+        line-height:1;
+        font-weight:950;
+        cursor:pointer;
+      }
+
+      .logQuickReplyMiniBtn--primary{
+        background:#2479ff;
+        border-color:#2479ff;
+        color:#ffffff;
+      }
+
+      .logQuickReplyOverlay__body{
+        flex:1 1 auto;
+        min-height:0;
+        overflow-y:auto;
+        padding:12px 16px 16px;
+      }
+
+      .logQuickReplyList{
+        display:grid;
+        gap:9px;
+      }
+
+      .logQuickReplyItem{
+        width:100%;
+        border:1px solid rgba(255,255,255,.12);
+        background:#2a2a2a;
+        color:#ffffff;
+        border-radius:12px;
+        padding:11px 12px;
+        text-align:left;
+        cursor:pointer;
+        transition:background .16s ease,border-color .16s ease,transform .16s ease;
+      }
+
+      .logQuickReplyItem:hover{
+        background:#313131;
+        border-color:rgba(36,121,255,.48);
+        transform:translateY(-1px);
+      }
+
+      .logQuickReplyItem strong{
+        display:block;
+        color:#ffffff;
+        font-size:13px;
+        line-height:1.15;
+        font-weight:950;
+        margin-bottom:5px;
+      }
+
+      .logQuickReplyItem span{
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+        color:rgba(255,255,255,.66);
+        font-size:12px;
+        line-height:1.3;
+        font-weight:750;
+      }
+
+      .logQuickReplyCreate{
+        display:grid;
+        gap:9px;
+        margin-bottom:12px;
+        padding:12px;
+        border-radius:12px;
+        background:#272727;
+        border:1px dashed rgba(36,121,255,.38);
+      }
+
+      .logQuickReplyCreate[hidden]{
+        display:none!important;
+      }
+
+      .logQuickReplyCreate input,
+      .logQuickReplyCreate textarea{
+        width:100%;
+        border:1px solid rgba(255,255,255,.14)!important;
+        background:#151515!important;
+        color:#ffffff!important;
+        border-radius:10px!important;
+        padding:10px 11px!important;
+        font:inherit!important;
+        font-size:13px!important;
+        font-weight:800!important;
+        outline:none!important;
+        box-shadow:none!important;
+      }
+
+      .logQuickReplyCreate textarea{
+        min-height:92px!important;
+        resize:vertical!important;
+      }
+
+      .logQuickReplyCreate input::placeholder,
+      .logQuickReplyCreate textarea::placeholder{
+        color:rgba(255,255,255,.46)!important;
+      }
+
+      .logQuickReplyVars{
+        color:rgba(255,255,255,.58);
+        font-size:11px;
+        line-height:1.35;
+        font-weight:750;
+      }
+
+      .logQuickReplyEmpty{
+        padding:14px;
+        border-radius:12px;
+        background:#2a2a2a;
+        color:rgba(255,255,255,.62);
+        font-size:13px;
+        font-weight:850;
+        text-align:center;
+      }
+
+      @media(max-width:760px){
+        .logQuickReplyOverlay{
+          align-items:flex-end;
+          padding:14px;
+        }
+
+        .logQuickReplyOverlay__dialog{
+          width:100%;
+          max-height:82vh;
+          border-radius:18px;
+        }
+      }
+
+      /* Mensajes rápidos como popover local: no toca ni oscurece el slide */
+      .logConversationReply{
+        position:relative!important;
+      }
+
+      body .logQuickReplyOverlay,
+      main.logisticsMain .logQuickReplyOverlay{
+        position:absolute!important;
+        inset:auto 0 calc(100% + 12px) 0!important;
+        z-index:80!important;
+        display:block!important;
+        align-items:initial!important;
+        justify-content:initial!important;
+        padding:0!important;
+        background:transparent!important;
+        background-color:transparent!important;
+        border:0!important;
+        box-shadow:none!important;
+        pointer-events:none!important;
+      }
+
+      body .logQuickReplyOverlay[hidden],
+      main.logisticsMain .logQuickReplyOverlay[hidden]{
+        display:none!important;
+      }
+
+      body .logQuickReplyOverlay__scrim,
+      main.logisticsMain .logQuickReplyOverlay__scrim{
+        display:none!important;
+      }
+
+      body .logQuickReplyOverlay__dialog,
+      main.logisticsMain .logQuickReplyOverlay__dialog{
+        width:min(640px,100%)!important;
+        max-height:min(56vh,520px)!important;
+        margin-left:auto!important;
+        margin-right:0!important;
+        pointer-events:auto!important;
+      }
+
+      @media(max-width:980px){
+        body .logQuickReplyOverlay,
+        main.logisticsMain .logQuickReplyOverlay{
+          left:0!important;
+          right:0!important;
+          bottom:calc(100% + 10px)!important;
+        }
+
+        body .logQuickReplyOverlay__dialog,
+        main.logisticsMain .logQuickReplyOverlay__dialog{
+          width:100%!important;
+          max-height:58vh!important;
+          border-radius:16px!important;
+        }
+      }
+
+      body .logQuickReplyOverlay,
+      main.logisticsMain .logQuickReplyOverlay{
+        background:transparent!important;
+        background-color:transparent!important;
+        border:0!important;
+        box-shadow:none!important;
+      }
+
+      body .logQuickReplyOverlay__scrim,
+      main.logisticsMain .logQuickReplyOverlay__scrim{
+        background:rgba(0,0,0,.10)!important;
+        background-color:rgba(0,0,0,.10)!important;
+        backdrop-filter:blur(7px) brightness(.88)!important;
+        -webkit-backdrop-filter:blur(7px) brightness(.88)!important;
+        border:0!important;
+        box-shadow:none!important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -600,6 +1007,190 @@
   }
 
 
+  function readCustomQuickReplies() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(QUICK_REPLY_CUSTOM_STORAGE_KEY) || '[]');
+      return Array.isArray(parsed)
+        ? parsed.filter(item => item && item.title && item.body).map(item => ({
+            title: String(item.title || '').trim(),
+            body: String(item.body || '').trim(),
+            custom: true
+          }))
+        : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveCustomQuickReplies(list) {
+    try {
+      localStorage.setItem(QUICK_REPLY_CUSTOM_STORAGE_KEY, JSON.stringify(Array.isArray(list) ? list : []));
+    } catch (error) {
+      console.warn('[Conversaciones Supabase · Mensajes rápidos]', error);
+    }
+  }
+
+  function allQuickReplies() {
+    return DEFAULT_QUICK_REPLIES.concat(readCustomQuickReplies());
+  }
+
+  function plain(value, fallback) {
+    const clean = String(value === null || value === undefined ? '' : value).trim();
+    return clean || fallback || '';
+  }
+
+  function quickReplyContext(item) {
+    const conversation = item || state.detailConversation || {};
+    const domicilio = [
+      conversation.shipping_address,
+      conversation.locality,
+      conversation.province,
+      conversation.postal_code
+    ].filter(Boolean).join(', ');
+
+    return {
+      nombre: plain(conversation.customer_name, 'Cliente'),
+      pedido: plain(conversation.shopify_order_name, plain(conversation.tracking_id, 'tu pedido')),
+      producto_comprado: plain(conversation.product_name, plain(conversation.sku, 'tu producto')),
+      domicilio_entrega: plain(domicilio, 'el domicilio informado'),
+      localidad: plain(conversation.locality, ''),
+      estado_envio: plain(conversation.shipping_status || conversation.logistics_status, 'en revisión'),
+      monto_a_cobrar: conversation.amount_to_collect ? money(conversation.amount_to_collect) : ''
+    };
+  }
+
+  function applyQuickReplyTemplate(template, item) {
+    const context = quickReplyContext(item);
+    return String(template || '').replace(/\{([a-zA-Z0-9_]+)\}/g, function (_, key) {
+      return context[key] || '';
+    }).replace(/\s+([,.])/g, '$1').trim();
+  }
+
+  function quickReplyIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 6.8A3.8 3.8 0 0 1 8.8 3h6.4A3.8 3.8 0 0 1 19 6.8v4.9a3.8 3.8 0 0 1-3.8 3.8h-2.1L9.7 19v-3.5h-.9A3.8 3.8 0 0 1 5 11.7V6.8Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 8.5h6M9 11.2h4.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
+  }
+
+  function renderQuickReplyItems(item) {
+    const replies = allQuickReplies();
+
+    if (!replies.length) {
+      return '<div class="logQuickReplyEmpty">Todavía no hay mensajes rápidos.</div>';
+    }
+
+    return replies.map(function (reply, index) {
+      const preview = applyQuickReplyTemplate(reply.body, item);
+      return [
+        '<button class="logQuickReplyItem" type="button" data-log-quick-reply-index="' + index + '">',
+          '<strong>' + esc(reply.title) + '</strong>',
+          '<span>' + esc(preview) + '</span>',
+        '</button>'
+      ].join('');
+    }).join('');
+  }
+
+  function renderQuickReplyPanel(item) {
+    return [
+      '<div class="logQuickReplyOverlay" data-log-quick-panel hidden>',
+        '<button class="logQuickReplyOverlay__scrim" type="button" data-log-quick-close aria-label="Cerrar mensajes rápidos"></button>',
+        '<section class="logQuickReplyOverlay__dialog" role="dialog" aria-modal="true" aria-label="Mensajes rápidos">',
+          '<header class="logQuickReplyOverlay__head">',
+            '<div>',
+              '<strong>Mensajes rápidos</strong>',
+              '<span>Seleccioná una respuesta para insertarla en el campo de escritura.</span>',
+            '</div>',
+            '<div class="logQuickReplyOverlay__actions">',
+              '<button class="logQuickReplyMiniBtn logQuickReplyMiniBtn--primary" type="button" data-log-quick-create-open>Crear</button>',
+              '<button class="logQuickReplyMiniBtn" type="button" data-log-quick-close>Cerrar</button>',
+            '</div>',
+          '</header>',
+
+          '<div class="logQuickReplyOverlay__body">',
+            '<div class="logQuickReplyCreate" data-log-quick-create-form hidden>',
+              '<input type="text" data-log-quick-title placeholder="Título del mensaje rápido">',
+              '<textarea data-log-quick-body placeholder="Escribí el mensaje. Ejemplo: Hola, {nombre}. Tu pedido {pedido} ya se encuentra en camino."></textarea>',
+              '<div class="logQuickReplyVars">Llaves disponibles: {nombre}, {pedido}, {producto_comprado}, {domicilio_entrega}, {localidad}, {estado_envio}, {monto_a_cobrar}</div>',
+              '<div class="logQuickReplyOverlay__actions">',
+                '<button class="logQuickReplyMiniBtn logQuickReplyMiniBtn--primary" type="button" data-log-quick-create-save>Guardar mensaje</button>',
+                '<button class="logQuickReplyMiniBtn" type="button" data-log-quick-create-cancel>Cancelar</button>',
+              '</div>',
+            '</div>',
+
+            '<div class="logQuickReplyList" data-log-quick-list>',
+              renderQuickReplyItems(item),
+            '</div>',
+          '</div>',
+        '</section>',
+      '</div>'
+    ].join('');
+  }
+
+  function quickFormFromEvent(event) {
+    return event.target.closest('[data-log-conversation-reply-real]');
+  }
+
+  function setQuickPanelOpen(form, open) {
+    const panel = form ? form.querySelector('[data-log-quick-panel]') : null;
+    if (!panel) return;
+
+    panel.hidden = !open;
+
+    if (open) {
+      refreshQuickReplyList(form);
+    } else {
+      setQuickCreateOpen(form, false);
+    }
+  }
+
+  function refreshQuickReplyList(form) {
+    const list = form ? form.querySelector('[data-log-quick-list]') : null;
+    if (!list) return;
+    list.innerHTML = renderQuickReplyItems(state.detailConversation || {});
+  }
+
+  function insertQuickReply(form, index) {
+    const textarea = form ? form.querySelector('[data-log-reply-textarea]') : null;
+    const reply = allQuickReplies()[Number(index)];
+    if (!textarea || !reply) return;
+
+    textarea.value = applyQuickReplyTemplate(reply.body, state.detailConversation || {});
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.focus();
+    setQuickPanelOpen(form, false);
+  }
+
+  function setQuickCreateOpen(form, open) {
+    const box = form ? form.querySelector('[data-log-quick-create-form]') : null;
+    if (!box) return;
+    box.hidden = !open;
+  }
+
+  function saveCreatedQuickReply(form) {
+    const titleInput = form ? form.querySelector('[data-log-quick-title]') : null;
+    const bodyInput = form ? form.querySelector('[data-log-quick-body]') : null;
+    const title = String(titleInput?.value || '').trim();
+    const body = String(bodyInput?.value || '').trim();
+
+    if (!body) {
+      alert('Escribí el cuerpo del mensaje rápido antes de guardarlo.');
+      return;
+    }
+
+    const custom = readCustomQuickReplies();
+    custom.push({
+      title: title || body.slice(0, 42),
+      body
+    });
+
+    saveCustomQuickReplies(custom);
+
+    if (titleInput) titleInput.value = '';
+    if (bodyInput) bodyInput.value = '';
+
+    setQuickCreateOpen(form, false);
+    refreshQuickReplyList(form);
+  }
+
+
   function bubble(message) {
     const type = message.sender_type === 'operator' ? 'operator' : message.sender_type === 'system' ? 'system' : 'customer';
     return `<div class="logConversationBubble logConversationBubble--${type}"><strong>${esc(message.sender_name || message.sender_type)}</strong>${renderMessageText(message)}${renderAttachmentCards(message)}<small>${esc(shortDate(message.created_at))}</small></div>`;
@@ -621,7 +1212,7 @@
   }
 
   function operatorHasDraft() {
-    const textarea = root()?.querySelector('[data-log-conversation-reply-real] textarea');
+    const textarea = root()?.querySelector('[data-log-conversation-reply-real] [data-log-reply-textarea]');
     return Boolean(textarea && textarea.value.trim());
   }
 
@@ -637,6 +1228,7 @@
     }
 
     const item = payload.conversation;
+    state.detailConversation = item;
     const messages = Array.isArray(payload.messages) ? payload.messages : [];
     state.detailAttachmentsByMessageId = payload.attachments_by_message_id && typeof payload.attachments_by_message_id === 'object'
       ? payload.attachments_by_message_id
@@ -657,11 +1249,16 @@
           <div class="logConversationBox__head"><div><strong>Historial de conversación</strong><span>Mensajes reales desde support_messages</span></div></div>
           <div class="logConversationChat">${messages.map(bubble).join('') || '<div class="logConversationLiveEmpty">Esta conversación todavía no tiene mensajes.</div>'}</div>
           <form class="logConversationReply" data-log-conversation-reply-real="${esc(item.conversation_id)}">
-            <textarea placeholder="Escribir respuesta para el cliente..."></textarea>
-            <div class="logConversationReply__actions">
-              <button class="btn btn--secondary" type="button">Guardar borrador</button>
-              <button class="btn btn--primary" type="submit">Enviar respuesta</button>
+            <div class="logConversationReplyBar">
+              <button class="logQuickReplyToggle" type="button" data-log-quick-replies-toggle aria-label="Abrir mensajes rápidos">${quickReplyIcon()}</button>
+              <textarea data-log-reply-textarea placeholder="Escribir respuesta para el cliente..."></textarea>
+              <button class="logConversationReplySend" type="submit" aria-label="Enviar respuesta">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
             </div>
+            ${renderQuickReplyPanel(item)}
           </form>
         </section>
         <aside class="logConversationBox logConversationBox--data">
@@ -737,6 +1334,52 @@
         return;
       }
 
+      const quickForm = quickFormFromEvent(event);
+
+      if (event.target.closest('[data-log-quick-replies-toggle]') && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        const panel = quickForm.querySelector('[data-log-quick-panel]');
+        setQuickPanelOpen(quickForm, !panel || panel.hidden);
+        return;
+      }
+
+      const quickItem = event.target.closest('[data-log-quick-reply-index]');
+      if (quickItem && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        insertQuickReply(quickForm, quickItem.dataset.logQuickReplyIndex);
+        return;
+      }
+
+      if (event.target.closest('[data-log-quick-close]') && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        setQuickPanelOpen(quickForm, false);
+        return;
+      }
+
+      if (event.target.closest('[data-log-quick-create-open]') && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        setQuickCreateOpen(quickForm, true);
+        return;
+      }
+
+      if (event.target.closest('[data-log-quick-create-cancel]') && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        setQuickCreateOpen(quickForm, false);
+        return;
+      }
+
+      if (event.target.closest('[data-log-quick-create-save]') && quickForm) {
+        event.preventDefault();
+        event.stopPropagation();
+        saveCreatedQuickReply(quickForm);
+        return;
+      }
+
       const open = event.target.closest('[data-log-open-conversation]');
       const row = event.target.closest('[data-log-row-open]');
       const id = open?.dataset.logOpenConversation || row?.dataset.logRowOpen;
@@ -804,6 +1447,7 @@
 
     ensureStyles();
     ensureAttachmentStyles();
+    ensureQuickReplyStyles();
     ensureToolbarBadge();
     ensureSlide();
     bind();
