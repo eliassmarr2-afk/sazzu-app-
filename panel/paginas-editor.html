@@ -4,189 +4,259 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="view-transition" content="same-origin">
-  <title>Protocol Data · Tienda</title>
+  <title>Protocol Data · Rendimiento web</title>
 
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/panel.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/sidebar.css">
-  <link rel="stylesheet" href="../css/tienda.css">
+  <link rel="stylesheet" href="../css/rendimiento-web.css?v=20260712_01">
 </head>
 
-<body data-page="tienda">
+<body data-page="rendimiento-web">
   <div class="appShell">
     <div class="bodyGrid">
       <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
 
-      <main class="main tiendaBuilderMain" aria-label="Constructor de tienda">
-        <section class="tiendaBuilderSandbox" aria-label="Constructor visual de tienda">
-          <aside class="builderSidePanel" aria-label="Herramientas del constructor">
-            <div class="builderSidePanel__main" data-builder-main-view>
-              <header class="builderSidePanel__top">
-                <div class="builderSidePanel__brand">
-                  <button type="button" aria-label="Menú">☰</button>
-                  <strong>App Builder</strong>
-                </div>
-                <div class="builderSidePanel__actions">
-                  <button type="button">Edit menu</button>
-                  <button type="button">New modal</button>
-                </div>
-              </header>
+      <main class="main rwMain" aria-label="Rendimiento web">
+        <header class="rwHeader">
+          <div>
+            <div class="rwEyebrow">Protocol Data · Inteligencia de navegación</div>
+            <h1>Rendimiento web</h1>
+            <p>Profundidad, permanencia y caída entre niveles de intención en las landings de producto.</p>
+          </div>
 
-              <div class="builderSidePanel__quickbar">
-                <button type="button">↶ Undo</button>
-                <button type="button">↷ Redo</button>
+          <div class="rwHeaderBadges" aria-label="Estado del sistema">
+            <span class="rwBadge rwBadge--success"><i></i> Supabase activo</span>
+            <span class="rwBadge rwBadge--blue"><i></i> Tracking en producción</span>
+            <span class="rwBadge" id="rwLastUpdateBadge">Sin actualizar</span>
+          </div>
+        </header>
+
+        <section class="rwCard rwFilters" aria-label="Filtros de rendimiento">
+          <div class="rwFilterGrid">
+            <label class="rwField rwField--wide">
+              <span>Landing</span>
+              <select id="rwLandingSelect">
+                <option value="">Todas las landings</option>
+              </select>
+            </label>
+
+            <label class="rwField">
+              <span>Versión</span>
+              <select id="rwVersionSelect">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label class="rwField">
+              <span>Desde</span>
+              <input id="rwStartDate" type="date">
+            </label>
+
+            <label class="rwField">
+              <span>Hasta</span>
+              <input id="rwEndDate" type="date">
+            </label>
+
+            <label class="rwField">
+              <span>Fuente UTM</span>
+              <input id="rwSourceInput" type="text" placeholder="Todas">
+            </label>
+
+            <label class="rwField rwField--wide">
+              <span>Campaña</span>
+              <input id="rwCampaignInput" type="text" placeholder="Todas">
+            </label>
+
+            <label class="rwField">
+              <span>Dispositivo</span>
+              <select id="rwDeviceSelect">
+                <option value="">Todos</option>
+                <option value="mobile">Mobile</option>
+                <option value="desktop">Desktop</option>
+                <option value="tablet">Tablet</option>
+              </select>
+            </label>
+
+            <button class="rwPrimaryButton" id="rwRefreshButton" type="button">Actualizar panel</button>
+          </div>
+
+          <div class="rwStatus" id="rwStatus" role="status">Preparando conexión con Analytics…</div>
+        </section>
+
+        <section class="rwKpiGrid" aria-label="Indicadores principales">
+          <article class="rwKpi rwKpi--neutral">
+            <span>Visitas</span>
+            <strong id="rwKpiViews">—</strong>
+            <small id="rwKpiViewsHint">Cargas únicas de landing</small>
+          </article>
+          <article class="rwKpi rwKpi--neutral">
+            <span>Sesiones</span>
+            <strong id="rwKpiSessions">—</strong>
+            <small>Sesiones anónimas detectadas</small>
+          </article>
+          <article class="rwKpi rwKpi--l1">
+            <span>Llegaron a L1</span>
+            <strong id="rwKpiL1">—</strong>
+            <small id="rwKpiL1Pct">10% scroll + 10 s</small>
+          </article>
+          <article class="rwKpi rwKpi--l2">
+            <span>Llegaron a L2</span>
+            <strong id="rwKpiL2">—</strong>
+            <small id="rwKpiL2Pct">25% scroll + 20 s</small>
+          </article>
+          <article class="rwKpi rwKpi--l3">
+            <span>Llegaron a L3</span>
+            <strong id="rwKpiL3">—</strong>
+            <small id="rwKpiL3Pct">50% scroll + 30 s</small>
+          </article>
+          <article class="rwKpi rwKpi--conversion">
+            <span>Conversión View → L3</span>
+            <strong id="rwKpiConversion">—</strong>
+            <small id="rwKpiConversionHint">Embudo completo</small>
+          </article>
+        </section>
+
+        <section class="rwMainGrid">
+          <article class="rwCard rwFunnelCard">
+            <div class="rwCardHead">
+              <div>
+                <span class="rwSectionLabel">EMBUDO PRINCIPAL</span>
+                <h2>Profundidad + tiempo real</h2>
+                <p>La anchura representa la retención acumulada desde la visita inicial.</p>
               </div>
-
-              <nav class="builderTabs" aria-label="Secciones del constructor">
-                <div class="builderTabs__track" data-builder-tabs-track>
-                  <button class="builderTab is-active" type="button" data-builder-tab="home">Inicio</button>
-                  <button class="builderTab" type="button" data-builder-tab="theme">Diseño</button>
-                  <button class="builderTab" type="button" data-builder-tab="sections">Secciones</button>
-                  <button class="builderTab" type="button" data-builder-tab="tabs">Pestañas</button>
-                  <button class="builderTab" type="button" data-builder-tab="products">Productos</button>
-                  <button class="builderTab" type="button" data-builder-tab="checkout">Checkout</button>
-                  <button class="builderTab" type="button" data-builder-tab="publish">Publicación</button>
-                </div>
-              </nav>
-
-              <section class="builderTabContent is-active" data-builder-panel="home">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Inicio <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button" data-builder-open-editor="store-name"><span>◎</span><strong>Nombre</strong></button>
-                    <button class="builderToolCard" type="button"><span>▧</span><strong>Portada</strong></button>
-                    <button class="builderToolCard" type="button"><span>●</span><strong>Logo</strong></button>
-                    <button class="builderToolCard" type="button"><span>◷</span><strong>Estado</strong></button>
-                    <button class="builderToolCard" type="button"><span>✎</span><strong>Información rápida</strong></button>
-                  </div>
-                </div>
-
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Contacto <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>☏</span><strong>WhatsApp</strong></button>
-                    <button class="builderToolCard" type="button"><span>✉</span><strong>Email</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="theme">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Diseño <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>◐</span><strong>Paleta</strong></button>
-                    <button class="builderToolCard" type="button"><span>▣</span><strong>Botones</strong></button>
-                    <button class="builderToolCard" type="button"><span>□</span><strong>Tarjetas</strong></button>
-                    <button class="builderToolCard" type="button"><span>≋</span><strong>Fondo</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="sections">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Secciones <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>▤</span><strong>Más elegidos</strong></button>
-                    <button class="builderToolCard" type="button"><span>◇</span><strong>Combos</strong></button>
-                    <button class="builderToolCard" type="button"><span>＋</span><strong>Sumar pedido</strong></button>
-                    <button class="builderToolCard" type="button"><span>▰</span><strong>Banner</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="tabs">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Pestañas <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>▣</span><strong>Editar pestañas</strong></button>
-                    <button class="builderToolCard" type="button"><span>⇄</span><strong>Orden</strong></button>
-                    <button class="builderToolCard" type="button"><span>◫</span><strong>Productos por pestaña</strong></button>
-                    <button class="builderToolCard" type="button"><span>＋</span><strong>Nueva pestaña</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="products">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Productos <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>▦</span><strong>Ver todos</strong></button>
-                    <button class="builderToolCard" type="button"><span>◫</span><strong>Productos activos</strong></button>
-                    <button class="builderToolCard" type="button"><span>◌</span><strong>Productos ocultos</strong></button>
-                    <button class="builderToolCard" type="button"><span>$</span><strong>Visibilidad de precio</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="checkout">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Checkout <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>▥</span><strong>Estructura</strong></button>
-                    <button class="builderToolCard" type="button"><span>$</span><strong>Pagos</strong></button>
-                    <button class="builderToolCard" type="button"><span>☑</span><strong>Datos comprador</strong></button>
-                    <button class="builderToolCard" type="button"><span>CP</span><strong>Validación postal</strong></button>
-                    <button class="builderToolCard" type="button"><span>▰</span><strong>Banner checkout</strong></button>
-                    <button class="builderToolCard" type="button"><span>↯</span><strong>Contra-entrega</strong></button>
-                  </div>
-                </div>
-              </section>
-
-              <section class="builderTabContent" data-builder-panel="publish">
-                <div class="builderToolGroup">
-                  <button class="builderToolGroup__title" type="button">Publicación <span>⌃</span></button>
-                  <div class="builderToolGrid">
-                    <button class="builderToolCard" type="button"><span>↗</span><strong>URL</strong></button>
-                    <button class="builderToolCard" type="button"><span>●</span><strong>Estado</strong></button>
-                    <button class="builderToolCard" type="button"><span>UTM</span><strong>Tracking</strong></button>
-                    <button class="builderToolCard" type="button"><span>⌁</span><strong>Login</strong></button>
-                  </div>
-                </div>
-              </section>
+              <span class="rwBadge" id="rwSelectedLandingBadge">Todas las landings</span>
             </div>
 
-            <section class="builderInnerEditor" aria-hidden="true" data-builder-inner-editor>
-              <header class="builderInnerEditor__header">
-                <button type="button" data-builder-editor-back aria-label="Volver">‹</button>
-                <div>
-                  <span>Inicio</span>
-                  <strong>Editar nombre</strong>
+            <div class="rwFunnel" aria-label="Embudo vertical de navegación">
+              <div class="rwStage rwStage--view" style="--stage-width:100%">
+                <div class="rwStageTop">
+                  <div><span>Entrada</span><strong>Landing View</strong></div>
+                  <b id="rwStageViewCount">—</b>
                 </div>
-              </header>
-
-              <div class="builderInnerEditor__body">
-                <label class="builderFormField">
-                  <span>Nombre de la tienda</span>
-                  <input type="text" value="Dulce Nube" data-store-name-input>
-                </label>
-
-                <p class="builderFieldHint">Este nombre aparece en el perfil superior de la tienda y en el resumen público del constructor.</p>
+                <div class="rwStageMeta">
+                  <span>100% de base</span>
+                  <span id="rwStageViewDrop">Inicio del recorrido</span>
+                </div>
               </div>
 
-              <footer class="builderInnerEditor__footer">
-                <button type="button" class="builderInnerEditor__ghost" data-builder-editor-back>Cancelar</button>
-                <button type="button" class="builderInnerEditor__save" data-builder-editor-save>Guardar cambios</button>
-              </footer>
-            </section>
-          </aside>
+              <div class="rwFunnelConnector"><span>↓</span></div>
 
-          <article class="builderPreviewPanel" aria-label="Contenido visible de la tienda"></article>
+              <div class="rwStage rwStage--l1" id="rwStageL1" style="--stage-width:72%">
+                <div class="rwStageTop">
+                  <div><span>Nivel 1</span><strong>L1 · Atención inicial</strong></div>
+                  <b id="rwStageL1Count">—</b>
+                </div>
+                <div class="rwStageRule"><span>10% scroll</span><span>10 segundos</span></div>
+                <div class="rwStageMeta">
+                  <span id="rwStageL1Conversion">—</span>
+                  <span id="rwStageL1Time">Mediana: —</span>
+                  <span id="rwStageL1Drop">Caída: —</span>
+                </div>
+              </div>
+
+              <div class="rwFunnelConnector"><span>↓</span></div>
+
+              <div class="rwStage rwStage--l2" id="rwStageL2" style="--stage-width:54%">
+                <div class="rwStageTop">
+                  <div><span>Nivel 2</span><strong>L2 · Interés sostenido</strong></div>
+                  <b id="rwStageL2Count">—</b>
+                </div>
+                <div class="rwStageRule"><span>25% scroll</span><span>20 segundos</span></div>
+                <div class="rwStageMeta">
+                  <span id="rwStageL2Conversion">—</span>
+                  <span id="rwStageL2Time">Mediana: —</span>
+                  <span id="rwStageL2Drop">Caída: —</span>
+                </div>
+              </div>
+
+              <div class="rwFunnelConnector"><span>↓</span></div>
+
+              <div class="rwStage rwStage--l3" id="rwStageL3" style="--stage-width:36%">
+                <div class="rwStageTop">
+                  <div><span>Nivel 3</span><strong>L3 · Intención alta</strong></div>
+                  <b id="rwStageL3Count">—</b>
+                </div>
+                <div class="rwStageRule"><span>50% scroll</span><span>30 segundos</span></div>
+                <div class="rwStageMeta">
+                  <span id="rwStageL3Conversion">—</span>
+                  <span id="rwStageL3Time">Mediana: —</span>
+                  <span id="rwStageL3Drop">Caída: —</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <aside class="rwSideStack">
+            <article class="rwCard rwTimingCard">
+              <div class="rwCardHead rwCardHead--compact">
+                <div>
+                  <span class="rwSectionLabel">VELOCIDAD</span>
+                  <h2>Tiempo de activación</h2>
+                </div>
+              </div>
+
+              <div class="rwTimingList">
+                <div class="rwTimingRow"><span><i class="rwDot rwDot--l1"></i>Hasta L1</span><strong id="rwTimeL1">—</strong></div>
+                <div class="rwTimingRow"><span><i class="rwDot rwDot--l2"></i>Hasta L2</span><strong id="rwTimeL2">—</strong></div>
+                <div class="rwTimingRow"><span><i class="rwDot rwDot--l3"></i>Hasta L3</span><strong id="rwTimeL3">—</strong></div>
+              </div>
+
+              <div class="rwPercentileGrid">
+                <div><span>P75 hasta L3</span><strong id="rwTimeP75">—</strong></div>
+                <div><span>P90 hasta L3</span><strong id="rwTimeP90">—</strong></div>
+              </div>
+            </article>
+
+            <article class="rwCard rwInsightCard">
+              <span class="rwSectionLabel">LECTURA OPERATIVA</span>
+              <h2 id="rwInsightTitle">Esperando datos</h2>
+              <p id="rwInsightBody">El panel identificará la mayor caída del recorrido y el nivel con llegada más lenta.</p>
+              <div class="rwInsightBadges">
+                <span class="rwBadge rwBadge--blue" id="rwInsightDropBadge">Mayor caída: —</span>
+                <span class="rwBadge rwBadge--success" id="rwInsightSpeedBadge">Nivel más lento: —</span>
+              </div>
+            </article>
+          </aside>
+        </section>
+
+        <section class="rwBottomGrid">
+          <article class="rwCard rwChartCard">
+            <div class="rwCardHead">
+              <div>
+                <span class="rwSectionLabel">EVOLUCIÓN</span>
+                <h2>Recorrido diario</h2>
+                <p>Visitas y niveles alcanzados dentro del rango seleccionado.</p>
+              </div>
+            </div>
+            <div class="rwChartWrap">
+              <canvas id="rwDailyChart" aria-label="Evolución diaria del embudo"></canvas>
+            </div>
+          </article>
+
+          <article class="rwCard rwContextCard">
+            <span class="rwSectionLabel">CONTEXTO ACTIVO</span>
+            <h2 id="rwContextTitle">Todas las landings</h2>
+            <dl>
+              <div><dt>Versión</dt><dd id="rwContextVersion">Todas</dd></div>
+              <div><dt>Fuente</dt><dd id="rwContextSource">Todas</dd></div>
+              <div><dt>Campaña</dt><dd id="rwContextCampaign">Todas</dd></div>
+              <div><dt>Dispositivo</dt><dd id="rwContextDevice">Todos</dd></div>
+              <div><dt>Rango</dt><dd id="rwContextRange">—</dd></div>
+            </dl>
+          </article>
         </section>
       </main>
     </div>
   </div>
 
-  <script src="../js/app.js" defer></script>
-  <script src="../js/tienda.js" defer></script>
-  <script src="../js/tienda-preview.js" defer></script>
-  <script src="../js/tienda-home-polish.js" defer></script>
-  <script src="../js/tienda-tarjetas.js" defer></script>
-  <script src="../js/tienda-fondo.js" defer></script>
-  <script src="../js/tienda-secciones.js" defer></script>
-  <script src="../js/tienda-banner.js" defer></script>
-  <script src="../js/tienda-productos.js" defer></script>
-  <script src="../js/tienda-checkout.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="../js/config/supabase-config.js"></script>
+  <script src="../js/auth/auth-client.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/rendimiento-web.js?v=20260712_01"></script>
 </body>
 </html>
