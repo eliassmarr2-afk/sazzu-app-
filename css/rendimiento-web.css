@@ -197,3 +197,69 @@ body[data-page="rendimiento-web"] { background:var(--rw-bg); color:var(--rw-text
   .rwCompareVs { padding:0; }
   .rwVersionCard { flex-basis:88vw; }
 }
+
+
+/* Version activation controls · 2026-07-13 */
+.rwVersionActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.rwVersionActions small {
+  color: #818a97;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.rwVersionActivateButton {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 5px;
+  background: #2479ff;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform .16s ease,
+    opacity .16s ease,
+    background .16s ease;
+}
+
+.rwVersionActivateButton:hover:not(:disabled) {
+  background: #1669eb;
+  transform: translateY(-1px);
+}
+
+.rwVersionActivateButton:disabled {
+  cursor: wait;
+  opacity: .58;
+}
+
+.rwVersionPendingNote {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(36, 121, 255, .24);
+  border-radius: 5px;
+  background: rgba(36, 121, 255, .09);
+  color: #a9c9ff;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rwVersionState--pending_activation {
+  background: rgba(36, 121, 255, .12);
+  color: #79aaff;
+}
+
+.rwVersionState--activation_failed {
+  background: rgba(255, 86, 86, .12);
+  color: #ff8a8a;
+}

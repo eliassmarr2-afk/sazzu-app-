@@ -4,7 +4,8 @@
     chart: null,
     versionsPayload: null,
     activeLanding: null,
-    versionsLoaded: false
+    versionsLoaded: false,
+    activationVersionNumber: null
   };
 
   const $ = (id) => document.getElementById(id);
@@ -425,6 +426,8 @@
   function statusText(status) {
     if (status === 'active') return 'Activa';
     if (status === 'draft') return 'Borrador';
+    if (status === 'pending_activation') return 'Pendiente';
+    if (status === 'activation_failed') return 'Error de activación';
     return 'Cerrada';
   }
 
@@ -440,6 +443,36 @@
     const period = version.period || {};
     const status = version.status || 'closed';
     const views = number(funnel.views);
+    const canActivate = status === 'draft' || status === 'activation_failed';
+    const isActivating =
+      state.activationVersionNumber === number(version.version_number);
+
+    const activationLabel =
+      status === 'activation_failed'
+        ? 'Reintentar activación'
+        : 'Activar versión';
+
+    const activationFooter = canActivate
+      ? `
+        <div class="rwVersionActions">
+          <button
+            class="rwVersionActivateButton"
+            type="button"
+            data-activate-version="${escapeHtml(version.version_number)}"
+            ${isActivating ? 'disabled' : ''}
+          >
+            ${isActivating ? 'Activando…' : activationLabel}
+          </button>
+          <small>
+            Actualiza Shopify y deja la versión esperando su primera visita.
+          </small>
+        </div>`
+      : status === 'pending_activation'
+        ? `
+          <div class="rwVersionPendingNote">
+            Metacampo sincronizado. Esperando la primera visita real de esta versión.
+          </div>`
+        : '';
 
     return `
       <article class="rwVersionCard">
@@ -478,7 +511,139 @@
           <div><span>Mediana L2</span><strong>${formatSeconds(timing.median_seconds_to_l2)}</strong></div>
           <div><span>Mediana L3</span><strong>${formatSeconds(timing.median_seconds_to_l3)}</strong></div>
         </div>
+
+        ${activationFooter}
       </article>`;
+  }
+
+  async function getFunctionErrorMessage(error) {
+    if (error && error.context) {
+      try {
+        const payload = await error.context.clone().json();
+
+        if (payload && payload.error) {
+          return String(payload.error);
+        }
+      } catch (_) {
+        // La respuesta no contenía JSON legible.
+      }
+    }
+
+    return error && error.message
+      ? error.message
+      : 'La función no devolvió un mensaje de error.';
+  }
+
+  async function activateVersion(versionNumber, button) {
+    if (state.activationVersionNumber !== null) return;
+    if (!state.activeLanding) return;
+
+    const versions = Array.isArray(state.activeLanding.versions)
+      ? state.activeLanding.versions
+      : [];
+
+    const version = versions.find((item) =>
+      number(item.version_number) === number(versionNumber)
+    );
+
+    if (!version) {
+      setVersionsStatus('No se encontró la versión seleccionada.', 'error');
+      return;
+    }
+
+    const landingTitle =
+      state.activeLanding.product_title ||
+      state.activeLanding.product_handle ||
+      state.activeLanding.landing_key;
+
+    const confirmed = window.confirm(
+      `Vas a activar ${version.version_label} para "${landingTitle}".\n\n` +
+      'Protocol Data actualizará el metacampo en Shopify. La versión anterior ' +
+      'seguirá activa hasta que ingrese la primera visita real con la nueva versión.\n\n' +
+      '¿Continuar?'
+    );
+
+    if (!confirmed) return;
+
+    state.activationVersionNumber = number(versionNumber);
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Activando…';
+    }
+
+    setVersionsStatus(
+      `Sincronizando ${version.version_label} con Shopify…`
+    );
+
+    try {
+      const client = await getClient();
+      if (!client) return;
+
+      const response = await client.functions.invoke(
+        'analytics-version-shopify-sync',
+        {
+          body: {
+            landing_key: state.activeLanding.landing_key,
+            version_number: number(versionNumber),
+            dry_run: false
+          }
+        }
+      );
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      if (!response.data || response.data.ok !== true) {
+        throw new Error(
+          response.data && response.data.error
+            ? response.data.error
+            : 'Shopify no confirmó la sincronización.'
+        );
+      }
+
+      state.activationVersionNumber = null;
+
+      await loadVersions(client);
+
+      const items = Array.isArray(state.versionsPayload.items)
+        ? state.versionsPayload.items
+        : [];
+
+      const updatedLanding = items.find((item) =>
+        item.landing_key === response.data.landing_key
+      );
+
+      if (updatedLanding) {
+        openVersionDrawer(updatedLanding);
+      }
+
+      setVersionsStatus(
+        `${version.version_label} quedó sincronizada con Shopify y espera su primera visita.`,
+        'success'
+      );
+    } catch (error) {
+      const message = await getFunctionErrorMessage(error);
+
+      console.error('[rendimiento-web:activate-version]', error);
+
+      setVersionsStatus(message, 'error');
+
+      window.alert(
+        `No se pudo activar ${version.version_label}.\n\n${message}`
+      );
+    } finally {
+      state.activationVersionNumber = null;
+
+      if (button && document.body.contains(button)) {
+        button.disabled = false;
+        button.textContent =
+          version.status === 'activation_failed'
+            ? 'Reintentar activación'
+            : 'Activar versión';
+      }
+    }
   }
 
   function openVersionDrawer(item) {
@@ -623,6 +788,16 @@
         candidate.landing_key === row.getAttribute('data-landing-key')
       );
       if (item) openVersionDrawer(item);
+    });
+
+    $('rwVersionTrack').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-activate-version]');
+      if (!button) return;
+
+      activateVersion(
+        number(button.getAttribute('data-activate-version')),
+        button
+      );
     });
 
     document.querySelectorAll('[data-rw-tab]').forEach((button) => {
