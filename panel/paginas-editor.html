@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../css/panel.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/sidebar.css">
-  <link rel="stylesheet" href="../css/rendimiento-web.css?v=20260712_01">
+  <link rel="stylesheet" href="../css/rendimiento-web.css?v=20260713_02">
 </head>
 
 <body data-page="rendimiento-web">
@@ -34,229 +34,295 @@
           </div>
         </header>
 
-        <section class="rwCard rwFilters" aria-label="Filtros de rendimiento">
-          <div class="rwFilterGrid">
-            <label class="rwField rwField--wide">
-              <span>Landing</span>
-              <select id="rwLandingSelect">
-                <option value="">Todas las landings</option>
-              </select>
-            </label>
+        <nav class="rwTabs" aria-label="Secciones de rendimiento">
+          <button class="rwTab is-active" type="button" data-rw-tab="summary" aria-selected="true">Resumen</button>
+          <button class="rwTab" type="button" data-rw-tab="versions" aria-selected="false">Versiones</button>
+        </nav>
 
-            <label class="rwField">
-              <span>Versión</span>
-              <select id="rwVersionSelect">
-                <option value="">Todas</option>
-              </select>
-            </label>
+        <section class="rwTabPanel is-active" data-rw-panel="summary">
+          <section class="rwCard rwFilters" aria-label="Filtros de rendimiento">
+            <div class="rwFilterGrid">
+              <label class="rwField rwField--wide">
+                <span>Landing</span>
+                <select id="rwLandingSelect">
+                  <option value="">Todas las landings</option>
+                </select>
+              </label>
 
-            <label class="rwField">
-              <span>Desde</span>
-              <input id="rwStartDate" type="date">
-            </label>
+              <label class="rwField">
+                <span>Versión</span>
+                <select id="rwVersionSelect">
+                  <option value="">Todas</option>
+                </select>
+              </label>
 
-            <label class="rwField">
-              <span>Hasta</span>
-              <input id="rwEndDate" type="date">
-            </label>
+              <label class="rwField">
+                <span>Desde</span>
+                <input id="rwStartDate" type="date">
+              </label>
 
-            <label class="rwField">
-              <span>Fuente UTM</span>
-              <input id="rwSourceInput" type="text" placeholder="Todas">
-            </label>
+              <label class="rwField">
+                <span>Hasta</span>
+                <input id="rwEndDate" type="date">
+              </label>
 
-            <label class="rwField rwField--wide">
-              <span>Campaña</span>
-              <input id="rwCampaignInput" type="text" placeholder="Todas">
-            </label>
+              <label class="rwField">
+                <span>Fuente UTM</span>
+                <input id="rwSourceInput" type="text" placeholder="Todas">
+              </label>
 
-            <label class="rwField">
-              <span>Dispositivo</span>
-              <select id="rwDeviceSelect">
-                <option value="">Todos</option>
-                <option value="mobile">Mobile</option>
-                <option value="desktop">Desktop</option>
-                <option value="tablet">Tablet</option>
-              </select>
-            </label>
+              <label class="rwField rwField--wide">
+                <span>Campaña</span>
+                <input id="rwCampaignInput" type="text" placeholder="Todas">
+              </label>
 
-            <button class="rwPrimaryButton" id="rwRefreshButton" type="button">Actualizar panel</button>
-          </div>
+              <label class="rwField">
+                <span>Dispositivo</span>
+                <select id="rwDeviceSelect">
+                  <option value="">Todos</option>
+                  <option value="mobile">Mobile</option>
+                  <option value="desktop">Desktop</option>
+                  <option value="tablet">Tablet</option>
+                </select>
+              </label>
 
-          <div class="rwStatus" id="rwStatus" role="status">Preparando conexión con Analytics…</div>
-        </section>
-
-        <section class="rwKpiGrid" aria-label="Indicadores principales">
-          <article class="rwKpi rwKpi--neutral">
-            <span>Visitas</span>
-            <strong id="rwKpiViews">—</strong>
-            <small id="rwKpiViewsHint">Cargas únicas de landing</small>
-          </article>
-          <article class="rwKpi rwKpi--neutral">
-            <span>Sesiones</span>
-            <strong id="rwKpiSessions">—</strong>
-            <small>Sesiones anónimas detectadas</small>
-          </article>
-          <article class="rwKpi rwKpi--l1">
-            <span>Llegaron a L1</span>
-            <strong id="rwKpiL1">—</strong>
-            <small id="rwKpiL1Pct">10% scroll + 10 s</small>
-          </article>
-          <article class="rwKpi rwKpi--l2">
-            <span>Llegaron a L2</span>
-            <strong id="rwKpiL2">—</strong>
-            <small id="rwKpiL2Pct">25% scroll + 20 s</small>
-          </article>
-          <article class="rwKpi rwKpi--l3">
-            <span>Llegaron a L3</span>
-            <strong id="rwKpiL3">—</strong>
-            <small id="rwKpiL3Pct">50% scroll + 30 s</small>
-          </article>
-          <article class="rwKpi rwKpi--conversion">
-            <span>Conversión View → L3</span>
-            <strong id="rwKpiConversion">—</strong>
-            <small id="rwKpiConversionHint">Embudo completo</small>
-          </article>
-        </section>
-
-        <section class="rwMainGrid">
-          <article class="rwCard rwFunnelCard">
-            <div class="rwCardHead">
-              <div>
-                <span class="rwSectionLabel">EMBUDO PRINCIPAL</span>
-                <h2>Profundidad + tiempo real</h2>
-                <p>La anchura representa la retención acumulada desde la visita inicial.</p>
-              </div>
-              <span class="rwBadge" id="rwSelectedLandingBadge">Todas las landings</span>
+              <button class="rwPrimaryButton" id="rwRefreshButton" type="button">Actualizar panel</button>
             </div>
 
-            <div class="rwFunnel" aria-label="Embudo vertical de navegación">
-              <div class="rwStage rwStage--view" style="--stage-width:100%">
-                <div class="rwStageTop">
-                  <div><span>Entrada</span><strong>Landing View</strong></div>
-                  <b id="rwStageViewCount">—</b>
-                </div>
-                <div class="rwStageMeta">
-                  <span>100% de base</span>
-                  <span id="rwStageViewDrop">Inicio del recorrido</span>
-                </div>
-              </div>
+            <div class="rwStatus" id="rwStatus" role="status">Preparando conexión con Analytics…</div>
+          </section>
 
-              <div class="rwFunnelConnector"><span>↓</span></div>
+          <section class="rwKpiGrid" aria-label="Indicadores principales">
+            <article class="rwKpi rwKpi--neutral">
+              <span>Visitas</span>
+              <strong id="rwKpiViews">—</strong>
+              <small id="rwKpiViewsHint">Cargas únicas de landing</small>
+            </article>
+            <article class="rwKpi rwKpi--neutral">
+              <span>Sesiones</span>
+              <strong id="rwKpiSessions">—</strong>
+              <small>Sesiones anónimas detectadas</small>
+            </article>
+            <article class="rwKpi rwKpi--l1">
+              <span>Llegaron a L1</span>
+              <strong id="rwKpiL1">—</strong>
+              <small id="rwKpiL1Pct">10% scroll + 10 s</small>
+            </article>
+            <article class="rwKpi rwKpi--l2">
+              <span>Llegaron a L2</span>
+              <strong id="rwKpiL2">—</strong>
+              <small id="rwKpiL2Pct">25% scroll + 20 s</small>
+            </article>
+            <article class="rwKpi rwKpi--l3">
+              <span>Llegaron a L3</span>
+              <strong id="rwKpiL3">—</strong>
+              <small id="rwKpiL3Pct">50% scroll + 30 s</small>
+            </article>
+            <article class="rwKpi rwKpi--conversion">
+              <span>Conversión View → L3</span>
+              <strong id="rwKpiConversion">—</strong>
+              <small id="rwKpiConversionHint">Embudo completo</small>
+            </article>
+          </section>
 
-              <div class="rwStage rwStage--l1" id="rwStageL1" style="--stage-width:72%">
-                <div class="rwStageTop">
-                  <div><span>Nivel 1</span><strong>L1 · Atención inicial</strong></div>
-                  <b id="rwStageL1Count">—</b>
-                </div>
-                <div class="rwStageRule"><span>10% scroll</span><span>10 segundos</span></div>
-                <div class="rwStageMeta">
-                  <span id="rwStageL1Conversion">—</span>
-                  <span id="rwStageL1Time">Mediana: —</span>
-                  <span id="rwStageL1Drop">Caída: —</span>
-                </div>
-              </div>
-
-              <div class="rwFunnelConnector"><span>↓</span></div>
-
-              <div class="rwStage rwStage--l2" id="rwStageL2" style="--stage-width:54%">
-                <div class="rwStageTop">
-                  <div><span>Nivel 2</span><strong>L2 · Interés sostenido</strong></div>
-                  <b id="rwStageL2Count">—</b>
-                </div>
-                <div class="rwStageRule"><span>25% scroll</span><span>20 segundos</span></div>
-                <div class="rwStageMeta">
-                  <span id="rwStageL2Conversion">—</span>
-                  <span id="rwStageL2Time">Mediana: —</span>
-                  <span id="rwStageL2Drop">Caída: —</span>
-                </div>
-              </div>
-
-              <div class="rwFunnelConnector"><span>↓</span></div>
-
-              <div class="rwStage rwStage--l3" id="rwStageL3" style="--stage-width:36%">
-                <div class="rwStageTop">
-                  <div><span>Nivel 3</span><strong>L3 · Intención alta</strong></div>
-                  <b id="rwStageL3Count">—</b>
-                </div>
-                <div class="rwStageRule"><span>50% scroll</span><span>30 segundos</span></div>
-                <div class="rwStageMeta">
-                  <span id="rwStageL3Conversion">—</span>
-                  <span id="rwStageL3Time">Mediana: —</span>
-                  <span id="rwStageL3Drop">Caída: —</span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <aside class="rwSideStack">
-            <article class="rwCard rwTimingCard">
-              <div class="rwCardHead rwCardHead--compact">
+          <section class="rwMainGrid">
+            <article class="rwCard rwFunnelCard">
+              <div class="rwCardHead">
                 <div>
-                  <span class="rwSectionLabel">VELOCIDAD</span>
-                  <h2>Tiempo de activación</h2>
+                  <span class="rwSectionLabel">EMBUDO PRINCIPAL</span>
+                  <h2>Profundidad + tiempo real</h2>
+                  <p>La anchura representa la retención acumulada desde la visita inicial.</p>
+                </div>
+                <span class="rwBadge" id="rwSelectedLandingBadge">Todas las landings</span>
+              </div>
+
+              <div class="rwFunnel" aria-label="Embudo vertical de navegación">
+                <div class="rwStage rwStage--view" style="--stage-width:100%">
+                  <div class="rwStageTop">
+                    <div><span>Entrada</span><strong>Landing View</strong></div>
+                    <b id="rwStageViewCount">—</b>
+                  </div>
+                  <div class="rwStageMeta">
+                    <span>100% de base</span>
+                    <span id="rwStageViewDrop">Inicio del recorrido</span>
+                  </div>
+                </div>
+
+                <div class="rwFunnelConnector"><span>↓</span></div>
+
+                <div class="rwStage rwStage--l1" id="rwStageL1" style="--stage-width:72%">
+                  <div class="rwStageTop">
+                    <div><span>Nivel 1</span><strong>L1 · Atención inicial</strong></div>
+                    <b id="rwStageL1Count">—</b>
+                  </div>
+                  <div class="rwStageRule"><span>10% scroll</span><span>10 segundos</span></div>
+                  <div class="rwStageMeta">
+                    <span id="rwStageL1Conversion">—</span>
+                    <span id="rwStageL1Time">Mediana: —</span>
+                    <span id="rwStageL1Drop">Caída: —</span>
+                  </div>
+                </div>
+
+                <div class="rwFunnelConnector"><span>↓</span></div>
+
+                <div class="rwStage rwStage--l2" id="rwStageL2" style="--stage-width:54%">
+                  <div class="rwStageTop">
+                    <div><span>Nivel 2</span><strong>L2 · Interés sostenido</strong></div>
+                    <b id="rwStageL2Count">—</b>
+                  </div>
+                  <div class="rwStageRule"><span>25% scroll</span><span>20 segundos</span></div>
+                  <div class="rwStageMeta">
+                    <span id="rwStageL2Conversion">—</span>
+                    <span id="rwStageL2Time">Mediana: —</span>
+                    <span id="rwStageL2Drop">Caída: —</span>
+                  </div>
+                </div>
+
+                <div class="rwFunnelConnector"><span>↓</span></div>
+
+                <div class="rwStage rwStage--l3" id="rwStageL3" style="--stage-width:36%">
+                  <div class="rwStageTop">
+                    <div><span>Nivel 3</span><strong>L3 · Intención alta</strong></div>
+                    <b id="rwStageL3Count">—</b>
+                  </div>
+                  <div class="rwStageRule"><span>50% scroll</span><span>30 segundos</span></div>
+                  <div class="rwStageMeta">
+                    <span id="rwStageL3Conversion">—</span>
+                    <span id="rwStageL3Time">Mediana: —</span>
+                    <span id="rwStageL3Drop">Caída: —</span>
+                  </div>
                 </div>
               </div>
+            </article>
 
-              <div class="rwTimingList">
-                <div class="rwTimingRow"><span><i class="rwDot rwDot--l1"></i>Hasta L1</span><strong id="rwTimeL1">—</strong></div>
-                <div class="rwTimingRow"><span><i class="rwDot rwDot--l2"></i>Hasta L2</span><strong id="rwTimeL2">—</strong></div>
-                <div class="rwTimingRow"><span><i class="rwDot rwDot--l3"></i>Hasta L3</span><strong id="rwTimeL3">—</strong></div>
+            <aside class="rwSideStack">
+              <article class="rwCard rwTimingCard">
+                <div class="rwCardHead rwCardHead--compact">
+                  <div>
+                    <span class="rwSectionLabel">VELOCIDAD</span>
+                    <h2>Tiempo de activación</h2>
+                  </div>
+                </div>
+
+                <div class="rwTimingList">
+                  <div class="rwTimingRow"><span><i class="rwDot rwDot--l1"></i>Hasta L1</span><strong id="rwTimeL1">—</strong></div>
+                  <div class="rwTimingRow"><span><i class="rwDot rwDot--l2"></i>Hasta L2</span><strong id="rwTimeL2">—</strong></div>
+                  <div class="rwTimingRow"><span><i class="rwDot rwDot--l3"></i>Hasta L3</span><strong id="rwTimeL3">—</strong></div>
+                </div>
+
+                <div class="rwPercentileGrid">
+                  <div><span>P75 hasta L3</span><strong id="rwTimeP75">—</strong></div>
+                  <div><span>P90 hasta L3</span><strong id="rwTimeP90">—</strong></div>
+                </div>
+              </article>
+
+              <article class="rwCard rwInsightCard">
+                <span class="rwSectionLabel">LECTURA OPERATIVA</span>
+                <h2 id="rwInsightTitle">Esperando datos</h2>
+                <p id="rwInsightBody">El panel identificará la mayor caída del recorrido y el nivel con llegada más lenta.</p>
+                <div class="rwInsightBadges">
+                  <span class="rwBadge rwBadge--blue" id="rwInsightDropBadge">Mayor caída: —</span>
+                  <span class="rwBadge rwBadge--success" id="rwInsightSpeedBadge">Nivel más lento: —</span>
+                </div>
+              </article>
+            </aside>
+          </section>
+
+          <section class="rwBottomGrid">
+            <article class="rwCard rwChartCard">
+              <div class="rwCardHead">
+                <div>
+                  <span class="rwSectionLabel">EVOLUCIÓN</span>
+                  <h2>Recorrido diario</h2>
+                  <p>Visitas y niveles alcanzados dentro del rango seleccionado.</p>
+                </div>
               </div>
-
-              <div class="rwPercentileGrid">
-                <div><span>P75 hasta L3</span><strong id="rwTimeP75">—</strong></div>
-                <div><span>P90 hasta L3</span><strong id="rwTimeP90">—</strong></div>
+              <div class="rwChartWrap">
+                <canvas id="rwDailyChart" aria-label="Evolución diaria del embudo"></canvas>
               </div>
             </article>
 
-            <article class="rwCard rwInsightCard">
-              <span class="rwSectionLabel">LECTURA OPERATIVA</span>
-              <h2 id="rwInsightTitle">Esperando datos</h2>
-              <p id="rwInsightBody">El panel identificará la mayor caída del recorrido y el nivel con llegada más lenta.</p>
-              <div class="rwInsightBadges">
-                <span class="rwBadge rwBadge--blue" id="rwInsightDropBadge">Mayor caída: —</span>
-                <span class="rwBadge rwBadge--success" id="rwInsightSpeedBadge">Nivel más lento: —</span>
-              </div>
+            <article class="rwCard rwContextCard">
+              <span class="rwSectionLabel">CONTEXTO ACTIVO</span>
+              <h2 id="rwContextTitle">Todas las landings</h2>
+              <dl>
+                <div><dt>Versión</dt><dd id="rwContextVersion">Todas</dd></div>
+                <div><dt>Fuente</dt><dd id="rwContextSource">Todas</dd></div>
+                <div><dt>Campaña</dt><dd id="rwContextCampaign">Todas</dd></div>
+                <div><dt>Dispositivo</dt><dd id="rwContextDevice">Todos</dd></div>
+                <div><dt>Rango</dt><dd id="rwContextRange">—</dd></div>
+              </dl>
             </article>
-          </aside>
+          </section>
         </section>
 
-        <section class="rwBottomGrid">
-          <article class="rwCard rwChartCard">
-            <div class="rwCardHead">
+        <section class="rwTabPanel" data-rw-panel="versions" hidden>
+          <section class="rwVersionToolbar" aria-label="Filtros del historial de versiones">
+            <div class="rwVersionToolbarHead">
               <div>
-                <span class="rwSectionLabel">EVOLUCIÓN</span>
-                <h2>Recorrido diario</h2>
-                <p>Visitas y niveles alcanzados dentro del rango seleccionado.</p>
+                <span class="rwSectionLabel">EVOLUCIÓN DE LANDINGS</span>
+                <h2>Versiones e hipótesis</h2>
+                <p>Compará el comportamiento histórico de cada intervención sin mezclar sus períodos de medición.</p>
               </div>
+              <button class="rwPrimaryButton" id="rwVersionsRefreshButton" type="button">Actualizar versiones</button>
             </div>
-            <div class="rwChartWrap">
-              <canvas id="rwDailyChart" aria-label="Evolución diaria del embudo"></canvas>
-            </div>
-          </article>
 
-          <article class="rwCard rwContextCard">
-            <span class="rwSectionLabel">CONTEXTO ACTIVO</span>
-            <h2 id="rwContextTitle">Todas las landings</h2>
-            <dl>
-              <div><dt>Versión</dt><dd id="rwContextVersion">Todas</dd></div>
-              <div><dt>Fuente</dt><dd id="rwContextSource">Todas</dd></div>
-              <div><dt>Campaña</dt><dd id="rwContextCampaign">Todas</dd></div>
-              <div><dt>Dispositivo</dt><dd id="rwContextDevice">Todos</dd></div>
-              <div><dt>Rango</dt><dd id="rwContextRange">—</dd></div>
-            </dl>
-          </article>
+            <div class="rwVersionFilterGrid">
+              <label class="rwField"><span>Desde</span><input id="rwVersionsStartDate" type="date"></label>
+              <label class="rwField"><span>Hasta</span><input id="rwVersionsEndDate" type="date"></label>
+              <label class="rwField"><span>Fuente UTM</span><input id="rwVersionsSourceInput" type="text" placeholder="Todas"></label>
+              <label class="rwField"><span>Campaña</span><input id="rwVersionsCampaignInput" type="text" placeholder="Todas"></label>
+              <label class="rwField"><span>Dispositivo</span><select id="rwVersionsDeviceSelect"><option value="">Todos</option><option value="mobile">Mobile</option><option value="desktop">Desktop</option><option value="tablet">Tablet</option></select></label>
+            </div>
+            <div class="rwStatus" id="rwVersionsStatus" role="status">Abrí esta pestaña para consultar las versiones registradas.</div>
+          </section>
+
+          <section class="rwVersionKpis" aria-label="Resumen de versiones">
+            <article><span>Landings</span><strong id="rwVersionsLandingCount">—</strong><small>Con historial registrado</small></article>
+            <article><span>Versiones</span><strong id="rwVersionsVersionCount">—</strong><small>Activas, cerradas y borradores</small></article>
+            <article><span>Medidas</span><strong id="rwVersionsMeasuredCount">—</strong><small>Con tráfico capturado</small></article>
+            <article><span>Borradores</span><strong id="rwVersionsDraftCount">—</strong><small>Hipótesis aún no activadas</small></article>
+          </section>
+
+          <section class="rwVersionListCard">
+            <div class="rwVersionListHead" aria-hidden="true">
+              <span>Landing</span><span>Activa</span><span>Versiones</span><span>Visitas</span><span>View → L3</span><span></span>
+            </div>
+            <div id="rwVersionRows" class="rwVersionRows"></div>
+          </section>
         </section>
       </main>
     </div>
   </div>
+
+  <div class="rwDrawerBackdrop" id="rwVersionDrawerBackdrop" hidden></div>
+  <aside class="rwVersionDrawer" id="rwVersionDrawer" aria-hidden="true" aria-label="Comparación de versiones">
+    <header class="rwVersionDrawerHeader">
+      <div>
+        <span class="rwSectionLabel">COMPARACIÓN HISTÓRICA</span>
+        <h2 id="rwVersionDrawerTitle">Landing</h2>
+        <p id="rwVersionDrawerMeta">Seleccioná una landing para revisar sus versiones.</p>
+      </div>
+      <button class="rwDrawerClose" id="rwVersionDrawerClose" type="button" aria-label="Cerrar">×</button>
+    </header>
+
+    <section class="rwVersionCompareBar">
+      <div class="rwCompareSelectors">
+        <label class="rwField"><span>Comparar</span><select id="rwCompareA"></select></label>
+        <span class="rwCompareVs">contra</span>
+        <label class="rwField"><span>Versión</span><select id="rwCompareB"></select></label>
+      </div>
+      <div class="rwCompareMetrics" id="rwCompareMetrics"></div>
+    </section>
+
+    <section class="rwVersionTrack" id="rwVersionTrack" aria-label="Versiones de la landing"></section>
+  </aside>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="../js/config/supabase-config.js"></script>
   <script src="../js/auth/auth-client.js"></script>
   <script src="../js/app.js"></script>
-  <script src="../js/rendimiento-web.js?v=20260712_01"></script>
+  <script src="../js/rendimiento-web.js?v=20260713_02"></script>
 </body>
 </html>
