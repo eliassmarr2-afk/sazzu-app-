@@ -63,6 +63,13 @@ root: null,
 audienceSetMembersPayload: null,
 audienceSetMembersSearch: "",
 audienceSetMembersView: "por_audiencia",
+
+/* INICIO · STATE · Miembros del detalle de audiencia */
+audienceDetailMembersPayload: null,
+audienceDetailMembersSearch: "",
+audienceDetailMembersRequestId: 0,
+/* FIN · STATE · Miembros del detalle de audiencia */
+
 /* FIN · STATE · Miembros de conjuntos de audiencias */
 
 /* INICIO · STATE · Comparador por parámetro UTM */
@@ -2878,7 +2885,151 @@ function ejecutarEnvioConjuntoAPapelera_(root, id, button) {
      FIN · Supabase · Lectura conjuntos UTM panel
      ========================================================= */
 
-     /* INICIO · Supabase · Miembros reales de conjunto */
+     /* =========================================================
+   INICIO · Supabase · Miembros reales de audiencia
+   Fuente: rpc_panel_utm_listar_miembros_audiencia
+   ========================================================= */
+
+function loadPublicidadUtmMiembrosAudienciaSupabase_(audienciaId, busqueda) {
+  const config = resolvePublicidadUtmSupabaseConfig_();
+  const rawId = String(audienciaId || "").trim();
+
+  if (!rawId) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_listar_miembros_audiencia",
+      error: "Falta audiencia_id para cargar miembros."
+    });
+  }
+
+  if (!config.ok) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_listar_miembros_audiencia",
+      error: config.error
+    });
+  }
+
+  const isCodigoAudiencia = /^AUD-/i.test(rawId);
+
+  return supabaseRpcRequest_(
+    config,
+    "rpc_panel_utm_listar_miembros_audiencia",
+    {
+      p_audiencia_id: isCodigoAudiencia ? null : rawId,
+      p_codigo_audiencia: isCodigoAudiencia ? rawId : null,
+      p_busqueda: busqueda || null,
+      p_limit: 1000,
+      p_offset: 0
+    }
+  ).then(function (payload) {
+    if (!payload || payload.ok !== true) {
+      return {
+        ok: false,
+        source: "rpc_panel_utm_listar_miembros_audiencia",
+        error: payload && payload.error
+          ? payload.error
+          : "La RPC de miembros de audiencia no devolvió ok=true.",
+        raw: payload
+      };
+    }
+
+    return normalizePublicidadUtmMiembrosAudienciaSupabase_(payload);
+  });
+}
+
+function normalizePublicidadUtmMiembrosAudienciaSupabase_(payload) {
+  const data = payload || {};
+  const rawItems = Array.isArray(data.items)
+    ? data.items
+    : (Array.isArray(data.miembros) ? data.miembros : []);
+
+  const items = rawItems.map(function (item) {
+    const nombre = String(
+      item.nombre_cliente ||
+      item.nombre ||
+      item.email_cliente ||
+      item.email ||
+      "Usuario sin nombre"
+    ).trim();
+
+    const email = String(
+      item.email_cliente ||
+      item.email ||
+      ""
+    ).trim();
+
+    const pedido = String(
+      item.numero_pedido ||
+      item.ultimo_numero_pedido ||
+      item.primera_numero_pedido ||
+      item.pedido ||
+      ""
+    ).trim();
+
+    return Object.assign({}, item, {
+      member_id:
+        item.member_id ||
+        item.cliente_key ||
+        item.cliente_id ||
+        email ||
+        pedido,
+
+      cliente_id:
+        item.cliente_id ||
+        item.cliente_key ||
+        item.member_id ||
+        email ||
+        pedido,
+
+      nombre: nombre,
+      nombre_cliente: nombre,
+
+      email: email,
+      email_cliente: email,
+
+      pedido: pedido,
+      numero_pedido: pedido,
+
+      ventas_asociadas: Number(
+        item.ventas_asociadas ||
+        item.ventas_match_count ||
+        0
+      ),
+
+      facturacion_asociada: Number(
+        item.facturacion_asociada ||
+        item.facturacion_total ||
+        item.monto_total ||
+        0
+      ),
+
+      ultima_fecha_compra:
+        item.ultima_fecha_compra ||
+        item.fecha_ultima_compra ||
+        item.fecha_ultimo_match ||
+        "",
+
+      origen_datos: "supabase"
+    });
+  });
+
+  return Object.assign({}, data, {
+    audiencia: data.audiencia || {},
+    summary: data.summary || {},
+    condiciones: Array.isArray(data.condiciones)
+      ? data.condiciones
+      : [],
+    items: items,
+    miembros: items
+  });
+}
+
+/* =========================================================
+   FIN · Supabase · Miembros reales de audiencia
+   ========================================================= */
+
+/* INICIO · Supabase · Miembros reales de conjunto */
 function loadPublicidadUtmMiembrosConjuntoSupabase_(conjuntoId, busqueda) {
   const config = resolvePublicidadUtmSupabaseConfig_();
   const rawId = String(conjuntoId || "").trim();
@@ -15516,6 +15667,8 @@ function openAudienceDetailSlide_(root, audienceInput, focusMode) {
 
   const main = root.closest("main") || root;
   main.classList.add("pubUtmSlideOpen");
+
+  loadAudienceDetailMembersForSlide_(root, audience);
 }
 
 function closeAudienceDetailSlide_(root) {
@@ -15525,6 +15678,10 @@ function closeAudienceDetailSlide_(root) {
   slide.classList.remove("is-open");
   slide.setAttribute("aria-hidden", "true");
   slide.removeAttribute("data-current-audience-id");
+
+  STATE.audienceDetailMembersRequestId += 1;
+  STATE.audienceDetailMembersPayload = null;
+  STATE.audienceDetailMembersSearch = "";
 
   const main = root.closest("main") || root;
   main.classList.remove("pubUtmSlideOpen");
@@ -15719,7 +15876,14 @@ function toAudienceDetailReadableCase_(value) {
   
     decorateAudienceDetailCreateSetButton_(slide);
     decorateAudienceDetailCards_(slide);
-    injectAudienceMembersOperationalNote_(slide);
+
+    const obsoleteMembersNote = slide.querySelector(
+      "[data-audience-members-note]"
+    );
+
+    if (obsoleteMembersNote) {
+      obsoleteMembersNote.remove();
+    }
   }
   
   function decorateAudienceDetailCreateSetButton_(slide) {
@@ -15983,7 +16147,13 @@ function renderAudienceDetailActions_(audience) {
 }
 
 function renderAudienceDetailComposition_(audience) {
-  const condiciones = Array.isArray(audience.condiciones) ? audience.condiciones : [];
+  const condiciones = Array.isArray(audience.condiciones)
+    ? audience.condiciones
+    : (
+        Array.isArray(audience.condiciones_json)
+          ? audience.condiciones_json
+          : []
+      );
 
   return `
     <div class="pubUtmAudienceDetailCard__head">
@@ -16011,37 +16181,654 @@ function renderAudienceDetailComposition_(audience) {
   `;
 }
 
-function renderAudienceDetailMembers_(audience) {
-  return `
-    <div class="pubUtmAudienceDetailCard__head">
-      <div>
-        <div class="pubUtmCard__eyebrow">Miembros</div>
-        <h3>Resumen de miembros y ventas</h3>
+function renderAudienceDetailMembers_(audience, payload, errorMessage) {
+  const a = audience || {};
+
+  if (errorMessage) {
+    return `
+      <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+        <div class="pubUtmAudienceMembersHead__copy">
+          <div class="pubUtmCard__eyebrow">Miembros</div>
+          <h3>No se pudieron cargar los usuarios</h3>
+        </div>
       </div>
+
+      <div class="pubUtmAudienceMembersEmpty pubUtmAudienceMembersEmpty--error">
+        <strong>Error al consultar Supabase</strong>
+        <span>${escapeHtml_(String(errorMessage || "Error desconocido."))}</span>
+      </div>
+    `;
+  }
+
+  if (!payload) {
+    return `
+      <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+        <div class="pubUtmAudienceMembersHead__copy">
+          <div class="pubUtmCard__eyebrow">Miembros</div>
+          <h3>Cargando usuarios vinculados</h3>
+        </div>
+      </div>
+
+      <div class="pubUtmAudienceMembersLoading">
+        <div class="pubUtmSkeletonLine pubUtmSkeletonLine--lg"></div>
+        <div class="pubUtmSkeletonLine"></div>
+        <div class="pubUtmSkeletonLine pubUtmSkeletonLine--sm"></div>
+      </div>
+    `;
+  }
+
+  const summary = payload.summary || {};
+  const members = Array.isArray(payload.items)
+    ? payload.items
+    : [];
+
+  const filtered = filterAudienceDetailMembers_(
+    members,
+    STATE.audienceDetailMembersSearch
+  );
+
+  const total = Number(
+    summary.miembros_actuales_count ||
+    payload.total ||
+    members.length ||
+    a.cantidad_miembros ||
+    0
+  );
+
+  const ventas = Number(
+    summary.ventas_match_count ||
+    a.ventas_asociadas ||
+    0
+  );
+
+  const facturacion = Number(
+    summary.facturacion_total ||
+    a.facturacion_asociada ||
+    0
+  );
+
+  const displayName = buildAudienceDetailMembersName_(
+    a,
+    payload
+  );
+
+  return `
+    <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+      <div class="pubUtmAudienceMembersHead__copy">
+        <div class="pubUtmCard__eyebrow">
+          Miembros · ${formatInteger_(total)} usuarios
+        </div>
+
+        <h3>${escapeHtml_(displayName)}</h3>
+      </div>
+
+      ${renderAudienceDetailMembersHelp_(a, payload)}
     </div>
 
-    <div class="pubUtmAudienceDetailMiniGrid">
+    <div class="pubUtmAudienceDetailMiniGrid pubUtmAudienceMembersStats">
       <div class="pubUtmMiniStat">
-        <span class="pubUtmMiniStat__label">Miembros</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.cantidad_miembros || 0)}</strong>
+        <span class="pubUtmMiniStat__label">Usuarios</span>
+        <strong class="pubUtmMiniStat__value">
+          ${formatInteger_(total)}
+        </strong>
       </div>
 
       <div class="pubUtmMiniStat">
         <span class="pubUtmMiniStat__label">Ventas asociadas</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.ventas_asociadas || 0)}</strong>
+        <strong class="pubUtmMiniStat__value">
+          ${formatInteger_(ventas)}
+        </strong>
       </div>
 
       <div class="pubUtmMiniStat">
-        <span class="pubUtmMiniStat__label">Clientes únicos</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.clientes_unicos || 0)}</strong>
+        <span class="pubUtmMiniStat__label">Facturación</span>
+        <strong class="pubUtmMiniStat__value">
+          ${formatMoneyAr_(facturacion)}
+        </strong>
       </div>
     </div>
 
-    <p class="pubUtmPanelSlide__text" style="margin-top:14px;">
-      Esta primera versión muestra el resumen operativo. La tabla profunda de miembros se conectará luego
-      con un endpoint específico para no sobrecargar el dashboard principal.
-    </p>
+    <div class="pubUtmAudienceMembersToolbar">
+      <label class="pubUtmAudienceMembersSearch">
+        <span class="pubUtmAudienceMembersSearch__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle
+              cx="10.5"
+              cy="10.5"
+              r="6.5"
+              stroke="currentColor"
+              stroke-width="1.8"
+            ></circle>
+            <path
+              d="m15.5 15.5 4 4"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            ></path>
+          </svg>
+        </span>
+
+        <input
+          type="search"
+          data-audience-members-search
+          value="${escapeHtml_(STATE.audienceDetailMembersSearch || "")}"
+          placeholder="Buscar por nombre, correo o pedido"
+          autocomplete="off"
+          aria-label="Buscar usuarios de esta audiencia"
+        >
+      </label>
+
+      <span class="pubUtmAudienceMembersToolbar__count">
+        <strong data-audience-members-visible>
+          ${formatInteger_(filtered.length)}
+        </strong>
+        visibles
+      </span>
+    </div>
+
+    <div
+      class="pubUtmAudienceMembersList"
+      data-audience-members-list
+    >
+      ${renderAudienceDetailMemberRows_(filtered)}
+    </div>
   `;
+}
+
+function loadAudienceDetailMembersForSlide_(root, audience) {
+  const slide = root.querySelector(
+    "[data-pubutm-audience-detail-slide]"
+  );
+
+  if (!slide || !audience) return;
+
+  const audienciaId = String(
+    audience.audiencia_id ||
+    audience.codigo_audiencia ||
+    ""
+  ).trim();
+
+  const membersNode = slide.querySelector(
+    "[data-audience-detail-members]"
+  );
+
+  if (!audienciaId || !membersNode) return;
+
+  const requestId =
+    Number(STATE.audienceDetailMembersRequestId || 0) + 1;
+
+  STATE.audienceDetailMembersRequestId = requestId;
+  STATE.audienceDetailMembersPayload = null;
+  STATE.audienceDetailMembersSearch = "";
+
+  membersNode.innerHTML = renderAudienceDetailMembers_(
+    audience,
+    null,
+    null
+  );
+
+  loadPublicidadUtmMiembrosAudienciaSupabase_(
+    audienciaId,
+    null
+  )
+    .then(function (payload) {
+      const activeId = String(
+        slide.getAttribute("data-current-audience-id") || ""
+      ).trim();
+
+      if (
+        requestId !== STATE.audienceDetailMembersRequestId ||
+        activeId !== String(audience.audiencia_id || "").trim()
+      ) {
+        return;
+      }
+
+      if (!payload || payload.ok !== true) {
+        throw new Error(
+          payload && payload.error
+            ? payload.error
+            : "No se pudieron cargar los miembros."
+        );
+      }
+
+      STATE.audienceDetailMembersPayload = payload;
+
+      membersNode.innerHTML = renderAudienceDetailMembers_(
+        audience,
+        payload,
+        null
+      );
+
+      attachAudienceDetailMembersEvents_(root, audience);
+
+      const composition = slide.querySelector(
+        "[data-audience-detail-composition]"
+      );
+
+      if (
+        composition &&
+        Array.isArray(payload.condiciones) &&
+        payload.condiciones.length
+      ) {
+        composition.innerHTML = renderAudienceDetailComposition_(
+          Object.assign({}, audience, {
+            condiciones: payload.condiciones,
+            condiciones_json: payload.condiciones,
+            cantidad_condiciones: payload.condiciones.length
+          })
+        );
+      }
+
+      console.info(
+        "[Publicidad UTM] Miembros de audiencia cargados:",
+        audienciaId,
+        payload.total || 0
+      );
+    })
+    .catch(function (error) {
+      if (
+        requestId !== STATE.audienceDetailMembersRequestId
+      ) {
+        return;
+      }
+
+      membersNode.innerHTML = renderAudienceDetailMembers_(
+        audience,
+        null,
+        error && error.message
+          ? error.message
+          : String(error || "Error desconocido.")
+      );
+    });
+}
+
+function attachAudienceDetailMembersEvents_(root, audience) {
+  const slide = root.querySelector(
+    "[data-pubutm-audience-detail-slide]"
+  );
+
+  if (!slide) return;
+
+  const search = slide.querySelector(
+    "[data-audience-members-search]"
+  );
+
+  if (search) {
+    search.oninput = function () {
+      STATE.audienceDetailMembersSearch = String(
+        search.value || ""
+      ).trim().toLowerCase();
+
+      const payload =
+        STATE.audienceDetailMembersPayload || {};
+
+      const items = Array.isArray(payload.items)
+        ? payload.items
+        : [];
+
+      const filtered = filterAudienceDetailMembers_(
+        items,
+        STATE.audienceDetailMembersSearch
+      );
+
+      const list = slide.querySelector(
+        "[data-audience-members-list]"
+      );
+
+      const count = slide.querySelector(
+        "[data-audience-members-visible]"
+      );
+
+      if (list) {
+        list.innerHTML =
+          renderAudienceDetailMemberRows_(filtered);
+        list.scrollTop = 0;
+      }
+
+      if (count) {
+        count.textContent = formatInteger_(
+          filtered.length
+        );
+      }
+    };
+  }
+
+  const helpButton = slide.querySelector(
+    "[data-audience-members-help]"
+  );
+
+  if (helpButton) {
+    helpButton.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const wrap = helpButton.closest(
+        ".pubUtmAudienceMembersHelp"
+      );
+
+      if (!wrap) return;
+
+      const willOpen = !wrap.classList.contains("is-open");
+
+      wrap.classList.toggle("is-open", willOpen);
+      helpButton.setAttribute(
+        "aria-expanded",
+        willOpen ? "true" : "false"
+      );
+    };
+
+    helpButton.onkeydown = function (event) {
+      if (event.key !== "Escape") return;
+
+      const wrap = helpButton.closest(
+        ".pubUtmAudienceMembersHelp"
+      );
+
+      if (wrap) {
+        wrap.classList.remove("is-open");
+      }
+
+      helpButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      helpButton.blur();
+    };
+  }
+}
+
+function buildAudienceDetailMembersName_(audience, payload) {
+  const detail = Object.assign(
+    {},
+    audience || {},
+    (payload && payload.audiencia) || {}
+  );
+
+  const rawName = String(
+    detail.nombre_audiencia || ""
+  ).trim();
+
+  const id = String(
+    detail.audiencia_id ||
+    detail.codigo_audiencia ||
+    ""
+  ).trim();
+
+  const genericName =
+    !rawName ||
+    rawName === id ||
+    /^AUD-/i.test(rawName);
+
+  if (!genericName) {
+    return buildAudienceDetailReadableName_(detail);
+  }
+
+  const condiciones = Array.isArray(payload.condiciones)
+    ? payload.condiciones
+    : (
+        Array.isArray(detail.condiciones_json)
+          ? detail.condiciones_json
+          : []
+      );
+
+  const values = condiciones
+    .map(function (condition) {
+      return String(
+        condition.valor_utm || ""
+      ).trim();
+    })
+    .filter(Boolean)
+    .map(function (value) {
+      return buildAudienceDetailValueLabel_(
+        humanizeLabel_(value)
+      );
+    });
+
+  if (values.length) {
+    return values.join(" · ");
+  }
+
+  return (
+    detail.codigo_audiencia ||
+    detail.audiencia_id ||
+    "Audiencia automática"
+  );
+}
+
+function renderAudienceDetailMembersHelp_(audience, payload) {
+  const condiciones = Array.isArray(payload.condiciones)
+    ? payload.condiciones
+    : (
+        Array.isArray(audience.condiciones_json)
+          ? audience.condiciones_json
+          : (
+              Array.isArray(audience.condiciones)
+                ? audience.condiciones
+                : []
+            )
+      );
+
+  return `
+    <div class="pubUtmAudienceMembersHelp">
+      <button
+        type="button"
+        class="pubUtmAudienceMembersHelp__button"
+        data-audience-members-help
+        aria-label="Ver parámetros de esta audiencia"
+        aria-expanded="false"
+        aria-controls="pubUtmAudienceMembersTooltip"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.8"
+          ></circle>
+          <path
+            d="M9.9 9.2a2.3 2.3 0 0 1 4.4 1c0 1.8-2.3 2-2.3 3.6"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          ></path>
+          <circle
+            cx="12"
+            cy="17.2"
+            r="1"
+            fill="currentColor"
+          ></circle>
+        </svg>
+      </button>
+
+      <div
+        id="pubUtmAudienceMembersTooltip"
+        class="pubUtmAudienceMembersTooltip"
+        role="tooltip"
+      >
+        <strong>Parámetros de la audiencia</strong>
+
+        ${
+          condiciones.length
+            ? condiciones.map(function (condition) {
+                return `
+                  <div class="pubUtmAudienceMembersTooltip__row">
+                    <span>
+                      ${escapeHtml_(condition.campo_utm || "Parámetro")}
+                    </span>
+                    <em>
+                      ${escapeHtml_(condition.valor_utm || "—")}
+                    </em>
+                  </div>
+                `;
+              }).join("")
+            : `
+              <p>
+                No hay parámetros visibles para esta audiencia.
+              </p>
+            `
+        }
+      </div>
+    </div>
+  `;
+}
+
+function filterAudienceDetailMembers_(members, query) {
+  const list = Array.isArray(members)
+    ? members
+    : [];
+
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
+
+  if (!q) return list;
+
+  return list.filter(function (member) {
+    const haystack = [
+      member.nombre_cliente,
+      member.nombre,
+      member.email_cliente,
+      member.email,
+      member.cliente_key,
+      member.member_id,
+      member.numero_pedido,
+      member.pedido,
+      member.primera_numero_pedido,
+      member.ultimo_numero_pedido
+    ].join(" ").toLowerCase();
+
+    return haystack.indexOf(q) !== -1;
+  });
+}
+
+function renderAudienceDetailMemberRows_(members) {
+  const list = Array.isArray(members)
+    ? members
+    : [];
+
+  if (!list.length) {
+    return `
+      <div class="pubUtmAudienceMembersEmpty">
+        <strong>Sin resultados</strong>
+        <span>
+          No hay usuarios que coincidan con la búsqueda actual.
+        </span>
+      </div>
+    `;
+  }
+
+  return list.map(function (member) {
+    const name = String(
+      member.nombre_cliente ||
+      member.nombre ||
+      member.email_cliente ||
+      member.email ||
+      "Usuario sin nombre"
+    ).trim();
+
+    const email = String(
+      member.email_cliente ||
+      member.email ||
+      "Sin correo"
+    ).trim();
+
+    const pedido = String(
+      member.numero_pedido ||
+      member.ultimo_numero_pedido ||
+      member.primera_numero_pedido ||
+      member.pedido ||
+      ""
+    ).trim();
+
+    const ventas = Number(
+      member.ventas_asociadas ||
+      member.ventas_match_count ||
+      0
+    );
+
+    const facturacion = Number(
+      member.facturacion_asociada ||
+      member.facturacion_total ||
+      member.monto_total ||
+      0
+    );
+
+    const initial = (
+      name ||
+      email ||
+      "U"
+    ).charAt(0).toUpperCase();
+
+    const avatarColor =
+      getAudienceDetailMemberAvatarColor_(member);
+
+    return `
+      <article class="pubUtmAudienceMemberRow">
+        <div
+          class="pubUtmAudienceMemberRow__avatar"
+          style="--pub-utm-audience-avatar:${avatarColor};"
+          aria-hidden="true"
+        >
+          ${escapeHtml_(initial || "U")}
+        </div>
+
+        <div class="pubUtmAudienceMemberRow__identity">
+          <strong>${escapeHtml_(name)}</strong>
+          <span>${escapeHtml_(email)}</span>
+        </div>
+
+        <div class="pubUtmAudienceMemberRow__details">
+          <span>
+            ${pedido ? escapeHtml_(pedido) : "Sin pedido"}
+            · ${formatInteger_(ventas)}
+            ${ventas === 1 ? "venta" : "ventas"}
+          </span>
+
+          <strong>${formatMoneyAr_(facturacion)}</strong>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function getAudienceDetailMemberAvatarColor_(member) {
+  const palette = [
+    "#2479FF",
+    "#7A5AF8",
+    "#12B76A",
+    "#F79009",
+    "#E54D8C",
+    "#0BA5EC",
+    "#F04438",
+    "#667085",
+    "#875BF7",
+    "#039855"
+  ];
+
+  const seed = String(
+    (member && (
+      member.email_cliente ||
+      member.email ||
+      member.nombre_cliente ||
+      member.nombre ||
+      member.cliente_key ||
+      member.member_id
+    )) ||
+    "usuario"
+  );
+
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (
+      (hash * 31) +
+      seed.charCodeAt(index)
+    ) >>> 0;
+  }
+
+  return palette[hash % palette.length];
 }
 
 function renderAudienceDetailOrigin_(audience) {
