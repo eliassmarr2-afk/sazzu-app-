@@ -1,0 +1,513 @@
+/* ==========================================================
+   Protocol Data · Logística · Calendario operativo
+   Alcance aislado: únicamente TAB Calendario
+   ========================================================== */
+
+.logCalendarCard {
+  min-width: 0;
+}
+
+.logCalendarIntro {
+  max-width: 840px;
+  margin: -3px 0 18px;
+  color: #697386;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.logCalendarStatus,
+.logCalendarCounter,
+.logCalendarPreviewBadge {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 11px;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.logCalendarStatus {
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.10);
+  color: #d99a35;
+}
+
+.logCalendarStatus.is-saved {
+  border-color: rgba(49, 210, 151, 0.28);
+  background: rgba(49, 210, 151, 0.10);
+  color: #50d7a5;
+}
+
+.logCalendarCounter {
+  border: 1px solid rgba(36, 121, 255, 0.26);
+  background: rgba(36, 121, 255, 0.09);
+  color: #69a2ff;
+}
+
+.logCalendarPreviewBadge {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(148, 163, 184, 0.08);
+  color: #a7b3c5;
+}
+
+.logCalendarLayout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(300px, 0.85fr);
+  gap: 14px;
+}
+
+.logCalendarSection,
+.logCalendarPreview {
+  min-width: 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #f7faff;
+  padding: 16px;
+}
+
+.logCalendarSection__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.logCalendarSection__head h3 {
+  margin: 4px 0 0;
+  color: #252a32;
+  font-size: 17px;
+  line-height: 1.15;
+  font-weight: 950;
+  letter-spacing: -0.025em;
+}
+
+.logCalendarDays {
+  display: grid;
+  gap: 8px;
+}
+
+.logCalendarDay {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  box-sizing: border-box;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 13px;
+  background: #ffffff;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.logCalendarDay:hover {
+  border-color: rgba(36, 121, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.logCalendarDay__text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.logCalendarDay__text strong {
+  color: #252a32;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.logCalendarDay__text small {
+  color: #97a1b2;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.logCalendarDay input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logCalendarSwitch {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 24px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #d9dee7;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+  transition: background-color 160ms ease;
+}
+
+.logCalendarSwitch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 7px rgba(15, 23, 42, 0.24);
+  transition: transform 160ms ease;
+}
+
+.logCalendarDay input:checked + .logCalendarSwitch {
+  background: #2479ff;
+}
+
+.logCalendarDay input:checked + .logCalendarSwitch::after {
+  transform: translateX(18px);
+}
+
+.logCalendarDay:has(input:checked) {
+  border-color: rgba(36, 121, 255, 0.30);
+  background: rgba(36, 121, 255, 0.035);
+}
+
+.logCalendarField {
+  display: grid;
+  gap: 7px;
+}
+
+.logCalendarField > span {
+  color: #697386;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.logCalendarSummary {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.logCalendarSummary__label {
+  color: #97a1b2;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.logCalendarSummary strong {
+  color: #252a32;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.logCalendarSummary small {
+  color: #697386;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.logCalendarRule {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  border: 1px solid rgba(36, 121, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(36, 121, 255, 0.07);
+  padding: 14px;
+}
+
+.logCalendarRule__icon {
+  display: inline-flex;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #2479ff;
+  color: #ffffff;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.logCalendarRule strong {
+  display: block;
+  color: #2479ff;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.logCalendarRule p {
+  margin: 5px 0 0;
+  color: #4f6f9e;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.logCalendarPreview {
+  margin-top: 14px;
+}
+
+.logCalendarPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.logCalendarPreviewItem {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-width: 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 13px;
+}
+
+.logCalendarPreviewItem > span {
+  color: #97a1b2;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.logCalendarPreviewItem strong {
+  color: #252a32;
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+
+.logCalendarPreviewItem small {
+  color: #697386;
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.logCalendarActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.logCalendarMessage {
+  min-height: 18px;
+  color: #697386;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.logCalendarMessage.is-success {
+  color: #31c48d;
+}
+
+.logCalendarMessage.is-error {
+  color: #ef6b6b;
+}
+
+/* ==========================================================
+   Dark mode · alineado con el panel Logística actual
+   ========================================================== */
+
+body.logistica-dark .logCalendarIntro {
+  color: #aeb4bd;
+}
+
+body.logistica-dark .logCalendarSection,
+body.logistica-dark .logCalendarPreview {
+  border-color: rgba(255, 255, 255, 0.13);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.012)
+    ),
+    #232323;
+}
+
+body.logistica-dark .logCalendarSection__head h3 {
+  color: #f4f4f4;
+}
+
+body.logistica-dark .logCalendarDay {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #292929;
+}
+
+body.logistica-dark .logCalendarDay:hover {
+  border-color: rgba(92, 154, 255, 0.48);
+  background: #2d2d2d;
+}
+
+body.logistica-dark .logCalendarDay:has(input:checked) {
+  border-color: rgba(36, 121, 255, 0.48);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(36, 121, 255, 0.12),
+      rgba(36, 121, 255, 0.025)
+    ),
+    #292929;
+}
+
+body.logistica-dark .logCalendarDay__text strong {
+  color: #f3f3f3;
+}
+
+body.logistica-dark .logCalendarDay__text small {
+  color: #979da7;
+}
+
+body.logistica-dark .logCalendarSwitch {
+  background: #4b4f55;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+body.logistica-dark
+.logCalendarDay
+input:checked
++ .logCalendarSwitch {
+  background: #2479ff;
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, 0.10);
+}
+
+body.logistica-dark .logCalendarField > span {
+  color: #aeb4bd;
+}
+
+body.logistica-dark #logCalendarTimezone {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: #292929;
+  color: #f2f2f2;
+}
+
+body.logistica-dark #logCalendarTimezone:focus {
+  border-color: #2479ff;
+  box-shadow: 0 0 0 4px rgba(36, 121, 255, 0.14);
+}
+
+body.logistica-dark .logCalendarSummary {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #292929;
+}
+
+body.logistica-dark .logCalendarSummary__label {
+  color: #858d99;
+}
+
+body.logistica-dark .logCalendarSummary strong {
+  color: #f3f3f3;
+}
+
+body.logistica-dark .logCalendarSummary small {
+  color: #9299a4;
+}
+
+body.logistica-dark .logCalendarRule {
+  border-color: rgba(36, 121, 255, 0.25);
+  background: rgba(36, 121, 255, 0.09);
+}
+
+body.logistica-dark .logCalendarRule strong {
+  color: #70a7ff;
+}
+
+body.logistica-dark .logCalendarRule p {
+  color: #a7b8d4;
+}
+
+body.logistica-dark .logCalendarPreviewItem {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #292929;
+}
+
+body.logistica-dark .logCalendarPreviewItem > span {
+  color: #858d99;
+}
+
+body.logistica-dark .logCalendarPreviewItem strong {
+  color: #f4f4f4;
+}
+
+body.logistica-dark .logCalendarPreviewItem small {
+  color: #979da7;
+}
+
+body.logistica-dark .logCalendarMessage {
+  color: #9ba2ac;
+}
+
+@media (max-width: 1080px) {
+  .logCalendarLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .logCalendarPreviewGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .logCalendarSection__head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .logCalendarCounter,
+  .logCalendarPreviewBadge {
+    align-self: flex-start;
+  }
+
+  .logCalendarPreviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .logCalendarActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .logCalendarActions .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================
+   Calendario · contenedores compactos
+   ========================================================== */
+
+.logCalendarCard,
+.logCalendarSection,
+.logCalendarPreview,
+.logCalendarDay,
+.logCalendarSummary,
+.logCalendarRule,
+.logCalendarPreviewItem {
+  border-radius: 5px !important;
+}

@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="../../css/logistica/logistica.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-rule-slide.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-pedidos.css">
+  <link rel="stylesheet" href="../../css/logistica/logistica-calendar.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-dark.css">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-dark-overrides.css">
@@ -68,6 +69,7 @@
           <button class="logTab" type="button" data-log-tab="pedidos">Pedidos</button>
           <button class="logTab" type="button" data-log-tab="conversaciones">Conversaciones</button>
           <button class="logTab" type="button" data-log-tab="reglas">Reglas de envío</button>
+          <button class="logTab" type="button" data-log-tab="calendario">Calendario</button>
           <button class="logTab" type="button" data-log-tab="codigos">Códigos postales</button>
           <button class="logTab" type="button" data-log-tab="excepciones">Excepciones</button>
           <button class="logTab" type="button" data-log-tab="banners">Banners</button>
@@ -219,6 +221,284 @@
             </div>
 
             <div class="logRuleList" id="logRulesList"></div>
+          </article>
+        </section>
+
+        <section class="logPanel" data-log-panel="calendario">
+          <article class="logCard logCalendarCard">
+            <div class="logCard__head logCard__head--toolbar">
+              <div>
+                <span class="u-sectionLabel">CALENDARIO OPERATIVO</span>
+                <h2>Días habilitados para entregas</h2>
+              </div>
+
+              <span class="logCalendarStatus" id="logCalendarStatus">
+                Configuración local
+              </span>
+            </div>
+
+            <p class="logCalendarIntro">
+              Definí qué días pueden realizarse entregas. Las reglas conservan
+              sus plazos y el calendario mueve automáticamente la promesa al
+              próximo día habilitado.
+            </p>
+
+            <form id="logCalendarForm">
+              <div class="logCalendarLayout">
+
+                <section class="logCalendarSection">
+                  <div class="logCalendarSection__head">
+                    <div>
+                      <span class="u-sectionLabel">SEMANA OPERATIVA</span>
+                      <h3>Días disponibles para entregar</h3>
+                    </div>
+
+                    <span class="logCalendarCounter" id="logCalendarCounter">
+                      5 días activos
+                    </span>
+                  </div>
+
+                  <div class="logCalendarDays">
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Lunes</strong>
+                        <small>Entregas habilitadas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="1"
+                        checked
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Martes</strong>
+                        <small>Entregas habilitadas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="2"
+                        checked
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Miércoles</strong>
+                        <small>Entregas habilitadas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="3"
+                        checked
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Jueves</strong>
+                        <small>Entregas habilitadas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="4"
+                        checked
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Viernes</strong>
+                        <small>Entregas habilitadas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="5"
+                        checked
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Sábado</strong>
+                        <small>Sin entregas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="6"
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                    <label class="logCalendarDay">
+                      <span class="logCalendarDay__text">
+                        <strong>Domingo</strong>
+                        <small>Sin entregas</small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        data-calendar-day="0"
+                      >
+
+                      <i class="logCalendarSwitch" aria-hidden="true"></i>
+                    </label>
+
+                  </div>
+                </section>
+
+                <section class="logCalendarSection">
+                  <div class="logCalendarSection__head">
+                    <div>
+                      <span class="u-sectionLabel">CONFIGURACIÓN</span>
+                      <h3>Comportamiento del calendario</h3>
+                    </div>
+                  </div>
+
+                  <label
+                    class="logCalendarField"
+                    for="logCalendarTimezone"
+                  >
+                    <span>Zona horaria</span>
+
+                    <select
+                      class="logSelect"
+                      id="logCalendarTimezone"
+                    >
+                      <option value="America/Argentina/Buenos_Aires">
+                        Argentina · Buenos Aires
+                      </option>
+
+                      <option value="America/Montevideo">
+                        Uruguay · Montevideo
+                      </option>
+
+                      <option value="America/Santiago">
+                        Chile · Santiago
+                      </option>
+
+                      <option value="America/Sao_Paulo">
+                        Brasil · São Paulo
+                      </option>
+                    </select>
+                  </label>
+
+                  <div class="logCalendarSummary">
+                    <span class="logCalendarSummary__label">
+                      Configuración activa
+                    </span>
+
+                    <strong id="logCalendarSummaryText">
+                      Entregas de lunes a viernes
+                    </strong>
+
+                    <small id="logCalendarSummaryTimezone">
+                      America/Argentina/Buenos_Aires
+                    </small>
+                  </div>
+
+                  <div class="logCalendarRule">
+                    <span class="logCalendarRule__icon" aria-hidden="true">
+                      i
+                    </span>
+
+                    <div>
+                      <strong>Próximo día habilitado</strong>
+
+                      <p>
+                        Una regla de 1 día avanza únicamente por jornadas
+                        activas. Si se consulta el viernes y sábado y domingo
+                        están desactivados, la promesa será “Llega el lunes”.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+
+              <section class="logCalendarPreview">
+                <div class="logCalendarSection__head">
+                  <div>
+                    <span class="u-sectionLabel">VISTA PREVIA</span>
+                    <h3>Promesa para una entrega de 1 día</h3>
+                  </div>
+
+                  <span class="logCalendarPreviewBadge">
+                    Simulación automática
+                  </span>
+                </div>
+
+                <div
+                  class="logCalendarPreviewGrid"
+                  id="logCalendarPreview"
+                >
+                  <article class="logCalendarPreviewItem">
+                    <span>Consulta el jueves</span>
+                    <strong>Llega mañana</strong>
+                    <small>Viernes</small>
+                  </article>
+
+                  <article class="logCalendarPreviewItem">
+                    <span>Consulta el viernes</span>
+                    <strong>Llega el lunes</strong>
+                    <small>Fin de semana no operativo</small>
+                  </article>
+
+                  <article class="logCalendarPreviewItem">
+                    <span>Consulta el sábado</span>
+                    <strong>Llega el lunes</strong>
+                    <small>Próximo día habilitado</small>
+                  </article>
+
+                  <article class="logCalendarPreviewItem">
+                    <span>Consulta el domingo</span>
+                    <strong>Llega mañana</strong>
+                    <small>Lunes</small>
+                  </article>
+                </div>
+              </section>
+
+              <div class="logCalendarActions">
+                <button
+                  class="btn btn--primary"
+                  type="submit"
+                >
+                  Guardar calendario
+                </button>
+
+                <button
+                  class="btn btn--secondary"
+                  id="logCalendarReset"
+                  type="button"
+                >
+                  Restaurar lunes a viernes
+                </button>
+
+                <span
+                  class="logCalendarMessage"
+                  id="logCalendarMessage"
+                ></span>
+              </div>
+            </form>
           </article>
         </section>
 
@@ -555,6 +835,7 @@
 <script src="../../js/logistica/logistica-conversaciones-force-real.js"></script>
 <script src="../../js/logistica/logistica-simulador-card.js"></script>
 <script src="../../js/logistica/logistica-rule-slide.js"></script>
+<script src="../../js/logistica/logistica-calendar.js"></script>
 <script src="../../js/logistica/logistica-dark-toggle.js"></script>
 <script src="../../js/logistica/logistica-dark-reference.js"></script>
 </body>
