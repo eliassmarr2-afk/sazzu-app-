@@ -2,15 +2,14 @@
    Protocol Data · Logística · Calendario operativo
    Alcance aislado: únicamente TAB Calendario.
 
-   Persistencia temporal:
-   localStorage hasta conectar Supabase.
+   Persistencia:
+   Supabase mediante RPC autenticado.
    ========================================================== */
 
 (function () {
   'use strict';
 
-  const STORAGE_KEY =
-    'protocolData.logistica.deliveryCalendar.v1';
+  let currentConfig = null;
 
   const DEFAULT_CONFIG = {
     timezone: 'America/Argentina/Buenos_Aires',
@@ -113,32 +112,232 @@
     };
   }
 
-  function readStoredConfig() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-
-      if (!raw) {
-        return normalizeStoredConfig(DEFAULT_CONFIG);
-      }
-
-      return normalizeStoredConfig(JSON.parse(raw));
-    } catch (error) {
-      console.warn(
-        '[Logística Calendario] No se pudo leer localStorage.',
-        error
-      );
-
-      return normalizeStoredConfig(DEFAULT_CONFIG);
-    }
+  function cfg() {
+    return (
+      window.SAZZU_SUPABASE_CONFIG ||
+      window.PROTOCOL_SUPABASE_CONFIG ||
+      null
+    );
   }
 
-  function writeStoredConfig(config) {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        timezone: config.timezone,
-        activeWeekdays: config.activeWeekdays
-      })
+  function ensureProtocolAuth() {
+    if (window.ProtocolAuth) {
+      return Promise.resolve(
+        window.ProtocolAuth
+      );
+    }
+
+    if (window.__protocolAuthLoader) {
+      return window.__protocolAuthLoader;
+    }
+
+    window.__protocolAuthLoader =
+      new Promise(function (resolve, reject) {
+        const existing =
+          document.querySelector(
+            'script[data-protocol-auth-client="1"]'
+          );
+
+        if (existing) {
+          existing.addEventListener(
+            'load',
+            function () {
+              resolve(
+                window.ProtocolAuth || null
+              );
+            }
+          );
+
+          existing.addEventListener(
+            'error',
+            reject
+          );
+
+          return;
+        }
+
+        const script =
+          document.createElement('script');
+
+        script.src =
+          '/js/auth/auth-client.js';
+
+        script.defer = true;
+
+        script.dataset.protocolAuthClient =
+          '1';
+
+        script.onload = function () {
+          resolve(
+            window.ProtocolAuth || null
+          );
+        };
+
+        script.onerror = reject;
+
+        document.body.appendChild(script);
+      });
+
+    return window.__protocolAuthLoader;
+  }
+
+  function getClient() {
+    if (
+      window.ProtocolAuth &&
+      typeof window.ProtocolAuth.getClient ===
+        'function'
+    ) {
+      const shared =
+        window.ProtocolAuth.getClient();
+
+      if (shared) {
+        return shared;
+      }
+    }
+
+    if (
+      window.__protocolLogisticaCalendarClient
+    ) {
+      return (
+        window.__protocolLogisticaCalendarClient
+      );
+    }
+
+    const config = cfg();
+
+    const key =
+      config &&
+      (
+        config.publishableKey ||
+        config.anonKey ||
+        config.key
+      );
+
+    if (
+      !window.supabase ||
+      !config ||
+      !config.url ||
+      !key
+    ) {
+      return null;
+    }
+
+    window.__protocolLogisticaCalendarClient =
+      window.supabase.createClient(
+        config.url,
+        key
+      );
+
+    return (
+      window.__protocolLogisticaCalendarClient
+    );
+  }
+
+  async function rpc(name, args) {
+    const client = getClient();
+
+    if (!client) {
+      throw new Error(
+        'Supabase no configurado'
+      );
+    }
+
+    const response =
+      await client.rpc(
+        name,
+        args || {}
+      );
+
+    if (response.error) {
+      throw response.error;
+    }
+
+    return response.data;
+  }
+
+  function normalizeRemoteConfig(data) {
+    return normalizeStoredConfig({
+      timezone:
+        data?.timezone ||
+        data?.calendar_timezone,
+
+      activeWeekdays:
+        data?.active_weekdays ||
+        data?.delivery_weekdays
+    });
+  }
+
+  async function readRemoteConfig() {
+    await ensureProtocolAuth()
+      .catch(function () {
+        return null;
+      });
+
+    const data = await rpc(
+      'protocol_logistics_delivery_calendar'
+    );
+
+    if (
+      !data ||
+      data.status !== 'ok'
+    ) {
+      throw new Error(
+        'Respuesta inválida del calendario'
+      );
+    }
+
+    currentConfig =
+      normalizeRemoteConfig(data);
+
+    return normalizeStoredConfig(
+      currentConfig
+    );
+  }
+
+  async function writeRemoteConfig(config) {
+    await ensureProtocolAuth();
+
+    const session =
+      window.ProtocolAuth &&
+      typeof window.ProtocolAuth.getSession ===
+        'function'
+        ? await window.ProtocolAuth
+            .getSession()
+            .catch(function () {
+              return null;
+            })
+        : null;
+
+    if (!session) {
+      throw new Error('AUTH_REQUIRED');
+    }
+
+    const data = await rpc(
+      'protocol_logistics_upsert_delivery_calendar',
+      {
+        input_calendar: {
+          timezone: config.timezone,
+          active_weekdays:
+            config.activeWeekdays.slice(),
+          is_active: true
+        }
+      }
+    );
+
+    if (
+      !data ||
+      data.status !== 'ok'
+    ) {
+      throw new Error(
+        'Respuesta inválida al guardar el calendario'
+      );
+    }
+
+    currentConfig =
+      normalizeRemoteConfig(data);
+
+    return normalizeStoredConfig(
+      currentConfig
     );
   }
 
@@ -443,7 +642,7 @@
     }
 
     status.textContent = saved
-      ? 'Guardado localmente'
+      ? 'Sincronizado con Supabase'
       : 'Cambios sin guardar';
 
     status.classList.toggle(
@@ -489,7 +688,7 @@
     setMessage('Hay cambios sin guardar.');
   }
 
-  function handleFormSubmit(event) {
+  async function handleFormSubmit(event) {
     event.preventDefault();
 
     const config = readFormConfig();
@@ -507,13 +706,22 @@
       return;
     }
 
+    setStatus(false);
+
+    setMessage(
+      'Guardando calendario en Supabase...'
+    );
+
     try {
-      writeStoredConfig(config);
+      const savedConfig =
+        await writeRemoteConfig(config);
+
+      applyConfigToForm(savedConfig);
 
       setStatus(true);
 
       setMessage(
-        'Calendario guardado localmente. La conexión con Supabase será la próxima etapa.',
+        'Calendario guardado y aplicado a las promesas de entrega.',
         'is-success'
       );
 
@@ -522,9 +730,11 @@
           'protocol:logistica:calendar-updated',
           {
             detail: {
-              timezone: config.timezone,
+              timezone:
+                savedConfig.timezone,
+
               activeWeekdays:
-                config.activeWeekdays.slice()
+                savedConfig.activeWeekdays.slice()
             }
           }
         )
@@ -538,31 +748,25 @@
       setStatus(false);
 
       setMessage(
-        'No se pudo guardar la configuración local.',
+        error?.message === 'AUTH_REQUIRED'
+          ? 'Iniciá sesión interna para modificar el calendario.'
+          : 'No se pudo guardar el calendario en Supabase.',
         'is-error'
       );
     }
   }
 
   function handleReset() {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch (error) {
-      console.warn(
-        '[Logística Calendario] No se pudo limpiar localStorage.',
-        error
-      );
-    }
-
     applyConfigToForm(DEFAULT_CONFIG);
+
     setStatus(false);
 
     setMessage(
-      'Se restauró la configuración de lunes a viernes.'
+      'Se restauró lunes a viernes en el formulario. Guardá para aplicarlo.'
     );
   }
 
-  function initializeCalendar() {
+  async function initializeCalendar() {
     const form = byId(
       'logCalendarForm'
     );
@@ -579,11 +783,13 @@
 
     form.dataset.calendarReady = 'true';
 
-    applyConfigToForm(
-      readStoredConfig()
-    );
+    applyConfigToForm(DEFAULT_CONFIG);
 
-    setStatus(true);
+    setStatus(false);
+
+    setMessage(
+      'Cargando calendario desde Supabase...'
+    );
 
     form.addEventListener(
       'change',
@@ -600,10 +806,42 @@
         'click',
         handleReset
       );
+
+    try {
+      const remoteConfig =
+        await readRemoteConfig();
+
+      applyConfigToForm(remoteConfig);
+
+      setStatus(true);
+
+      setMessage(
+        'Calendario sincronizado con Supabase.',
+        'is-success'
+      );
+    } catch (error) {
+      console.warn(
+        '[Logística Calendario] No se pudo cargar.',
+        error
+      );
+
+      setStatus(false);
+
+      setMessage(
+        'No se pudo cargar el calendario desde Supabase.',
+        'is-error'
+      );
+    }
   }
 
   window.ProtocolLogisticaCalendar = {
-    getConfig: readStoredConfig,
+    getConfig: function () {
+      return normalizeStoredConfig(
+        currentConfig || DEFAULT_CONFIG
+      );
+    },
+
+    reload: readRemoteConfig,
 
     calculateDeliveryDate:
       function (
@@ -613,7 +851,8 @@
       ) {
         const selectedConfig =
           config ||
-          readStoredConfig();
+          currentConfig ||
+          DEFAULT_CONFIG;
 
         return addOperationalDays(
           baseDate,
@@ -625,8 +864,7 @@
     createPromiseLabel:
       createPromiseLabel,
 
-    storageKey:
-      STORAGE_KEY
+    source: 'supabase'
   };
 
   if (
