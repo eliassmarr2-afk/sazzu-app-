@@ -1,0 +1,852 @@
+/* ============================================================
+   Protocol Data · Experiencias postcompra
+   Esqueleto visual dark · V1
+   ============================================================ */
+
+body[data-page="experiencias"] {
+  background: #101010;
+}
+
+body[data-page="experiencias"] .main {
+  background: #101010;
+  color: #f5f7fb;
+  min-width: 0;
+}
+
+.expPage,
+.expPage * {
+  box-sizing: border-box;
+}
+
+.expPage {
+  --exp-bg: #101010;
+  --exp-surface: #181818;
+  --exp-surface-2: #202020;
+  --exp-surface-3: #272727;
+  --exp-border: #3a3a3a;
+  --exp-border-soft: #2c2c2c;
+  --exp-text: #f6f7f9;
+  --exp-text-soft: #c6c8ce;
+  --exp-muted: #8e9198;
+  --exp-blue: #2479ff;
+  --exp-blue-hover: #1769ea;
+  --exp-blue-soft: rgba(36, 121, 255, 0.14);
+  --exp-green: #48d597;
+  --exp-green-soft: rgba(72, 213, 151, 0.14);
+  --exp-red: #ff625f;
+  --exp-red-soft: rgba(255, 98, 95, 0.13);
+  --exp-amber: #f0b35a;
+  --exp-amber-soft: rgba(240, 179, 90, 0.14);
+  --exp-violet: #9a72ff;
+  --exp-violet-soft: rgba(154, 114, 255, 0.14);
+  --exp-radius: 5px;
+  --exp-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+  --exp-shadow-blue: 0 8px 22px rgba(36, 121, 255, 0.25);
+
+  width: 100%;
+  min-height: 100vh;
+  padding: 28px;
+  background: var(--exp-bg);
+  color: var(--exp-text);
+  font-family: Inter, "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.expHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.expHeader__identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.expHeader__icon {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--exp-radius);
+  color: var(--exp-blue);
+  background: #dceeff;
+  box-shadow: 0 12px 28px rgba(36, 121, 255, 0.18);
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.expHeader__copy {
+  min-width: 0;
+}
+
+.expHeader__eyebrow,
+.expCard__eyebrow {
+  margin: 0 0 7px;
+  color: var(--exp-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.expHeader__titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.expHeader__title {
+  margin: 0;
+  color: var(--exp-text);
+  font-size: 27px;
+  line-height: 1.08;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.expHeader__desc {
+  margin: 8px 0 0;
+  max-width: 720px;
+  color: var(--exp-text-soft);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.expHeader__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.expStatus {
+  min-height: 27px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  background: var(--exp-surface-2);
+  color: var(--exp-text-soft);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.expStatus--off {
+  color: var(--exp-amber);
+  border-color: rgba(240, 179, 90, 0.25);
+  background: var(--exp-amber-soft);
+}
+
+.expStatus__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.expBtn {
+  appearance: none;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--exp-radius);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 720;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.expBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.expBtn:focus-visible,
+.expTab:focus-visible,
+.expFilter:focus-visible,
+.expSearch input:focus-visible {
+  outline: 2px solid var(--exp-blue);
+  outline-offset: 2px;
+}
+
+.expBtn--primary {
+  color: #fff;
+  background: var(--exp-blue);
+  border-color: var(--exp-blue);
+  box-shadow: var(--exp-shadow-blue);
+}
+
+.expBtn--primary:hover:not(:disabled) {
+  background: var(--exp-blue-hover);
+  border-color: var(--exp-blue-hover);
+}
+
+.expBtn--ghost {
+  color: var(--exp-text-soft);
+  background: var(--exp-surface-2);
+  border-color: var(--exp-border);
+}
+
+.expBtn--ghost:hover:not(:disabled) {
+  color: var(--exp-text);
+  background: var(--exp-surface-3);
+  border-color: #515151;
+}
+
+.expBtn--icon {
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+  color: var(--exp-text);
+  background: var(--exp-surface-2);
+  border-color: var(--exp-border);
+  font-size: 20px;
+}
+
+.expBtn:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.expTabs {
+  width: max-content;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  margin: 0 0 18px;
+  border: 1px solid var(--exp-border);
+  border-radius: 24px;
+  background: var(--exp-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.expTab {
+  appearance: none;
+  min-height: 38px;
+  padding: 0 17px;
+  border: 1px solid transparent;
+  border-radius: 19px;
+  color: var(--exp-muted);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 720;
+  cursor: pointer;
+  transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.expTab:hover:not(.is-active) {
+  color: var(--exp-text-soft);
+  background: var(--exp-surface-2);
+}
+
+.expTab.is-active {
+  color: var(--exp-text);
+  background: var(--exp-surface-3);
+  border-color: #515151;
+}
+
+.expTabPanel {
+  display: none;
+}
+
+.expTabPanel.is-active {
+  display: block;
+}
+
+.expKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.expKpiCard,
+.expCard {
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  background: var(--exp-surface);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.14);
+}
+
+.expKpiCard {
+  min-height: 126px;
+  padding: 18px;
+  transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.expKpiCard:hover {
+  border-color: #4b4b4b;
+  transform: translateY(-1px);
+  box-shadow: var(--exp-shadow);
+}
+
+.expKpiCard__label {
+  min-height: 30px;
+  color: var(--exp-muted);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.expKpiCard__value {
+  margin-top: 10px;
+  color: var(--exp-text);
+  font-size: 28px;
+  font-weight: 760;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.expKpiCard__meta {
+  margin-top: 9px;
+  color: var(--exp-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.expCard {
+  padding: 18px;
+}
+
+.expCard + .expCard {
+  margin-top: 16px;
+}
+
+.expCard--toolbar {
+  padding: 12px;
+}
+
+.expCard--table {
+  padding: 0;
+  overflow: hidden;
+}
+
+.expCard__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 18px 15px;
+  border-bottom: 1px solid var(--exp-border-soft);
+}
+
+.expCard__title {
+  margin: 0;
+  color: var(--exp-text);
+  font-size: 17px;
+  font-weight: 740;
+  line-height: 1.25;
+}
+
+.expToolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.expSearch {
+  min-width: 250px;
+  flex: 1 1 390px;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  background: #151515;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.expSearch:focus-within {
+  border-color: var(--exp-blue);
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, 0.12);
+}
+
+.expSearch__icon {
+  color: var(--exp-muted);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.expSearch input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: var(--exp-text);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+}
+
+.expSearch input::placeholder {
+  color: #777b82;
+}
+
+.expFilters {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.expFilter {
+  appearance: none;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  color: var(--exp-text-soft);
+  background: var(--exp-surface-2);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 720;
+  cursor: pointer;
+  transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.expFilter:hover:not(.is-active) {
+  color: var(--exp-text);
+  border-color: #515151;
+}
+
+.expFilter.is-active {
+  color: #fff;
+  background: var(--exp-blue);
+  border-color: var(--exp-blue);
+  box-shadow: 0 5px 14px rgba(36, 121, 255, 0.22);
+}
+
+.expReadOnlyBadge {
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid rgba(36, 121, 255, 0.28);
+  border-radius: var(--exp-radius);
+  color: #7fb0ff;
+  background: var(--exp-blue-soft);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.expTableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.expTable {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.expTable th,
+.expTable td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--exp-border-soft);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.expTable th {
+  color: var(--exp-muted);
+  background: #161616;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.expTable td {
+  color: var(--exp-text-soft);
+  font-size: 12px;
+}
+
+.expTable tbody tr:not(.expEmptyRow):hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.expTable tr:last-child td {
+  border-bottom: 0;
+}
+
+.expTable__actionsCol {
+  width: 88px;
+  text-align: right !important;
+}
+
+.expEmptyRow td {
+  padding: 0;
+}
+
+.expEmptyState {
+  min-height: 310px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.expEmptyState__icon,
+.expPlaceholder__icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(36, 121, 255, 0.3);
+  border-radius: var(--exp-radius);
+  color: #78a9ff;
+  background: var(--exp-blue-soft);
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.expEmptyState h3 {
+  margin: 16px 0 0;
+  color: var(--exp-text);
+  font-size: 16px;
+  font-weight: 740;
+}
+
+.expEmptyState p {
+  max-width: 520px;
+  margin: 8px 0 18px;
+  color: var(--exp-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.expPlaceholder {
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.expPlaceholder p {
+  margin: 8px 0 0;
+  max-width: 680px;
+  color: var(--exp-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.expStateChip {
+  min-height: 25px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.expStateChip--scheduled {
+  color: #aebbd0;
+  background: rgba(125, 146, 180, 0.12);
+  border-color: rgba(125, 146, 180, 0.22);
+}
+
+.expStateChip--sent {
+  color: #7fb0ff;
+  background: var(--exp-blue-soft);
+  border-color: rgba(36, 121, 255, 0.28);
+}
+
+.expStateChip--opened {
+  color: #b99dff;
+  background: var(--exp-violet-soft);
+  border-color: rgba(154, 114, 255, 0.28);
+}
+
+.expStateChip--submitted {
+  color: var(--exp-green);
+  background: var(--exp-green-soft);
+  border-color: rgba(72, 213, 151, 0.27);
+}
+
+.expStateChip--error {
+  color: var(--exp-red);
+  background: var(--exp-red-soft);
+  border-color: rgba(255, 98, 95, 0.27);
+}
+
+.expDrawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.expDrawer.is-open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.expDrawer__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  cursor: default;
+  transition: opacity 0.22s ease;
+}
+
+.expDrawer.is-open .expDrawer__backdrop {
+  opacity: 1;
+}
+
+.expDrawer__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 94vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--exp-border);
+  background: #151515;
+  box-shadow: -26px 0 60px rgba(0, 0, 0, 0.46);
+  transform: translateX(100%);
+  transition: transform 0.24s ease;
+}
+
+.expDrawer.is-open .expDrawer__dialog {
+  transform: translateX(0);
+}
+
+.expDrawer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--exp-border);
+}
+
+.expDrawer__title {
+  margin: 0;
+  color: var(--exp-text);
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.expDrawer__subtitle {
+  margin: 6px 0 0;
+  color: var(--exp-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.expDrawer__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+}
+
+.expDrawerSection {
+  padding: 16px;
+  border: 1px solid var(--exp-border);
+  border-radius: var(--exp-radius);
+  background: var(--exp-surface);
+}
+
+.expDrawerSection + .expDrawerSection {
+  margin-top: 12px;
+}
+
+.expDrawerSection__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: var(--exp-text);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.expDefinitionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.expDefinitionGrid > div {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--exp-border-soft);
+  border-radius: var(--exp-radius);
+  background: #141414;
+}
+
+.expDefinitionGrid dt {
+  color: var(--exp-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.expDefinitionGrid dd {
+  margin: 6px 0 0;
+  color: var(--exp-text-soft);
+  font-size: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.expProductPlaceholder,
+.expTimelinePlaceholder {
+  padding: 14px;
+  border: 1px dashed #404040;
+  border-radius: var(--exp-radius);
+  color: var(--exp-muted);
+  background: #141414;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.expRatingPlaceholder {
+  margin-bottom: 13px;
+  color: #f1bb4c;
+  font-size: 24px;
+  letter-spacing: 0.1em;
+}
+
+.expDrawer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--exp-border);
+  background: #151515;
+}
+
+body.expDrawerOpen {
+  overflow: hidden;
+}
+
+@media (max-width: 1240px) {
+  .expKpiGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .expPage {
+    padding: 20px;
+  }
+
+  .expHeader {
+    flex-direction: column;
+  }
+
+  .expHeader__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .expKpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .expPage {
+    padding: 16px;
+  }
+
+  .expHeader__identity {
+    gap: 12px;
+  }
+
+  .expHeader__icon {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .expHeader__title {
+    font-size: 23px;
+  }
+
+  .expTabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .expTab {
+    flex: 0 0 auto;
+  }
+
+  .expKpiGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .expToolbar,
+  .expFilters {
+    align-items: stretch;
+  }
+
+  .expFilters {
+    width: 100%;
+  }
+
+  .expFilter {
+    flex: 1 1 calc(50% - 7px);
+  }
+
+  .expDefinitionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .expDrawer__footer {
+    flex-wrap: wrap;
+  }
+
+  .expDrawer__footer .expBtn {
+    flex: 1 1 auto;
+  }
+}
