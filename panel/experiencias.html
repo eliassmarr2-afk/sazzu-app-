@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="view-transition" content="same-origin" />
+    <title>Experiencias · Protocol Data</title>
+
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/panel.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/experiencias/experiencias.css" />
+  </head>
+
+  <body data-page="experiencias">
+    <div class="appShell">
+      <div class="bodyGrid">
+        <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
+
+        <main class="main" aria-label="Contenido principal">
+          <section id="experienciasPage" class="expPage" aria-label="Panel de Experiencias">
+            <header class="expHeader">
+              <div class="expHeader__identity">
+                <div class="expHeader__icon" aria-hidden="true">✦</div>
+
+                <div class="expHeader__copy">
+                  <div class="expHeader__eyebrow">Protocol Data · Postcompra</div>
+                  <div class="expHeader__titleRow">
+                    <h1 class="expHeader__title">Experiencias</h1>
+                    <span class="expStatus expStatus--off">
+                      <span class="expStatus__dot" aria-hidden="true"></span>
+                      Automatización desactivada
+                    </span>
+                  </div>
+                  <p class="expHeader__desc">
+                    Gestión postcompra, opiniones de clientes y seguimiento de invitaciones.
+                  </p>
+                </div>
+              </div>
+
+              <div class="expHeader__actions">
+                <button class="expBtn expBtn--primary" type="button" disabled>
+                  Enviar correo de prueba
+                </button>
+                <button class="expBtn expBtn--icon" type="button" aria-label="Más acciones" disabled>
+                  ···
+                </button>
+              </div>
+            </header>
+
+            <nav class="expTabs" aria-label="Secciones de Experiencias">
+              <button class="expTab is-active" type="button" data-exp-tab="resumen">
+                Resumen
+              </button>
+              <button class="expTab" type="button" data-exp-tab="opiniones">
+                Opiniones
+              </button>
+              <button class="expTab" type="button" data-exp-tab="automatizacion">
+                Automatización
+              </button>
+            </nav>
+
+            <section class="expTabPanel is-active" data-exp-panel="resumen">
+              <section class="expKpiGrid" aria-label="Indicadores de Experiencias">
+                <article class="expKpiCard">
+                  <div class="expKpiCard__label">Invitaciones programadas</div>
+                  <div class="expKpiCard__value" data-exp-kpi="scheduled">—</div>
+                  <div class="expKpiCard__meta">Esperando conexión de lectura</div>
+                </article>
+
+                <article class="expKpiCard">
+                  <div class="expKpiCard__label">Correos enviados</div>
+                  <div class="expKpiCard__value" data-exp-kpi="sent">—</div>
+                  <div class="expKpiCard__meta">Sin envíos activos</div>
+                </article>
+
+                <article class="expKpiCard">
+                  <div class="expKpiCard__label">Experiencias abiertas</div>
+                  <div class="expKpiCard__value" data-exp-kpi="opened">—</div>
+                  <div class="expKpiCard__meta">Lectura pendiente</div>
+                </article>
+
+                <article class="expKpiCard">
+                  <div class="expKpiCard__label">Opiniones recibidas</div>
+                  <div class="expKpiCard__value" data-exp-kpi="submitted">—</div>
+                  <div class="expKpiCard__meta">Lectura pendiente</div>
+                </article>
+
+                <article class="expKpiCard">
+                  <div class="expKpiCard__label">Calificación promedio</div>
+                  <div class="expKpiCard__value" data-exp-kpi="rating">—</div>
+                  <div class="expKpiCard__meta">Sobre 5 estrellas</div>
+                </article>
+              </section>
+
+              <article class="expCard expCard--toolbar">
+                <div class="expToolbar">
+                  <label class="expSearch" aria-label="Buscar experiencias">
+                    <span class="expSearch__icon" aria-hidden="true">⌕</span>
+                    <input
+                      type="search"
+                      placeholder="Buscar pedido, cliente, correo o producto..."
+                      data-exp-search
+                    />
+                  </label>
+
+                  <div class="expFilters" aria-label="Filtrar experiencias">
+                    <button class="expFilter is-active" type="button" data-exp-filter="all">Todos</button>
+                    <button class="expFilter" type="button" data-exp-filter="scheduled">Programadas</button>
+                    <button class="expFilter" type="button" data-exp-filter="sent">Enviadas</button>
+                    <button class="expFilter" type="button" data-exp-filter="opened">Abiertas</button>
+                    <button class="expFilter" type="button" data-exp-filter="submitted">Respondidas</button>
+                    <button class="expFilter" type="button" data-exp-filter="error">Con error</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="expCard expCard--table">
+                <div class="expCard__head">
+                  <div>
+                    <div class="expCard__eyebrow">Operación postcompra</div>
+                    <h2 class="expCard__title">Invitaciones y opiniones</h2>
+                  </div>
+
+                  <span class="expReadOnlyBadge">Solo lectura</span>
+                </div>
+
+                <div class="expTableWrap">
+                  <table class="expTable">
+                    <thead>
+                      <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Entrega</th>
+                        <th>Envío programado</th>
+                        <th>Correo</th>
+                        <th>Experiencia</th>
+                        <th>Calificación</th>
+                        <th class="expTable__actionsCol">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody data-exp-table-body>
+                      <tr class="expEmptyRow">
+                        <td colspan="8">
+                          <div class="expEmptyState">
+                            <div class="expEmptyState__icon" aria-hidden="true">✦</div>
+                            <h3 data-exp-empty-title>Todavía no hay experiencias cargadas</h3>
+                            <p data-exp-empty-copy>
+                              En el próximo bloque conectaremos la lectura multicuentas desde Supabase.
+                            </p>
+                            <button class="expBtn expBtn--ghost" type="button" data-exp-open-drawer>
+                              Ver estructura del detalle
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            </section>
+
+            <section class="expTabPanel" data-exp-panel="opiniones">
+              <article class="expCard expPlaceholder">
+                <div class="expPlaceholder__icon" aria-hidden="true">★</div>
+                <div>
+                  <div class="expCard__eyebrow">Vista preparada</div>
+                  <h2 class="expCard__title">Opiniones recibidas</h2>
+                  <p>
+                    Esta sección mostrará valoraciones generales, comentarios y calificaciones por producto.
+                  </p>
+                </div>
+              </article>
+            </section>
+
+            <section class="expTabPanel" data-exp-panel="automatizacion">
+              <article class="expCard expPlaceholder">
+                <div class="expPlaceholder__icon" aria-hidden="true">⚙</div>
+                <div>
+                  <div class="expCard__eyebrow">Protección activa</div>
+                  <h2 class="expCard__title">Automatización desactivada</h2>
+                  <p>
+                    Los días de espera, horario, zona horaria y recordatorios se configurarán después de validar la lectura.
+                  </p>
+                </div>
+              </article>
+            </section>
+
+            <aside class="expDrawer" data-exp-drawer aria-hidden="true">
+              <button class="expDrawer__backdrop" type="button" data-exp-close-drawer aria-label="Cerrar detalle"></button>
+
+              <div class="expDrawer__dialog" role="dialog" aria-modal="true" aria-labelledby="expDrawerTitle">
+                <header class="expDrawer__head">
+                  <div>
+                    <div class="expCard__eyebrow">Detalle lateral</div>
+                    <h2 id="expDrawerTitle" class="expDrawer__title">Experiencia del pedido</h2>
+                    <p class="expDrawer__subtitle">La información real aparecerá al seleccionar una fila.</p>
+                  </div>
+
+                  <button class="expBtn expBtn--icon" type="button" data-exp-close-drawer aria-label="Cerrar detalle">
+                    ×
+                  </button>
+                </header>
+
+                <div class="expDrawer__body">
+                  <section class="expDrawerSection">
+                    <div class="expDrawerSection__head">
+                      <span>Pedido y cliente</span>
+                      <span class="expStateChip expStateChip--scheduled">Programada</span>
+                    </div>
+                    <dl class="expDefinitionGrid">
+                      <div>
+                        <dt>Pedido</dt>
+                        <dd>—</dd>
+                      </div>
+                      <div>
+                        <dt>Cliente</dt>
+                        <dd>—</dd>
+                      </div>
+                      <div>
+                        <dt>Correo</dt>
+                        <dd>—</dd>
+                      </div>
+                      <div>
+                        <dt>Entrega</dt>
+                        <dd>—</dd>
+                      </div>
+                    </dl>
+                  </section>
+
+                  <section class="expDrawerSection">
+                    <div class="expDrawerSection__head">
+                      <span>Productos comprados</span>
+                    </div>
+                    <div class="expProductPlaceholder">
+                      Los productos y su calificación individual se mostrarán en este bloque.
+                    </div>
+                  </section>
+
+                  <section class="expDrawerSection">
+                    <div class="expDrawerSection__head">
+                      <span>Valoración general</span>
+                    </div>
+                    <div class="expRatingPlaceholder">☆ ☆ ☆ ☆ ☆</div>
+                    <div class="expDefinitionGrid expDefinitionGrid--ratings">
+                      <div><dt>Entrega</dt><dd>—</dd></div>
+                      <div><dt>Soporte</dt><dd>—</dd></div>
+                      <div><dt>Empaque</dt><dd>—</dd></div>
+                      <div><dt>Contacto</dt><dd>—</dd></div>
+                    </div>
+                  </section>
+
+                  <section class="expDrawerSection">
+                    <div class="expDrawerSection__head">
+                      <span>Historial de eventos</span>
+                    </div>
+                    <div class="expTimelinePlaceholder">
+                      Programación, envío, apertura y respuesta aparecerán ordenados cronológicamente.
+                    </div>
+                  </section>
+                </div>
+
+                <footer class="expDrawer__footer">
+                  <button class="expBtn expBtn--ghost" type="button" disabled>Cancelar invitación</button>
+                  <button class="expBtn expBtn--ghost" type="button" disabled>Reprogramar</button>
+                  <button class="expBtn expBtn--primary" type="button" disabled>Enviar ahora</button>
+                </footer>
+              </div>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/experiencias/experiencias.js"></script>
+  </body>
+</html>
