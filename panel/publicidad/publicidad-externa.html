@@ -3,41 +3,315 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publicidad Externa · Sazzú Control Tower</title>
+  <meta name="view-transition" content="same-origin" />
+  <title>Publicidad Externa · Protocol Data</title>
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/panel.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/publicidad/publicidadexterna.css" />
 </head>
 <body data-page="publicidad-externa">
-  <aside class="sidebar" data-include="sidebar"></aside>
+  <div class="appShell">
+    <div class="bodyGrid">
+      <aside class="sidebar" data-include="sidebar" aria-label="Navegación"></aside>
 
-  <main class="main">
-    <section class="pubExtPage">
-      <header class="pubExtHeader">
-        <div>
-          <div class="pubExtHeader__eyebrow">Motores de crecimiento</div>
-          <h1 class="pubExtHeader__title">Publicidad Externa</h1>
-          <p class="pubExtHeader__desc">
-            Colector estructural de campañas, conjuntos, anuncios y métricas nativas de Meta, Google, TikTok y otros canales.
-          </p>
-        </div>
-      </header>
+      <main class="main" aria-label="Contenido principal">
+        <section id="pubExtPage" class="pubExtPage" aria-label="Publicidad Externa · Meta Ads">
+          <header class="pubExtHeader">
+            <div class="pubExtHeader__copy">
+              <div class="pubExtHeader__eyebrow">Sazzú · Ecosistema publicitario</div>
+              <div class="pubExtHeader__titleLine">
+                <h1 class="pubExtHeader__title">Publicidad Externa</h1>
+                <span class="pubExtStatus pubExtStatus--loading" data-meta-status>
+                  <span class="pubExtStatus__dot"></span>
+                  Conectando
+                </span>
+              </div>
+              <p class="pubExtHeader__desc">
+                Meta Ads desde la impresión hasta la venta real: rendimiento, embudo, atribución y salud del tracking.
+              </p>
+              <p class="pubExtHeader__meta">
+                Cuenta <strong data-meta-account>Meta Ads</strong>
+                <span>·</span>
+                Última sincronización <strong data-meta-freshness>—</strong>
+              </p>
+            </div>
 
-      <section class="pubExtHero">
-        <article class="pubExtKpi"><span>Inversión total</span><strong>$0</strong></article>
-        <article class="pubExtKpi"><span>Campañas</span><strong>0</strong></article>
-        <article class="pubExtKpi"><span>Anuncios</span><strong>0</strong></article>
-        <article class="pubExtKpi"><span>Fuentes conectadas</span><strong>0</strong></article>
-      </section>
+            <div class="pubExtHeader__actions" aria-label="Rango de análisis">
+              <div class="pubExtPeriodGroup" role="group" aria-label="Períodos rápidos">
+                <button class="pubExtPeriodBtn is-active" type="button" data-period-days="7">7 días</button>
+                <button class="pubExtPeriodBtn" type="button" data-period-days="14">14 días</button>
+                <button class="pubExtPeriodBtn" type="button" data-period-days="30">30 días</button>
+              </div>
 
-      <article class="pubExtCard">
-        <div class="pubExtCard__eyebrow">Primera fase</div>
-        <h2 class="pubExtCard__title">Estructura del panel preparada</h2>
-        <p class="pubExtCard__text">
-          Este módulo va a recibir datos diarios de plataformas publicitarias para luego cruzarlos con Publicidad UTM y Backend.
-        </p>
-      </article>
-    </section>
-  </main>
+              <label class="pubExtDateField">
+                <span>Desde</span>
+                <input type="date" data-date-from />
+              </label>
+              <label class="pubExtDateField">
+                <span>Hasta</span>
+                <input type="date" data-date-to />
+              </label>
 
+              <button class="pubExtBtn pubExtBtn--primary" type="button" data-apply-range>
+                Aplicar
+              </button>
+              <button class="pubExtBtn pubExtBtn--ghost pubExtBtn--icon" type="button" data-refresh title="Actualizar datos" aria-label="Actualizar datos">
+                ↻
+              </button>
+            </div>
+          </header>
+
+          <div class="pubExtNotice" data-page-notice hidden></div>
+
+          <section class="pubExtKpis" aria-label="Resumen ejecutivo">
+            <article class="pubExtKpi">
+              <div class="pubExtKpi__top">
+                <span class="pubExtKpi__label">Gasto</span>
+                <span class="pubExtDelta" data-kpi-delta="spend">—</span>
+              </div>
+              <div class="pubExtKpi__value" data-kpi="spend">—</div>
+              <div class="pubExtKpi__hint">Inversión Meta · rango seleccionado</div>
+            </article>
+
+            <article class="pubExtKpi">
+              <div class="pubExtKpi__top">
+                <span class="pubExtKpi__label">Compras Meta</span>
+                <span class="pubExtDelta" data-kpi-delta="purchases">—</span>
+              </div>
+              <div class="pubExtKpi__value" data-kpi="purchases">—</div>
+              <div class="pubExtKpi__hint">Atribución informada por Meta</div>
+            </article>
+
+            <article class="pubExtKpi">
+              <div class="pubExtKpi__top">
+                <span class="pubExtKpi__label">ROAS Meta</span>
+                <span class="pubExtDelta" data-kpi-delta="roas">—</span>
+              </div>
+              <div class="pubExtKpi__value" data-kpi="roas">—</div>
+              <div class="pubExtKpi__hint">Purchase value / gasto Meta</div>
+            </article>
+
+            <article class="pubExtKpi pubExtKpi--protocol">
+              <div class="pubExtKpi__top">
+                <span class="pubExtKpi__label">Ventas Protocol</span>
+                <span class="pubExtDelta" data-kpi-delta="protocol_paid">—</span>
+              </div>
+              <div class="pubExtKpi__value" data-kpi="protocol_paid">—</div>
+              <div class="pubExtKpi__hint" data-kpi="protocol_revenue">Revenue real atribuido: —</div>
+            </article>
+          </section>
+
+          <nav class="pubExtTabs" aria-label="Secciones de Publicidad Externa">
+            <button class="pubExtTab is-active" type="button" data-tab-target="resumen">Resumen</button>
+            <button class="pubExtTab" type="button" data-tab-target="campanas">Campañas</button>
+            <button class="pubExtTab" type="button" data-tab-target="conjuntos">Conjuntos</button>
+            <button class="pubExtTab" type="button" data-tab-target="anuncios">Anuncios</button>
+            <button class="pubExtTab" type="button" data-tab-target="tracking">Tracking</button>
+          </nav>
+
+          <section class="pubExtTabPanel is-active" data-tab-panel="resumen">
+            <div class="pubExtOverviewGrid">
+              <article class="pubExtCard pubExtCard--funnel">
+                <div class="pubExtCard__head">
+                  <div>
+                    <div class="pubExtCard__eyebrow">Embudo completo</div>
+                    <h2 class="pubExtCard__title">Del anuncio a la venta real</h2>
+                  </div>
+                  <span class="pubExtPill">Meta + Protocol</span>
+                </div>
+                <div class="pubExtFunnel" data-funnel>
+                  <div class="pubExtSkeleton pubExtSkeleton--tall"></div>
+                </div>
+              </article>
+
+              <article class="pubExtCard pubExtCard--compare">
+                <div class="pubExtCard__head">
+                  <div>
+                    <div class="pubExtCard__eyebrow">Atribución</div>
+                    <h2 class="pubExtCard__title">Meta vs Protocol</h2>
+                  </div>
+                  <span class="pubExtPill pubExtPill--soft" data-attribution-state>Comparando</span>
+                </div>
+                <div class="pubExtCompare" data-meta-protocol-compare>
+                  <div class="pubExtSkeleton pubExtSkeleton--tall"></div>
+                </div>
+              </article>
+            </div>
+
+            <article class="pubExtCard">
+              <div class="pubExtCard__head">
+                <div>
+                  <div class="pubExtCard__eyebrow">Señales de rendimiento</div>
+                  <h2 class="pubExtCard__title">Lectura rápida del período</h2>
+                </div>
+              </div>
+              <div class="pubExtMetricGrid" data-metric-grid></div>
+            </article>
+          </section>
+
+          <section class="pubExtTabPanel" data-tab-panel="campanas">
+            <article class="pubExtCard pubExtCard--table">
+              <div class="pubExtCard__head">
+                <div>
+                  <div class="pubExtCard__eyebrow">Nivel 1</div>
+                  <h2 class="pubExtCard__title">Campañas</h2>
+                </div>
+                <span class="pubExtCount" data-count="campaigns">—</span>
+              </div>
+              <div class="pubExtTableWrap">
+                <table class="pubExtTable">
+                  <thead>
+                    <tr>
+                      <th>Campaña</th>
+                      <th>Estado</th>
+                      <th>Gasto</th>
+                      <th>LPV</th>
+                      <th>L1</th>
+                      <th>ATC</th>
+                      <th>Compras</th>
+                      <th>ROAS</th>
+                      <th>Ventas PD</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody data-campaigns-body>
+                    <tr><td colspan="10"><div class="pubExtSkeleton"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="pubExtTabPanel" data-tab-panel="conjuntos">
+            <article class="pubExtCard pubExtCard--table">
+              <div class="pubExtCard__head">
+                <div>
+                  <div class="pubExtCard__eyebrow">Nivel 2</div>
+                  <h2 class="pubExtCard__title">Conjuntos de anuncios</h2>
+                </div>
+                <span class="pubExtCount" data-count="adsets">—</span>
+              </div>
+              <div class="pubExtTableWrap">
+                <table class="pubExtTable">
+                  <thead>
+                    <tr>
+                      <th>Conjunto</th>
+                      <th>Campaña</th>
+                      <th>Estado</th>
+                      <th>Gasto</th>
+                      <th>LPV</th>
+                      <th>L1</th>
+                      <th>ATC</th>
+                      <th>Compras</th>
+                      <th>ROAS</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody data-adsets-body>
+                    <tr><td colspan="10"><div class="pubExtSkeleton"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="pubExtTabPanel" data-tab-panel="anuncios">
+            <article class="pubExtCard pubExtCard--table">
+              <div class="pubExtCard__head">
+                <div>
+                  <div class="pubExtCard__eyebrow">Nivel 3</div>
+                  <h2 class="pubExtCard__title">Anuncios y creativos</h2>
+                </div>
+                <span class="pubExtCount" data-count="ads">—</span>
+              </div>
+              <div class="pubExtTableWrap">
+                <table class="pubExtTable">
+                  <thead>
+                    <tr>
+                      <th>Anuncio</th>
+                      <th>Conjunto</th>
+                      <th>Estado</th>
+                      <th>Gasto</th>
+                      <th>LPV</th>
+                      <th>L1 / L2 / L3</th>
+                      <th>ATC</th>
+                      <th>Compra Meta</th>
+                      <th>Venta PD</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody data-ads-body>
+                    <tr><td colspan="10"><div class="pubExtSkeleton"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="pubExtTabPanel" data-tab-panel="tracking">
+            <section class="pubExtTrackingKpis" aria-label="Salud del tracking">
+              <article class="pubExtMiniKpi"><span>Anuncios</span><strong data-tracking-kpi="ads">—</strong></article>
+              <article class="pubExtMiniKpi"><span>Tracking válido</span><strong data-tracking-kpi="valid">—</strong></article>
+              <article class="pubExtMiniKpi"><span>Parámetros</span><strong data-tracking-kpi="params">—</strong></article>
+              <article class="pubExtMiniKpi"><span>Inválidos</span><strong data-tracking-kpi="invalid">—</strong></article>
+            </section>
+
+            <article class="pubExtCard pubExtCard--table">
+              <div class="pubExtCard__head">
+                <div>
+                  <div class="pubExtCard__eyebrow">Salud de atribución</div>
+                  <h2 class="pubExtCard__title">Tracking por anuncio</h2>
+                </div>
+                <span class="pubExtCount" data-count="tracking">—</span>
+              </div>
+              <div class="pubExtTableWrap">
+                <table class="pubExtTable">
+                  <thead>
+                    <tr>
+                      <th>Anuncio</th>
+                      <th>Estado</th>
+                      <th>ad_id</th>
+                      <th>Parámetros</th>
+                      <th>URL tags</th>
+                      <th>Ventas atribuidas</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody data-tracking-body>
+                    <tr><td colspan="7"><div class="pubExtSkeleton"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <div class="pubExtLoading" data-loading hidden>
+            <div class="pubExtLoading__spinner"></div>
+            <span>Actualizando Meta Ads…</span>
+          </div>
+
+          <div class="pubExtDrawerBackdrop" data-drawer-backdrop hidden></div>
+          <aside class="pubExtDrawer" data-drawer aria-hidden="true" aria-label="Detalle">
+            <div class="pubExtDrawer__head">
+              <div>
+                <div class="pubExtDrawer__eyebrow" data-drawer-eyebrow>Detalle</div>
+                <h2 class="pubExtDrawer__title" data-drawer-title>—</h2>
+              </div>
+              <button class="pubExtBtn pubExtBtn--ghost pubExtBtn--icon" type="button" data-close-drawer aria-label="Cerrar">×</button>
+            </div>
+            <div class="pubExtDrawer__body" data-drawer-body></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/config/supabase-config.js"></script>
   <script src="/js/app.js"></script>
   <script src="/js/publicidad/publicidad-externa.js"></script>
 </body>
