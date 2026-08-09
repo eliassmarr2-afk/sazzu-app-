@@ -96,6 +96,44 @@ function isIsoDate(value: string): boolean {
   return parsed.toISOString().slice(0, 10) === value;
 }
 
+function isoDateInTimeZone(date: Date, timeZone: string): string {
+  const fallback = "UTC";
+  const zone = cleanText(timeZone) || fallback;
+
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: zone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(date);
+
+    const values = new Map(parts.map((part) => [part.type, part.value]));
+    const year = values.get("year");
+    const month = values.get("month");
+    const day = values.get("day");
+
+    if (year && month && day) {
+      return `${year}-${month}-${day}`;
+    }
+  } catch {
+    // Si la timezone almacenada fuese inválida, auditamos con UTC en vez de fallar.
+  }
+
+  return date.toISOString().slice(0, 10);
+}
+
+function addIsoDays(value: string, deltaDays: number): string {
+  const parsed = new Date(`${value}T00:00:00Z`);
+
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Invalid ISO date for date arithmetic: ${value}`);
+  }
+
+  parsed.setUTCDate(parsed.getUTCDate() + deltaDays);
+  return parsed.toISOString().slice(0, 10);
+}
+
 function chunkArray<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < items.length; i += size) {
@@ -134,6 +172,7 @@ Deno.serve(async (req) => {
       ),
       sync_token_configured: Boolean(Deno.env.get("META_SYNC_TOKEN")),
       supported_sync_modes: ["historical", "recent", "custom"],
+      recent_semantics: "account-local-today-minus-6-through-today",
     });
   }
 
@@ -248,6 +287,9 @@ Deno.serve(async (req) => {
   const customSince = cleanText(input.since);
   const customUntil = cleanText(input.until);
 
+  let requestedSince: string | null = null;
+  let requestedUntil: string | null = null;
+
   if (syncMode === "custom") {
     if (!isIsoDate(customSince) || !isIsoDate(customUntil)) {
       return jsonResponse(
@@ -270,6 +312,9 @@ Deno.serve(async (req) => {
         400
       );
     }
+
+    requestedSince = customSince;
+    requestedUntil = customUntil;
   }
 
   const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
@@ -358,14 +403,18 @@ Deno.serve(async (req) => {
 
     if (syncMode === "historical") {
       firstUrl.searchParams.set("date_preset", "maximum");
-    } else if (syncMode === "recent") {
-      firstUrl.searchParams.set("date_preset", "last_7d");
     } else {
+      if (!requestedSince || !requestedUntil) {
+        throw new Error(
+          `Missing resolved time range for sync_mode=${syncMode}`
+        );
+      }
+
       firstUrl.searchParams.set(
         "time_range",
         JSON.stringify({
-          since: customSince,
-          until: customUntil,
+          since: requestedSince,
+          until: requestedUntil,
         })
       );
     }
@@ -452,6 +501,14 @@ Deno.serve(async (req) => {
 
     adAccountInternalId = adAccount.id;
 
+    if (syncMode === "recent") {
+      requestedUntil = isoDateInTimeZone(
+        new Date(),
+        adAccount.timezone_name || "UTC"
+      );
+      requestedSince = addIsoDays(requestedUntil, -6);
+    }
+
     const { data: syncRun, error: syncRunError } = await supabase
       .from("meta_sync_runs")
       .insert({
@@ -461,13 +518,19 @@ Deno.serve(async (req) => {
         store_id: storeId,
         sync_type: "insights_daily",
         status: "running",
-        date_from: syncMode === "custom" ? customSince : null,
-        date_to: syncMode === "custom" ? customUntil : null,
+        date_from: requestedSince,
+        date_to: requestedUntil,
         metadata: {
           graph_version: graphVersion,
           meta_ad_account_id: metaAdAccountId,
           sync_mode: syncMode,
+          requested_date_from: requestedSince,
+          requested_date_to: requestedUntil,
           account_timezone: adAccount.timezone_name || null,
+          recent_semantics:
+            syncMode === "recent"
+              ? "account-local-today-minus-6-through-today"
+              : null,
         },
       })
       .select("id")
@@ -633,17 +696,22 @@ Deno.serve(async (req) => {
         insights_received: insights.length,
         insights_upserted: upsertedCount,
         insights_skipped: skippedCount,
-        date_from:
-          actualDateFrom || (syncMode === "custom" ? customSince : null),
-        date_to: actualDateTo || (syncMode === "custom" ? customUntil : null),
+        date_from: actualDateFrom || requestedSince,
+        date_to: actualDateTo || requestedUntil,
         finished_at: finishedAt,
         metadata: {
           graph_version: graphVersion,
           meta_ad_account_id: metaAdAccountId,
           graph_account_id: graphAdAccountId,
           sync_mode: syncMode,
+          requested_date_from: requestedSince,
+          requested_date_to: requestedUntil,
           graph_pages: insightResult.pages,
           account_timezone: adAccount.timezone_name || null,
+          recent_semantics:
+            syncMode === "recent"
+              ? "account-local-today-minus-6-through-today"
+              : null,
           read_only: true,
           missing_local_ad_ids: Array.from(missingLocalAdIds).slice(0, 100),
           skipped_reasons_sample: skippedReasons.slice(0, 50),
@@ -674,6 +742,8 @@ Deno.serve(async (req) => {
       storeId,
       metaAdAccountId,
       syncMode,
+      requestedSince,
+      requestedUntil,
       received: insights.length,
       upserted: upsertedCount,
       skipped: skippedCount,
@@ -690,6 +760,11 @@ Deno.serve(async (req) => {
       meta_ad_account_id: metaAdAccountId,
       graph_account_id: graphAdAccountId,
       sync_run_id: syncRunId,
+      requested_date_range: {
+        from: requestedSince,
+        to: requestedUntil,
+        timezone: adAccount.timezone_name || null,
+      },
       date_range: {
         from: actualDateFrom,
         to: actualDateTo,
@@ -713,6 +788,8 @@ Deno.serve(async (req) => {
       storeId,
       metaAdAccountId,
       syncMode,
+      requestedSince,
+      requestedUntil,
       errorCode,
       errorMessage,
       detail: isGraphError ? error.detail : null,
@@ -730,6 +807,8 @@ Deno.serve(async (req) => {
             graph_version: graphVersion,
             meta_ad_account_id: metaAdAccountId,
             sync_mode: syncMode,
+            requested_date_from: requestedSince,
+            requested_date_to: requestedUntil,
             read_only: true,
             graph_detail: isGraphError ? error.detail : null,
           },
