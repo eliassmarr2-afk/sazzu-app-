@@ -1224,8 +1224,20 @@ Deno.serve(
             false,
           );
 
+        if (!cronSecret) {
+          return responseJson(
+            {
+              status:
+                "server_misconfigured",
+
+              message:
+                "El modo automático no tiene cron secret configurado.",
+            },
+            503,
+          );
+        }
+
         if (
-          cronSecret &&
           req.headers.get(
             "x-cron-secret",
           ) !== cronSecret
@@ -1265,6 +1277,69 @@ Deno.serve(
             },
           },
         );
+
+      /*
+       * Las invocaciones manuales sólo pueden venir
+       * de una sesión real de Supabase Auth.
+       *
+       * No alcanza con poseer una API key pública:
+       * necesitamos identificar un usuario válido.
+       */
+      if (!autoMode) {
+        const authorization =
+          text(
+            req.headers.get(
+              "authorization",
+            ),
+          );
+
+        const match =
+          authorization.match(
+            /^Bearer\s+(.+)$/i,
+          );
+
+        const userJwt =
+          match
+            ? text(match[1])
+            : "";
+
+        if (!userJwt) {
+          return responseJson(
+            {
+              status:
+                "unauthorized",
+
+              message:
+                "Se requiere una sesión autenticada de Protocol Data.",
+            },
+            401,
+          );
+        }
+
+        const {
+          data: authData,
+          error: authError,
+        } =
+          await supabase.auth.getUser(
+            userJwt,
+          );
+
+        if (
+          authError ||
+          !authData?.user
+        ) {
+          return responseJson(
+            {
+              status:
+                "unauthorized",
+
+              message:
+                "La sesión de Protocol Data no es válida.",
+            },
+            401,
+          );
+        }
+      }
 
       /*
        * event_id concreto:
