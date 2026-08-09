@@ -1,6 +1,12 @@
 name: Deploy send-logistics-status-email
 
 on:
+  push:
+    branches:
+      - logistica-status-email-v1
+    paths:
+      - '.github/workflows/deploy-send-logistics-status-email.yml'
+      - 'supabase/functions/send-logistics-status-email/**'
   workflow_dispatch:
 
 permissions:
