@@ -1,4 +1,76 @@
 // Sazzú Control Tower - SPA light + page init event (sidebar persistente)
+
+/* =========================================================
+   Protocol Data · Auth gate
+   Backend 1E-B3
+   ========================================================= */
+(function initProtocolAuthGate_() {
+  "use strict";
+
+  const AUTH_SCRIPT_URL = "/js/protocol-auth.js";
+  const LOGIN_URL = "/protocolo-ui/login.html";
+
+  // Evita mostrar el panel antes de validar la sesión.
+  document.documentElement.style.visibility = "hidden";
+
+  function loadProtocolAuth_() {
+    if (window.ProtocolAuth) return Promise.resolve(window.ProtocolAuth);
+
+    return new Promise(function (resolve, reject) {
+      const existing = Array.from(document.scripts).find(function (script) {
+        return script.src && new URL(script.src, location.href).pathname === AUTH_SCRIPT_URL;
+      });
+
+      if (existing) {
+        existing.addEventListener("load", function () {
+          if (window.ProtocolAuth) resolve(window.ProtocolAuth);
+          else reject(new Error("ProtocolAuth no quedó disponible."));
+        }, { once: true });
+        existing.addEventListener("error", function () {
+          reject(new Error("No se pudo cargar ProtocolAuth."));
+        }, { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = AUTH_SCRIPT_URL;
+      script.async = true;
+      script.onload = function () {
+        if (window.ProtocolAuth) resolve(window.ProtocolAuth);
+        else reject(new Error("ProtocolAuth no quedó disponible."));
+      };
+      script.onerror = function () {
+        reject(new Error("No se pudo cargar ProtocolAuth."));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  window.__PROTOCOL_AUTH_GATE__ = (async function () {
+    try {
+      const auth = await loadProtocolAuth_();
+      await auth.ready();
+
+      const state = await auth.requireSession({ redirectTo: LOGIN_URL });
+      if (!state) return false;
+
+      window.__PROTOCOL_AUTH_STATE__ = state;
+      document.documentElement.style.visibility = "";
+      document.dispatchEvent(new CustomEvent("protocol:auth:ready", {
+        detail: {
+          userId: state.user.id,
+          email: state.user.email || null
+        }
+      }));
+      return true;
+    } catch (error) {
+      console.error("[app.js] Falló el guard de autenticación:", error);
+      window.location.replace(LOGIN_URL);
+      return false;
+    }
+  })();
+})();
+
 (function () {
   console.log("Sazzú Control Tower - SPA light");
 
@@ -195,6 +267,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
+    const authOk = await window.__PROTOCOL_AUTH_GATE__;
+    if (!authOk) return;
+
     await injectSidebarIfNeeded_();
     setActiveNav_();
     enableSoftNavigation_();
