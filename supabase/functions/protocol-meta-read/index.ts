@@ -58,7 +58,9 @@ function bearerToken(req: Request): string | null {
 
 function parseAction(value: unknown): MetaReadAction | null {
   const action = cleanText(value).toLowerCase();
-  return action in ACTION_RPC ? (action as MetaReadAction) : null;
+  return Object.prototype.hasOwnProperty.call(ACTION_RPC, action)
+    ? (action as MetaReadAction)
+    : null;
 }
 
 function buildRpcParams(
