@@ -644,6 +644,11 @@ async function sendBrevo(
     subject:
       config.subject,
 
+    tags: [
+      "protocol-logistics-status",
+      `protocol-logistics-${event.to_status}`,
+    ],
+
     htmlContent:
       html(
         event,
@@ -661,6 +666,9 @@ async function sendBrevo(
     headers: {
       idempotencyKey:
         event.id,
+
+      "X-Mailin-custom":
+        `protocol_event_id:${event.id}`,
     },
 
     params: {
