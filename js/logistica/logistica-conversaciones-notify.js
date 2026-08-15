@@ -39,9 +39,14 @@
 
   function currentFingerprint() {
     const id = conversationId();
-    const bubble = latestBubble();
-    const text = String(bubble?.textContent || '').replace(/\s+/g, ' ').trim();
+    const text = String(latestBubble()?.textContent || '').replace(/\s+/g, ' ').trim();
     return `${id}|${text}`;
+  }
+
+  function setText(element, value) {
+    if (!element) return;
+    const next = String(value || '');
+    if (element.textContent !== next) element.textContent = next;
   }
 
   function chatIcon() {
@@ -59,61 +64,13 @@
     const style = document.createElement('style');
     style.id = 'logSupportReplyNotifyStyles';
     style.textContent = `
-      .logSupportReplyNotify{
-        flex:0 0 auto;
-        display:grid;
-        gap:7px;
-        margin:0 0 12px;
-      }
-      .logSupportReplyNotify__button{
-        width:100%;
-        min-height:44px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:9px;
-        border:1px solid #2479FF;
-        border-radius:5px;
-        background:#2479FF;
-        color:#FFFFFF;
-        padding:10px 14px;
-        font:inherit;
-        font-size:13px;
-        line-height:1.15;
-        font-weight:900;
-        letter-spacing:-.01em;
-        cursor:pointer;
-        box-shadow:0 8px 18px rgba(36,121,255,.18);
-        transition:transform .16s ease,opacity .16s ease,background .16s ease;
-      }
-      .logSupportReplyNotify__button:hover:not(:disabled){
-        transform:translateY(-1px);
-        background:#1f6ee8;
-      }
-      .logSupportReplyNotify__button:focus-visible{
-        outline:2px solid rgba(36,121,255,.38);
-        outline-offset:2px;
-      }
-      .logSupportReplyNotify__button:disabled{
-        cursor:not-allowed;
-        opacity:.58;
-        transform:none;
-        box-shadow:none;
-      }
-      .logSupportReplyNotify__button svg{
-        width:18px;
-        height:18px;
-        flex:0 0 auto;
-      }
-      .logSupportReplyNotify__status{
-        min-height:0;
-        margin:0;
-        padding:0 2px;
-        font-size:11px;
-        line-height:1.3;
-        font-weight:800;
-        color:#8f99aa;
-      }
+      .logSupportReplyNotify{flex:0 0 auto;display:grid;gap:7px;margin:0 0 12px}
+      .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF;border-radius:5px;background:#2479FF;color:#fff;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:0 8px 18px rgba(36,121,255,.18);transition:transform .16s ease,opacity .16s ease,background .16s ease}
+      .logSupportReplyNotify__button:hover:not(:disabled){transform:translateY(-1px);background:#1f6ee8}
+      .logSupportReplyNotify__button:focus-visible{outline:2px solid rgba(36,121,255,.38);outline-offset:2px}
+      .logSupportReplyNotify__button:disabled{cursor:not-allowed;opacity:.58;transform:none;box-shadow:none}
+      .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto}
+      .logSupportReplyNotify__status{min-height:0;margin:0;padding:0 2px;font-size:11px;line-height:1.3;font-weight:800;color:#8f99aa}
       .logSupportReplyNotify__status:empty{display:none}
       .logSupportReplyNotify__status.is-success{color:#43c98b}
       .logSupportReplyNotify__status.is-error{color:#ff6b6b}
@@ -127,27 +84,25 @@
 
     const button = wrapper.querySelector('[data-log-support-reply-notify]');
     const status = wrapper.querySelector('[data-log-support-reply-notify-status]');
-    if (!button || !status) return;
+    const label = button?.querySelector('[data-label]');
+    if (!button || !status || !label) return;
 
     const eligible = latestIsOperator();
-    const fingerprint = currentFingerprint();
-    const saved = uiState.get(fingerprint) || null;
+    const saved = uiState.get(currentFingerprint()) || null;
 
     if (saved) {
       button.disabled = Boolean(saved.disabled);
       button.dataset.loading = saved.loading ? '1' : '0';
-      button.querySelector('[data-label]').textContent = saved.label || 'Enviar aviso de respuesta';
-      status.textContent = saved.message || '';
+      setText(label, saved.label || 'Enviar aviso de respuesta');
+      setText(status, saved.message || '');
       status.className = 'logSupportReplyNotify__status' + (saved.kind ? ` is-${saved.kind}` : '');
       return;
     }
 
     button.disabled = !eligible;
     button.dataset.loading = '0';
-    button.querySelector('[data-label]').textContent = 'Enviar aviso de respuesta';
-    status.textContent = eligible
-      ? ''
-      : 'Disponible cuando el último mensaje público pertenece al operador.';
+    setText(label, 'Enviar aviso de respuesta');
+    setText(status, eligible ? '' : 'Disponible cuando el último mensaje público pertenece al operador.');
     status.className = 'logSupportReplyNotify__status' + (eligible ? '' : ' is-info');
   }
 
@@ -189,15 +144,13 @@
   }
 
   function setState(fingerprint, patch) {
-    const previous = uiState.get(fingerprint) || {};
-    uiState.set(fingerprint, { ...previous, ...patch });
+    uiState.set(fingerprint, { ...(uiState.get(fingerprint) || {}), ...patch });
     queueInject();
   }
 
   async function errorPayload(error) {
     const response = error?.context;
     if (!response || typeof response.clone !== 'function') return null;
-
     try {
       return await response.clone().json();
     } catch (_) {
@@ -263,8 +216,10 @@
       });
 
       if (result.error) {
-        const payload = await errorPayload(result.error);
-        throw { notificationPayload: payload, original: result.error };
+        throw {
+          notificationPayload: await errorPayload(result.error),
+          original: result.error
+        };
       }
 
       const data = result.data || {};
@@ -339,20 +294,29 @@
     const main = root();
     if (!main) return;
 
-    observer = new MutationObserver(queueInject);
+    observer = new MutationObserver(function (mutations) {
+      const onlyOwnUi = mutations.length > 0 && mutations.every(function (mutation) {
+        return mutation.target?.closest?.('[data-log-support-reply-notify-wrap]');
+      });
+      if (!onlyOwnUi) queueInject();
+    });
     observer.observe(main, { childList: true, subtree: true });
   }
 
   function boot() {
     const main = root();
     if (!main) return;
+    if (window[READY_FLAG] && main.dataset.logSupportReplyNotifyBooted === '1') {
+      queueInject();
+      return;
+    }
 
+    window[READY_FLAG] = true;
+    main.dataset.logSupportReplyNotifyBooted = '1';
     ensureStyles();
     bind();
     observe();
     queueInject();
-
-    window[READY_FLAG] = true;
   }
 
   document.addEventListener('DOMContentLoaded', boot);
