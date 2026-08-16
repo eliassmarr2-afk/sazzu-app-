@@ -68,11 +68,11 @@
     if (element.textContent !== next) element.textContent = next;
   }
 
-  function chatIcon() {
+  function messageIcon() {
     return `
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5 6.8A3.8 3.8 0 0 1 8.8 3h6.4A3.8 3.8 0 0 1 19 6.8v4.9a3.8 3.8 0 0 1-3.8 3.8h-2.1L9.7 19v-3.5h-.9A3.8 3.8 0 0 1 5 11.7V6.8Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
-        <path d="M9 8.5h6M9 11.2h4.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+        <rect x="3.5" y="5.5" width="17" height="13" rx="2.2" stroke="currentColor" stroke-width="1.9"/>
+        <path d="m5 7.3 6.15 4.75a1.4 1.4 0 0 0 1.7 0L19 7.3" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
   }
@@ -83,11 +83,11 @@
     style.id = 'logSupportReplyNotifyStyles';
     style.textContent = `
       .logSupportReplyNotify{flex:0 0 auto;display:grid;gap:7px;margin:0 0 12px}
-      .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF;border-radius:5px;background:#2479FF;color:#fff;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:0 8px 18px rgba(36,121,255,.18);transition:transform .16s ease,opacity .16s ease,background .16s ease}
-      .logSupportReplyNotify__button:hover:not(:disabled){transform:translateY(-1px);background:#1f6ee8}
+      .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF;border-radius:5px;background:#2479FF;color:#fff;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,color .16s ease}
+      .logSupportReplyNotify__button:hover:not(:disabled){background:#1f6ee8;border-color:#1f6ee8}
       .logSupportReplyNotify__button:focus-visible{outline:2px solid rgba(36,121,255,.38);outline-offset:2px}
-      .logSupportReplyNotify__button:disabled{cursor:not-allowed;opacity:.58;transform:none;box-shadow:none}
-      .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto}
+      .logSupportReplyNotify__button:disabled{cursor:not-allowed;opacity:1;transform:none;box-shadow:none;background:rgba(36,121,255,.20);border-color:rgba(36,121,255,.30);color:rgba(255,255,255,.48)}
+      .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto;color:currentColor}
       .logSupportReplyNotify__status{min-height:0;margin:0;padding:0 2px;font-size:11px;line-height:1.3;font-weight:800;color:#8f99aa}
       .logSupportReplyNotify__status:empty{display:none}
       .logSupportReplyNotify__status.is-success{color:#43c98b}
@@ -146,8 +146,8 @@
       wrapper.dataset.logSupportReplyNotifyWrap = '1';
       wrapper.innerHTML = `
         <button class="logSupportReplyNotify__button" type="button" data-log-support-reply-notify="${id}">
-          ${chatIcon()}
           <span data-label>Enviar aviso de respuesta</span>
+          ${messageIcon()}
         </button>
         <p class="logSupportReplyNotify__status" data-log-support-reply-notify-status aria-live="polite"></p>
       `;
