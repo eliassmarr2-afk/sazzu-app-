@@ -225,7 +225,7 @@
 
 (function () {
   const SCRIPT_ID = 'logistica-conversaciones-notify-loader';
-  const SCRIPT_SRC = '../../js/logistica/logistica-conversaciones-notify.js';
+  const SCRIPT_SRC = '../../js/logistica/logistica-conversaciones-notify.js?v=20260815-2320';
 
   function loadConversacionesNotify() {
     if (!document.querySelector('main.logisticsMain')) return;
