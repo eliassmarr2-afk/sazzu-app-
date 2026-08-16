@@ -220,25 +220,15 @@
 
 /* ==========================================================
    Protocol Data · Logística · Conversaciones · Loader aviso
-   Fase 7: habilita exclusivamente la conversación controlada.
+   Fase 8: carga la acción manual general de aviso de respuesta.
    ========================================================== */
 
 (function () {
   const SCRIPT_ID = 'logistica-conversaciones-notify-loader';
   const SCRIPT_SRC = '../../js/logistica/logistica-conversaciones-notify.js';
-  const CONTROLLED_CONVERSATION_ID = '325247ac-c3b4-4970-bfb1-fe4d2d623f87';
-
-  function configureControlledReplyNotice() {
-    window.PROTOCOL_SUPPORT_REPLY_NOTIFICATION_CONTROL = Object.freeze({
-      enabled: true,
-      allowedConversationIds: Object.freeze([CONTROLLED_CONVERSATION_ID])
-    });
-  }
 
   function loadConversacionesNotify() {
     if (!document.querySelector('main.logisticsMain')) return;
-
-    configureControlledReplyNotice();
 
     if (document.getElementById(SCRIPT_ID)) {
       window.ProtocolSupportReplyNotification?.refresh?.();
