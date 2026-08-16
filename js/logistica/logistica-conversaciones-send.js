@@ -217,3 +217,29 @@
 
   if (document.readyState !== 'loading') loadConversacionesCierre();
 })();
+
+/* ==========================================================
+   Protocol Data · Logística · Conversaciones · Loader aviso
+   Fase 5: carga la acción manual de aviso de respuesta.
+   ========================================================== */
+
+(function () {
+  const SCRIPT_ID = 'logistica-conversaciones-notify-loader';
+  const SCRIPT_SRC = '../../js/logistica/logistica-conversaciones-notify.js';
+
+  function loadConversacionesNotify() {
+    if (!document.querySelector('main.logisticsMain')) return;
+    if (document.getElementById(SCRIPT_ID)) return;
+
+    const script = document.createElement('script');
+    script.id = SCRIPT_ID;
+    script.src = SCRIPT_SRC;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  document.addEventListener('DOMContentLoaded', loadConversacionesNotify);
+  document.addEventListener('sazzu:page:load', loadConversacionesNotify);
+
+  if (document.readyState !== 'loading') loadConversacionesNotify();
+})();
