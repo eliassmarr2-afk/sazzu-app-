@@ -1,13 +1,12 @@
 /* ==========================================================
    Protocol Data · Logística · Conversaciones · Aviso de respuesta
-   Fase 7: acción manual controlada por allowlist de una conversación.
+   Fase 8: acción manual general para conversaciones elegibles.
    El backend sigue siendo la autoridad final.
    ========================================================== */
 
 (function () {
   const PAGE_EVENT = 'sazzu:page:load';
   const READY_FLAG = '__protocolSupportReplyNotificationReady';
-  const CONTROL_KEY = 'PROTOCOL_SUPPORT_REPLY_NOTIFICATION_CONTROL';
   const FUNCTION_NAME = 'send-support-reply-notification';
   const uiState = new Map();
   let observer = null;
@@ -28,32 +27,18 @@
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || '').trim());
   }
 
-  function control() {
-    const raw = window[CONTROL_KEY] && typeof window[CONTROL_KEY] === 'object'
-      ? window[CONTROL_KEY]
-      : {};
-    const ids = Array.isArray(raw.allowedConversationIds)
-      ? raw.allowedConversationIds.map(value => String(value || '').trim().toLowerCase()).filter(isUuid)
-      : [];
-    return {
-      enabled: raw.enabled === true,
-      allowedConversationIds: new Set(ids)
-    };
-  }
-
-  function isControlledConversation(id) {
-    const cfg = control();
-    return cfg.enabled && cfg.allowedConversationIds.size === 1 && cfg.allowedConversationIds.has(String(id || '').toLowerCase());
-  }
-
   function conversationId() {
     const form = root()?.querySelector('[data-log-conversation-reply-real]');
     return String(form?.dataset.logConversationReplyReal || '').trim().toLowerCase();
   }
 
+  function bubbles() {
+    return root()?.querySelectorAll('.logConversationChat .logConversationBubble') || [];
+  }
+
   function latestBubble() {
-    const bubbles = root()?.querySelectorAll('.logConversationChat .logConversationBubble');
-    return bubbles && bubbles.length ? bubbles[bubbles.length - 1] : null;
+    const list = bubbles();
+    return list.length ? list[list.length - 1] : null;
   }
 
   function latestIsOperator() {
@@ -71,8 +56,10 @@
 
   function currentFingerprint() {
     const id = conversationId();
-    const text = String(latestBubble()?.textContent || '').replace(/\s+/g, ' ').trim();
-    return `${id}|${text}`;
+    const list = bubbles();
+    const latest = list.length ? list[list.length - 1] : null;
+    const text = String(latest?.textContent || '').replace(/\s+/g, ' ').trim();
+    return `${id}|${list.length}|${text}`;
   }
 
   function setText(element, value) {
@@ -147,7 +134,7 @@
 
     const id = conversationId();
     const dataBox = main.querySelector('.logConversationBox--data');
-    if (!dataBox || !isControlledConversation(id) || slideLooksFinalized()) {
+    if (!dataBox || !isUuid(id) || slideLooksFinalized()) {
       removeOwnButton(main);
       return;
     }
@@ -198,10 +185,9 @@
   function friendlyError(payload) {
     const code = String(payload?.code || '').trim();
     if (payload?.message) return String(payload.message);
-    if (code === 'feature_not_armed') return 'La función está desactivada en servidor.';
-    if (code === 'controlled_conversation_not_allowed') return 'Esta conversación no está habilitada para el envío controlado.';
     if (code === 'conversation_closed') return 'La conversación está finalizada. No se puede enviar un nuevo aviso.';
     if (code === 'latest_public_message_not_operator') return 'El último mensaje público no pertenece al operador.';
+    if (code === 'invalid_customer_email') return 'La conversación no tiene un email de cliente válido.';
     if (code === 'unauthorized') return 'Tu sesión de Protocol Data no es válida. Volvé a iniciar sesión.';
     if (code === 'notification_already_sending') return 'El aviso ya se está procesando o requiere revisión antes de un nuevo intento.';
     if (code === 'email_sent_audit_failed') return 'Brevo pudo haber aceptado el correo, pero falló la auditoría. No reintentes automáticamente.';
@@ -211,7 +197,7 @@
 
   async function handleNotify(button) {
     const id = String(button?.dataset.logSupportReplyNotify || '').trim().toLowerCase();
-    if (!button || !isControlledConversation(id) || id !== conversationId() || slideLooksFinalized()) return;
+    if (!button || !isUuid(id) || id !== conversationId() || slideLooksFinalized()) return;
 
     const fingerprint = currentFingerprint();
     if (!latestIsOperator()) {
@@ -278,7 +264,7 @@
           loading: false,
           label: 'Aviso ya enviado',
           kind: 'info',
-          message: 'Esta respuesta del operador ya fue notificada. No se envió un duplicado.'
+          message: 'Esta última respuesta del operador ya fue notificada. No se envió un duplicado.'
         });
         return;
       }
@@ -357,14 +343,7 @@
   }
 
   window.ProtocolSupportReplyNotification = Object.freeze({
-    refresh: queueInject,
-    getControl: function () {
-      const cfg = control();
-      return {
-        enabled: cfg.enabled,
-        allowedConversationIds: Array.from(cfg.allowedConversationIds)
-      };
-    }
+    refresh: queueInject
   });
 
   document.addEventListener('DOMContentLoaded', boot);
