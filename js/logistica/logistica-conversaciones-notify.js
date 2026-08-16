@@ -8,6 +8,10 @@
   const PAGE_EVENT = 'sazzu:page:load';
   const READY_FLAG = '__protocolSupportReplyNotificationReady';
   const FUNCTION_NAME = 'send-support-reply-notification';
+  const ACTIVE_COLOR = '#2479FF';
+  const HOVER_COLOR = '#1B5FCC';
+  const DISABLED_BG = 'rgba(36,121,255,.20)';
+  const DISABLED_BORDER = 'rgba(36,121,255,.30)';
   const uiState = new Map();
   let observer = null;
   let injectQueued = false;
@@ -77,18 +81,64 @@
     `;
   }
 
+  function important(element, property, value) {
+    if (!element) return;
+    element.style.setProperty(property, value, 'important');
+  }
+
+  function paintButton(button, hovered) {
+    if (!button) return;
+
+    const disabled = Boolean(button.disabled);
+    const background = disabled ? DISABLED_BG : (hovered ? HOVER_COLOR : ACTIVE_COLOR);
+    const border = disabled ? DISABLED_BORDER : background;
+    const foreground = disabled ? 'rgba(255,255,255,.48)' : '#FFFFFF';
+
+    important(button, 'background', background);
+    important(button, 'background-color', background);
+    important(button, 'background-image', 'none');
+    important(button, 'border-color', border);
+    important(button, 'border-radius', '5px');
+    important(button, 'color', foreground);
+    important(button, 'box-shadow', 'none');
+    important(button, 'opacity', '1');
+    important(button, 'filter', 'none');
+    important(button, '-webkit-filter', 'none');
+    important(button, 'transform', 'none');
+    important(button, 'appearance', 'none');
+    important(button, '-webkit-appearance', 'none');
+
+    const label = button.querySelector('[data-label]');
+    const svg = button.querySelector('svg');
+    important(label, 'color', foreground);
+    important(label, 'opacity', '1');
+    important(svg, 'color', foreground);
+    important(svg, 'opacity', '1');
+  }
+
+  function bindButtonVisualState(button) {
+    if (!button || button.dataset.logSupportReplyVisualBound === '1') return;
+    button.dataset.logSupportReplyVisualBound = '1';
+
+    button.addEventListener('pointerenter', function () {
+      paintButton(button, !button.disabled);
+    });
+
+    button.addEventListener('pointerleave', function () {
+      paintButton(button, false);
+    });
+  }
+
   function ensureStyles() {
     if (document.getElementById('logSupportReplyNotifyStyles')) return;
     const style = document.createElement('style');
     style.id = 'logSupportReplyNotifyStyles';
     style.textContent = `
       .logSupportReplyNotify{flex:0 0 auto;display:grid;gap:7px;margin:0 0 12px}
-      .logSupportReplyNotify .logSupportReplyNotify__button:not(:disabled){width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF!important;border-color:#2479FF!important;border-radius:5px!important;background:#2479FF!important;background-color:#2479FF!important;background-image:none!important;color:#fff!important;opacity:1!important;filter:none!important;-webkit-filter:none!important;appearance:none!important;-webkit-appearance:none!important;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:none!important;transform:none!important;transition:background-color .16s ease,border-color .16s ease}
-      .logSupportReplyNotify .logSupportReplyNotify__button:not(:disabled):hover{background:#1B5FCC!important;background-color:#1B5FCC!important;border-color:#1B5FCC!important;color:#fff!important;opacity:1!important;filter:none!important;-webkit-filter:none!important;box-shadow:none!important;transform:none!important}
+      .logSupportReplyNotify .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF;border-radius:5px;background:#2479FF;color:#fff;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:none;transition:background-color .16s ease,border-color .16s ease}
       .logSupportReplyNotify .logSupportReplyNotify__button:focus-visible{outline:2px solid rgba(36,121,255,.38);outline-offset:2px}
-      .logSupportReplyNotify .logSupportReplyNotify__button:disabled{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid rgba(36,121,255,.30)!important;border-radius:5px!important;background:rgba(36,121,255,.20)!important;background-color:rgba(36,121,255,.20)!important;background-image:none!important;color:rgba(255,255,255,.48)!important;cursor:not-allowed!important;opacity:1!important;filter:none!important;-webkit-filter:none!important;appearance:none!important;-webkit-appearance:none!important;transform:none!important;box-shadow:none!important;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em}
-      .logSupportReplyNotify .logSupportReplyNotify__button:not(:disabled) [data-label],.logSupportReplyNotify .logSupportReplyNotify__button:not(:disabled) svg{color:#fff!important;opacity:1!important}
-      .logSupportReplyNotify .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto;color:currentColor!important}
+      .logSupportReplyNotify .logSupportReplyNotify__button:disabled{cursor:not-allowed}
+      .logSupportReplyNotify .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto;color:currentColor}
       .logSupportReplyNotify__status{min-height:0;margin:0;padding:0 2px;font-size:11px;line-height:1.3;font-weight:800;color:#8f99aa}
       .logSupportReplyNotify__status:empty{display:none}
       .logSupportReplyNotify__status.is-success{color:#43c98b}
@@ -105,6 +155,8 @@
     const label = button?.querySelector('[data-label]');
     if (!button || !status || !label) return;
 
+    bindButtonVisualState(button);
+
     const eligible = latestIsOperator() && !slideLooksFinalized();
     const saved = uiState.get(currentFingerprint()) || null;
 
@@ -114,14 +166,15 @@
       setText(label, saved.label || 'Enviar aviso de respuesta');
       setText(status, saved.message || '');
       status.className = 'logSupportReplyNotify__status' + (saved.kind ? ` is-${saved.kind}` : '');
-      return;
+    } else {
+      button.disabled = !eligible;
+      button.dataset.loading = '0';
+      setText(label, 'Enviar aviso de respuesta');
+      setText(status, eligible ? '' : 'Disponible cuando la conversación está activa y el último mensaje público pertenece al operador.');
+      status.className = 'logSupportReplyNotify__status' + (eligible ? '' : ' is-info');
     }
 
-    button.disabled = !eligible;
-    button.dataset.loading = '0';
-    setText(label, 'Enviar aviso de respuesta');
-    setText(status, eligible ? '' : 'Disponible cuando la conversación está activa y el último mensaje público pertenece al operador.');
-    status.className = 'logSupportReplyNotify__status' + (eligible ? '' : ' is-info');
+    paintButton(button, !button.disabled && button.matches(':hover'));
   }
 
   function removeOwnButton(main) {
