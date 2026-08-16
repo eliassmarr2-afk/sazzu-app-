@@ -83,11 +83,11 @@
     style.id = 'logSupportReplyNotifyStyles';
     style.textContent = `
       .logSupportReplyNotify{flex:0 0 auto;display:grid;gap:7px;margin:0 0 12px}
-      .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF;border-radius:5px;background:#2479FF;color:#fff;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:none;transition:background .16s ease,border-color .16s ease,color .16s ease}
-      .logSupportReplyNotify__button:hover:not(:disabled){background:#1f6ee8;border-color:#1f6ee8}
-      .logSupportReplyNotify__button:focus-visible{outline:2px solid rgba(36,121,255,.38);outline-offset:2px}
-      .logSupportReplyNotify__button:disabled{cursor:not-allowed;opacity:1;transform:none;box-shadow:none;background:rgba(36,121,255,.20);border-color:rgba(36,121,255,.30);color:rgba(255,255,255,.48)}
-      .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto;color:currentColor}
+      .logSupportReplyNotify .logSupportReplyNotify__button{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #2479FF!important;border-radius:5px!important;background:#2479FF!important;color:#fff!important;padding:10px 14px;font:inherit;font-size:13px;line-height:1.15;font-weight:900;letter-spacing:-.01em;cursor:pointer;box-shadow:none!important;transition:background .16s ease,border-color .16s ease,color .16s ease}
+      .logSupportReplyNotify .logSupportReplyNotify__button:hover:not(:disabled){background:#1f6ee8!important;border-color:#1f6ee8!important;box-shadow:none!important}
+      .logSupportReplyNotify .logSupportReplyNotify__button:focus-visible{outline:2px solid rgba(36,121,255,.38);outline-offset:2px}
+      .logSupportReplyNotify .logSupportReplyNotify__button:disabled{cursor:not-allowed!important;opacity:1!important;transform:none!important;box-shadow:none!important;background:rgba(36,121,255,.20)!important;border-color:rgba(36,121,255,.30)!important;color:rgba(255,255,255,.48)!important}
+      .logSupportReplyNotify .logSupportReplyNotify__button svg{width:18px;height:18px;flex:0 0 auto;color:currentColor!important}
       .logSupportReplyNotify__status{min-height:0;margin:0;padding:0 2px;font-size:11px;line-height:1.3;font-weight:800;color:#8f99aa}
       .logSupportReplyNotify__status:empty{display:none}
       .logSupportReplyNotify__status.is-success{color:#43c98b}
