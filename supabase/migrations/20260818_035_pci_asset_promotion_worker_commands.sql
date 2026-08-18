@@ -250,11 +250,16 @@ begin
 
   if v_all_available and v_purchase.status='agreed' then
     for v_submission in
-      select distinct s.submission_id,s.status,s.creator_id
-      from pci.creative_assets ca
-      join pci.submissions s on s.submission_id=ca.source_submission_id
-      where ca.purchase_id=v_asset.purchase_id
-      for update of s
+      select s.submission_id,s.status,s.creator_id
+      from pci.submissions s
+      where exists (
+        select 1
+        from pci.creative_assets ca
+        where ca.purchase_id=v_asset.purchase_id
+          and ca.source_submission_id=s.submission_id
+      )
+      order by s.submission_id
+      for update
     loop
       if v_submission.status <> 'preselected' then
         raise exception using errcode='23514',message='pci_purchase_settlement_submission_not_preselected';
