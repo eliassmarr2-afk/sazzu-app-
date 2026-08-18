@@ -29,11 +29,10 @@ begin
   select * into v_job
   from pci.outbox o
   where o.job_type='promote_asset'
-    and o.attempts < 5
     and (
-      (o.status in ('pending','failed') and o.available_at <= now())
+      (o.status in ('pending','failed') and o.attempts < 5 and o.available_at <= now())
       or
-      (o.status='processing' and o.locked_at < now()-interval '15 minutes')
+      (o.status='processing' and o.attempts <= 5 and o.locked_at < now()-interval '15 minutes')
     )
   order by
     case when o.status='processing' then 0 else 1 end,
@@ -141,4 +140,4 @@ revoke all on function pci_api.worker_claim_promote_asset(text,uuid) from public
 grant execute on function pci_api.worker_claim_promote_asset(text,uuid) to service_role;
 
 comment on function pci_api.worker_claim_promote_asset(text,uuid) is
-  'Claims due promotion work with SKIP LOCKED and safely reclaims processing jobs whose 15-minute worker lease is stale.';
+  'Claims new attempts below the retry limit and safely reclaims stale processing leases, including an interrupted fifth attempt.';
