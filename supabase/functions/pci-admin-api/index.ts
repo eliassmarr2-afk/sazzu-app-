@@ -59,6 +59,14 @@ const CREATOR_INVITATION_FIELDS = [
   'expires_hours',
 ];
 
+const REVIEW_DECISION_FIELDS = [
+  'workspace_id',
+  'decision',
+  'reason_code',
+  'creator_feedback',
+  'internal_assessment',
+];
+
 function requireCommandKey(request: Request): string {
   const idem = idempotencyKey(request);
   if (!idem) throw new Error('invalid_or_missing_idempotency_key');
@@ -68,6 +76,13 @@ function requireCommandKey(request: Request): string {
 function assertOptionalStringArray(value: unknown, field: string): void {
   if (value === undefined || value === null) return;
   if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    throw new Error(`invalid_${field}`);
+  }
+}
+
+function assertOptionalObject(value: unknown, field: string): void {
+  if (value === undefined || value === null) return;
+  if (typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`invalid_${field}`);
   }
 }
@@ -195,6 +210,83 @@ Deno.serve(async (request) => {
       });
     }
 
+    // GET /v1/submissions/:id?workspace_id=...
+    const detailMatch = path.match(/^\/v1\/submissions\/([0-9a-f-]+)$/i);
+    if (request.method === 'GET' && detailMatch) {
+      const submissionId = detailMatch[1].toLowerCase();
+      if (!isUuid(submissionId)) throw new Error('invalid_submission_id');
+      const workspaceId = clean(new URL(request.url).searchParams.get('workspace_id'));
+      if (!workspaceId) throw new Error('workspace_id_required');
+
+      const item = await pciRpc<JsonObject>(admin, 'admin_submission_detail', {
+        p_actor_user_id: actor.id,
+        p_workspace_id: workspaceId,
+        p_submission_id: submissionId,
+      });
+
+      return jsonResponse(request, { ok: true, request_id: reqId, item });
+    }
+
+    // POST /v1/submissions/:id/review/start
+    const reviewStartMatch = path.match(/^\/v1\/submissions\/([0-9a-f-]+)\/review\/start$/i);
+    if (request.method === 'POST' && reviewStartMatch) {
+      const submissionId = reviewStartMatch[1].toLowerCase();
+      if (!isUuid(submissionId)) throw new Error('invalid_submission_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, ['workspace_id']);
+      const workspaceId = clean(payload.workspace_id);
+      if (!workspaceId) throw new Error('workspace_id_required');
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'admin_start_submission_review', {
+        p_actor_user_id: actor.id,
+        p_workspace_id: workspaceId,
+        p_submission_id: submissionId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
+    // POST /v1/submissions/:id/review/decision
+    const reviewDecisionMatch = path.match(/^\/v1\/submissions\/([0-9a-f-]+)\/review\/decision$/i);
+    if (request.method === 'POST' && reviewDecisionMatch) {
+      const submissionId = reviewDecisionMatch[1].toLowerCase();
+      if (!isUuid(submissionId)) throw new Error('invalid_submission_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, REVIEW_DECISION_FIELDS);
+      assertOptionalObject(payload.internal_assessment, 'internal_assessment');
+
+      const workspaceId = clean(payload.workspace_id);
+      if (!workspaceId) throw new Error('workspace_id_required');
+      const decision = clean(payload.decision);
+      if (!['changes_requested', 'preselected', 'rejected'].includes(decision)) {
+        throw new Error('invalid_review_decision');
+      }
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'admin_review_decision', {
+        p_actor_user_id: actor.id,
+        p_workspace_id: workspaceId,
+        p_submission_id: submissionId,
+        p_decision: decision,
+        p_reason_code: clean(payload.reason_code) || null,
+        p_creator_feedback: clean(payload.creator_feedback) || null,
+        p_internal_assessment: payload.internal_assessment ?? {},
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
     return jsonResponse(request, { ok: false, code: 'route_not_found', request_id: reqId }, 404);
   } catch (error) {
     const normalized = normalizeError(error);
@@ -204,7 +296,10 @@ Deno.serve(async (request) => {
       raw === 'invalid_or_missing_idempotency_key' ||
       raw === 'workspace_id_required' ||
       raw === 'invalid_consignment_id' ||
-      raw === 'invalid_specialties'
+      raw === 'invalid_submission_id' ||
+      raw === 'invalid_specialties' ||
+      raw === 'invalid_internal_assessment' ||
+      raw === 'invalid_review_decision'
     ) {
       return jsonResponse(request, { ok: false, code: raw, request_id: reqId }, 400);
     }
