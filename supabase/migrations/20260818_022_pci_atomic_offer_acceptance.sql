@@ -52,6 +52,39 @@ begin
     raise exception using errcode = 'P0002', message = 'pci_offer_not_found';
   end if;
 
+  -- Register idempotency before checking mutable commercial state. If the first
+  -- request committed and the HTTP response was lost, an exact retry returns
+  -- the original purchase snapshot even though the offer is now accepted.
+  insert into pci.command_receipts (
+    idempotency_key, actor_type, actor_user_id, actor_creator_id, workspace_id,
+    command_name, request_id, status
+  ) values (
+    p_idempotency_key, 'creator', p_actor_user_id, v_creator.creator_id, v_offer.workspace_id,
+    'creator_accept_offer', p_request_id, 'processing'
+  )
+  on conflict do nothing
+  returning command_receipt_id into v_receipt_id;
+
+  if v_receipt_id is null then
+    select * into v_existing_receipt
+    from pci.command_receipts cr
+    where cr.actor_type = 'creator'
+      and cr.actor_user_id = p_actor_user_id
+      and cr.actor_creator_id = v_creator.creator_id
+      and cr.command_name = 'creator_accept_offer'
+      and cr.idempotency_key = p_idempotency_key
+    order by cr.created_at desc
+    limit 1;
+
+    if v_existing_receipt.command_receipt_id is null then
+      raise exception using errcode = '23505', message = 'pci_idempotency_conflict';
+    end if;
+    if v_existing_receipt.status = 'completed' then
+      return v_existing_receipt.response_snapshot;
+    end if;
+    raise exception using errcode = '40001', message = 'pci_command_already_processing';
+  end if;
+
   if v_offer.proposed_by_type <> 'workspace' then
     raise exception using errcode = '23514', message = 'pci_creator_can_only_accept_workspace_offer';
   end if;
@@ -171,36 +204,6 @@ begin
       raise exception using errcode = '23505', message = 'pci_submission_version_already_acquired';
     end if;
   end loop;
-
-  insert into pci.command_receipts (
-    idempotency_key, actor_type, actor_user_id, actor_creator_id, workspace_id,
-    command_name, request_id, status
-  ) values (
-    p_idempotency_key, 'creator', p_actor_user_id, v_creator.creator_id, v_offer.workspace_id,
-    'creator_accept_offer', p_request_id, 'processing'
-  )
-  on conflict do nothing
-  returning command_receipt_id into v_receipt_id;
-
-  if v_receipt_id is null then
-    select * into v_existing_receipt
-    from pci.command_receipts cr
-    where cr.actor_type = 'creator'
-      and cr.actor_user_id = p_actor_user_id
-      and cr.actor_creator_id = v_creator.creator_id
-      and cr.command_name = 'creator_accept_offer'
-      and cr.idempotency_key = p_idempotency_key
-    order by cr.created_at desc
-    limit 1;
-
-    if v_existing_receipt.command_receipt_id is null then
-      raise exception using errcode = '23505', message = 'pci_idempotency_conflict';
-    end if;
-    if v_existing_receipt.status = 'completed' then
-      return v_existing_receipt.response_snapshot;
-    end if;
-    raise exception using errcode = '40001', message = 'pci_command_already_processing';
-  end if;
 
   update pci.purchase_offers
   set status = 'accepted', accepted_at = now()
@@ -354,4 +357,4 @@ revoke all on function pci_api.creator_accept_offer(uuid,uuid,uuid,uuid) from pu
 grant execute on function pci_api.creator_accept_offer(uuid,uuid,uuid,uuid) to service_role;
 
 comment on function pci_api.creator_accept_offer(uuid,uuid,uuid,uuid) is
-  'Atomically accepts one live Protocol offer and creates Purchase + base Payable + pending Rights Grant(s). No accepted offer can exist without its purchase commitment and debt.';
+  'Atomically accepts one live Protocol offer and creates Purchase + base Payable + pending Rights Grant(s). Exact retries return the original committed purchase through the command receipt.';
