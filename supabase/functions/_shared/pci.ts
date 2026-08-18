@@ -197,6 +197,12 @@ const CONFLICT_CODES = new Set([
   'submission_limit_reached',
   'submission_version_limit_reached',
   'submission_version_not_allowed_in_current_state',
+  'submission_version_not_uploading',
+  'uploaded_object_not_found',
+  'upload_completed_after_authorization_expiry',
+  'rights_declaration_not_allowed_in_current_state',
+  'submission_cannot_be_presented_in_current_state',
+  'submission_version_not_processing',
 ]);
 
 const FORBIDDEN_CODES = new Set([
@@ -211,6 +217,7 @@ const FORBIDDEN_CODES = new Set([
   'creator_workspace_closed',
   'creator_workspace_not_active',
   'consignment_invitation_required',
+  'creator_account_closed',
 ]);
 
 const NOT_FOUND_CODES = new Set([
@@ -219,16 +226,32 @@ const NOT_FOUND_CODES = new Set([
   'consignment_draft_revision_not_found',
   'participation_not_found',
   'submission_not_found',
+  'submission_version_not_found',
 ]);
 
-const VALIDATION_CODES = new Set([
+const BAD_REQUEST_CODES = new Set([
   'consignment_title_required',
   'invalid_consignment_visibility',
   'invalid_deliverable_type',
   'invalid_compensation_mode',
   'invalid_currency',
-  'consignment_revision_not_published',
   'unsupported_submission_mime_type',
+  'invalid_authorship_basis',
+  'external_material_basis_required',
+]);
+
+const BUSINESS_RULE_CODES = new Set([
+  'consignment_revision_not_published',
+  'minors_not_supported',
+  'uploaded_object_invalid_size',
+  'uploaded_object_mime_mismatch',
+  'submission_version_required',
+  'submission_version_not_ready',
+  'rights_declaration_incomplete',
+  'valid_sha256_required',
+  'invalid_media_width',
+  'invalid_media_height',
+  'invalid_worker_result_status',
 ]);
 
 export function normalizeError(error: unknown): { status: number; code: string; message: string } {
@@ -238,13 +261,13 @@ export function normalizeError(error: unknown): { status: number; code: string; 
   if (code.startsWith('unexpected_fields:')) {
     return { status: 400, code: 'unexpected_fields', message: code.slice('unexpected_fields:'.length) };
   }
-  if (code === 'invalid_json' || code === 'invalid_payload' || VALIDATION_CODES.has(code)) {
+  if (code === 'invalid_json' || code === 'invalid_payload' || BAD_REQUEST_CODES.has(code)) {
     return { status: 400, code, message: code };
   }
   if (FORBIDDEN_CODES.has(code)) return { status: 403, code, message: code };
   if (NOT_FOUND_CODES.has(code)) return { status: 404, code, message: code };
   if (CONFLICT_CODES.has(code)) return { status: 409, code, message: code };
-  if (code === 'creator_account_closed') return { status: 403, code, message: code };
+  if (BUSINESS_RULE_CODES.has(code)) return { status: 422, code, message: code };
 
   return { status: 500, code: 'internal_error', message: 'Internal PCI error.' };
 }
