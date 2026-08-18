@@ -148,6 +148,9 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
     "pci_storage_object_not_verified",
     "pci_submission_version_mime_mismatch",
     "pci_submission_version_not_finalizable",
+    "pci_submission_version_not_invalidatable",
+    "pci_invalidation_reason_invalid",
+    "pci_ready_submission_version_immutable",
     "pci_command_already_processing",
     "pci_idempotency_conflict",
   ];
@@ -160,10 +163,10 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found"].includes(code)) {
     return { code, status: 404 };
   }
-  if (["pci_command_already_processing", "pci_idempotency_conflict", "pci_submission_version_not_finalizable", "pci_submission_version_not_allowed", "pci_consignment_not_open", "pci_submission_limit_reached", "pci_version_limit_reached"].includes(code)) {
+  if (["pci_command_already_processing", "pci_idempotency_conflict", "pci_submission_version_not_finalizable", "pci_submission_version_not_invalidatable", "pci_submission_version_not_allowed", "pci_consignment_not_open", "pci_submission_limit_reached", "pci_version_limit_reached", "pci_ready_submission_version_immutable"].includes(code)) {
     return { code, status: 409 };
   }
-  if (["pci_video_mime_not_allowed", "pci_video_size_invalid", "pci_sha256_invalid", "pci_submission_version_mime_mismatch", "pci_storage_object_not_verified"].includes(code)) {
+  if (["pci_video_mime_not_allowed", "pci_video_size_invalid", "pci_sha256_invalid", "pci_submission_version_mime_mismatch", "pci_storage_object_not_verified", "pci_invalidation_reason_invalid"].includes(code)) {
     return { code, status: 422 };
   }
   return { code, status: 400 };
@@ -285,6 +288,34 @@ async function verifyStorageObject(
   };
 }
 
+async function persistInvalidVersion(
+  admin: SupabaseAdmin,
+  userId: string,
+  versionId: string,
+  idempotencyKeyValue: string,
+  reqId: string,
+  reasonCode: "file_too_large" | "mime_mismatch" | "invalid_media" | "storage_metadata_invalid",
+  validation: JsonRecord,
+): Promise<void> {
+  const result = await rpc(admin, "invalidate_submission_version", {
+    p_actor_user_id: userId,
+    p_submission_version_id: versionId,
+    p_idempotency_key: idempotencyKeyValue,
+    p_request_id: reqId,
+    p_reason_code: reasonCode,
+    p_validation_metadata: validation,
+  });
+
+  if (result.error) {
+    console.error("[PCI Creator API] failed to persist invalid version", {
+      reqId,
+      versionId,
+      reasonCode,
+      message: result.error.message,
+    });
+  }
+}
+
 async function finalizeVersion(
   request: Request,
   admin: SupabaseAdmin,
@@ -334,14 +365,29 @@ async function finalizeVersion(
   if (!stored.exists) {
     return json(request, { ok: false, code: "storage_object_not_found", request_id: reqId }, 409);
   }
+
+  const validation: JsonRecord = {
+    object_exists: true,
+    verified_by: "pci-creator-api",
+    storage_object_id: stored.objectId,
+    storage_size_bytes: stored.size,
+    storage_mime_type: stored.mimeType,
+    storage_checked_at: new Date().toISOString(),
+  };
+
   if (!stored.size || stored.size <= 0) {
-    return json(request, { ok: false, code: "storage_object_size_unavailable", request_id: reqId }, 409);
+    await persistInvalidVersion(admin, userId, versionId, idem, reqId, "storage_metadata_invalid", validation);
+    return json(request, { ok: false, code: "storage_object_size_unavailable", version_status: "invalid", request_id: reqId }, 422);
   }
+
   if (stored.size > 262144000) {
-    return json(request, { ok: false, code: "pci_video_size_invalid", request_id: reqId }, 422);
+    await persistInvalidVersion(admin, userId, versionId, idem, reqId, "file_too_large", validation);
+    return json(request, { ok: false, code: "pci_video_size_invalid", version_status: "invalid", request_id: reqId }, 422);
   }
+
   if (stored.mimeType && stored.mimeType !== expectedMime) {
-    return json(request, { ok: false, code: "pci_submission_version_mime_mismatch", request_id: reqId }, 422);
+    await persistInvalidVersion(admin, userId, versionId, idem, reqId, "mime_mismatch", validation);
+    return json(request, { ok: false, code: "pci_submission_version_mime_mismatch", version_status: "invalid", request_id: reqId }, 422);
   }
 
   const duration = payload.duration_seconds == null ? null : Number(payload.duration_seconds);
@@ -359,14 +405,7 @@ async function finalizeVersion(
     p_duration_seconds: Number.isFinite(duration as number) ? duration : null,
     p_width: Number.isInteger(width) ? width : null,
     p_height: Number.isInteger(height) ? height : null,
-    p_storage_validation: {
-      object_exists: true,
-      verified_by: "pci-creator-api",
-      storage_object_id: stored.objectId,
-      storage_size_bytes: stored.size,
-      storage_mime_type: stored.mimeType,
-      storage_checked_at: new Date().toISOString(),
-    },
+    p_storage_validation: validation,
   });
 
   if (command.error) {
