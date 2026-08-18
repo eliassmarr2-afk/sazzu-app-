@@ -13,9 +13,14 @@ begin;
 create unique index pci_negotiations_submission_uq
   on pci.negotiations (submission_id);
 
+-- Required by contextual foreign keys below.
+alter table pci.negotiations
+  add constraint pci_negotiations_context_uq
+  unique (negotiation_id, workspace_id, creator_id);
+
 create table pci.negotiation_messages (
   negotiation_message_id uuid primary key default gen_random_uuid(),
-  negotiation_id uuid not null references pci.negotiations(negotiation_id) on delete restrict,
+  negotiation_id uuid not null,
   workspace_id text not null references public.protocol_workspaces(workspace_id) on delete restrict,
   creator_id uuid not null references pci.creators(creator_id) on delete restrict,
 
@@ -30,11 +35,6 @@ create table pci.negotiation_messages (
     references pci.negotiations(negotiation_id, workspace_id, creator_id)
     on delete restrict
 );
-
--- Required for the composite contextual FK above.
-alter table pci.negotiations
-  add constraint pci_negotiations_context_uq
-  unique (negotiation_id, workspace_id, creator_id);
 
 create index pci_negotiation_messages_history_idx
   on pci.negotiation_messages (negotiation_id, created_at, negotiation_message_id);
@@ -92,7 +92,7 @@ create table pci.purchase_offers (
   supersedes_offer_id uuid references pci.purchase_offers(purchase_offer_id) on delete restrict,
 
   currency text not null check (char_length(currency) = 3),
-  total_amount numeric(14,2) not null check (total_amount >= 0),
+  total_amount numeric(14,2) not null check (total_amount > 0),
 
   rights_package_snapshot jsonb not null default '{}'::jsonb,
   payment_terms jsonb not null default '{}'::jsonb,
@@ -143,7 +143,7 @@ create table pci.purchase_offer_items (
   submission_id uuid not null,
   submission_version_id uuid not null,
 
-  amount numeric(14,2) not null check (amount >= 0),
+  amount numeric(14,2) not null check (amount > 0),
   item_terms jsonb not null default '{}'::jsonb,
   version_sha256_snapshot text not null,
   created_at timestamptz not null default now(),
@@ -216,17 +216,20 @@ language plpgsql
 set search_path = ''
 as $$
 declare
+  v_offer_id uuid;
   v_offer_status text;
 begin
+  v_offer_id := case when tg_op = 'DELETE' then old.purchase_offer_id else new.purchase_offer_id end;
+
   select o.status into v_offer_status
   from pci.purchase_offers o
-  where o.purchase_offer_id = coalesce(new.purchase_offer_id, old.purchase_offer_id);
+  where o.purchase_offer_id = v_offer_id;
 
-  if tg_op = 'DELETE' and v_offer_status <> 'draft' then
-    raise exception using errcode = 'P0001', message = 'sent_purchase_offer_items_are_immutable';
+  if v_offer_status is null then
+    raise exception using errcode = 'P0001', message = 'purchase_offer_not_found';
   end if;
 
-  if tg_op = 'UPDATE' and v_offer_status <> 'draft' then
+  if v_offer_status <> 'draft' then
     raise exception using errcode = 'P0001', message = 'sent_purchase_offer_items_are_immutable';
   end if;
 
@@ -235,7 +238,7 @@ end;
 $$;
 
 create trigger trg_pci_purchase_offer_items_immutable
-before update or delete on pci.purchase_offer_items
+before insert or update or delete on pci.purchase_offer_items
 for each row execute function pci.guard_purchase_offer_item_mutation();
 
 -- --------------------------------------------------------------------------
@@ -259,7 +262,7 @@ declare
   v_submission pci.submissions%rowtype;
   v_negotiation pci.negotiations%rowtype;
   v_receipt pci.command_receipts%rowtype;
-  v_previous text;
+  v_transition text;
   v_result jsonb;
 begin
   perform pci.require_operator(p_actor_user_id, p_workspace_id, true);
@@ -301,27 +304,30 @@ begin
     ) values (
       p_workspace_id,v_submission.creator_id,p_submission_id,'open',p_actor_user_id,now()
     ) returning * into v_negotiation;
-    v_previous := null;
+    v_transition := 'opened';
   elsif v_negotiation.status='closed' then
     update pci.negotiations
     set status='open', close_reason=null, reopened_at=now()
     where negotiation_id=v_negotiation.negotiation_id
     returning * into v_negotiation;
-    v_previous := 'closed';
+    v_transition := 'reopened';
   else
-    v_previous := 'open';
+    v_transition := 'already_open';
   end if;
 
-  perform pci.append_event(
-    p_request_id,p_workspace_id,'operator',p_actor_user_id,null,
-    'negotiation',v_negotiation.negotiation_id,
-    case when v_previous='closed' then 'negotiation.reopened' else 'negotiation.opened' end,
-    v_previous,'open',null,jsonb_build_object('submission_id',p_submission_id)
-  );
+  if v_transition <> 'already_open' then
+    perform pci.append_event(
+      p_request_id,p_workspace_id,'operator',p_actor_user_id,null,
+      'negotiation',v_negotiation.negotiation_id,
+      case when v_transition='reopened' then 'negotiation.reopened' else 'negotiation.opened' end,
+      case when v_transition='reopened' then 'closed' else null end,'open',null,
+      jsonb_build_object('submission_id',p_submission_id)
+    );
+  end if;
 
   v_result := jsonb_build_object(
     'ok',true,'negotiation_id',v_negotiation.negotiation_id,
-    'submission_id',p_submission_id,'status','open'
+    'submission_id',p_submission_id,'status','open','transition',v_transition
   );
 
   update pci.command_receipts set status='succeeded',result_entity_type='negotiation',
@@ -364,15 +370,17 @@ begin
     raise exception using errcode='P0001', message='negotiation_not_open';
   end if;
 
-  -- Resolve actor without trusting a client-provided role.
-  begin
-    v_operator_role := pci.require_operator(p_actor_user_id,v_negotiation.workspace_id,false);
-    v_sender_type := 'operator';
-  exception when others then
-    v_operator_role := null;
-  end;
+  select m.role into v_operator_role
+  from public.protocol_workspace_members m
+  where m.user_id=p_actor_user_id
+    and m.workspace_id=v_negotiation.workspace_id
+    and m.status='active'
+  limit 1;
 
-  if v_sender_type is null then
+  if v_operator_role is not null then
+    perform pci.require_operator(p_actor_user_id,v_negotiation.workspace_id,true);
+    v_sender_type := 'operator';
+  else
     v_creator_id := pci.require_creator(p_actor_user_id,false);
     if v_creator_id <> v_negotiation.creator_id then
       raise exception using errcode='P0001', message='negotiation_actor_forbidden';
@@ -468,6 +476,7 @@ declare
   v_total numeric(14,2) := 0;
   v_item_count integer := 0;
   v_previous pci.purchase_offers%rowtype;
+  v_pending_offer_id uuid;
 begin
   select n.* into v_negotiation from pci.negotiations n
   where n.negotiation_id=p_negotiation_id for update;
@@ -498,7 +507,18 @@ begin
     raise exception using errcode='P0001', message='offer_items_required';
   end if;
 
-  -- A counteroffer must supersede a currently sent offer from the other side.
+  select o.purchase_offer_id into v_pending_offer_id
+  from pci.purchase_offers o
+  where o.negotiation_id=p_negotiation_id and o.status='sent'
+  order by o.sent_at desc
+  limit 1
+  for update;
+
+  if p_supersedes_offer_id is null and v_pending_offer_id is not null then
+    raise exception using errcode='P0001', message='pending_offer_exists';
+  end if;
+
+  -- A counteroffer must supersede the one currently-sent offer from the other side.
   if p_supersedes_offer_id is not null then
     select o.* into v_previous from pci.purchase_offers o
     where o.purchase_offer_id=p_supersedes_offer_id for update;
@@ -507,6 +527,9 @@ begin
     end if;
     if v_previous.status <> 'sent' then
       raise exception using errcode='P0001', message='superseded_offer_not_pending';
+    end if;
+    if v_pending_offer_id is distinct from p_supersedes_offer_id then
+      raise exception using errcode='P0001', message='counteroffer_must_supersede_current_offer';
     end if;
     if v_previous.proposer_type = p_actor_type then
       raise exception using errcode='P0001', message='counteroffer_must_respond_to_other_party';
@@ -520,8 +543,13 @@ begin
     if nullif(v_item->>'submission_version_id','') is null then
       raise exception using errcode='P0001', message='offer_item_version_required';
     end if;
-    v_amount := (v_item->>'amount')::numeric;
-    if v_amount is null or v_amount < 0 then
+
+    begin
+      v_amount := (v_item->>'amount')::numeric;
+    exception when invalid_text_representation then
+      raise exception using errcode='P0001', message='invalid_offer_item_amount';
+    end;
+    if v_amount is null or v_amount <= 0 then
       raise exception using errcode='P0001', message='invalid_offer_item_amount';
     end if;
 
@@ -545,15 +573,16 @@ begin
     v_total := v_total + v_amount;
   end loop;
 
+  -- Build as DRAFT, add immutable items, then atomically publish as SENT.
   insert into pci.purchase_offers (
     workspace_id,creator_id,negotiation_id,proposer_type,proposer_user_id,status,
     supersedes_offer_id,currency,total_amount,rights_package_snapshot,payment_terms,
-    performance_bonus_terms,commercial_terms,expires_at,sent_at
+    performance_bonus_terms,commercial_terms,expires_at
   ) values (
-    v_negotiation.workspace_id,v_negotiation.creator_id,p_negotiation_id,p_actor_type,p_actor_user_id,'sent',
+    v_negotiation.workspace_id,v_negotiation.creator_id,p_negotiation_id,p_actor_type,p_actor_user_id,'draft',
     p_supersedes_offer_id,upper(p_currency),v_total,coalesce(p_rights_package_snapshot,'{}'::jsonb),
     coalesce(p_payment_terms,'{}'::jsonb),coalesce(p_performance_bonus_terms,'{}'::jsonb),
-    coalesce(p_commercial_terms,'{}'::jsonb),p_expires_at,now()
+    coalesce(p_commercial_terms,'{}'::jsonb),p_expires_at
   ) returning purchase_offer_id into v_offer_id;
 
   for v_item in select value from jsonb_array_elements(p_items)
@@ -569,6 +598,10 @@ begin
       coalesce(v_item->'item_terms','{}'::jsonb),v_version.sha256
     );
   end loop;
+
+  update pci.purchase_offers
+  set status='sent',sent_at=now()
+  where purchase_offer_id=v_offer_id;
 
   if p_supersedes_offer_id is not null then
     update pci.purchase_offers
@@ -587,7 +620,7 @@ begin
     case when p_actor_type='creator' then v_negotiation.creator_id else null end,
     'purchase_offer',v_offer_id,
     case when p_supersedes_offer_id is null then 'offer.sent' else 'offer.countered' end,
-    null,'sent',null,jsonb_build_object(
+    'draft','sent',null,jsonb_build_object(
       'negotiation_id',p_negotiation_id,'total_amount',v_total,'currency',upper(p_currency),
       'item_count',v_item_count,'supersedes_offer_id',p_supersedes_offer_id
     )
@@ -627,13 +660,17 @@ declare
   v_result jsonb;
 begin
   select n.* into v_negotiation from pci.negotiations n where n.negotiation_id=p_negotiation_id;
-  if v_negotiation.negotiation_id is null then raise exception using errcode='P0001',message='negotiation_not_found'; end if;
+  if v_negotiation.negotiation_id is null then
+    raise exception using errcode='P0001',message='negotiation_not_found';
+  end if;
 
   if p_actor_type='operator' then
     perform pci.require_operator(p_actor_user_id,v_negotiation.workspace_id,true);
   elsif p_actor_type='creator' then
     v_creator_id:=pci.require_creator(p_actor_user_id,true);
-    if v_creator_id<>v_negotiation.creator_id then raise exception using errcode='P0001',message='negotiation_actor_forbidden'; end if;
+    if v_creator_id<>v_negotiation.creator_id then
+      raise exception using errcode='P0001',message='negotiation_actor_forbidden';
+    end if;
   else
     raise exception using errcode='P0001',message='invalid_offer_proposer';
   end if;
@@ -644,7 +681,9 @@ begin
   where r.actor_type=p_actor_type and r.actor_user_id=p_actor_user_id
     and r.command_name='send_purchase_offer' and r.idempotency_key=p_idempotency_key limit 1;
   if v_receipt.command_receipt_id is not null then
-    if v_receipt.request_hash is distinct from p_request_hash then raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload'; end if;
+    if v_receipt.request_hash is distinct from p_request_hash then
+      raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload';
+    end if;
     if v_receipt.status='succeeded' then return v_receipt.result_payload; end if;
     raise exception using errcode='P0001',message='idempotent_command_not_replayable';
   end if;
@@ -704,12 +743,18 @@ declare
 begin
   select o.* into v_offer from pci.purchase_offers o
   where o.purchase_offer_id=p_purchase_offer_id for update;
-  if v_offer.purchase_offer_id is null then raise exception using errcode='P0001',message='purchase_offer_not_found'; end if;
-  if v_offer.status<>'sent' then raise exception using errcode='P0001',message='purchase_offer_not_pending'; end if;
+  if v_offer.purchase_offer_id is null then
+    raise exception using errcode='P0001',message='purchase_offer_not_found';
+  end if;
+  if v_offer.status<>'sent' then
+    raise exception using errcode='P0001',message='purchase_offer_not_pending';
+  end if;
 
   if v_offer.proposer_type='operator' then
     v_creator_id:=pci.require_creator(p_actor_user_id,true);
-    if v_creator_id<>v_offer.creator_id then raise exception using errcode='P0001',message='offer_recipient_forbidden'; end if;
+    if v_creator_id<>v_offer.creator_id then
+      raise exception using errcode='P0001',message='offer_recipient_forbidden';
+    end if;
     v_actor_type:='creator';
   else
     perform pci.require_operator(p_actor_user_id,v_offer.workspace_id,true);
@@ -721,7 +766,9 @@ begin
   where r.actor_type=v_actor_type and r.actor_user_id=p_actor_user_id
     and r.command_name='reject_purchase_offer' and r.idempotency_key=p_idempotency_key limit 1;
   if v_receipt.command_receipt_id is not null then
-    if v_receipt.request_hash is distinct from p_request_hash then raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload'; end if;
+    if v_receipt.request_hash is distinct from p_request_hash then
+      raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload';
+    end if;
     if v_receipt.status='succeeded' then return v_receipt.result_payload; end if;
     raise exception using errcode='P0001',message='idempotent_command_not_replayable';
   end if;
@@ -735,7 +782,8 @@ begin
     v_offer.workspace_id,'reject_purchase_offer',p_request_hash,'processing'
   );
 
-  update pci.purchase_offers set status='rejected',rejected_at=now(),status_reason=nullif(btrim(p_reason),'')
+  update pci.purchase_offers
+  set status='rejected',rejected_at=now(),status_reason=nullif(btrim(p_reason),'')
   where purchase_offer_id=p_purchase_offer_id;
 
   perform pci.append_event(
@@ -754,7 +802,9 @@ begin
 end;
 $$;
 
--- Formal sent offer can be withdrawn only by proposer and only before acceptance.
+-- Formal sent offer can be withdrawn only by its proposing party and only
+-- before acceptance. Any owner/admin may withdraw a Protocol offer because the
+-- buyer is the workspace, not the individual operator who clicked Send.
 create or replace function pci_api.withdraw_purchase_offer(
   p_actor_user_id uuid,
   p_purchase_offer_id uuid,
@@ -774,20 +824,22 @@ declare
   v_receipt pci.command_receipts%rowtype;
   v_result jsonb;
 begin
-  select o.* into v_offer from pci.purchase_offers o where o.purchase_offer_id=p_purchase_offer_id for update;
-  if v_offer.purchase_offer_id is null then raise exception using errcode='P0001',message='purchase_offer_not_found'; end if;
-  if v_offer.status<>'sent' then raise exception using errcode='P0001',message='purchase_offer_not_pending'; end if;
+  select o.* into v_offer from pci.purchase_offers o
+  where o.purchase_offer_id=p_purchase_offer_id for update;
+  if v_offer.purchase_offer_id is null then
+    raise exception using errcode='P0001',message='purchase_offer_not_found';
+  end if;
+  if v_offer.status<>'sent' then
+    raise exception using errcode='P0001',message='purchase_offer_not_pending';
+  end if;
 
   if v_offer.proposer_type='operator' then
     perform pci.require_operator(p_actor_user_id,v_offer.workspace_id,true);
   else
     v_actor_creator_id:=pci.require_creator(p_actor_user_id,true);
-    if v_actor_creator_id<>v_offer.creator_id then raise exception using errcode='P0001',message='offer_proposer_forbidden'; end if;
-  end if;
-
-  -- Enforce the exact proposer identity, not merely same party type.
-  if v_offer.proposer_user_id<>p_actor_user_id then
-    raise exception using errcode='P0001',message='offer_proposer_forbidden';
+    if v_actor_creator_id<>v_offer.creator_id then
+      raise exception using errcode='P0001',message='offer_proposer_forbidden';
+    end if;
   end if;
 
   perform pci.lock_command_key(v_offer.proposer_type || ':' || p_actor_user_id::text || ':withdraw_purchase_offer',p_idempotency_key);
@@ -795,7 +847,9 @@ begin
   where r.actor_type=v_offer.proposer_type and r.actor_user_id=p_actor_user_id
     and r.command_name='withdraw_purchase_offer' and r.idempotency_key=p_idempotency_key limit 1;
   if v_receipt.command_receipt_id is not null then
-    if v_receipt.request_hash is distinct from p_request_hash then raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload'; end if;
+    if v_receipt.request_hash is distinct from p_request_hash then
+      raise exception using errcode='P0001',message='idempotency_key_reused_with_different_payload';
+    end if;
     if v_receipt.status='succeeded' then return v_receipt.result_payload; end if;
     raise exception using errcode='P0001',message='idempotent_command_not_replayable';
   end if;
@@ -809,7 +863,8 @@ begin
     v_offer.workspace_id,'withdraw_purchase_offer',p_request_hash,'processing'
   );
 
-  update pci.purchase_offers set status='withdrawn',withdrawn_at=now(),status_reason=nullif(btrim(p_reason),'')
+  update pci.purchase_offers
+  set status='withdrawn',withdrawn_at=now(),status_reason=nullif(btrim(p_reason),'')
   where purchase_offer_id=p_purchase_offer_id;
 
   perform pci.append_event(
@@ -842,21 +897,25 @@ as $$
 declare
   v_n pci.negotiations%rowtype;
   v_creator_id uuid;
-  v_is_operator boolean:=false;
+  v_operator_role text;
 begin
   select n.* into v_n from pci.negotiations n where n.negotiation_id=p_negotiation_id;
-  if v_n.negotiation_id is null then raise exception using errcode='P0001',message='negotiation_not_found'; end if;
+  if v_n.negotiation_id is null then
+    raise exception using errcode='P0001',message='negotiation_not_found';
+  end if;
 
-  begin
-    perform pci.require_operator(p_actor_user_id,v_n.workspace_id,false);
-    v_is_operator:=true;
-  exception when others then
-    v_is_operator:=false;
-  end;
+  select m.role into v_operator_role
+  from public.protocol_workspace_members m
+  where m.user_id=p_actor_user_id and m.workspace_id=v_n.workspace_id and m.status='active'
+  limit 1;
 
-  if not v_is_operator then
+  if v_operator_role is null then
     v_creator_id:=pci.require_creator(p_actor_user_id,false);
-    if v_creator_id<>v_n.creator_id then raise exception using errcode='P0001',message='negotiation_actor_forbidden'; end if;
+    if v_creator_id<>v_n.creator_id then
+      raise exception using errcode='P0001',message='negotiation_actor_forbidden';
+    end if;
+  else
+    perform pci.require_operator(p_actor_user_id,v_n.workspace_id,false);
   end if;
 
   return jsonb_build_object(
