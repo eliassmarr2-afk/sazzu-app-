@@ -47,7 +47,7 @@ function corsHeaders(request: Request): HeadersInit {
 
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, idempotency-key",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -84,6 +84,21 @@ async function requireUser(request: Request, admin: SupabaseAdmin): Promise<{ id
   return { id: data.user.id };
 }
 
+async function parseObject(request: Request): Promise<JsonRecord | null> {
+  try {
+    const value = await request.json();
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+    return value as JsonRecord;
+  } catch {
+    return null;
+  }
+}
+
+function rejectUnexpected(payload: JsonRecord, allowed: string[]): string[] {
+  const accepted = new Set(allowed);
+  return Object.keys(payload).filter((key) => !accepted.has(key));
+}
+
 function normalizePathname(url: URL): string {
   const marker = "/pci-admin-api";
   const index = url.pathname.indexOf(marker);
@@ -94,6 +109,13 @@ function normalizePathname(url: URL): string {
 
 function requestId(): string {
   return crypto.randomUUID();
+}
+
+function idempotencyKey(request: Request, payload?: JsonRecord): string | null {
+  const fromHeader = clean(request.headers.get("idempotency-key"));
+  const fromBody = clean(payload?.idempotency_key);
+  const value = fromHeader || fromBody;
+  return isUuid(value) ? value.toLowerCase() : null;
 }
 
 async function rpc(
@@ -114,6 +136,20 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
     "pci_submission_version_not_found",
     "pci_submission_version_not_ready",
     "pci_submission_version_storage_invalid",
+    "pci_review_context_required",
+    "pci_submission_not_reviewable",
+    "pci_submission_current_version_required",
+    "pci_submission_current_version_not_ready",
+    "pci_submission_review_decision_not_allowed",
+    "pci_creator_feedback_required",
+    "pci_submission_participation_invalid",
+    "pci_submission_brief_revision_invalid",
+    "pci_pre_purchase_revision_limit_reached",
+    "pci_rejection_reason_invalid",
+    "pci_internal_note_context_required",
+    "pci_internal_note_body_required",
+    "pci_command_already_processing",
+    "pci_idempotency_conflict",
   ];
   const code = known.find((item) => message.includes(item)) ?? "pci_operation_failed";
 
@@ -123,10 +159,48 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   if (["pci_submission_not_found", "pci_submission_version_not_found"].includes(code)) {
     return { code, status: 404 };
   }
-  if (["pci_submission_version_not_ready", "pci_submission_version_storage_invalid"].includes(code)) {
+  if ([
+    "pci_submission_version_not_ready",
+    "pci_submission_version_storage_invalid",
+    "pci_submission_not_reviewable",
+    "pci_submission_current_version_required",
+    "pci_submission_current_version_not_ready",
+    "pci_submission_review_decision_not_allowed",
+    "pci_pre_purchase_revision_limit_reached",
+    "pci_command_already_processing",
+    "pci_idempotency_conflict",
+  ].includes(code)) {
     return { code, status: 409 };
   }
+  if ([
+    "pci_creator_feedback_required",
+    "pci_submission_participation_invalid",
+    "pci_submission_brief_revision_invalid",
+    "pci_rejection_reason_invalid",
+    "pci_internal_note_body_required",
+  ].includes(code)) {
+    return { code, status: 422 };
+  }
   return { code, status: 400 };
+}
+
+function validateWorkspaceAndSubmission(
+  request: Request,
+  workspaceIdRaw: string,
+  submissionIdRaw: string,
+  reqId: string,
+): Response | { workspaceId: string; submissionId: string } {
+  const workspaceId = decodeURIComponent(workspaceIdRaw);
+  const submissionId = submissionIdRaw.toLowerCase();
+
+  if (!isWorkspaceId(workspaceId)) {
+    return json(request, { ok: false, code: "invalid_workspace_id", request_id: reqId }, 400);
+  }
+  if (!isUuid(submissionId)) {
+    return json(request, { ok: false, code: "invalid_submission_id", request_id: reqId }, 400);
+  }
+
+  return { workspaceId, submissionId };
 }
 
 Deno.serve(async (request) => {
@@ -173,23 +247,16 @@ Deno.serve(async (request) => {
     return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
   }
 
-  const submissionMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)$/i);
-  if (request.method === "GET" && submissionMatch) {
+  const reviewContextMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/review-context$/i);
+  if (request.method === "GET" && reviewContextMatch) {
     const reqId = requestId();
-    const workspaceId = decodeURIComponent(submissionMatch[1]);
-    const submissionId = submissionMatch[2].toLowerCase();
+    const validated = validateWorkspaceAndSubmission(request, reviewContextMatch[1], reviewContextMatch[2], reqId);
+    if (validated instanceof Response) return validated;
 
-    if (!isWorkspaceId(workspaceId)) {
-      return json(request, { ok: false, code: "invalid_workspace_id", request_id: reqId }, 400);
-    }
-    if (!isUuid(submissionId)) {
-      return json(request, { ok: false, code: "invalid_submission_id", request_id: reqId }, 400);
-    }
-
-    const result = await rpc(admin, "admin_submission_detail", {
+    const result = await rpc(admin, "admin_submission_review_context", {
       p_actor_user_id: user.id,
-      p_workspace_id: workspaceId,
-      p_submission_id: submissionId,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
     });
 
     if (result.error) {
@@ -198,6 +265,194 @@ Deno.serve(async (request) => {
     }
 
     return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const submissionMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)$/i);
+  if (request.method === "GET" && submissionMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, submissionMatch[1], submissionMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const result = await rpc(admin, "admin_submission_detail", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const startReviewMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/review\/start$/i);
+  if (request.method === "POST" && startReviewMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, startReviewMatch[1], startReviewMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["idempotency_key"]);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+    const idem = idempotencyKey(request, payload);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+
+    const result = await rpc(admin, "start_review", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+      p_idempotency_key: idem,
+      p_request_id: reqId,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const requestChangesMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/review\/request-changes$/i);
+  if (request.method === "POST" && requestChangesMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, requestChangesMatch[1], requestChangesMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["creator_feedback", "internal_summary", "idempotency_key"]);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+
+    const idem = idempotencyKey(request, payload);
+    const creatorFeedback = clean(payload.creator_feedback);
+    const internalSummary = clean(payload.internal_summary);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+    if (!creatorFeedback || creatorFeedback.length > 5000) return json(request, { ok: false, code: "invalid_creator_feedback", request_id: reqId }, 400);
+    if (internalSummary.length > 5000) return json(request, { ok: false, code: "invalid_internal_summary", request_id: reqId }, 400);
+
+    const result = await rpc(admin, "request_changes", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+      p_creator_feedback: creatorFeedback,
+      p_idempotency_key: idem,
+      p_request_id: reqId,
+      p_internal_summary: internalSummary || null,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const preselectMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/review\/preselect$/i);
+  if (request.method === "POST" && preselectMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, preselectMatch[1], preselectMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["creator_feedback", "internal_summary", "idempotency_key"]);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+
+    const idem = idempotencyKey(request, payload);
+    const creatorFeedback = clean(payload.creator_feedback);
+    const internalSummary = clean(payload.internal_summary);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+    if (creatorFeedback.length > 5000) return json(request, { ok: false, code: "invalid_creator_feedback", request_id: reqId }, 400);
+    if (internalSummary.length > 5000) return json(request, { ok: false, code: "invalid_internal_summary", request_id: reqId }, 400);
+
+    const result = await rpc(admin, "preselect_submission", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+      p_idempotency_key: idem,
+      p_request_id: reqId,
+      p_creator_feedback: creatorFeedback || null,
+      p_internal_summary: internalSummary || null,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const rejectMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/review\/reject$/i);
+  if (request.method === "POST" && rejectMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, rejectMatch[1], rejectMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["rejection_reason_code", "creator_feedback", "internal_summary", "idempotency_key"]);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+
+    const idem = idempotencyKey(request, payload);
+    const reasonCode = clean(payload.rejection_reason_code).toLowerCase();
+    const creatorFeedback = clean(payload.creator_feedback);
+    const internalSummary = clean(payload.internal_summary);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+    if (!reasonCode || reasonCode.length > 80 || !/^[a-z0-9_:-]+$/.test(reasonCode)) return json(request, { ok: false, code: "pci_rejection_reason_invalid", request_id: reqId }, 422);
+    if (!creatorFeedback || creatorFeedback.length > 5000) return json(request, { ok: false, code: "invalid_creator_feedback", request_id: reqId }, 400);
+    if (internalSummary.length > 5000) return json(request, { ok: false, code: "invalid_internal_summary", request_id: reqId }, 400);
+
+    const result = await rpc(admin, "reject_submission", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+      p_rejection_reason_code: reasonCode,
+      p_creator_feedback: creatorFeedback,
+      p_idempotency_key: idem,
+      p_request_id: reqId,
+      p_internal_summary: internalSummary || null,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId });
+  }
+
+  const internalNoteMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)\/internal-notes$/i);
+  if (request.method === "POST" && internalNoteMatch) {
+    const reqId = requestId();
+    const validated = validateWorkspaceAndSubmission(request, internalNoteMatch[1], internalNoteMatch[2], reqId);
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["body", "idempotency_key"]);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+
+    const idem = idempotencyKey(request, payload);
+    const body = clean(payload.body);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+    if (!body || body.length > 5000) return json(request, { ok: false, code: "invalid_internal_note", request_id: reqId }, 400);
+
+    const result = await rpc(admin, "add_internal_note", {
+      p_actor_user_id: user.id,
+      p_workspace_id: validated.workspaceId,
+      p_submission_id: validated.submissionId,
+      p_body: body,
+      p_idempotency_key: idem,
+      p_request_id: reqId,
+    });
+
+    if (result.error) {
+      const mapped = rpcErrorCode(result.error);
+      return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
+    }
+    return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId }, 201);
   }
 
   const playbackMatch = path.match(/^\/v1\/workspaces\/([^/]+)\/versions\/([0-9a-f-]+)\/playback$/i);
