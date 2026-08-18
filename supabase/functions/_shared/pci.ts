@@ -203,6 +203,10 @@ const CONFLICT_CODES = new Set([
   'rights_declaration_not_allowed_in_current_state',
   'submission_cannot_be_presented_in_current_state',
   'submission_version_not_processing',
+  'creator_already_active_in_workspace',
+  'creator_invitation_not_pending',
+  'creator_invitation_expired',
+  'creator_identity_already_linked',
 ]);
 
 const FORBIDDEN_CODES = new Set([
@@ -218,6 +222,9 @@ const FORBIDDEN_CODES = new Set([
   'creator_workspace_not_active',
   'consignment_invitation_required',
   'creator_account_closed',
+  'creator_workspace_invitation_forbidden',
+  'creator_invitation_email_mismatch',
+  'authenticated_email_not_verified',
 ]);
 
 const NOT_FOUND_CODES = new Set([
@@ -227,6 +234,8 @@ const NOT_FOUND_CODES = new Set([
   'participation_not_found',
   'submission_not_found',
   'submission_version_not_found',
+  'creator_invitation_not_found',
+  'authenticated_email_not_found',
 ]);
 
 const BAD_REQUEST_CODES = new Set([
@@ -238,6 +247,9 @@ const BAD_REQUEST_CODES = new Set([
   'unsupported_submission_mime_type',
   'invalid_authorship_basis',
   'external_material_basis_required',
+  'invalid_creator_email',
+  'creator_display_name_required',
+  'invalid_invitation_expiry',
 ]);
 
 const BUSINESS_RULE_CODES = new Set([
