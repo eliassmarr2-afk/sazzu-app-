@@ -49,10 +49,27 @@ const CREATE_CONSIGNMENT_FIELDS = [
   'metadata',
 ];
 
-function commandHeaders(request: Request): { idempotencyKey: string; requestId: string } {
+const CREATOR_INVITATION_FIELDS = [
+  'workspace_id',
+  'email',
+  'display_name',
+  'legal_name',
+  'phone',
+  'specialties',
+  'expires_hours',
+];
+
+function requireCommandKey(request: Request): string {
   const idem = idempotencyKey(request);
   if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-  return { idempotencyKey: idem, requestId: requestId(request) };
+  return idem;
+}
+
+function assertOptionalStringArray(value: unknown, field: string): void {
+  if (value === undefined || value === null) return;
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    throw new Error(`invalid_${field}`);
+  }
 }
 
 Deno.serve(async (request) => {
@@ -93,9 +110,7 @@ Deno.serve(async (request) => {
       const workspaceId = clean(payload.workspace_id);
       if (!workspaceId) throw new Error('workspace_id_required');
 
-      const idem = idempotencyKey(request);
-      if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-
+      const idem = requireCommandKey(request);
       const draftPayload: JsonObject = { ...payload };
       delete draftPayload.workspace_id;
 
@@ -123,9 +138,7 @@ Deno.serve(async (request) => {
       const workspaceId = clean(payload.workspace_id);
       if (!workspaceId) throw new Error('workspace_id_required');
 
-      const idem = idempotencyKey(request);
-      if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-
+      const idem = requireCommandKey(request);
       const hash = await requestHash(path, payload);
       const result = await pciRpc<JsonObject>(admin, 'admin_publish_consignment', {
         p_actor_user_id: actor.id,
@@ -137,6 +150,32 @@ Deno.serve(async (request) => {
       });
 
       return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
+    // POST /v1/creators/invitations
+    if (request.method === 'POST' && path === '/v1/creators/invitations') {
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, CREATOR_INVITATION_FIELDS);
+      assertOptionalStringArray(payload.specialties, 'specialties');
+
+      const workspaceId = clean(payload.workspace_id);
+      if (!workspaceId) throw new Error('workspace_id_required');
+
+      const invitePayload: JsonObject = { ...payload };
+      delete invitePayload.workspace_id;
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'admin_prepare_creator_invitation', {
+        p_actor_user_id: actor.id,
+        p_workspace_id: workspaceId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+        p_payload: invitePayload,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId }, 201);
     }
 
     // GET /v1/review-queue?workspace_id=...
@@ -161,17 +200,11 @@ Deno.serve(async (request) => {
     const normalized = normalizeError(error);
     const raw = error instanceof Error ? error.message : String(error);
 
-    if (raw === 'invalid_or_missing_idempotency_key') {
-      return jsonResponse(request, {
-        ok: false,
-        code: 'invalid_or_missing_idempotency_key',
-        request_id: reqId,
-      }, 400);
-    }
-
     if (
+      raw === 'invalid_or_missing_idempotency_key' ||
       raw === 'workspace_id_required' ||
-      raw === 'invalid_consignment_id'
+      raw === 'invalid_consignment_id' ||
+      raw === 'invalid_specialties'
     ) {
       return jsonResponse(request, { ok: false, code: raw, request_id: reqId }, 400);
     }
