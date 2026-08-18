@@ -102,7 +102,7 @@ async function inspectObject(admin: SupabaseAdmin, bucket: string, path: string)
 
 function objectMatches(object: StorageObject, expectedSize: number, expectedMime: string): boolean {
   if (!object.exists || object.size == null || object.size !== expectedSize) return false;
-  if (expectedMime && object.mimeType && object.mimeType !== expectedMime) return false;
+  if (!expectedMime || object.mimeType !== expectedMime) return false;
   return true;
 }
 
@@ -213,8 +213,8 @@ async function processClaimedJob(
     p_creative_asset_id: assetId,
     p_source_size_bytes: source.size,
     p_destination_size_bytes: destination.size,
-    p_source_mime_type: source.mimeType || expectedMime,
-    p_destination_mime_type: destination.mimeType || expectedMime,
+    p_source_mime_type: source.mimeType,
+    p_destination_mime_type: destination.mimeType,
     p_verification_metadata: {
       worker_version: "1L-v1",
       storage_copy_mode: "server_side_cross_bucket",
