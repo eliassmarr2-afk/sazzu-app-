@@ -7,32 +7,60 @@
 
 ## Current technical phase
 
-**FASE 1H — Review workflow + revision cycle — CODE COMPLETE / RUNTIME UNVALIDATED**
+**FASE 1I — Negotiation + formal offers — CODE COMPLETE / RUNTIME UNVALIDATED**
 
-The current vertical slice now covers:
+The implemented vertical slice now covers:
 
-`Protocol creates/publishes consignment → Creator sees opportunity → joins → creates submission → reserves immutable version → signed TUS upload → backend verifies Storage object → version ready/submission submitted → Protocol sees review queue → Protocol opens signed playback URL → Protocol starts review → requests changes / preselects / rejects → Creator sees only published feedback → requested changes allow V2 upload → V2 preserves lineage and returns to submitted for a new review.`
+`Protocol creates/publishes consignment → Creator joins → Submission/V1 → signed TUS upload → review → changes/V2 or preselection → Creator rights declaration → Protocol rights clearance → negotiation → shared contextual messages → immutable formal offer for the exact preselected version → Creator rejects or counteroffers → Protocol can reject counteroffer, supersede it with a new formal offer, withdraw its own offer or close/reopen negotiation.`
 
-Negotiation, formal offers, purchases, payouts and rights activation are not part of the active implementation slice yet.
+**Formal acceptance is deliberately NOT implemented in 1I.** The frozen invariant is that an accepted offer may not exist without its Purchase + base Payable + Rights Grant pending payment. Therefore the `accept_offer` command and route begin in **FASE 1J** and must create those objects atomically.
 
-## Frozen architecture already represented in code
+## Frozen architecture represented in code
 
 - `pci` is the private authoritative schema.
 - `pci_api` is the minimal backend command/query surface.
-- Creator identities are not `protocol_workspace_members`.
-- All commercial objects carry workspace ownership; external objects resolve creator ownership.
-- Direct browser mutation of PCI business tables is forbidden.
-- `anon` and `authenticated` receive no direct PCI table/function access.
-- PCI business mutations use service-role backend commands, state validation, idempotency receipts and append-only events.
-- Submitted files and acquired assets use different private Storage buckets.
-- Immutable creative versions never overwrite an existing Storage object.
-- Large creative uploads use signed resumable TUS uploads; `upsert=false`.
-- Internal Protocol notes and creator-visible review feedback are separate database fields/tables and separate API projections.
-- Published review decisions are append-only.
-- Change requests are bounded by the `pre_purchase_revision_limit` from the exact consignment revision accepted by that Creator.
-- Rejections require both a structured rejection reason and creator-visible feedback.
+- Creator identities are external counterparties, never `protocol_workspace_members`.
+- Browser clients cannot mutate PCI business tables directly.
+- `anon` and `authenticated` receive no direct PCI table/function grants.
+- JWT-authenticated Edge Functions resolve actor identity server-side and invoke service-role-only commands.
+- Business mutations use state validation, row locking where required, idempotency receipts and append-only events.
+- Submitted media and acquired assets remain in separate private Storage zones.
+- Creative bytes are immutable after `ready`; rights declaration/clearance metadata may evolve independently.
+- Internal Protocol review notes and Creator-visible feedback are different projections.
+- Negotiation chat is contextual evidence only; it never substitutes a formal `purchase_offer`.
+- Formal offers are immutable snapshots and reference an exact preselected version.
+- Only one open negotiation may exist per submission.
+- Only one `sent` formal offer may exist per negotiation.
+- Counteroffers create a new formal row linked by `parent_offer_id`; the previous live proposal becomes `superseded`.
+- Creator counteroffers preserve the exact creative version and inherited rights/payment/bonus snapshots; only price and explicit counter note change.
+- Offer expiration has a worker command but is not scheduled in production.
 
-## Migrations currently implemented
+## Rights-clearance refinement made during 1I
+
+The earlier ready-version guard was intentionally corrected.
+
+### Immutable forever
+
+- Storage bucket/path
+- original filename
+- MIME
+- file size
+- duration/dimensions
+- SHA-256
+- technical validation
+- finalization timestamps
+- version number / submission ownership
+
+### Allowed to evolve without changing bytes
+
+- `rights_declaration`
+- `rights_clearance_status` (`pending`, `complete`, `flagged`)
+
+Creator submits a declaration for the exact ready version. Protocol records an append-only `rights_clearance_review`. Formal offer creation requires `rights_clearance_status = complete`.
+
+Once a future Rights Grant exists for a version, the Creator declaration is locked against rewriting.
+
+## Migrations implemented
 
 1. `20260818_001_pci_foundation_schema.sql`
 2. `20260818_002_pci_security_invariants.sql`
@@ -47,14 +75,22 @@ Negotiation, formal offers, purchases, payouts and rights activation are not par
 11. `20260818_011_pci_review_read_models.sql`
 12. `20260818_012_pci_creator_submission_detail_reviews.sql`
 13. `20260818_013_pci_review_invariants.sql`
+14. `20260818_014_pci_negotiation_offer_invariants.sql`
+15. `20260818_015_pci_admin_negotiation_commands.sql`
+16. `20260818_016_pci_admin_formal_offer_commands.sql`
+17. `20260818_017_pci_creator_negotiation_offer_commands.sql`
+18. `20260818_018_pci_negotiation_offer_read_models.sql`
+19. `20260818_019_pci_offer_expiration_worker.sql`
+20. `20260818_020_pci_rights_clearance_lifecycle.sql`
+21. `20260818_021_pci_offer_exact_version_guards.sql`
 
-## Edge Functions currently implemented in Git
+## Edge Functions in Git
 
 ### `pci-creator-api`
 
 JWT required at deployment.
 
-Current routes:
+Current routes include:
 
 - `GET /v1/opportunities`
 - `POST /v1/consignments/:consignment_id/join`
@@ -63,83 +99,80 @@ Current routes:
 - `GET /v1/submissions/:submission_id`
 - `POST /v1/submissions/:submission_id/versions`
 - `POST /v1/versions/:submission_version_id/finalize`
+- `POST /v1/versions/:submission_version_id/rights-declaration`
+- `GET /v1/negotiations`
+- `GET /v1/negotiations/:negotiation_id`
+- `POST /v1/negotiations/:negotiation_id/messages`
+- `POST /v1/offers/:offer_id/reject`
+- `POST /v1/offers/:offer_id/counter`
 
-The existing submission detail now returns creator-safe review history next to version lineage. It never selects `internal_summary`, `internal_notes` or reviewer identities.
-
-Upload reservation returns a 2-hour signed Storage upload token for the exact reserved path and the direct Supabase TUS endpoint. TUS chunk size is fixed to 6 MiB. No upsert is allowed.
-
-Finalization verifies the exact Storage object before marking a version ready. Missing/incomplete uploads remain resumable. An object proven technically invalid is recorded as `invalid` with an audit event.
-
-When a Creator finalizes V2 while the submission is `changes_requested`, the existing finalization command changes the submission back to `submitted`. Protocol then starts a fresh review against V2; V1 remains immutable and historically visible.
+There is intentionally no Creator `accept` route yet.
 
 ### `pci-admin-api`
 
 JWT required at deployment.
 
-Current read routes:
+Review/read routes remain intact, including review queue, submission detail, review context, review decisions, internal notes and signed playback.
 
-- `GET /v1/workspaces/:workspace_id/review-queue`
-- `GET /v1/workspaces/:workspace_id/submissions/:submission_id`
-- `GET /v1/workspaces/:workspace_id/submissions/:submission_id/review-context`
-- `POST /v1/workspaces/:workspace_id/versions/:submission_version_id/playback`
+1I adds:
 
-Current review command routes:
+- `POST /v1/workspaces/:workspace_id/versions/:submission_version_id/rights-clearance`
+- `GET /v1/workspaces/:workspace_id/negotiations`
+- `GET /v1/workspaces/:workspace_id/negotiations/:negotiation_id`
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/negotiation/open`
+- `POST /v1/workspaces/:workspace_id/negotiations/:negotiation_id/reopen`
+- `POST /v1/workspaces/:workspace_id/negotiations/:negotiation_id/close`
+- `POST /v1/workspaces/:workspace_id/negotiations/:negotiation_id/messages`
+- `POST /v1/workspaces/:workspace_id/negotiations/:negotiation_id/offers`
+- `POST /v1/workspaces/:workspace_id/offers/:offer_id/reject`
+- `POST /v1/workspaces/:workspace_id/offers/:offer_id/withdraw`
 
-- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/start`
-- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/request-changes`
-- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/preselect`
-- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/reject`
-- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/internal-notes`
+## Formal offer lifecycle implemented
 
-Review mutations require an idempotency UUID. The browser cannot submit a target creator, arbitrary workspace ownership or target version: these are resolved server-side from the submission and authenticated operator context.
+Initial Protocol proposal:
 
-Playback returns a private signed URL with a 10-minute lifetime. The browser never gets permanent bucket access.
+`none → offer SENT (workspace)`
 
-## Review state flow implemented
+Creator response:
 
-`submitted → under_review`
+- `SENT → REJECTED`
+- `SENT → SUPERSEDED + new SENT counteroffer (creator)`
 
-From `under_review`:
+Protocol response to Creator counteroffer:
 
-- `request_changes` → `changes_requested`
-- `preselect_submission` → `preselected`
-- `reject_submission` → `rejected`
+- creator `SENT → REJECTED`
+- creator `SENT → SUPERSEDED + new SENT offer (workspace)`
 
-For a change request:
+Protocol may withdraw its own live proposal:
 
-`changes_requested → Creator reserves V2 → signed TUS upload → finalize V2 → submitted → Protocol starts review → under_review`
+`workspace SENT → WITHDRAWN`
 
-Each review decision references the exact `submission_version_id` reviewed.
+Due offers may be materialized by worker:
 
-## Review visibility rules implemented
+`SENT → EXPIRED`
 
-Protocol internal model can see:
+Negotiation can close without acquisition. Closing resolves any live proposal first and never changes ownership of the submission.
 
-- `internal_summary`
-- `creator_feedback`
-- `internal_notes`
-- reviewer user id
-- all version metadata
+## Acceptance boundary — frozen for 1J
 
-Creator projection can see:
+`accept_offer()` must validate, lock and atomically create:
 
-- decision
-- exact reviewed version/version number
-- creator feedback
-- rejection reason code when applicable
-- decision timestamp
+1. Offer `sent → accepted`
+2. Purchase `agreed`
+3. Base Payable `awaiting_confirmation`
+4. Rights Grant `pending_payment` tied to exact version/hash
+5. Negotiation `closed` with purchase reason
+6. Append-only events / command receipt
 
-Creator projection cannot select:
+If any step fails, none of them may persist.
 
-- `internal_summary`
-- `internal_notes`
-- reviewer identity
+Only after that layer exists may the Creator API expose `POST /v1/offers/:offer_id/accept`.
 
 ## Required deployment configuration — do not apply to production yet
 
-Before these Edge Functions can invoke `pci_api` through PostgREST, `pci_api` must be included in the project's exposed API schemas. This does **not** expose the authoritative `pci` schema and does not grant access to `anon` or `authenticated`; grants remain service-role-only.
+Before Edge Functions can invoke `pci_api` through PostgREST, `pci_api` must be included in the project's exposed API schemas. The authoritative `pci` schema remains private and no direct `anon/authenticated` grants are introduced.
 
-Both Edge Functions must be deployed with JWT verification enabled.
+Both Edge Functions must deploy with JWT verification enabled.
 
 Expected environment configuration:
 
@@ -151,24 +184,22 @@ No production configuration is changed at this checkpoint.
 
 ## Validation status
 
-The code is versioned in Git but migrations and functions have **not yet been executed against a disposable Supabase environment**. Therefore SQL/runtime integration is not considered validated yet.
+Code is versioned in Git but migrations/functions have **not** been executed against a disposable Supabase environment. SQL/runtime integration therefore remains unvalidated.
 
-A local clone/static check was attempted from the execution container, but that environment has no outbound DNS/network access to GitHub. Connected-repository inspection was used instead. This is not a substitute for executing the migrations in Postgres.
+A paid Supabase development branch remains deliberately deferred. Before real Creator sessions, create a temporary branch, apply all PCI migrations/functions, execute state-transition/idempotency/Storage/authorization/adversarial tests, then delete that branch.
 
-A paid Supabase development branch was deliberately deferred. When testing becomes necessary, create a temporary branch, apply migrations, execute state-transition, idempotency, Storage and adversarial creator/operator tests, then delete the branch when finished.
+## Security gate still required before external Creator launch
 
-## Security gate still required before any real Creator session
-
-External launch remains blocked until the legacy project's broad authenticated/public RPC surface is audited and hardened. PCI's own private boundary does not by itself make unrelated legacy RPCs safe for external authenticated users.
+External launch remains blocked until the legacy project's broad `authenticated` / public RPC surface is audited and hardened. PCI's own private boundary does not make unrelated legacy RPCs safe automatically.
 
 ## Next technical block
 
-**FASE 1I — Negotiation + formal offers**
+**FASE 1J — Atomic offer acceptance + Purchase + Payable + Rights Pending**
 
 Target slice:
 
-`Preselected submission → Protocol opens negotiation → contextual shared messages → Protocol sends immutable formal offer for exact version → Creator can accept / reject / counteroffer → offer history is immutable and chat never substitutes formal commercial objects.`
+`Creator accepts exact live Protocol offer → one PostgreSQL transaction creates the commercial purchase commitment and debt → Creator confirms payment destination → payment remains pending → commercial rights remain inactive until confirmed payment.`
 
-Purchase creation, payable creation, payment confirmation, rights activation and Creative Asset promotion follow after the formal-offer layer is stable.
+Payment transfer execution, rights activation and Creative Asset promotion continue after the purchase-acceptance layer is stable.
 
 Meta Ads execution remains explicitly out of scope.
