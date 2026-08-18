@@ -106,6 +106,21 @@ Deno.serve(async (request) => {
       });
     }
 
+    // GET /v1/submissions/:id
+    // The underlying read model explicitly excludes internal review fields.
+    const detailMatch = path.match(/^\/v1\/submissions\/([0-9a-f-]+)$/i);
+    if (request.method === 'GET' && detailMatch) {
+      const submissionId = detailMatch[1].toLowerCase();
+      if (!isUuid(submissionId)) throw new Error('invalid_submission_id');
+
+      const item = await pciRpc<JsonObject>(admin, 'creator_submission_detail', {
+        p_actor_user_id: actor.id,
+        p_submission_id: submissionId,
+      });
+
+      return jsonResponse(request, { ok: true, request_id: reqId, item });
+    }
+
     // POST /v1/consignments/:id/join
     const joinMatch = path.match(/^\/v1\/consignments\/([0-9a-f-]+)\/join$/i);
     if (request.method === 'POST' && joinMatch) {
