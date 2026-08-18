@@ -56,6 +56,43 @@ Deno.serve(async (request) => {
   const path = relativePath(request, FUNCTION_SLUG).replace(/\/+$/, '') || '/';
 
   try {
+    // GET /v1/onboarding/invitations
+    // Works before auth.users is linked to pci.creators. The DB matches only
+    // the email already verified by Supabase Auth.
+    if (request.method === 'GET' && path === '/v1/onboarding/invitations') {
+      const items = await pciRpc<unknown[]>(admin, 'creator_list_pending_invitations', {
+        p_actor_user_id: actor.id,
+      });
+
+      return jsonResponse(request, {
+        ok: true,
+        request_id: reqId,
+        items: Array.isArray(items) ? items : [],
+      });
+    }
+
+    // POST /v1/onboarding/invitations/:id/claim
+    const claimMatch = path.match(/^\/v1\/onboarding\/invitations\/([0-9a-f-]+)\/claim$/i);
+    if (request.method === 'POST' && claimMatch) {
+      const invitationId = claimMatch[1].toLowerCase();
+      if (!isUuid(invitationId)) throw new Error('invalid_invitation_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, []);
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'creator_claim_invitation', {
+        p_actor_user_id: actor.id,
+        p_invitation_id: invitationId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
     // GET /v1/opportunities
     if (request.method === 'GET' && path === '/v1/opportunities') {
       const items = await pciRpc<unknown[]>(admin, 'creator_list_opportunities', {
@@ -273,6 +310,7 @@ Deno.serve(async (request) => {
 
     if (
       raw === 'invalid_or_missing_idempotency_key' ||
+      raw === 'invalid_invitation_id' ||
       raw === 'invalid_consignment_id' ||
       raw === 'invalid_participation_id' ||
       raw === 'invalid_submission_id' ||
