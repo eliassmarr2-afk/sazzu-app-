@@ -207,6 +207,10 @@ const CONFLICT_CODES = new Set([
   'creator_invitation_not_pending',
   'creator_invitation_expired',
   'creator_identity_already_linked',
+  'submission_not_ready_for_review',
+  'review_decision_invalid_for_submission_state',
+  'worker_replay_result_conflict',
+  'worker_replay_metadata_conflict',
 ]);
 
 const FORBIDDEN_CODES = new Set([
@@ -223,6 +227,7 @@ const FORBIDDEN_CODES = new Set([
   'consignment_invitation_required',
   'creator_account_closed',
   'creator_workspace_invitation_forbidden',
+  'creator_global_invitation_forbidden',
   'creator_invitation_email_mismatch',
   'authenticated_email_not_verified',
 ]);
@@ -250,6 +255,8 @@ const BAD_REQUEST_CODES = new Set([
   'invalid_creator_email',
   'creator_display_name_required',
   'invalid_invitation_expiry',
+  'invalid_review_decision',
+  'invalid_review_reason',
 ]);
 
 const BUSINESS_RULE_CODES = new Set([
@@ -264,6 +271,7 @@ const BUSINESS_RULE_CODES = new Set([
   'invalid_media_width',
   'invalid_media_height',
   'invalid_worker_result_status',
+  'review_reason_required',
 ]);
 
 export function normalizeError(error: unknown): { status: number; code: string; message: string } {
