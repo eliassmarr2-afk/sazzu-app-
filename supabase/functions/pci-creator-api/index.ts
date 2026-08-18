@@ -20,6 +20,12 @@ import {
 
 const FUNCTION_SLUG = 'pci-creator-api';
 
+function requireCommandKey(request: Request): string {
+  const idem = idempotencyKey(request);
+  if (!idem) throw new Error('invalid_or_missing_idempotency_key');
+  return idem;
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     if (!isAllowedOrigin(request)) return new Response('origin_not_allowed', { status: 403 });
@@ -72,9 +78,7 @@ Deno.serve(async (request) => {
       const payload = await readJsonObject(request);
       assertAllowedFields(payload, []);
 
-      const idem = idempotencyKey(request);
-      if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-
+      const idem = requireCommandKey(request);
       const hash = await requestHash(path, payload);
       const result = await pciRpc<JsonObject>(admin, 'creator_join_consignment', {
         p_actor_user_id: actor.id,
@@ -103,9 +107,7 @@ Deno.serve(async (request) => {
         'metadata',
       ]);
 
-      const idem = idempotencyKey(request);
-      if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-
+      const idem = requireCommandKey(request);
       const hash = await requestHash(path, payload);
       const result = await pciRpc<JsonObject>(admin, 'creator_create_submission', {
         p_actor_user_id: actor.id,
@@ -135,9 +137,7 @@ Deno.serve(async (request) => {
         throw new Error('invalid_original_file_name');
       }
 
-      const idem = idempotencyKey(request);
-      if (!idem) throw new Error('invalid_or_missing_idempotency_key');
-
+      const idem = requireCommandKey(request);
       const hash = await requestHash(path, payload);
       const result = await pciRpc<JsonObject>(admin, 'creator_prepare_submission_version', {
         p_actor_user_id: actor.id,
@@ -153,8 +153,8 @@ Deno.serve(async (request) => {
       const storagePath = clean(result.storage_path);
       if (!bucket || !storagePath) throw new Error('upload_reservation_invalid');
 
-      // A retry with the same Idempotency-Key returns the same immutable path
-      // from PostgreSQL and simply mints a fresh short-lived token for it.
+      // Retrying the same command returns the same immutable object path and
+      // only mints a fresh short-lived Storage token. No file can be upserted.
       const { data: signed, error: signedError } = await admin.storage
         .from(bucket)
         .createSignedUploadUrl(storagePath);
@@ -190,6 +190,82 @@ Deno.serve(async (request) => {
       }, 201);
     }
 
+    // POST /v1/submission-versions/:id/rights
+    const rightsMatch = path.match(/^\/v1\/submission-versions\/([0-9a-f-]+)\/rights$/i);
+    if (request.method === 'POST' && rightsMatch) {
+      const versionId = rightsMatch[1].toLowerCase();
+      if (!isUuid(versionId)) throw new Error('invalid_submission_version_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, [
+        'authorship_basis',
+        'contains_identifiable_people',
+        'image_voice_authorized',
+        'contains_external_material',
+        'external_material_basis',
+        'generative_ai_used',
+        'contains_minors',
+        'notes',
+      ]);
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'creator_declare_version_rights', {
+        p_actor_user_id: actor.id,
+        p_submission_version_id: versionId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+        p_payload: payload,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
+    // POST /v1/submission-versions/:id/upload-complete
+    const uploadCompleteMatch = path.match(/^\/v1\/submission-versions\/([0-9a-f-]+)\/upload-complete$/i);
+    if (request.method === 'POST' && uploadCompleteMatch) {
+      const versionId = uploadCompleteMatch[1].toLowerCase();
+      if (!isUuid(versionId)) throw new Error('invalid_submission_version_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, []);
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'creator_confirm_submission_upload', {
+        p_actor_user_id: actor.id,
+        p_submission_version_id: versionId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
+    // POST /v1/submissions/:id/submit
+    const submitMatch = path.match(/^\/v1\/submissions\/([0-9a-f-]+)\/submit$/i);
+    if (request.method === 'POST' && submitMatch) {
+      const submissionId = submitMatch[1].toLowerCase();
+      if (!isUuid(submissionId)) throw new Error('invalid_submission_id');
+
+      const payload = await readJsonObject(request);
+      assertAllowedFields(payload, []);
+
+      const idem = requireCommandKey(request);
+      const hash = await requestHash(path, payload);
+      const result = await pciRpc<JsonObject>(admin, 'creator_submit_submission', {
+        p_actor_user_id: actor.id,
+        p_submission_id: submissionId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_request_hash: hash,
+      });
+
+      return jsonResponse(request, { ...result, request_id: reqId });
+    }
+
     return jsonResponse(request, { ok: false, code: 'route_not_found', request_id: reqId }, 404);
   } catch (error) {
     const normalized = normalizeError(error);
@@ -200,6 +276,7 @@ Deno.serve(async (request) => {
       raw === 'invalid_consignment_id' ||
       raw === 'invalid_participation_id' ||
       raw === 'invalid_submission_id' ||
+      raw === 'invalid_submission_version_id' ||
       raw === 'mime_type_required' ||
       raw === 'invalid_original_file_name'
     ) {
