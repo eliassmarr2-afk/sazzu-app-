@@ -7,13 +7,13 @@
 
 ## Current technical phase
 
-**FASE 1G — Creator Upload/API + first internal receive/view slice**
+**FASE 1H — Review workflow + revision cycle — CODE COMPLETE / RUNTIME UNVALIDATED**
 
-The current vertical slice is intentionally limited to:
+The current vertical slice now covers:
 
-`Protocol creates/publishes consignment → Creator sees opportunity → joins → creates submission → reserves immutable version → signed TUS upload → backend verifies Storage object → version ready/submission submitted → Protocol sees review queue → Protocol opens signed playback URL.`
+`Protocol creates/publishes consignment → Creator sees opportunity → joins → creates submission → reserves immutable version → signed TUS upload → backend verifies Storage object → version ready/submission submitted → Protocol sees review queue → Protocol opens signed playback URL → Protocol starts review → requests changes / preselects / rejects → Creator sees only published feedback → requested changes allow V2 upload → V2 preserves lineage and returns to submitted for a new review.`
 
-Review decisions, negotiation, offers, purchases, payouts and rights activation are not part of the active implementation slice yet.
+Negotiation, formal offers, purchases, payouts and rights activation are not part of the active implementation slice yet.
 
 ## Frozen architecture already represented in code
 
@@ -27,6 +27,10 @@ Review decisions, negotiation, offers, purchases, payouts and rights activation 
 - Submitted files and acquired assets use different private Storage buckets.
 - Immutable creative versions never overwrite an existing Storage object.
 - Large creative uploads use signed resumable TUS uploads; `upsert=false`.
+- Internal Protocol notes and creator-visible review feedback are separate database fields/tables and separate API projections.
+- Published review decisions are append-only.
+- Change requests are bounded by the `pre_purchase_revision_limit` from the exact consignment revision accepted by that Creator.
+- Rejections require both a structured rejection reason and creator-visible feedback.
 
 ## Migrations currently implemented
 
@@ -39,6 +43,10 @@ Review decisions, negotiation, offers, purchases, payouts and rights activation 
 7. `20260818_007_pci_creator_finalize_and_read_models.sql`
 8. `20260818_008_pci_creator_upload_invalidation.sql`
 9. `20260818_009_pci_admin_review_read_models.sql`
+10. `20260818_010_pci_review_workflow_commands.sql`
+11. `20260818_011_pci_review_read_models.sql`
+12. `20260818_012_pci_creator_submission_detail_reviews.sql`
+13. `20260818_013_pci_review_invariants.sql`
 
 ## Edge Functions currently implemented in Git
 
@@ -56,21 +64,76 @@ Current routes:
 - `POST /v1/submissions/:submission_id/versions`
 - `POST /v1/versions/:submission_version_id/finalize`
 
+The existing submission detail now returns creator-safe review history next to version lineage. It never selects `internal_summary`, `internal_notes` or reviewer identities.
+
 Upload reservation returns a 2-hour signed Storage upload token for the exact reserved path and the direct Supabase TUS endpoint. TUS chunk size is fixed to 6 MiB. No upsert is allowed.
 
 Finalization verifies the exact Storage object before marking a version ready. Missing/incomplete uploads remain resumable. An object proven technically invalid is recorded as `invalid` with an audit event.
+
+When a Creator finalizes V2 while the submission is `changes_requested`, the existing finalization command changes the submission back to `submitted`. Protocol then starts a fresh review against V2; V1 remains immutable and historically visible.
 
 ### `pci-admin-api`
 
 JWT required at deployment.
 
-Current routes:
+Current read routes:
 
 - `GET /v1/workspaces/:workspace_id/review-queue`
 - `GET /v1/workspaces/:workspace_id/submissions/:submission_id`
+- `GET /v1/workspaces/:workspace_id/submissions/:submission_id/review-context`
 - `POST /v1/workspaces/:workspace_id/versions/:submission_version_id/playback`
 
+Current review command routes:
+
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/start`
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/request-changes`
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/preselect`
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/review/reject`
+- `POST /v1/workspaces/:workspace_id/submissions/:submission_id/internal-notes`
+
+Review mutations require an idempotency UUID. The browser cannot submit a target creator, arbitrary workspace ownership or target version: these are resolved server-side from the submission and authenticated operator context.
+
 Playback returns a private signed URL with a 10-minute lifetime. The browser never gets permanent bucket access.
+
+## Review state flow implemented
+
+`submitted → under_review`
+
+From `under_review`:
+
+- `request_changes` → `changes_requested`
+- `preselect_submission` → `preselected`
+- `reject_submission` → `rejected`
+
+For a change request:
+
+`changes_requested → Creator reserves V2 → signed TUS upload → finalize V2 → submitted → Protocol starts review → under_review`
+
+Each review decision references the exact `submission_version_id` reviewed.
+
+## Review visibility rules implemented
+
+Protocol internal model can see:
+
+- `internal_summary`
+- `creator_feedback`
+- `internal_notes`
+- reviewer user id
+- all version metadata
+
+Creator projection can see:
+
+- decision
+- exact reviewed version/version number
+- creator feedback
+- rejection reason code when applicable
+- decision timestamp
+
+Creator projection cannot select:
+
+- `internal_summary`
+- `internal_notes`
+- reviewer identity
 
 ## Required deployment configuration — do not apply to production yet
 
@@ -90,7 +153,9 @@ No production configuration is changed at this checkpoint.
 
 The code is versioned in Git but migrations and functions have **not yet been executed against a disposable Supabase environment**. Therefore SQL/runtime integration is not considered validated yet.
 
-A paid Supabase development branch was deliberately deferred. When testing becomes necessary, create a temporary branch, apply migrations, execute adversarial creator/operator tests, and delete the branch when finished.
+A local clone/static check was attempted from the execution container, but that environment has no outbound DNS/network access to GitHub. Connected-repository inspection was used instead. This is not a substitute for executing the migrations in Postgres.
+
+A paid Supabase development branch was deliberately deferred. When testing becomes necessary, create a temporary branch, apply migrations, execute state-transition, idempotency, Storage and adversarial creator/operator tests, then delete the branch when finished.
 
 ## Security gate still required before any real Creator session
 
@@ -98,10 +163,12 @@ External launch remains blocked until the legacy project's broad authenticated/p
 
 ## Next technical block
 
-**FASE 1H — Review workflow + revision cycle**
+**FASE 1I — Negotiation + formal offers**
 
 Target slice:
 
-`Protocol starts review → requests changes / preselects / rejects → visible feedback is separated from internal notes → Creator sees change request → uploads V2 → Protocol receives V2 with preserved lineage.`
+`Preselected submission → Protocol opens negotiation → contextual shared messages → Protocol sends immutable formal offer for exact version → Creator can accept / reject / counteroffer → offer history is immutable and chat never substitutes formal commercial objects.`
 
-After 1H, proceed to negotiation and formal offer/purchase workflow. Meta Ads execution remains explicitly out of scope.
+Purchase creation, payable creation, payment confirmation, rights activation and Creative Asset promotion follow after the formal-offer layer is stable.
+
+Meta Ads execution remains explicitly out of scope.
