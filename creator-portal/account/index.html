@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Mi cuenta · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./account.css" />
+  <script src="../config.js"></script>
+</head>
+<body>
+  <div class="pci-app">
+    <aside class="pci-sidebar" aria-label="Navegación principal">
+      <a class="pci-brand pci-brand--link" href="../" aria-label="Protocol Creative Insights · Inicio">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+      <nav class="pci-nav" aria-label="Secciones del portal">
+        <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item" href="../payments/"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+      </nav>
+      <div class="pci-sidebar__divider"></div>
+      <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
+        <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="./?section=support"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+      </nav>
+      <button class="pci-profile-chip" type="button" data-account-scroll-top>
+        <span class="pci-avatar" data-creator-avatar>T</span>
+        <span class="pci-profile-chip__copy"><strong data-creator-name>Creator</strong><small><i></i> Creator</small></span>
+        <span class="pci-profile-chip__chevron">⌃</span>
+      </button>
+    </aside>
+
+    <main class="pci-main pci-account-main">
+      <header class="pci-mobile-header">
+        <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="../" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
+        <span class="pci-mobile-section-title">Mi cuenta</span>
+      </header>
+
+      <section class="pci-account-shell">
+        <div class="pci-account-loading" data-loading-state>
+          <span class="pci-account-spinner" aria-hidden="true"></span>
+          <p>Cargando tu cuenta…</p>
+        </div>
+
+        <div data-account-view hidden>
+          <header class="pci-account-header">
+            <div>
+              <p class="pci-eyebrow">Creator Portal</p>
+              <h1>Mi cuenta</h1>
+              <p>Tu identidad, relación con Protocol, aceptaciones legales y destinos de cobro.</p>
+            </div>
+            <button class="pci-account-secondary" type="button" data-sign-out>Cerrar sesión</button>
+          </header>
+
+          <section class="pci-account-grid" aria-label="Resumen de cuenta">
+            <article class="pci-account-card pci-account-card--identity" data-identity-card></article>
+            <article class="pci-account-card" data-access-card></article>
+          </section>
+
+          <section class="pci-account-section" aria-labelledby="legal-title">
+            <div class="pci-account-section__header">
+              <div><span>CONTRATOS</span><h2 id="legal-title">Documentos aceptados</h2></div>
+              <p>Las versiones aceptadas quedan congeladas como evidencia histórica.</p>
+            </div>
+            <div class="pci-account-list" data-legal-list></div>
+          </section>
+
+          <section class="pci-account-section" aria-labelledby="payment-title">
+            <div class="pci-account-section__header">
+              <div><span>COBROS</span><h2 id="payment-title">Cuentas de cobro</h2></div>
+              <a class="pci-account-link" href="../payments/">Administrar en Pagos →</a>
+            </div>
+            <div class="pci-account-list" data-payment-account-list></div>
+          </section>
+
+          <section class="pci-account-section pci-account-support" id="support" aria-labelledby="support-title" data-support-section>
+            <div class="pci-account-section__header">
+              <div><span>AYUDA</span><h2 id="support-title">Soporte</h2></div>
+            </div>
+            <div class="pci-account-support__grid">
+              <article><strong>Sobre un creativo u oferta</strong><p>Usá la conversación asociada a ese trabajo. Así Protocol conserva el contexto comercial exacto.</p><a href="../conversations/">Ir a Conversaciones →</a></article>
+              <article><strong>Problema de acceso</strong><p>Si tu sesión o invitación no puede validarse, volvé al enlace original de invitación o solicitá una nueva a Protocol.</p><a href="../auth/accept-invitation/">Revisar acceso →</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <nav class="pci-bottom-nav" aria-label="Navegación móvil">
+      <a class="pci-bottom-nav__item" href="../"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item" href="../opportunities/"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item" href="../works/"><span>▣</span><small>Mis trabajos</small></a>
+      <a class="pci-bottom-nav__item" href="../conversations/"><span>◌</span><small>Conversaciones</small></a>
+      <a class="pci-bottom-nav__item" href="../payments/"><span>▤</span><small>Pagos</small></a>
+    </nav>
+
+    <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
+      <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
+      <aside class="pci-mobile-drawer__panel">
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
+        <nav class="pci-nav" aria-label="Menú móvil completo">
+          <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item" href="../payments/"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="./?section=support"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        </nav>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="./account.js"></script>
+</body>
+</html>
