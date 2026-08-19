@@ -17,6 +17,10 @@ function onboardingUrl() {
   return new URL('auth/accept-invitation/', portalRootUrl());
 }
 
+function signInUrl() {
+  return new URL('auth/sign-in/', portalRootUrl());
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -42,12 +46,20 @@ function rememberReturnLocation() {
   }
 }
 
-function redirectToOnboarding(reason) {
+function redirectTo(url, reason) {
   rememberReturnLocation();
-  const url = onboardingUrl();
-  if (reason) url.searchParams.set('reason', reason);
-  window.location.replace(url.toString());
+  const target = new URL(url.toString());
+  if (reason) target.searchParams.set('reason', reason);
+  window.location.replace(target.toString());
   return new Promise(() => {});
+}
+
+function redirectToOnboarding(reason) {
+  return redirectTo(onboardingUrl(), reason);
+}
+
+function redirectToSignIn(reason) {
+  return redirectTo(signInUrl(), reason);
 }
 
 function firstActiveRelationship(state) {
@@ -106,22 +118,19 @@ function renderBlocked(state, relationship) {
     const button = document.querySelector('[data-pci-guard-sign-out]');
     if (button) button.disabled = true;
     await signOut().catch(() => {});
-    window.location.replace(onboardingUrl().toString());
+    window.location.replace(signInUrl().toString());
   });
   return new Promise(() => {});
 }
 
-async function refreshedSession() {
-  let session = await getSession();
-  if (session?.access_token) return session;
+async function forceRefreshSession() {
   try {
     const client = await getSupabaseClient();
     const { data } = await client.auth.refreshSession();
-    session = data?.session || null;
+    return data?.session || null;
   } catch {
-    session = null;
+    return null;
   }
-  return session;
 }
 
 async function resolvePortalAccess() {
@@ -145,18 +154,26 @@ async function resolvePortalAccess() {
     return context;
   }
 
-  const session = await refreshedSession();
-  if (!session?.access_token) return redirectToOnboarding('session_required');
+  let session = await getSession();
+  if (!session?.access_token) session = await forceRefreshSession();
+  if (!session?.access_token) return redirectToSignIn('session_required');
 
   let state;
   try {
     state = await getOnboardingState();
   } catch (error) {
-    if (Number(error?.status) === 401) return redirectToOnboarding('session_required');
-    throw error;
+    if (Number(error?.status) !== 401) throw error;
+    session = await forceRefreshSession();
+    if (!session?.access_token) return redirectToSignIn('session_required');
+    try {
+      state = await getOnboardingState();
+    } catch (retryError) {
+      if (Number(retryError?.status) === 401) return redirectToSignIn('session_required');
+      throw retryError;
+    }
   }
 
-  if (!state?.linked) return redirectToOnboarding('creator_not_linked');
+  if (!state?.linked) return redirectToSignIn('creator_not_linked');
 
   const creatorStatus = String(state?.creator_status || '');
   if (['restricted', 'suspended', 'closed'].includes(creatorStatus)) {
@@ -184,11 +201,7 @@ export function requirePortalAccess() {
         code: error?.message || 'unknown_error',
         status: error?.status || null,
       });
-      rememberReturnLocation();
-      const url = onboardingUrl();
-      url.searchParams.set('reason', 'access_check_failed');
-      window.location.replace(url.toString());
-      return new Promise(() => {});
+      return redirectToSignIn('access_check_failed');
     });
   }
   return accessPromise;
