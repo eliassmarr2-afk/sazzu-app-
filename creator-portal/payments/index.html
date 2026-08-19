@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Pagos · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./payments.css" />
+  <script src="../config.js"></script>
+</head>
+<body>
+  <div class="pci-app">
+    <aside class="pci-sidebar" aria-label="Navegación principal">
+      <a class="pci-brand" href="../" aria-label="Protocol Creative Insights · Inicio">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+      <nav class="pci-nav" aria-label="Secciones del portal">
+        <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+      </nav>
+      <div class="pci-sidebar__divider"></div>
+      <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
+        <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+      </nav>
+      <button class="pci-profile-chip" type="button">
+        <span class="pci-avatar" data-creator-avatar>T</span>
+        <span class="pci-profile-chip__copy"><strong data-creator-name>Tomás</strong><small><i></i> Creator</small></span>
+        <span class="pci-profile-chip__chevron">⌄</span>
+      </button>
+    </aside>
+
+    <main class="pci-main pci-payments-main">
+      <header class="pci-mobile-header">
+        <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="../" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
+        <span class="pci-payments-mobile-title">Pagos</span>
+      </header>
+
+      <section class="pci-payments-shell">
+        <div class="pci-payment-loading" data-loading-state><span class="pci-payment-spinner"></span><p>Cargando tus pagos…</p></div>
+        <div data-payments-view hidden>
+          <header class="pci-payments-header">
+            <div><p class="pci-eyebrow">Creator Portal</p><h1>Pagos</h1><p>Confirmá dónde cobrar y seguí cada transferencia sin perder el contexto de tu creativo.</p></div>
+            <button class="pci-payment-primary" type="button" data-open-account-dialog>Agregar cuenta de cobro</button>
+          </header>
+
+          <section class="pci-payment-metrics" aria-label="Resumen de pagos">
+            <article><span>POR COBRAR</span><strong data-payment-metric="receivable">—</strong><small>Saldo aún no confirmado como cobrado</small></article>
+            <article><span>EN TRANSFERENCIA</span><strong data-payment-metric="inflight">—</strong><small>Movimientos iniciados por Protocol</small></article>
+            <article><span>COBRADO</span><strong data-payment-metric="confirmed">—</strong><small>Payouts confirmados</small></article>
+            <article><span>REQUIEREN TU ACCIÓN</span><strong data-payment-metric="attention">0</strong><small>Destinos de cobro por confirmar</small></article>
+          </section>
+
+          <section class="pci-payment-section" aria-labelledby="obligations-title">
+            <div class="pci-payment-section__header"><div><h2 id="obligations-title">Tus cobros</h2><p>Cada obligación conserva el destino exacto que confirmaste para ella.</p></div><div class="pci-payment-filters" data-payable-filters><button class="is-active" type="button" data-payment-filter="all">Todos</button><button type="button" data-payment-filter="attention">Tu acción</button><button type="button" data-payment-filter="processing">En proceso</button><button type="button" data-payment-filter="paid">Pagados</button></div></div>
+            <div class="pci-payable-list" data-payable-list></div>
+            <div class="pci-payment-empty" data-payable-empty hidden><strong>No hay cobros en este estado.</strong><span>Cuando aceptes una oferta, su obligación aparecerá acá.</span></div>
+          </section>
+
+          <section class="pci-payment-section" aria-labelledby="accounts-title">
+            <div class="pci-payment-section__header"><div><h2 id="accounts-title">Cuentas de cobro</h2><p>Las cuentas no se editan: si cambian tus datos, agregá una nueva y desactivá la anterior.</p></div><button class="pci-payment-secondary" type="button" data-open-account-dialog>Agregar cuenta</button></div>
+            <div class="pci-payment-account-grid" data-payment-account-grid></div>
+          </section>
+
+          <section class="pci-payment-section" aria-labelledby="history-title">
+            <div class="pci-payment-section__header"><div><h2 id="history-title">Historial de transferencias</h2><p>Los comprobantes se abren mediante una URL privada temporal.</p></div></div>
+            <div class="pci-payout-list" data-payout-list></div>
+            <div class="pci-payment-empty" data-payout-empty hidden><strong>Todavía no hay transferencias.</strong><span>Las transferencias de Protocol aparecerán acá cuando se registren.</span></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <nav class="pci-bottom-nav" aria-label="Navegación móvil">
+      <a class="pci-bottom-nav__item" href="../"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item" href="../opportunities/"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item" href="../works/"><span>▣</span><small>Mis trabajos</small></a>
+      <a class="pci-bottom-nav__item" href="../conversations/"><span>◌</span><small>Conversaciones</small></a>
+      <a class="pci-bottom-nav__item is-active" href="./"><span>▤</span><small>Pagos</small></a>
+    </nav>
+
+    <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
+      <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
+      <aside class="pci-mobile-drawer__panel">
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close>×</button>
+        <nav class="pci-nav">
+          <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        </nav>
+      </aside>
+    </div>
+
+    <dialog class="pci-payment-dialog" data-account-dialog>
+      <form method="dialog" class="pci-payment-dialog__panel" data-account-form>
+        <div class="pci-payment-dialog__header"><div><span>NUEVA CUENTA DE COBRO</span><h2>¿Dónde querés recibir tus pagos?</h2></div><button type="button" data-close-account-dialog aria-label="Cerrar">×</button></div>
+        <p class="pci-payment-security-note">El CBU/CVU o identificador exacto se cifra antes de persistirse. Después de guardarlo, PCI solo vuelve a mostrar alias y últimos 4 caracteres.</p>
+        <label><span>Proveedor</span><select name="provider" required><option value="mercado_pago">Mercado Pago</option><option value="bank_transfer">Banco / billetera</option><option value="other">Otro</option></select></label>
+        <label><span>Titular</span><input name="holder_name" maxlength="200" autocomplete="name" required placeholder="Nombre del titular"></label>
+        <label><span>Documento enmascarado (opcional)</span><input name="holder_document_masked" maxlength="80" placeholder="Ej.: **.***.123"></label>
+        <label><span>Alias (si tenés)</span><input name="alias" maxlength="160" autocomplete="off" placeholder="ejemplo.alias.mp"></label>
+        <label><span>CBU / CVU / identificador</span><input name="account_identifier" maxlength="256" autocomplete="off" inputmode="numeric" placeholder="Podés usar esto en lugar del alias"></label>
+        <div data-account-form-error></div>
+        <div class="pci-payment-dialog__actions"><button type="button" class="pci-payment-secondary" data-close-account-dialog>Cancelar</button><button type="submit" class="pci-payment-primary" data-save-account>Guardar cuenta</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="pci-payment-dialog" data-confirm-dialog>
+      <div class="pci-payment-dialog__panel" data-confirm-dialog-content></div>
+    </dialog>
+
+    <dialog class="pci-payment-dialog" data-deactivate-dialog>
+      <div class="pci-payment-dialog__panel" data-deactivate-dialog-content></div>
+    </dialog>
+
+    <div class="pci-payment-toast" data-payment-toast hidden></div>
+  </div>
+  <script type="module" src="./payments.js"></script>
+</body>
+</html>
