@@ -158,11 +158,6 @@ function historyMarkup(detail, version) {
   `).join('')}</details>`;
 }
 
-function existingValue(path, fallback = '') {
-  const version = currentReadyVersion(activeDetail);
-  return path.reduce((value, key) => value?.[key], version?.rights_declaration) ?? fallback;
-}
-
 function checked(value) { return value ? 'checked' : ''; }
 
 function formMarkup(version) {
@@ -432,19 +427,36 @@ async function submitForm(form) {
   try {
     await submitCreatorRightsDeclaration(version.submission_version_id, declaration);
 
+    const submittedAt = new Date().toISOString();
+    const localVersion = activeDetail?.versions?.find((item) => item.submission_version_id === version.submission_version_id);
+    if (localVersion) {
+      localVersion.rights_declaration = declaration;
+      localVersion.rights_clearance_status = 'pending';
+      localVersion.rights_declaration_submitted_at = submittedAt;
+    }
+
     if (isDemoMode()) {
       const demo = demoRightsDetails[activeSubmissionId];
       const demoVersion = demo?.versions?.find((item) => item.submission_version_id === version.submission_version_id);
       if (demoVersion) {
         demoVersion.rights_declaration = declaration;
         demoVersion.rights_clearance_status = 'pending';
-        demoVersion.rights_declaration_submitted_at = new Date().toISOString();
+        demoVersion.rights_declaration_submitted_at = submittedAt;
       }
     }
 
-    activeDetail = await loadDetail(activeSubmissionId);
     editing = false;
     render();
+
+    try {
+      const refreshed = await loadDetail(activeSubmissionId);
+      if (refreshed?.submission) {
+        activeDetail = refreshed;
+        render();
+      }
+    } catch {
+      setTimeout(scheduleRefresh, 1500);
+    }
   } catch (error) {
     if (errorRoot) errorRoot.innerHTML = `<div class="pci-rights-form-error">${escapeHtml(friendlyError(error))}</div>`;
   } finally {
