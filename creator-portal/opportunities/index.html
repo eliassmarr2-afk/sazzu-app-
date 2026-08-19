@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Oportunidades · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./opportunities.css" />
+  <script src="../config.js"></script>
+</head>
+<body>
+  <div class="pci-app" data-pci-app>
+    <aside class="pci-sidebar" aria-label="Navegación principal">
+      <a class="pci-brand" href="../" aria-label="Ir a Inicio">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+
+      <nav class="pci-nav" aria-label="Secciones del portal">
+        <a class="pci-nav__item" href="../"><span class="pci-nav__icon" aria-hidden="true">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon" aria-hidden="true">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item" href="../#trabajos"><span class="pci-nav__icon" aria-hidden="true">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item" href="../#conversaciones"><span class="pci-nav__icon" aria-hidden="true">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item" href="../#pagos"><span class="pci-nav__icon" aria-hidden="true">▤</span><span>Pagos</span></a>
+      </nav>
+
+      <div class="pci-sidebar__divider"></div>
+
+      <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
+        <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon" aria-hidden="true">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon" aria-hidden="true">?</span><span>Soporte</span></a>
+      </nav>
+
+      <button class="pci-profile-chip" type="button" aria-label="Abrir cuenta de Creator">
+        <span class="pci-avatar" data-creator-avatar>T</span>
+        <span class="pci-profile-chip__copy"><strong data-creator-name>Tomás</strong><small><i></i> Creator</small></span>
+        <span class="pci-profile-chip__chevron" aria-hidden="true">⌄</span>
+      </button>
+    </aside>
+
+    <main class="pci-main pci-opportunities-main">
+      <header class="pci-mobile-header">
+        <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="../" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
+        <span class="pci-mobile-section-title">Oportunidades</span>
+      </header>
+
+      <section class="pci-opportunity-page" data-opportunity-page>
+        <div class="pci-opportunity-loading" data-loading-state>
+          <span class="pci-spinner" aria-hidden="true"></span>
+          <p>Cargando oportunidades…</p>
+        </div>
+
+        <div data-list-view hidden>
+          <header class="pci-opportunity-page__header">
+            <div>
+              <p class="pci-eyebrow">Creator Portal</p>
+              <h1>Oportunidades</h1>
+              <p>Briefs abiertos para que produzcas y presentes tu propuesta.</p>
+            </div>
+            <div class="pci-opportunity-count" aria-label="Cantidad de oportunidades">
+              <strong data-opportunity-count>0</strong>
+              <span>disponibles</span>
+            </div>
+          </header>
+
+          <div class="pci-opportunity-toolbar">
+            <label class="pci-search-field">
+              <span aria-hidden="true">⌕</span>
+              <input type="search" placeholder="Buscar por producto, formato o brief" data-opportunity-search />
+            </label>
+            <div class="pci-filter-group" aria-label="Filtrar oportunidades">
+              <button class="pci-filter-chip is-active" type="button" data-filter="all">Todas</button>
+              <button class="pci-filter-chip" type="button" data-filter="available">Sin participar</button>
+              <button class="pci-filter-chip" type="button" data-filter="active">Participando</button>
+              <button class="pci-filter-chip" type="button" data-filter="invited">Invitaciones</button>
+            </div>
+          </div>
+
+          <div class="pci-opportunity-grid" data-opportunity-grid></div>
+          <div class="pci-empty-state pci-opportunity-empty" data-opportunity-empty hidden>
+            <strong>No encontramos oportunidades con ese filtro</strong>
+            <span>Probá con otra búsqueda o volvé a ver todas.</span>
+          </div>
+        </div>
+
+        <div data-detail-view hidden>
+          <button class="pci-back-link" type="button" data-back-to-list>← Volver a oportunidades</button>
+          <div class="pci-brief-layout">
+            <article class="pci-brief-main" data-brief-main></article>
+            <aside class="pci-brief-action" data-brief-action></aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="pci-bottom-nav" aria-label="Navegación móvil">
+      <a class="pci-bottom-nav__item" href="../"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item is-active" href="./"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item" href="../#trabajos"><span>▣</span><small>Mis trabajos</small></a>
+      <a class="pci-bottom-nav__item" href="../#conversaciones"><span>◌</span><small>Conversaciones</small></a>
+      <a class="pci-bottom-nav__item" href="../#pagos"><span>▤</span><small>Pagos</small></a>
+    </nav>
+
+    <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
+      <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
+      <aside class="pci-mobile-drawer__panel">
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
+        <nav class="pci-nav" aria-label="Menú móvil completo">
+          <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item" href="../#trabajos"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item" href="../#conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item" href="../#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        </nav>
+      </aside>
+    </div>
+  </div>
+
+  <div class="pci-toast" role="status" aria-live="polite" data-toast hidden></div>
+
+  <script type="module" src="./opportunities.js"></script>
+</body>
+</html>
