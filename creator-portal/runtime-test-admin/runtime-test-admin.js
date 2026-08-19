@@ -23,9 +23,10 @@ async function requireSession() {
   return session;
 }
 
-async function onboardingRequest(path, options = {}) {
+async function apiRequest(baseUrl, path, options = {}) {
   const session = await requireSession();
-  const response = await fetch(`${config.onboardingApiUrl}${path}`, {
+  if (!baseUrl) throw new Error('pci_runtime_api_url_missing');
+  const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -42,6 +43,14 @@ async function onboardingRequest(path, options = {}) {
     throw error;
   }
   return body ?? {};
+}
+
+function onboardingRequest(path, options = {}) {
+  return apiRequest(config.onboardingApiUrl, path, options);
+}
+
+function invitationRequest(path, options = {}) {
+  return apiRequest(config.invitationApiUrl, path, options);
 }
 
 async function refreshSession() {
@@ -135,7 +144,7 @@ async function inviteCreator() {
   const legalName = clean(document.querySelector('#creator-legal-name').value);
   if (!email || !displayName) throw new Error('creator_email_and_display_name_required');
   const key = idempotencyKey();
-  const result = await onboardingRequest(`/v1/admin/workspaces/${encodeURIComponent(WORKSPACE_ID)}/invitations`, {
+  const result = await invitationRequest(`/v1/admin/workspaces/${encodeURIComponent(WORKSPACE_ID)}/invitations`, {
     method: 'POST',
     headers: { 'Idempotency-Key': key },
     body: JSON.stringify({
