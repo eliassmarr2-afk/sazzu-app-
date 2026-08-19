@@ -1,6 +1,7 @@
 import {
   createCreatorSubmission,
   getCreatorOpportunities,
+  getCreatorSubmissions,
   getOnboardingState,
   getSession,
   isDemoMode,
@@ -112,6 +113,18 @@ const demoOpportunities = [
   },
 ];
 
+const demoSubmissions = [
+  {
+    submission_id: '42222222-2222-4222-8222-222222222222',
+    workspace_id: 'protocol-demo',
+    consignment_id: '12222222-2222-4222-8222-222222222222',
+    status: 'draft',
+    concept_label: 'Demostración directa en mano',
+    created_at: '2026-08-19T09:42:00-03:00',
+    current_version: null,
+  },
+];
+
 const palettes = [
   ['#ef3945', '#714237', '#211918'],
   ['#d7c4ee', '#6b574a', '#211d1b'],
@@ -122,12 +135,12 @@ const palettes = [
 
 const state = {
   opportunities: [],
+  submissions: [],
   filtered: [],
   selectedId: null,
   filter: 'all',
   search: '',
   creatorName: 'Tomás',
-  createdSubmissions: new Map(),
   busy: false,
 };
 
@@ -222,6 +235,25 @@ function formatTargetAssets(value) {
   const count = Number(value);
   if (!Number.isFinite(count) || count <= 0) return 'A definir';
   return `${count} ${count === 1 ? 'activo' : 'activos'}`;
+}
+
+function existingSubmission(item) {
+  return state.submissions
+    .filter((submission) => submission?.consignment_id === item?.consignment_id && submission?.status !== 'withdrawn')
+    .sort((a, b) => new Date(b?.created_at || 0) - new Date(a?.created_at || 0))[0] ?? null;
+}
+
+function submissionStateCopy(submission) {
+  const copies = {
+    draft: ['Entrega en borrador', 'Ya creaste el espacio de trabajo. El próximo paso es subir tu V1.'],
+    submitted: ['V1 enviada', 'Tu entrega fue enviada y está esperando revisión de Protocol.'],
+    under_review: ['En revisión', 'Protocol está revisando tu versión actual.'],
+    changes_requested: ['Cambios solicitados', 'Protocol pidió una nueva versión. Continuá desde Mis trabajos.'],
+    preselected: ['Preseleccionada', 'Tu creativo fue preseleccionado. Las próximas acciones aparecerán en Conversaciones.'],
+    rejected: ['Entrega cerrada', 'Esta entrega fue rechazada. Conservamos el historial completo en Mis trabajos.'],
+    acquired: ['Creativo adquirido', 'Protocol adquirió una versión exacta de esta entrega.'],
+  };
+  return copies[submission?.status] ?? ['Entrega existente', 'Ya existe una entrega asociada a este brief.'];
 }
 
 function filterOpportunities() {
@@ -324,17 +356,7 @@ function actionFacts(item) {
   `;
 }
 
-function createSubmissionForm(item) {
-  const created = state.createdSubmissions.get(item.consignment_id);
-  if (created) {
-    return `
-      <div class="pci-submission-created">
-        <strong>Entrega creada en borrador</strong>
-        <span>Tu Submission ya existe. En el siguiente paso vas a subir la V1 desde Mis trabajos.</span>
-        <span><code>${escapeHtml(created.submission_id)}</code></span>
-      </div>
-    `;
-  }
+function createSubmissionForm() {
   return `
     <form class="pci-create-submission" data-create-submission-form>
       <label for="concept-label">Nombre de tu idea <span style="color:var(--pci-muted);font-weight:500">(opcional)</span></label>
@@ -347,19 +369,35 @@ function createSubmissionForm(item) {
   `;
 }
 
+function existingSubmissionCard(submission) {
+  const [title, description] = submissionStateCopy(submission);
+  return `
+    <div class="pci-submission-created">
+      <strong>${escapeHtml(title)}</strong>
+      <span>${escapeHtml(description)}</span>
+      ${submission?.concept_label ? `<span>${escapeHtml(submission.concept_label)}</span>` : ''}
+      <span><code>${escapeHtml(submission?.submission_id || '')}</code></span>
+    </div>
+  `;
+}
+
 function renderBriefAction(item) {
   const revision = item.revision ?? {};
   const participationStatus = item?.participation?.status ?? null;
   const active = participationStatus === 'active';
   const invited = participationStatus === 'invited';
   const joinLabel = invited ? 'Aceptar invitación' : 'Quiero participar';
+  const existing = existingSubmission(item);
 
   els.briefAction.innerHTML = `
     <span class="pci-brief-action__label">Pago base por activo adquirido</span>
     <strong class="pci-brief-action__price">${escapeHtml(formatMoney(revision.base_price_amount, revision.currency))}</strong>
     <span class="pci-brief-action__unit">El pago nace solo si Protocol compra una versión exacta.</span>
     ${actionFacts(item)}
-    ${active ? `<div class="pci-participation-state">✓ Ya estás participando de este brief. Podés crear tu entrega cuando quieras.</div>${createSubmissionForm(item)}` : `
+    ${active ? `
+      <div class="pci-participation-state">✓ Ya estás participando de este brief.</div>
+      ${existing ? existingSubmissionCard(existing) : createSubmissionForm()}
+    ` : `
       <button class="pci-primary-action" type="button" data-join-opportunity>${escapeHtml(joinLabel)}</button>
       <span class="pci-brief-action__note">Participar no transfiere derechos ni garantiza una compra. Tu material sigue siendo tuyo mientras Protocol no lo compre y pague.</span>
     `}
@@ -395,7 +433,7 @@ function showCurrentView() {
   els.listView.hidden = hasDetail;
   els.detailView.hidden = !hasDetail;
   if (hasDetail) renderDetail(); else renderList();
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 function showToast(message, error = false) {
@@ -468,7 +506,16 @@ async function createSubmission(event) {
       conceptLabel || null,
       conceptNote ? { creator_note: conceptNote, source: 'creator_portal' } : { source: 'creator_portal' },
     );
-    state.createdSubmissions.set(item.consignment_id, result);
+    state.submissions.unshift({
+      submission_id: result.submission_id,
+      workspace_id: item.workspace_id,
+      consignment_id: item.consignment_id,
+      status: result.status || 'draft',
+      concept_label: conceptLabel || null,
+      concept_metadata: conceptNote ? { creator_note: conceptNote, source: 'creator_portal' } : { source: 'creator_portal' },
+      current_version: null,
+      created_at: new Date().toISOString(),
+    });
     renderBriefAction(item);
     showToast('Entrega creada en borrador. El próximo paso será subir tu V1.');
   } catch (error) {
@@ -566,9 +613,14 @@ async function loadOpportunities() {
   await requireUsableCreator();
   if (isDemoMode()) {
     state.opportunities = structuredClone(demoOpportunities);
+    state.submissions = structuredClone(demoSubmissions);
   } else {
-    const response = await getCreatorOpportunities();
-    state.opportunities = Array.isArray(response?.items) ? response.items : [];
+    const [opportunitiesResponse, submissionsResponse] = await Promise.all([
+      getCreatorOpportunities(),
+      getCreatorSubmissions(),
+    ]);
+    state.opportunities = Array.isArray(opportunitiesResponse?.items) ? opportunitiesResponse.items : [];
+    state.submissions = Array.isArray(submissionsResponse?.items) ? submissionsResponse.items : [];
   }
   renderCreatorIdentity();
   state.selectedId = new URL(window.location.href).searchParams.get('id');
