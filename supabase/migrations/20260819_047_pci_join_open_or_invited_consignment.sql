@@ -71,8 +71,10 @@ begin
       raise exception using errcode = '42501', message = 'pci_consignment_invitation_required';
     end if;
     -- An invite is consent to one exact published brief revision. If Protocol
-    -- superseded it after inviting the Creator, a new invitation is required.
-    if v_participation.consignment_revision_id is distinct from v_consignment.current_revision_id then
+    -- superseded it before acceptance, a new invitation is required. Once the
+    -- participation is active, its revision remains the accepted snapshot.
+    if v_participation.status = 'invited'
+       and v_participation.consignment_revision_id is distinct from v_consignment.current_revision_id then
       raise exception using errcode = '42501', message = 'pci_consignment_invitation_required';
     end if;
     v_revision_id := v_participation.consignment_revision_id;
@@ -81,7 +83,10 @@ begin
        and v_participation.status in ('declined','withdrawn') then
       raise exception using errcode = '23514', message = 'pci_participation_not_joinable';
     end if;
-    v_revision_id := v_consignment.current_revision_id;
+    v_revision_id := case
+      when v_participation.status = 'active' then v_participation.consignment_revision_id
+      else v_consignment.current_revision_id
+    end;
   else
     raise exception using errcode = '23514', message = 'pci_participation_not_joinable';
   end if;
@@ -187,4 +192,4 @@ revoke all on function pci_api.join_consignment(uuid,uuid,uuid,uuid) from public
 grant execute on function pci_api.join_consignment(uuid,uuid,uuid,uuid) to service_role;
 
 comment on function pci_api.join_consignment(uuid,uuid,uuid,uuid) is
-  'Creator joins an open consignment or accepts an existing invite-only participation. Invite-only acceptance is bound to the exact invited revision and supports safe idempotent retries after activation.';
+  'Creator joins an open consignment or accepts an existing invite-only participation. Once active, repeated calls preserve the exact revision captured by the participation.';
