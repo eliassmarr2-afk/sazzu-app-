@@ -94,8 +94,17 @@ async function sendMagicLink() {
 }
 
 async function verifyOperator() {
+  const invitationApiUrl = clean(config.invitationApiUrl);
+  if (!invitationApiUrl || !invitationApiUrl.endsWith('/pci-invitation-api')) throw new Error('pci_secure_invitation_api_not_loaded');
   const result = await onboardingRequest(`/v1/admin/workspaces/${encodeURIComponent(WORKSPACE_ID)}/invitations`, { method: 'GET' });
-  show({ ok: true, operator_authorized: true, workspace_id: WORKSPACE_ID, response: result });
+  show({
+    ok: true,
+    operator_authorized: true,
+    workspace_id: WORKSPACE_ID,
+    secure_invitation_api_loaded: true,
+    invitation_api_url: invitationApiUrl,
+    response: result,
+  });
 }
 
 async function publishLegalDocuments() {
