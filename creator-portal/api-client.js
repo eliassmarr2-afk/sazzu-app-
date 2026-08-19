@@ -75,6 +75,11 @@ async function onboardingRequest(path, options = {}) {
   return requestJson(`${config.onboardingApiUrl}${path}`, options);
 }
 
+async function invitationRequest(path, options = {}) {
+  ensureBrowserConfig(['supabaseUrl', 'supabasePublishableKey', 'invitationApiUrl']);
+  return requestJson(`${config.invitationApiUrl}${path}`, options);
+}
+
 async function creatorRequest(path, options = {}) {
   ensureBrowserConfig(['supabaseUrl', 'supabasePublishableKey', 'creatorApiUrl']);
   return requestJson(`${config.creatorApiUrl}${path}`, options);
@@ -85,12 +90,27 @@ export async function getOnboardingState() {
   return onboardingRequest('/v1/creator/state', { method: 'GET' });
 }
 
+// Legacy token bootstrap retained only for already-issued historical links.
+// New invitations must use bootstrapInvitationById().
 export async function bootstrapInvitation(invitationToken, idempotencyKey = newIdempotencyKey()) {
   if (config.demoMode) return null;
   return onboardingRequest('/v1/creator/bootstrap', {
     method: 'POST',
     headers: { 'Idempotency-Key': idempotencyKey },
     body: JSON.stringify({ invitation_token: invitationToken, idempotency_key: idempotencyKey }),
+  });
+}
+
+export async function bootstrapInvitationById(invitationId, idempotencyKey = newIdempotencyKey()) {
+  if (config.demoMode) return null;
+  const id = String(invitationId ?? '').trim();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    throw new Error('invalid_invitation_id');
+  }
+  return invitationRequest(`/v1/creator/invitations/${encodeURIComponent(id)}/bootstrap`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({ idempotency_key: idempotencyKey }),
   });
 }
 
