@@ -19,12 +19,15 @@
     <div id="session-state" class="warn">Verificando sesión…</div>
     <label for="operator-email">Correo del operator ya creado en Supabase Auth</label>
     <input id="operator-email" type="email" autocomplete="email" placeholder="operator@example.com">
+    <label for="operator-password">Contraseña temporal del operator</label>
+    <input id="operator-password" type="password" autocomplete="current-password" placeholder="••••••••••••">
     <div class="row">
-      <button id="send-link">Enviar Magic Link</button>
+      <button id="sign-in-password">Ingresar con contraseña</button>
+      <button id="send-link" class="secondary">Enviar Magic Link</button>
       <button id="refresh-session" class="secondary">Verificar sesión</button>
       <button id="sign-out" class="secondary">Cerrar sesión</button>
     </div>
-    <p class="muted">El Magic Link usa shouldCreateUser:false: esta pantalla no puede crear usuarios Auth nuevos.</p>
+    <p class="muted">La contraseña se entrega directamente a Supabase Auth desde este navegador. El harness no la guarda ni la envía a PCI. Magic Link queda disponible como prueba secundaria y usa shouldCreateUser:false.</p>
   </section>
 
   <section class="card">
