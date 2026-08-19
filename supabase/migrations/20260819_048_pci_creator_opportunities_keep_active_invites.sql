@@ -1,5 +1,6 @@
 -- Protocol Creative Insights (PCI)
--- Phase 1N frontend support: invite-only briefs remain visible after acceptance.
+-- Phase 1N frontend support: Creator opportunity projection preserves the exact
+-- brief revision bound to an invited/active participation.
 -- Intentionally stored in Git only; not applied to production yet.
 
 create or replace function pci_api.creator_opportunities(
@@ -29,6 +30,7 @@ begin
       'revision', jsonb_build_object(
         'consignment_revision_id', r.consignment_revision_id,
         'revision_number', r.revision_number,
+        'revision_status', r.status,
         'title', r.title,
         'summary', r.summary,
         'objective', r.objective,
@@ -48,13 +50,12 @@ begin
       ),
       'participation', case when p.participation_id is null then null else jsonb_build_object(
         'participation_id', p.participation_id,
+        'consignment_revision_id', p.consignment_revision_id,
         'status', p.status,
         'joined_at', p.joined_at
       ) end
     ) as item
     from pci.consignments c
-    join pci.consignment_revisions r
-      on r.consignment_revision_id = c.current_revision_id
     join pci.workspace_creators wc
       on wc.workspace_id = c.workspace_id
      and wc.creator_id = v_creator.creator_id
@@ -62,6 +63,11 @@ begin
     left join pci.consignment_participations p
       on p.consignment_id = c.consignment_id
      and p.creator_id = v_creator.creator_id
+    join pci.consignment_revisions r
+      on r.consignment_revision_id = case
+        when p.status in ('invited','active') then p.consignment_revision_id
+        else c.current_revision_id
+      end
     where c.status = 'open'
       and (c.opens_at is null or c.opens_at <= now())
       and (c.closes_at is null or c.closes_at > now())
@@ -82,4 +88,4 @@ revoke all on function pci_api.creator_opportunities(uuid) from public, anon, au
 grant execute on function pci_api.creator_opportunities(uuid) to service_role;
 
 comment on function pci_api.creator_opportunities(uuid) is
-  'Creator-safe opportunity projection. Invite-only briefs remain visible after the Creator accepts the exact invited participation.';
+  'Creator-safe opportunity projection. Before participation it shows the current brief; invited/active Creators always see the exact revision captured by their participation.';
