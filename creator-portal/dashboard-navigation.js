@@ -52,6 +52,13 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  if (type === 'payment_confirmation') {
+    const url = new URL('./payments/', window.location.href);
+    url.searchParams.set('id', id);
+    window.location.href = url.toString();
+    return;
+  }
+
   if (type === 'offer') {
     target.disabled = true;
     await routeOfferToNegotiation(id);
