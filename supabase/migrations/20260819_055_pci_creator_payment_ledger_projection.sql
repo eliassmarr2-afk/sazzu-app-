@@ -68,7 +68,7 @@ begin
       'creative', case when oi.submission_id is null then null else jsonb_build_object(
         'submission_id', oi.submission_id,
         'submission_version_id', oi.submission_version_id,
-        'version_number', coalesce(sv.version_number, nullif(oi.item_terms_snapshot->>'version_number','')::integer),
+        'version_number', sv.version_number,
         'concept_label', s.concept_label,
         'consignment_title', r.title,
         'consignment_revision_number', r.revision_number,
@@ -159,7 +159,7 @@ begin
       'creative', case when oi.submission_id is null then null else jsonb_build_object(
         'submission_id', oi.submission_id,
         'submission_version_id', oi.submission_version_id,
-        'version_number', coalesce(sv.version_number, nullif(oi.item_terms_snapshot->>'version_number','')::integer),
+        'version_number', sv.version_number,
         'concept_label', s.concept_label,
         'consignment_title', r.title,
         'original_filename', coalesce(sv.original_filename, oi.item_terms_snapshot->>'original_filename')
