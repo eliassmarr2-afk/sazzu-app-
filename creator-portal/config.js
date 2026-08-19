@@ -16,6 +16,13 @@ window.PCI_CONFIG = Object.freeze({
   const configScriptUrl = document.currentScript?.src || '';
   if (!configScriptUrl) return;
   const portalRoot = new URL('./', configScriptUrl);
+  const current = new URL(window.location.href);
+  const relativePath = current.pathname.startsWith(portalRoot.pathname)
+    ? current.pathname.slice(portalRoot.pathname.length)
+    : '';
+  const isAuthSurface = relativePath.startsWith('auth/');
+
+  if (!isAuthSurface) document.documentElement.setAttribute('data-pci-access', 'checking');
 
   const accessibility = document.createElement('link');
   accessibility.rel = 'stylesheet';
@@ -36,6 +43,11 @@ window.PCI_CONFIG = Object.freeze({
     document.querySelectorAll('a[href]').forEach((anchor) => {
       const href = anchor.getAttribute('href');
       if (href && replacements[href]) anchor.setAttribute('href', replacements[href]);
+    });
+    document.querySelectorAll('button.pci-profile-chip:not([data-account-scroll-top])').forEach((button) => {
+      button.addEventListener('click', () => {
+        window.location.href = new URL('account/', portalRoot).toString();
+      });
     });
   }
 
