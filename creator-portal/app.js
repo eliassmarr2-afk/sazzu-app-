@@ -66,17 +66,9 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
-function itemsOf(payload) {
-  return Array.isArray(payload?.items) ? payload.items : [];
-}
-
-function firstNameOf(displayName) {
-  return String(displayName || '').trim().split(/\s+/)[0] || 'Creator';
-}
-
-function shortId(value) {
-  return String(value || '').replaceAll('-', '').slice(0, 8).toUpperCase() || 'PCI';
-}
+function itemsOf(payload) { return Array.isArray(payload?.items) ? payload.items : []; }
+function firstNameOf(displayName) { return String(displayName || '').trim().split(/\s+/)[0] || 'Creator'; }
+function shortId(value) { return String(value || '').replaceAll('-', '').slice(0, 8).toUpperCase() || 'PCI'; }
 
 function opportunityFromApi(item, index) {
   const revision = item?.revision ?? {};
@@ -145,19 +137,39 @@ function payableAttention(payable, index) {
   };
 }
 
+function confirmedAmountByPayable(payouts) {
+  const result = new Map();
+  payouts.forEach((payout) => {
+    if (payout?.status !== 'confirmed' || !payout?.payable_id) return;
+    const current = result.get(payout.payable_id) || 0;
+    result.set(payout.payable_id, current + (Number(payout.amount) || 0));
+  });
+  return result;
+}
+
 function stateFromSnapshot(snapshot) {
   const opportunities = itemsOf(snapshot?.opportunities);
   const submissions = itemsOf(snapshot?.submissions);
   const negotiations = itemsOf(snapshot?.negotiations);
   const payables = itemsOf(snapshot?.payables);
+  const payouts = itemsOf(snapshot?.payouts);
 
   const changes = submissions.filter((item) => item?.status === 'changes_requested');
   const inReview = submissions.filter((item) => ['submitted', 'under_review'].includes(item?.status));
   const liveWorkspaceOffers = negotiations.filter((item) => item?.live_offer?.status === 'sent' && item?.live_offer?.proposed_by_type === 'workspace');
   const confirmationNeeded = payables.filter((item) => item?.status === 'awaiting_confirmation');
-  const outstanding = payables.filter((item) => !['paid', 'cancelled'].includes(item?.status));
+  const confirmedByPayable = confirmedAmountByPayable(payouts);
+
+  const outstanding = payables
+    .filter((item) => !['paid', 'cancelled'].includes(item?.status))
+    .map((item) => ({
+      ...item,
+      remaining: Math.max((Number(item?.amount_due) || 0) - (confirmedByPayable.get(item?.payable_id) || 0), 0),
+    }))
+    .filter((item) => item.remaining > 0);
+
   const currencies = [...new Set(outstanding.map((item) => item?.currency).filter(Boolean))];
-  const receivable = outstanding.reduce((sum, item) => sum + (Number(item?.amount_due) || 0), 0);
+  const receivable = outstanding.reduce((sum, item) => sum + item.remaining, 0);
   const attention = [
     ...changes.map(changesAttention),
     ...liveWorkspaceOffers.map(offerAttention),
@@ -189,7 +201,9 @@ function renderCreator() {
     el.hidden = state.creator.notifications <= 0;
   });
   document.querySelectorAll('.pci-profile-chip__copy strong').forEach((el) => { el.textContent = state.creator.firstName; });
-  document.querySelectorAll('.pci-avatar').forEach((el) => { if (el.textContent.trim().length <= 1) el.textContent = state.creator.firstName.slice(0, 1).toUpperCase(); });
+  document.querySelectorAll('.pci-avatar').forEach((el) => {
+    if (el.textContent.trim().length <= 1) el.textContent = state.creator.firstName.slice(0, 1).toUpperCase();
+  });
 }
 
 function renderMetrics() {
@@ -251,12 +265,7 @@ function renderOpportunities() {
   `).join('');
 }
 
-function renderAll() {
-  renderCreator();
-  renderMetrics();
-  renderAttention();
-  renderOpportunities();
-}
+function renderAll() { renderCreator(); renderMetrics(); renderAttention(); renderOpportunities(); }
 
 function bindNavigation() {
   const navItems = [...document.querySelectorAll('[data-nav]')];
@@ -302,8 +311,7 @@ async function hydrateLiveDashboard() {
     renderAll();
   } catch (error) {
     console.error('[PCI Creator Portal] live dashboard unavailable; preserving local fallback', {
-      code: error?.message || 'unknown_error',
-      status: error?.status || null,
+      code: error?.message || 'unknown_error', status: error?.status || null,
     });
   }
 }
