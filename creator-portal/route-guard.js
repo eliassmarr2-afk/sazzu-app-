@@ -159,20 +159,22 @@ async function resolvePortalAccess() {
   if (!state?.linked) return redirectToOnboarding('creator_not_linked');
 
   const creatorStatus = String(state?.creator_status || '');
-  const relationshipBlocked = relationshipBlockState(state);
-  if (['restricted', 'suspended', 'closed'].includes(creatorStatus) || relationshipBlocked) {
-    return renderBlocked(state, relationshipBlocked);
+  if (['restricted', 'suspended', 'closed'].includes(creatorStatus)) {
+    return renderBlocked(state, null);
   }
 
   const activeRelationship = firstActiveRelationship(state);
-  if (creatorStatus !== 'active' || !activeRelationship) {
-    return redirectToOnboarding('onboarding_incomplete');
+  if (creatorStatus === 'active' && activeRelationship) {
+    const context = { demo: false, session, onboarding: state, activeRelationship };
+    window.PCI_GUARD_CONTEXT = context;
+    document.documentElement.setAttribute('data-pci-access', 'active');
+    return context;
   }
 
-  const context = { demo: false, session, onboarding: state, activeRelationship };
-  window.PCI_GUARD_CONTEXT = context;
-  document.documentElement.setAttribute('data-pci-access', 'active');
-  return context;
+  const relationshipBlocked = relationshipBlockState(state);
+  if (relationshipBlocked) return renderBlocked(state, relationshipBlocked);
+
+  return redirectToOnboarding('onboarding_incomplete');
 }
 
 export function requirePortalAccess() {
