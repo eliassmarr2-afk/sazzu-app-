@@ -8,163 +8,142 @@
 
 ## Current technical phase
 
-**FASE 1O — IN PROGRESS / DB + STORAGE + DATA API + AUTHORIZATION AUDIT VALIDATED / EDGE RUNTIME PENDING**
+**FASE 1O — IN PROGRESS / DB + STORAGE + DATA API + AUTHORIZATION + HUMAN EDGE BOOT + CORE COMMERCIAL LIFECYCLE VALIDATED**
 
-Phase 1N Creator Portal is code-complete. Phase 1O is now validating the complete architecture against an isolated real Supabase runtime.
+Phase 1N Creator Portal remains code-complete. Phase 1O is validating the complete PCI architecture against an isolated second Free Supabase project.
 
-No PCI migration, Auth setting, Edge Function, Storage policy or Creator Portal configuration has been applied to production.
+Production project `cuuzsbhpjmjbbnghtiny` remains untouched. No PCI migration, Edge Function, Auth setting, Storage policy, secret or Creator Portal configuration from 1O has been applied to production.
 
 ## Runtime checkpoint
 
-The disposable Free Supabase project now proves:
+The disposable runtime now proves:
 
 - PCI migrations `001–055` compile/apply sequentially on managed PostgreSQL;
-- private Storage bucket definitions are accepted by managed Supabase Storage;
-- PCI direct browser grants remain closed;
-- PostgREST can expose only the service-only `pci_api` schema while authoritative `pci` remains private;
-- Security Advisor has **0 ERROR** after test-fixture hardening;
-- two runtime-discovered authorization gaps were fixed through migrations `056–057` and verified behaviorally;
-- Creator A/B object isolation and workspace relationship state enforcement pass rollback-only adversarial tests.
+- runtime hardenings `056–059` discovered through adversarial/behavioral tests are applied;
+- 29/29 PCI business tables have RLS enabled;
+- direct `anon` / `authenticated` PCI DML and function EXECUTE remain zero;
+- authoritative `pci` stays private while `pci_api` is the service-role RPC surface known to PostgREST;
+- five PCI Storage buckets exist privately with intended size/MIME restrictions and no broad client policy;
+- Security Advisor currently reports **0 WARN / 0 ERROR**; INFO-only deny-all RLS notices remain intentional;
+- Protocol role authorization and Creator workspace authorization/BOLA have passed runtime tests;
+- `pci-creator-api`, `pci-admin-api` and `pci-onboarding-api` are deployed `ACTIVE` with `verify_jwt:true`;
+- real unauthenticated HTTP requests to all three are rejected at the Edge gateway with HTTP 401;
+- the atomic Offer → Purchase/Payable/Rights lifecycle passes with deferred constraints forced;
+- full Payout → Payable PAID → Rights ACTIVE → Creative Asset PROVISIONING passes;
+- worker DB claim/complete → Asset AVAILABLE → Submission ACQUIRED → Purchase SETTLED passes;
+- all synthetic lifecycle rows are removed by rollback.
 
 Detailed evidence:
 
 `supabase/docs/pci-phase-1o-runtime-validation-results.md`
 
-## Complete lifecycle represented in code/runtime schema
+## Runtime-discovered hardenings
+
+### 056 — Protocol operator role gate
+
+The common operator guard originally treated every active `protocol_workspace_member` role equivalently.
+
+Pilot policy is now fail-closed:
 
 ```text
-Protocol creates/invites Creator
-  → Supabase Auth
-  → PCI invitation bootstrap
-  → exact legal acceptance
-  → Creator/workspace ACTIVE
-  → Opportunity / exact Brief
-  → Participation
-  → Submission DRAFT
-  → immutable V1/V2
-  → private signed TUS upload + finalize
-  → creative Review / revisions
-  → Creator rights declaration
-  → Protocol Rights Clearance
-  → preselection
-  → negotiation/messages
-  → immutable Formal Offer / counteroffer
-  → atomic offer acceptance
-  → Purchase AGREED
-  → base Payable AWAITING_CONFIRMATION
-  → Rights PENDING_PAYMENT
-  → Creator confirms exact payment destination
-  → READY_TO_PAY
-  → Protocol manual payout
-  → partial/full payout ledger + proof
-  → Payable PAID
-  → Rights ACTIVE
-  → Creative Asset PROVISIONING
-  → internal worker Storage copy
-  → Creative Asset AVAILABLE
-  → Submission ACQUIRED
-  → Purchase SETTLED
-```
-
-Meta Ads execution remains out of scope.
-
-## Frozen architecture boundary
-
-- `pci` = private authoritative domain schema.
-- `pci_api` = minimal service-role-only RPC surface.
-- `pci` is not exposed through PostgREST.
-- `pci_api` is known to PostgREST so Edge Functions can call `.schema("pci_api").rpc(...)`.
-- `anon` / `authenticated` have no direct PCI business-table DML or PCI function EXECUTE.
-- Browser never receives `service_role`.
-- Creator identity derives from Supabase Auth server-side.
-- Auth is not authorization.
-- Creator is an external counterparty and never a `protocol_workspace_member`.
-- Browser route guards are UX/defense-in-depth only.
-- exact Brief revision, READY Version, Review evidence, Rights evidence, Formal Offers, Purchases, payment destinations and Payout evidence preserve immutable/append-only semantics where required.
-
-## Authorization model after runtime audit
-
-### Protocol internal plane — migration 056
-
-Runtime audit found that active workspace membership alone was previously sufficient for the common PCI operator guard, making `owner/admin/analyst/viewer` equivalent.
-
-Pilot rule is now fail-closed:
-
-```text
-owner  ACTIVE → allowed
-admin  ACTIVE → allowed
+owner   ACTIVE → allowed
+admin   ACTIVE → allowed
 analyst ACTIVE → denied
 viewer  ACTIVE → denied
 ```
 
-This is enforced centrally by `pci.require_active_workspace_member()`.
+Behavioral result:
 
-Fine-grained analyst/viewer reads may be designed later as explicit least-privilege read surfaces; they do not inherit sensitive command access.
+`protocol_operator_role_matrix_passed`
 
-### Creator workspace plane — migration 057
+### 057 — Creator workspace relationship gate
 
-Runtime audit also found that global Creator `active` status alone could not express per-workspace restriction/suspension.
+Global Creator `active` status was insufficient to authorize each workspace independently.
 
-Frozen relationship rule:
+Frozen relationship policy:
 
 ```text
 workspace_creator active     → read/write
 workspace_creator restricted → read-only
-workspace_creator invited    → onboarding only; no business-resource access
+workspace_creator invited    → onboarding only
 workspace_creator suspended  → no business-resource access
 workspace_creator closed     → no business-resource access
 ```
 
-Twenty mature workspace-scoped Creator implementations now live behind private `pci.*_core_1o` functions. Their `pci_api` names are authorization wrappers that either:
+Twenty mature workspace-scoped Creator implementations now sit behind private `pci.*_core_1o` functions while the same `pci_api` names act as authorization wrappers.
 
-- filter list items by workspace relationship; or
-- resolve the exact resource workspace and enforce read/write mode before delegating.
+Behavioral results:
 
-## Adversarial authorization evidence
+- `creator_workspace_gate_matrix_passed`
+- `creator_rpc_bola_and_relationship_state_passed`
 
-Rollback-only tests on the disposable runtime verified:
+### 058–059 — deferred Payable financial-integrity trigger
 
-### Protocol roles
+The first complete payment lifecycle with `SET CONSTRAINTS ALL IMMEDIATE` exposed a bug that SQL compilation could not detect.
 
-- owner admin-RPC access → pass;
-- admin admin-RPC access → pass;
-- analyst admin-RPC access → denied;
-- viewer admin-RPC access → denied.
+`pci.assert_payable_financial_integrity()` is shared by triggers on:
 
-### Creator relationship matrix
+- `pci.payables`;
+- `pci.payout_allocations`;
+- `pci.payouts`.
 
-- active read/write → pass;
-- restricted read → pass;
+The original function assumed every trigger row had `NEW/OLD.payable_id`, while `pci.payouts` reaches Payables through allocations.
+
+`058` introduced source-table dispatch. The immediate rerun exposed a PostgreSQL shared-RECORD subtlety: static `NEW/OLD` field references are resolved against the physical trigger row type even when they sit in an unselected CASE branch.
+
+`059` is the final polymorphic-safe implementation:
+
+- converts `NEW/OLD` to JSONB first;
+- extracts identifiers by key;
+- resolves direct Payables for `payables/payout_allocations`;
+- resolves all affected Payables through allocations for `payouts`;
+- preserves overpaid, overallocated, paid-underfunded and processing-without-inflight rules.
+
+The identical end-to-end payment test then passed with all deferred constraints forced immediately.
+
+## Authorization / BOLA evidence
+
+Rollback-only runtime tests verified:
+
+### Protocol
+
+- owner admin RPC → allowed;
+- admin admin RPC → allowed;
+- analyst admin RPC → denied;
+- viewer admin RPC → denied.
+
+### Creator
+
+- active read/write → allowed;
+- restricted read → allowed;
 - restricted write → denied;
-- invited read → denied;
-- suspended read → denied;
-- closed read → denied.
+- invited/suspended/closed read → denied;
+- Creator A → A Submission → allowed;
+- Creator A → B Submission → blocked;
+- Creator B → A Submission → blocked;
+- globally-active Creator with suspended workspace relationship → business-resource read blocked.
 
-### Creator A/B BOLA
+## Database / Data API / Storage boundary
 
-Two synthetic Creators with separate Submissions under the same workspace were tested through the real public Creator RPC:
-
-- A → own Submission → pass;
-- A → B Submission ID → blocked;
-- B → A Submission ID → blocked;
-- restricted Creator can still read own resource but cannot reserve a new Version;
-- suspended workspace relationship blocks own business-resource read even while global Creator remains active.
-
-Synthetic rows were rolled back and do not persist.
-
-## Database / Storage audit
-
-### PCI database
+### Database
 
 - 29/29 PCI tables: RLS enabled;
-- direct `anon` DML: 0;
-- direct `authenticated` DML: 0;
+- `anon` direct DML: 0;
+- `authenticated` direct DML: 0;
 - direct PCI function EXECUTE for `anon/authenticated`: 0;
-- PCI `SECURITY DEFINER` functions: 0;
-- explicit empty function `search_path` retained;
-- backend service-role access remains available.
+- PCI `SECURITY DEFINER`: 0;
+- explicit empty `search_path` retained;
+- service-role backend access remains available.
 
-`RLS Enabled No Policy` Security Advisor entries are intentional INFO: the architecture is deny-all direct access plus service-mediated RPCs.
+### PostgREST
+
+Disposable runtime explicitly exposes:
+
+```text
+public, graphql_public, pci_api
+```
+
+`pci` remains outside the Data API. `pci_api` routing does not grant browser authorization because `anon/authenticated` lack schema USAGE and function EXECUTE.
 
 ### Storage
 
@@ -176,142 +155,186 @@ Private buckets:
 - `pci-payout-proofs`;
 - `pci-message-attachments`.
 
-All are private with expected size/MIME constraints. No broad `storage.objects` policy was found.
+No broad `storage.objects` policy exists.
 
-### Data API
+## Human Edge runtime
 
-Disposable runtime explicitly exposes:
+Deployed from the feature-branch Git source:
+
+- `pci-creator-api` — `ACTIVE`, `verify_jwt:true`;
+- `pci-admin-api` — `ACTIVE`, `verify_jwt:true`;
+- `pci-onboarding-api` — `ACTIVE`, `verify_jwt:true`.
+
+`pci-worker` remains intentionally undeployed until `PCI_WORKER_SECRET` can be configured through an approved secret-management path.
+
+### Real unauthenticated network test
+
+A temporary disposable-only `pg_net` probe sent real HTTP requests with no Authorization header to all three human APIs.
+
+Each returned:
 
 ```text
-public, graphql_public, pci_api
+HTTP 401
+UNAUTHORIZED_NO_AUTH_HEADER
+Missing authorization header
 ```
 
-through `pgrst.db_schemas`.
+Edge logs independently recorded the three 401 requests. The temporary `pg_net` extension was removed immediately after testing, returning Security Advisor to 0 WARN / 0 ERROR.
 
-`pci` remains unexposed. Exposing `pci_api` to routing does not grant browser access because `anon/authenticated` still lack schema USAGE and function EXECUTE.
+Authenticated handler execution is still pending because the connected Supabase management surface does not expose user-session token creation and credential-like values are correctly blocked from SQL probes.
 
-## Security Advisor
+## Commercial/payment lifecycle runtime result
 
-Latest disposable-runtime result:
+A complete synthetic path was executed through the real `pci_api` commands inside a rollback-only transaction:
 
-- **ERROR: 0**
-- remaining findings: INFO-only `rls_enabled_no_policy` on intentionally deny-all tables.
+```text
+Consignment OPEN
+→ Creator joins
+→ Submission DRAFT
+→ Version reserve/finalize
+→ Version READY / Submission SUBMITTED
+→ Rights declaration v1
+→ Review
+→ PRESELECTED
+→ Rights Clearance COMPLETE
+→ Negotiation OPEN
+→ Formal Offer SENT
+→ Creator ACCEPT
+→ Purchase AGREED
+→ Payable AWAITING_CONFIRMATION
+→ Rights PENDING_PAYMENT
+→ payment destination confirmation
+→ READY_TO_PAY
+→ Payout INITIATED
+→ Payout CONFIRMED
+→ Payable PAID
+→ Rights ACTIVE
+→ Creative Asset PROVISIONING
+```
 
-The test-only public Protocol fixture was also hardened with RLS + revoked anon/authenticated privileges so it no longer creates false security errors.
+Assertions included:
 
-## Performance Advisor
+- finalize transition correctness;
+- Offer acceptance idempotent replay;
+- exactly one Purchase/base Payable/Rights Grant;
+- Rights remain `pending_payment` before confirmed payment;
+- Creator ledger before and after payout;
+- payout confirmation idempotent replay;
+- paid trigger creates exactly one provisioning asset;
+- deferred financial constraints pass.
 
-Current findings are INFO-only, mainly:
+Result:
 
-- foreign keys without dedicated indexes;
-- indexes unused in an empty/no-traffic runtime.
+`atomic_offer_payment_rights_lifecycle_passed`
 
-Do not mass-create indexes from this signal. Use representative seeded data and `EXPLAIN (ANALYZE, BUFFERS)` on hot paths before adding indexes.
+## Worker DB settlement runtime result
+
+A second rollback-only test extended the paid lifecycle:
+
+```text
+Asset PROVISIONING
+→ worker claim
+→ exact source/destination lock
+→ worker complete with matching size/MIME evidence
+→ Asset AVAILABLE
+→ Submission ACQUIRED
+→ Purchase SETTLED
+→ settlement notification outbox
+```
+
+Completion replay returned the idempotent completed result.
+
+Result:
+
+`worker_db_claim_complete_settlement_passed`
+
+This validates the worker database state machine, not yet the real server-side Storage byte copy.
+
+## Rights evidence lock
+
+`pci.guard_creator_rights_declaration_after_grant()` blocks any rights-declaration mutation whenever any Rights Grant exists for the exact Version, including `pending_payment`. The accepted purchase therefore cannot have its underlying creator rights evidence rewritten before payment.
+
+## Test-data hygiene
+
+After all rollback-only behavioral runs:
+
+- runtime synthetic Auth users: 0;
+- runtime synthetic workspaces: 0;
+- runtime synthetic Creators: 0;
+- persisted Purchases: 0;
+- persisted Payouts: 0.
 
 ## Creator Portal status
 
-Phase 1N remains code-complete, including:
+Phase 1N remains code-complete:
 
-- responsive Dashboard;
+- Dashboard;
 - invitation/Auth/legal onboarding;
-- Opportunities + exact frozen Brief;
-- Mis trabajos + immutable V1/V2 + TUS/finalize UX;
-- rights declaration/clearance UX;
-- conversations + Formal Offer/counter/accept UX;
-- payments + immutable destination + partial/full payout ledger;
-- returning Magic Link login;
-- shared route/session guard;
-- Mi Cuenta;
-- mobile/accessibility consistency.
+- Opportunities + frozen Brief revision;
+- Works + immutable V1/V2 + TUS/finalize UX;
+- rights declaration/clearance;
+- Conversations + Formal Offer/counter/accept;
+- Payments + immutable destination + ledger;
+- returning Magic Link;
+- route/session guard;
+- Account;
+- desktop/mobile/accessibility pass.
 
-`creator-portal/config.js` remains `demoMode:true` until runtime APIs are fully validated.
+`creator-portal/config.js` remains `demoMode:true` until authenticated runtime APIs and media paths are validated.
 
-## Edge Function status
+## Custom-secret gate still pending
 
-Expected surfaces:
+The connected Supabase management surface available in this session supports Edge deployment/logs but does not expose secret-management operations.
 
-- `pci-admin-api`;
-- `pci-creator-api`;
-- `pci-onboarding-api`;
-- `pci-worker`.
-
-Static audit confirms the intended controls:
-
-- human APIs validate Bearer identity through Supabase Auth;
-- CORS uses allowlists rather than wildcard origins;
-- Creator identity is server-derived;
-- errors are normalized;
-- worker uses independent secret authentication with constant-time comparison;
-- no obvious sensitive-token logging was found.
-
-The disposable runtime currently has **no PCI Edge Functions deployed**.
-
-Deployment remains pending because the available automated Supabase connector does not expose secret-management operations for required values such as:
+Still required in the disposable runtime:
 
 - `PCI_PAYMENT_DATA_KEY`;
-- `PCI_CREATOR_ALLOWED_ORIGINS`;
-- `PCI_ADMIN_ALLOWED_ORIGINS`;
+- `PCI_CREATOR_ALLOWED_ORIGINS` for a deployed non-local Portal origin;
+- `PCI_ADMIN_ALLOWED_ORIGINS` for a deployed Protocol origin;
 - `PCI_CREATOR_APP_URL`;
 - `PCI_INVITATION_TOKEN_KEY`;
 - `PCI_ONBOARDING_ALLOWED_ORIGINS`;
 - `PCI_WORKER_SECRET`.
 
-Do not deploy deliberately misconfigured Functions merely to claim runtime progress.
+Do not paste these secret values into chat and do not deploy the Worker without its independent secret.
 
 ## Phase 1O remaining validation
 
 Still unproven:
 
-### Edge/Auth
+### Auth / Edge
 
-- Edge Function boot/runtime/CORS/JWT after secrets are configured;
-- invitation email behavior;
-- returning Magic Link callback allowlist/session restore;
+- authenticated Creator request reaching `pci-creator-api` handler;
+- authenticated owner/admin request reaching Admin/Onboarding handlers;
+- deployed allowed/disallowed CORS behavior;
+- real invitation + returning Magic Link behavior;
 - unknown-user `shouldCreateUser:false` behavior.
 
 ### Media
 
-- signed TUS upload against real private Storage;
-- resume/retry/mobile/full-browser-loss behavior;
-- backend finalize verification against actual object metadata.
+- signed TUS upload against actual private Storage;
+- resume/retry/full-browser-loss behavior;
+- backend finalize using actual Storage metadata.
 
-### Review / rights / commerce
+### Rights / payments
 
-- complete V1/V2 transition path with seeded entities;
-- rights invalid/valid/resubmit/flag/complete/lock;
-- message idempotency;
-- offer expiry/supersession;
-- counteroffer snapshot preservation;
-- atomic accept duplicate/lost-response behavior.
+- invalid/valid/resubmit/flag/complete paths through HTTP;
+- AES-GCM payment identifier encrypt/decrypt through Creator/Admin Edge routes;
+- partial/failed/reversed payout HTTP paths;
+- proof URL ownership/expiry.
 
-### Payments / assets
+### Worker / Portal
 
-- AES-GCM encrypt/decrypt path;
-- payment account reconfirmation;
-- partial/full/failed/reversed Payout behavior;
-- proof signed URL ownership/expiry;
-- PAID → Rights ACTIVE transaction;
-- worker Storage copy/retry;
-- Asset AVAILABLE → Submission ACQUIRED → Purchase SETTLED.
+- deploy `pci-worker` with `PCI_WORKER_SECRET`;
+- real server-side Storage copy;
+- Portal `demoMode:false` desktop/mobile end-to-end.
 
-### Portal
+### Production security gate
 
-- `demoMode:false` desktop/mobile end-to-end behavior.
-
-## Creator Security Gate before any pilot
-
-No external Creator pilot until:
-
-1. the disposable runtime completes the above flow;
-2. the legacy production public/authenticated Supabase surface is audited safely;
-3. externally exposed schemas/RPCs are explicitly allowlisted;
-4. PCI Storage and Creator A/B/Protocol boundaries remain adversarially proven;
-5. a controlled rollout receives explicit production approval.
-
-Do not blindly harden the legacy production project.
+Before any external Creator pilot, audit the legacy production `public/authenticated` surface carefully. Do not blindly revoke legacy permissions in production.
 
 ## Next technical movement
 
-**Continue Phase 1O.**
+**Continue FASE 1O at the custom-secret/Auth gate.**
 
-The database/security boundary is now materially validated. The next runtime blocker is Edge deployment with the required custom secrets. Until a safe secret-configuration path is available, the productive work is to preserve the adversarial SQL tests as repeatable fixtures and prepare the exact Edge/Auth/TUS test sequence rather than touching production.
+The next useful step is to configure disposable-runtime-only Edge secrets and Auth redirect URLs through an approved management path. Once that is done, resume with authenticated HTTP calls, invitation/Magic Link, TUS and real worker copy. Production remains untouched until a later explicit rollout decision.
