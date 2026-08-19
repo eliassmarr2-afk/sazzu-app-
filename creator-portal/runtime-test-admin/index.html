@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PCI 1O · Operator Runtime Harness</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color-scheme:dark}body{margin:0;background:#0f0f10;color:#f5f7fa}main{max-width:820px;margin:0 auto;padding:32px 20px 64px}.card{background:#1b1d20;border:1px solid #303238;border-radius:5px;padding:18px;margin:14px 0}h1,h2{margin:0 0 12px}p{color:#b8bdc7;line-height:1.5}label{display:block;margin:12px 0 6px;font-size:14px}input{box-sizing:border-box;width:100%;background:#101114;color:#fff;border:1px solid #3b3e45;border-radius:5px;padding:12px}button{margin-top:12px;border:0;border-radius:5px;padding:11px 14px;background:#2479ff;color:#fff;font-weight:700;cursor:pointer}button.secondary{background:#2a2d32}button:disabled{opacity:.55;cursor:not-allowed}pre{white-space:pre-wrap;word-break:break-word;background:#101114;border:1px solid #303238;border-radius:5px;padding:12px;color:#cfd5df}.ok{color:#64d98b}.warn{color:#f4bd62}.bad{color:#ff6b6b}.row{display:flex;gap:10px;flex-wrap:wrap}.row button{flex:0 0 auto}.muted{font-size:13px;color:#8d929c}
+  </style>
+  <script src="../config.js"></script>
+</head>
+<body>
+<main>
+  <h1>PCI · Phase 1O Operator Harness</h1>
+  <p>Solo para el runtime descartable. Usa publishable key + JWT de usuario. No contiene service role ni secretos PCI.</p>
+
+  <section class="card">
+    <h2>1. Sesión operator</h2>
+    <div id="session-state" class="warn">Verificando sesión…</div>
+    <label for="operator-email">Correo del operator ya creado en Supabase Auth</label>
+    <input id="operator-email" type="email" autocomplete="email" placeholder="operator@example.com">
+    <div class="row">
+      <button id="send-link">Enviar Magic Link</button>
+      <button id="refresh-session" class="secondary">Verificar sesión</button>
+      <button id="sign-out" class="secondary">Cerrar sesión</button>
+    </div>
+    <p class="muted">El Magic Link usa shouldCreateUser:false: esta pantalla no puede crear usuarios Auth nuevos.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Verificar autorización Protocol</h2>
+    <p>Workspace fijo del laboratorio: <code>pci-runtime-test</code>.</p>
+    <button id="verify-operator">Probar acceso owner/admin</button>
+  </section>
+
+  <section class="card">
+    <h2>3. Publicar documentos legales de prueba</h2>
+    <p>Publica dos documentos requeridos para activación: <code>creator_terms</code> y <code>privacy_notice</code>, versión <code>1.0-test</code>.</p>
+    <button id="publish-legal">Publicar documentos</button>
+  </section>
+
+  <section class="card">
+    <h2>4. Invitar Creator</h2>
+    <label for="creator-email">Correo Creator</label>
+    <input id="creator-email" type="email" autocomplete="off" placeholder="creator@example.com">
+    <label for="creator-name">Nombre visible</label>
+    <input id="creator-name" type="text" value="Creator Runtime Test">
+    <label for="creator-legal-name">Nombre legal (opcional)</label>
+    <input id="creator-legal-name" type="text" placeholder="">
+    <button id="invite-creator">Enviar invitación real</button>
+    <button id="list-invitations" class="secondary">Listar invitaciones</button>
+  </section>
+
+  <section class="card">
+    <h2>Resultado</h2>
+    <pre id="output">Sin acciones todavía.</pre>
+  </section>
+</main>
+<script type="module" src="./runtime-test-admin.js"></script>
+</body>
+</html>
