@@ -110,11 +110,15 @@ export async function acceptLegalDocument(invitationId, legalDocument, idempoten
 export async function getCreatorOpportunities() { return config.demoMode ? null : creatorRequest('/v1/opportunities', { method: 'GET' }); }
 export async function getCreatorSubmissions() {
   if (config.demoMode) return null;
-  if (!creatorSubmissionsReadPromise) {
-    creatorSubmissionsReadPromise = creatorRequest('/v1/submissions', { method: 'GET' });
-    setTimeout(() => { creatorSubmissionsReadPromise = null; }, 0);
-  }
-  return creatorSubmissionsReadPromise;
+  if (creatorSubmissionsReadPromise) return creatorSubmissionsReadPromise;
+
+  const current = creatorRequest('/v1/submissions', { method: 'GET' });
+  creatorSubmissionsReadPromise = current;
+  const release = () => setTimeout(() => {
+    if (creatorSubmissionsReadPromise === current) creatorSubmissionsReadPromise = null;
+  }, 0);
+  current.then(release, release);
+  return current;
 }
 export async function getCreatorNegotiations() { return config.demoMode ? null : creatorRequest('/v1/negotiations', { method: 'GET' }); }
 export async function getCreatorPayables() { return config.demoMode ? null : creatorRequest('/v1/payables', { method: 'GET' }); }
