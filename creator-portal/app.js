@@ -18,6 +18,12 @@ const demoState = {
       mediaAccent: '#db2d35', mediaA: '#5e452f', mediaB: '#1e2024',
     },
     {
+      id: '43333333-3333-4333-8333-333333333333', type: 'rights_declaration', badge: 'DECLARACIÓN PENDIENTE', badgeTone: 'blue',
+      title: 'Completá derechos de tu V1', description: 'Tu video ya está listo. Falta declarar origen, audio, terceros e IA para esa versión exacta.',
+      meta: 'La declaración no transfiere derechos ni equivale a una compra.', action: 'Completar declaración', mediaLabel: 'Derechos · V1',
+      mediaAccent: '#4e7bff', mediaA: '#253e63', mediaB: '#171b25',
+    },
+    {
       id: 'offer-1042', type: 'offer', badge: 'OFERTA PENDIENTE', badgeTone: 'amber',
       title: 'Oferta por creativo #PCI-1042', description: 'Protocol ofrece $45.000 por tu versión V2.',
       meta: 'Vence mañana · 20/08/2026', metaDanger: true, action: 'Revisar oferta', mediaLabel: 'Demostración',
@@ -102,6 +108,31 @@ function changesAttention(submission, index) {
   };
 }
 
+function rightsAttention(submission, index) {
+  const version = submission?.current_version ?? {};
+  const flagged = version.rights_clearance_status === 'flagged';
+  const palette = palettes[(index + 4) % palettes.length];
+  return {
+    id: submission.submission_id,
+    type: 'rights_declaration',
+    badge: flagged ? 'DERECHOS OBSERVADOS' : 'DECLARACIÓN PENDIENTE',
+    badgeTone: flagged ? 'amber' : 'blue',
+    title: flagged
+      ? `Revisá derechos de V${version.version_number || 'actual'}`
+      : `Completá derechos de V${version.version_number || 'actual'}`,
+    description: flagged
+      ? 'Protocol observó la declaración de esta versión. Abrí el trabajo para ver qué dato requiere corrección.'
+      : 'Tu video ya está listo. Falta declarar origen, audio, terceros e IA para esa versión exacta.',
+    meta: flagged
+      ? 'La versión no puede avanzar a una oferta formal hasta completar el clearance.'
+      : 'La declaración no transfiere derechos ni equivale a una compra.',
+    metaDanger: flagged,
+    action: flagged ? 'Revisar declaración' : 'Completar declaración',
+    mediaLabel: `Derechos · V${version.version_number || ''}`.trim(),
+    mediaAccent: palette[0], mediaA: palette[1], mediaB: palette[2],
+  };
+}
+
 function offerAttention(negotiation, index) {
   const offer = negotiation.live_offer ?? {};
   const palette = palettes[(index + 1) % palettes.length];
@@ -156,6 +187,12 @@ function stateFromSnapshot(snapshot) {
 
   const changes = submissions.filter((item) => item?.status === 'changes_requested');
   const inReview = submissions.filter((item) => ['submitted', 'under_review'].includes(item?.status));
+  const rightsActions = submissions.filter((item) => {
+    const version = item?.current_version;
+    if (!version || version.status !== 'ready' || version.rights_declaration_locked) return false;
+    if (['draft', 'changes_requested', 'rejected', 'acquired', 'withdrawn'].includes(item?.status)) return false;
+    return version.rights_declaration_submitted !== true || version.rights_clearance_status === 'flagged';
+  });
   const liveWorkspaceOffers = negotiations.filter((item) => item?.live_offer?.status === 'sent' && item?.live_offer?.proposed_by_type === 'workspace');
   const confirmationNeeded = payables.filter((item) => item?.status === 'awaiting_confirmation');
   const confirmedByPayable = confirmedAmountByPayable(payouts);
@@ -172,6 +209,7 @@ function stateFromSnapshot(snapshot) {
   const receivable = outstanding.reduce((sum, item) => sum + item.remaining, 0);
   const attention = [
     ...changes.map(changesAttention),
+    ...rightsActions.map(rightsAttention),
     ...liveWorkspaceOffers.map(offerAttention),
     ...confirmationNeeded.map(payableAttention),
   ];
@@ -223,7 +261,7 @@ function renderAttention() {
   const root = document.querySelector('[data-attention-list]');
   if (!root) return;
   if (!state.attention.length) {
-    root.innerHTML = '<div class="pci-empty-state"><strong>No tenés acciones pendientes</strong><span>Cuando Protocol pida cambios, envíe una oferta o necesite un dato de cobro, va a aparecer acá.</span></div>';
+    root.innerHTML = '<div class="pci-empty-state"><strong>No tenés acciones pendientes</strong><span>Cuando Protocol pida cambios, una versión necesite declaración, llegue una oferta o falte un dato de cobro, va a aparecer acá.</span></div>';
   } else {
     root.innerHTML = state.attention.map((item) => `
       <article class="pci-attention-card" data-attention-id="${escapeHtml(item.id)}">
