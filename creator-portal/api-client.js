@@ -112,6 +112,44 @@ export async function getCreatorNegotiations() { return config.demoMode ? null :
 export async function getCreatorPayables() { return config.demoMode ? null : creatorRequest('/v1/payables', { method: 'GET' }); }
 export async function getCreatorPayouts() { return config.demoMode ? null : creatorRequest('/v1/payouts', { method: 'GET' }); }
 
+export async function joinCreatorOpportunity(consignmentId, idempotencyKey = newIdempotencyKey()) {
+  if (config.demoMode) {
+    return {
+      ok: true,
+      participation_id: crypto.randomUUID(),
+      consignment_id: consignmentId,
+      status: 'active',
+      demo: true,
+    };
+  }
+  return creatorRequest(`/v1/consignments/${encodeURIComponent(consignmentId)}/join`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({ idempotency_key: idempotencyKey }),
+  });
+}
+
+export async function createCreatorSubmission(consignmentId, conceptLabel = null, conceptMetadata = {}, idempotencyKey = newIdempotencyKey()) {
+  if (config.demoMode) {
+    return {
+      ok: true,
+      submission_id: crypto.randomUUID(),
+      status: 'draft',
+      demo: true,
+    };
+  }
+  return creatorRequest('/v1/submissions', {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({
+      consignment_id: consignmentId,
+      concept_label: String(conceptLabel ?? '').trim() || null,
+      concept_metadata: conceptMetadata && typeof conceptMetadata === 'object' && !Array.isArray(conceptMetadata) ? conceptMetadata : {},
+      idempotency_key: idempotencyKey,
+    }),
+  });
+}
+
 export async function getCreatorDashboardSnapshot() {
   if (config.demoMode) return null;
   const [identity, opportunities, submissions, negotiations, payables, payouts] = await Promise.all([
