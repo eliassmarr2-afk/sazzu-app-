@@ -1,0 +1,686 @@
+.pci-opportunities-main{
+  min-width:0;
+}
+
+.pci-opportunity-page{
+  width:min(1180px,100%);
+  margin:0 auto;
+  padding:34px 34px 110px;
+}
+
+.pci-opportunity-loading{
+  min-height:60vh;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:14px;
+  color:var(--pci-muted);
+}
+
+.pci-spinner{
+  width:28px;
+  height:28px;
+  border:2px solid var(--pci-border);
+  border-top-color:var(--pci-blue);
+  border-radius:50%;
+  animation:pci-spin .7s linear infinite;
+}
+
+@keyframes pci-spin{to{transform:rotate(360deg)}}
+
+.pci-opportunity-page__header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:24px;
+}
+
+.pci-opportunity-page__header h1{
+  margin:4px 0 8px;
+  font-size:32px;
+  line-height:1.06;
+  letter-spacing:-.035em;
+}
+
+.pci-opportunity-page__header p:last-child{
+  color:var(--pci-muted);
+  font-size:14px;
+}
+
+.pci-opportunity-count{
+  min-width:112px;
+  border:1px solid var(--pci-border);
+  background:var(--pci-surface-3);
+  border-radius:5px;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+.pci-opportunity-count strong{
+  font-size:22px;
+  line-height:1;
+}
+
+.pci-opportunity-count span{
+  margin-top:5px;
+  color:var(--pci-muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.pci-opportunity-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.pci-search-field{
+  height:42px;
+  flex:1;
+  max-width:430px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:var(--pci-surface-3);
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  padding:0 12px;
+  color:var(--pci-muted);
+}
+
+.pci-search-field:focus-within{
+  border-color:rgba(36,121,255,.7);
+  box-shadow:0 0 0 3px rgba(36,121,255,.09);
+}
+
+.pci-search-field input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--pci-text);
+  font:inherit;
+  font-size:13px;
+}
+
+.pci-search-field input::placeholder{color:#6f737c}
+
+.pci-filter-group{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.pci-filter-chip{
+  border:1px solid var(--pci-border);
+  background:var(--pci-surface-3);
+  color:var(--pci-text-2);
+  border-radius:5px;
+  min-height:36px;
+  padding:0 12px;
+  font:inherit;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.pci-filter-chip:hover{border-color:#454850;color:var(--pci-text)}
+.pci-filter-chip.is-active{
+  border-color:rgba(36,121,255,.58);
+  background:var(--pci-blue-soft);
+  color:#78a9ff;
+}
+
+.pci-opportunity-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.pci-opportunity-list-card{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  background:linear-gradient(180deg,var(--pci-surface) 0%,#17181b 100%);
+  transition:border-color .16s ease,transform .16s ease;
+}
+
+.pci-opportunity-list-card:hover{
+  border-color:#41444b;
+  transform:translateY(-1px);
+}
+
+.pci-opportunity-list-card__visual{
+  position:relative;
+  min-height:166px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 68% 34%,var(--card-accent),transparent 14%),
+    linear-gradient(140deg,var(--card-a),var(--card-b));
+}
+
+.pci-opportunity-list-card__visual::before,
+.pci-opportunity-list-card__visual::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.13);
+}
+
+.pci-opportunity-list-card__visual::before{
+  width:118px;height:118px;right:-14px;bottom:-26px;
+}
+
+.pci-opportunity-list-card__visual::after{
+  width:64px;height:64px;right:45px;bottom:12px;
+  background:color-mix(in srgb,var(--card-accent) 42%,transparent);
+  box-shadow:0 18px 42px rgba(0,0,0,.28);
+}
+
+.pci-opportunity-list-card__visual span{
+  position:absolute;
+  left:14px;
+  bottom:13px;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:0 8px;
+  background:rgba(8,9,10,.72);
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:5px;
+  color:#f0f1f3;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  backdrop-filter:blur(8px);
+}
+
+.pci-opportunity-list-card__body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:15px;
+}
+
+.pci-opportunity-list-card__topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:9px;
+}
+
+.pci-opportunity-list-card__status{
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--pci-muted);
+}
+
+.pci-opportunity-list-card__status.is-invited{color:var(--pci-purple)}
+.pci-opportunity-list-card__status.is-active{color:var(--pci-green)}
+
+.pci-opportunity-list-card__deadline{
+  color:var(--pci-muted);
+  font-size:10px;
+}
+
+.pci-opportunity-list-card h2{
+  margin:0;
+  font-size:17px;
+  line-height:1.25;
+  letter-spacing:-.018em;
+}
+
+.pci-opportunity-list-card__summary{
+  margin:8px 0 14px;
+  min-height:40px;
+  color:var(--pci-muted);
+  font-size:12px;
+  line-height:1.55;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.pci-opportunity-list-card__facts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:auto;
+}
+
+.pci-opportunity-list-card__fact{
+  padding:9px 10px;
+  border:1px solid var(--pci-border-soft);
+  border-radius:5px;
+  background:#141518;
+}
+
+.pci-opportunity-list-card__fact span{
+  display:block;
+  color:var(--pci-muted);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  font-weight:700;
+}
+
+.pci-opportunity-list-card__fact strong{
+  display:block;
+  margin-top:5px;
+  font-size:14px;
+}
+
+.pci-opportunity-list-card__fact strong.is-money{color:var(--pci-green)}
+
+.pci-opportunity-list-card__button{
+  width:100%;
+  min-height:39px;
+  margin-top:12px;
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  background:#1c1e22;
+  color:#8fb7ff;
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.pci-opportunity-list-card__button:hover{border-color:#4a4d54;background:#22252a}
+
+.pci-opportunity-empty{grid-column:1/-1;margin-top:34px}
+
+.pci-back-link{
+  border:0;
+  background:transparent;
+  color:#8fb7ff;
+  font:inherit;
+  font-size:12px;
+  font-weight:650;
+  padding:0;
+  margin:0 0 18px;
+  cursor:pointer;
+}
+
+.pci-brief-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 320px;
+  gap:18px;
+  align-items:start;
+}
+
+.pci-brief-main{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.pci-brief-hero,
+.pci-brief-section,
+.pci-brief-action{
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  background:var(--pci-surface);
+}
+
+.pci-brief-hero{overflow:hidden}
+
+.pci-brief-hero__visual{
+  min-height:208px;
+  position:relative;
+  background:
+    radial-gradient(circle at 75% 42%,var(--brief-accent),transparent 13%),
+    linear-gradient(135deg,var(--brief-a),var(--brief-b));
+}
+
+.pci-brief-hero__visual::after{
+  content:"";
+  position:absolute;
+  width:144px;height:144px;
+  right:8%;bottom:-30px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--brief-accent) 34%,transparent);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.pci-brief-hero__body{padding:20px}
+
+.pci-brief-hero__meta{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:10px;
+}
+
+.pci-brief-chip{
+  display:inline-flex;
+  min-height:25px;
+  align-items:center;
+  padding:0 8px;
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  color:var(--pci-text-2);
+  background:#151619;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.pci-brief-chip.is-open{color:#74dfa1;border-color:rgba(69,212,129,.28);background:var(--pci-green-soft)}
+.pci-brief-chip.is-invited{color:#d18eff;border-color:rgba(194,107,255,.3);background:var(--pci-purple-soft)}
+
+.pci-brief-hero h1{
+  margin:0;
+  font-size:30px;
+  line-height:1.12;
+  letter-spacing:-.035em;
+}
+
+.pci-brief-hero__summary{
+  max-width:760px;
+  margin:10px 0 0;
+  color:var(--pci-text-2);
+  line-height:1.62;
+  font-size:14px;
+}
+
+.pci-brief-section{padding:18px 20px}
+
+.pci-brief-section__eyebrow{
+  display:block;
+  margin-bottom:7px;
+  color:var(--pci-muted);
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.pci-brief-section h2{
+  margin:0 0 9px;
+  font-size:16px;
+}
+
+.pci-brief-section p{
+  margin:0;
+  color:var(--pci-text-2);
+  line-height:1.65;
+  font-size:13px;
+  white-space:pre-wrap;
+}
+
+.pci-brief-duo{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.pci-structured-list{
+  display:grid;
+  gap:8px;
+  margin-top:3px;
+}
+
+.pci-structured-row{
+  display:grid;
+  grid-template-columns:minmax(120px,.42fr) minmax(0,1fr);
+  gap:14px;
+  padding:9px 0;
+  border-top:1px solid var(--pci-border-soft);
+}
+
+.pci-structured-row:first-child{border-top:0;padding-top:0}
+.pci-structured-row__key{
+  color:var(--pci-muted);
+  font-size:11px;
+  font-weight:700;
+}
+.pci-structured-row__value{
+  min-width:0;
+  color:var(--pci-text-2);
+  font-size:12px;
+  line-height:1.55;
+  overflow-wrap:anywhere;
+}
+
+.pci-brief-action{
+  position:sticky;
+  top:20px;
+  padding:17px;
+}
+
+.pci-brief-action__label{
+  display:block;
+  color:var(--pci-muted);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.pci-brief-action__price{
+  display:block;
+  margin:7px 0 2px;
+  color:var(--pci-green);
+  font-size:29px;
+  line-height:1;
+  letter-spacing:-.035em;
+}
+
+.pci-brief-action__unit{color:var(--pci-muted);font-size:11px}
+
+.pci-brief-action__facts{
+  display:grid;
+  gap:0;
+  margin:15px 0;
+  border-top:1px solid var(--pci-border-soft);
+  border-bottom:1px solid var(--pci-border-soft);
+}
+
+.pci-brief-action__fact{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 0;
+  border-top:1px solid var(--pci-border-soft);
+  font-size:11px;
+}
+.pci-brief-action__fact:first-child{border-top:0}
+.pci-brief-action__fact span{color:var(--pci-muted)}
+.pci-brief-action__fact strong{text-align:right}
+
+.pci-primary-action,
+.pci-secondary-action{
+  width:100%;
+  min-height:42px;
+  border-radius:5px;
+  font:inherit;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.pci-primary-action{
+  border:1px solid #3986ff;
+  background:var(--pci-blue);
+  color:white;
+}
+.pci-primary-action:hover{background:#3584ff}
+.pci-primary-action:disabled{cursor:not-allowed;opacity:.58}
+
+.pci-secondary-action{
+  margin-top:8px;
+  border:1px solid var(--pci-border);
+  background:#151619;
+  color:var(--pci-text-2);
+}
+
+.pci-brief-action__note{
+  display:block;
+  margin-top:10px;
+  color:var(--pci-muted);
+  font-size:10px;
+  line-height:1.5;
+}
+
+.pci-participation-state{
+  margin-bottom:11px;
+  padding:10px;
+  border:1px solid rgba(69,212,129,.23);
+  border-radius:5px;
+  background:var(--pci-green-soft);
+  color:#84e7ab;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.pci-create-submission{
+  display:grid;
+  gap:9px;
+  margin-top:13px;
+  padding-top:13px;
+  border-top:1px solid var(--pci-border-soft);
+}
+
+.pci-create-submission label{
+  color:var(--pci-text-2);
+  font-size:11px;
+  font-weight:700;
+}
+
+.pci-create-submission input,
+.pci-create-submission textarea{
+  width:100%;
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  background:#111215;
+  color:var(--pci-text);
+  padding:10px 11px;
+  outline:0;
+  font:inherit;
+  font-size:12px;
+  resize:vertical;
+}
+
+.pci-create-submission input:focus,
+.pci-create-submission textarea:focus{
+  border-color:rgba(36,121,255,.65);
+  box-shadow:0 0 0 3px rgba(36,121,255,.08);
+}
+
+.pci-create-submission small{color:var(--pci-muted);font-size:10px;line-height:1.45}
+
+.pci-submission-created{
+  padding:12px;
+  border:1px solid rgba(69,212,129,.24);
+  border-radius:5px;
+  background:var(--pci-green-soft);
+}
+
+.pci-submission-created strong{display:block;color:#86e8ad;font-size:12px}
+.pci-submission-created span{display:block;margin-top:5px;color:var(--pci-text-2);font-size:11px;line-height:1.5}
+.pci-submission-created code{font-size:10px;color:#b9f1cf;word-break:break-all}
+
+.pci-inline-error{
+  padding:10px;
+  margin-top:10px;
+  border:1px solid rgba(255,90,101,.27);
+  border-radius:5px;
+  background:rgba(255,90,101,.08);
+  color:#ff9ca4;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.pci-toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:100;
+  max-width:min(360px,calc(100vw - 32px));
+  padding:11px 13px;
+  border:1px solid var(--pci-border);
+  border-radius:5px;
+  background:#1c1e22;
+  color:var(--pci-text);
+  box-shadow:0 14px 44px rgba(0,0,0,.35);
+  font-size:12px;
+}
+
+.pci-toast.is-error{border-color:rgba(255,90,101,.35);color:#ffb0b6}
+.pci-mobile-section-title{display:none}
+
+@media (max-width:1060px){
+  .pci-opportunity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pci-brief-layout{grid-template-columns:minmax(0,1fr) 286px}
+}
+
+@media (max-width:820px){
+  .pci-opportunity-page{padding:22px 16px 104px}
+  .pci-opportunity-page__header{align-items:flex-start}
+  .pci-opportunity-toolbar{align-items:stretch;flex-direction:column}
+  .pci-search-field{max-width:none}
+  .pci-filter-group{justify-content:flex-start;flex-wrap:nowrap;overflow:auto;padding-bottom:2px;scrollbar-width:none}
+  .pci-filter-group::-webkit-scrollbar{display:none}
+  .pci-filter-chip{flex:0 0 auto}
+  .pci-brief-layout{grid-template-columns:1fr}
+  .pci-brief-action{position:static}
+  .pci-brief-duo{grid-template-columns:1fr}
+  .pci-mobile-section-title{
+    display:block;
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:12px;
+    font-weight:750;
+  }
+}
+
+@media (max-width:620px){
+  .pci-opportunity-page{padding:18px 12px 100px}
+  .pci-opportunity-page__header{gap:14px;margin-bottom:18px}
+  .pci-opportunity-page__header h1{font-size:26px}
+  .pci-opportunity-page__header p:last-child{font-size:12px;line-height:1.5}
+  .pci-opportunity-count{min-width:78px;padding:10px}
+  .pci-opportunity-count strong{font-size:19px}
+  .pci-opportunity-count span{font-size:8px}
+  .pci-opportunity-grid{grid-template-columns:1fr;gap:10px}
+  .pci-opportunity-list-card{display:grid;grid-template-columns:112px minmax(0,1fr)}
+  .pci-opportunity-list-card__visual{min-height:100%}
+  .pci-opportunity-list-card__body{padding:12px}
+  .pci-opportunity-list-card__summary{min-height:0;margin:6px 0 10px;-webkit-line-clamp:2}
+  .pci-opportunity-list-card__facts{grid-template-columns:1fr 1fr}
+  .pci-opportunity-list-card__button{grid-column:1/-1}
+  .pci-brief-hero__visual{min-height:150px}
+  .pci-brief-hero__body{padding:16px}
+  .pci-brief-hero h1{font-size:25px}
+  .pci-brief-section{padding:15px}
+  .pci-structured-row{grid-template-columns:1fr;gap:4px}
+  .pci-brief-action{padding:15px}
+  .pci-toast{right:12px;bottom:84px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .pci-spinner{animation:none}
+  .pci-opportunity-list-card{transition:none}
+}
