@@ -10,24 +10,35 @@ window.PCI_CONFIG = Object.freeze({
   dashboardUrl: '../../index.html',
 });
 
-// Temporary compatibility shim while Phase 1N finishes replacing legacy hash placeholders.
-// It changes navigation only; it never reads auth/session/business data.
-(function normalizePortalLegacyRoutes() {
+// Shared non-business bootstrap: accessibility layer + compatibility navigation.
+// It never reads auth/session/business data.
+(function bootstrapCreatorPortalShell() {
   const configScriptUrl = document.currentScript?.src || '';
-  function run() {
-    if (!configScriptUrl) return;
-    const portalRoot = new URL('./', configScriptUrl);
+  if (!configScriptUrl) return;
+  const portalRoot = new URL('./', configScriptUrl);
+
+  const accessibility = document.createElement('link');
+  accessibility.rel = 'stylesheet';
+  accessibility.href = new URL('accessibility.css', portalRoot).toString();
+  document.head.appendChild(accessibility);
+
+  function normalizeRoutes() {
     const replacements = {
       '#pagos': new URL('payments/', portalRoot).toString(),
       '../#pagos': new URL('payments/', portalRoot).toString(),
       '#conversaciones': new URL('conversations/', portalRoot).toString(),
       '../#conversaciones': new URL('conversations/', portalRoot).toString(),
+      '#cuenta': new URL('account/', portalRoot).toString(),
+      '../#cuenta': new URL('account/', portalRoot).toString(),
+      '#soporte': new URL('account/?section=support', portalRoot).toString(),
+      '../#soporte': new URL('account/?section=support', portalRoot).toString(),
     };
     document.querySelectorAll('a[href]').forEach((anchor) => {
       const href = anchor.getAttribute('href');
       if (href && replacements[href]) anchor.setAttribute('href', replacements[href]);
     });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
-  else run();
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', normalizeRoutes, { once: true });
+  else normalizeRoutes();
 })();
