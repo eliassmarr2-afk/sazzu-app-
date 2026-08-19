@@ -13,13 +13,13 @@
 <body>
   <div class="pci-app" data-pci-app>
     <aside class="pci-sidebar" aria-label="Navegación principal">
-      <div class="pci-brand" aria-label="Protocol Creative Insights">
+      <a class="pci-brand" href="./" aria-label="Protocol Creative Insights · Inicio">
         <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
-      </div>
+      </a>
       <nav class="pci-nav" aria-label="Secciones del portal">
-        <a class="pci-nav__item is-active" href="#inicio" data-nav="inicio"><span class="pci-nav__icon" aria-hidden="true">⌂</span><span>Inicio</span></a>
-        <a class="pci-nav__item" href="#oportunidades" data-nav="oportunidades"><span class="pci-nav__icon" aria-hidden="true">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item is-active" href="./" data-nav="inicio"><span class="pci-nav__icon" aria-hidden="true">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="./opportunities/" data-nav="oportunidades"><span class="pci-nav__icon" aria-hidden="true">◁</span><span>Oportunidades</span></a>
         <a class="pci-nav__item" href="#trabajos" data-nav="trabajos"><span class="pci-nav__icon" aria-hidden="true">▣</span><span>Mis trabajos</span></a>
         <a class="pci-nav__item" href="#conversaciones" data-nav="conversaciones"><span class="pci-nav__icon" aria-hidden="true">◌</span><span>Conversaciones</span></a>
         <a class="pci-nav__item" href="#pagos" data-nav="pagos"><span class="pci-nav__icon" aria-hidden="true">▤</span><span>Pagos</span></a>
@@ -39,7 +39,7 @@
     <main class="pci-main" id="inicio">
       <header class="pci-mobile-header">
         <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
-        <span class="pci-brand__mark pci-brand__mark--mobile" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="./" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
         <button class="pci-icon-button pci-notification-button" type="button" aria-label="Notificaciones">♢<span data-notification-count>3</span></button>
       </header>
       <section class="pci-dashboard" aria-labelledby="dashboard-title">
@@ -65,15 +65,15 @@
           <div class="pci-attention-list" data-attention-list></div>
         </section>
         <section class="pci-section" id="oportunidades" aria-labelledby="opportunities-title">
-          <div class="pci-section__header"><h2 id="opportunities-title">OPORTUNIDADES PARA VOS</h2><button class="pci-link-button" type="button">Ver todas</button></div>
+          <div class="pci-section__header"><h2 id="opportunities-title">OPORTUNIDADES PARA VOS</h2><a class="pci-link-button" href="./opportunities/">Ver todas</a></div>
           <div class="pci-opportunities" data-opportunities></div>
         </section>
       </section>
     </main>
 
     <nav class="pci-bottom-nav" aria-label="Navegación móvil">
-      <a class="pci-bottom-nav__item is-active" href="#inicio" data-nav="inicio"><span>⌂</span><small>Inicio</small></a>
-      <a class="pci-bottom-nav__item" href="#oportunidades" data-nav="oportunidades"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item is-active" href="./" data-nav="inicio"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item" href="./opportunities/" data-nav="oportunidades"><span>◁</span><small>Oportunidades</small></a>
       <a class="pci-bottom-nav__item" href="#trabajos" data-nav="trabajos"><span>▣</span><small>Mis trabajos</small></a>
       <a class="pci-bottom-nav__item" href="#conversaciones" data-nav="conversaciones"><span>◌</span><small>Conversaciones</small></a>
       <a class="pci-bottom-nav__item" href="#pagos" data-nav="pagos"><span>▤</span><small>Pagos</small></a>
@@ -85,8 +85,8 @@
         <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
         <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
         <nav class="pci-nav" aria-label="Menú móvil completo">
-          <a class="pci-nav__item is-active" href="#inicio" data-nav="inicio"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
-          <a class="pci-nav__item" href="#oportunidades" data-nav="oportunidades"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item is-active" href="./" data-nav="inicio"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="./opportunities/" data-nav="oportunidades"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
           <a class="pci-nav__item" href="#trabajos" data-nav="trabajos"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
           <a class="pci-nav__item" href="#conversaciones" data-nav="conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
           <a class="pci-nav__item" href="#pagos" data-nav="pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
@@ -98,5 +98,6 @@
   </div>
 
   <script type="module" src="./app.js"></script>
+  <script type="module" src="./dashboard-navigation.js"></script>
 </body>
 </html>
