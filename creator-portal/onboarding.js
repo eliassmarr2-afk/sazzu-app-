@@ -1,6 +1,6 @@
 import {
   acceptLegalDocument,
-  bootstrapInvitation,
+  bootstrapInvitationById,
   getOnboardingState,
   getSession,
   isDemoMode,
@@ -18,7 +18,7 @@ const acceptButton = document.querySelector('[data-accept-terms]');
 const authEmail = document.querySelector('[data-auth-email]');
 
 let currentSession = null;
-let invitationToken = new URL(window.location.href).searchParams.get('pci_invitation') || '';
+let invitationIdFromUrl = new URL(window.location.href).searchParams.get('pci_invitation_id') || '';
 let currentInvitationId = null;
 let requiredDocuments = [];
 let acceptedDocumentIds = new Set();
@@ -64,11 +64,16 @@ function setBusy(value) {
   });
 }
 
-function scrubInvitationTokenFromAddressBar() {
+function scrubInvitationReferenceFromAddressBar() {
   const url = new URL(window.location.href);
-  if (!url.searchParams.has('pci_invitation')) return;
-  url.searchParams.delete('pci_invitation');
-  window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+  let changed = false;
+  for (const key of ['pci_invitation_id', 'pci_invitation']) {
+    if (url.searchParams.has(key)) {
+      url.searchParams.delete(key);
+      changed = true;
+    }
+  }
+  if (changed) window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
 }
 
 function normalizeDocuments(value) {
@@ -127,6 +132,7 @@ function showError(error) {
     pci_creator_invitation_expired: ['La invitación venció', 'Pedile a Protocol que genere una invitación nueva.'],
     pci_creator_invitation_not_found: ['No encontramos esta invitación', 'El enlace puede ser incorrecto o ya no estar disponible.'],
     pci_creator_invitation_not_pending: ['Esta invitación ya no está disponible', 'Puede haber sido aceptada, reemplazada o revocada.'],
+    pci_creator_invitation_not_delivered: ['La invitación todavía no está habilitada', 'Pedile a Protocol que reenvíe una invitación válida.'],
     pci_creator_invitation_email_mismatch: ['Este enlace pertenece a otra cuenta', 'Abrí la invitación con el mismo correo al que fue enviada.'],
     pci_creator_invitation_user_mismatch: ['La invitación pertenece a otro usuario', 'Cerrá sesión y volvé a ingresar desde el correo correcto.'],
     pci_auth_session_required: ['Necesitamos validar tu sesión', 'Volvé al correo de invitación y abrí el enlace nuevamente.'],
@@ -162,7 +168,7 @@ async function hydrateFromOnboardingState() {
 
   const state = await getOnboardingState();
   if (!state?.linked) {
-    if (invitationToken) {
+    if (invitationIdFromUrl) {
       setState('bootstrap');
       return;
     }
@@ -178,7 +184,7 @@ async function hydrateFromOnboardingState() {
 
   const invitation = relationship.latest_invitation;
   if (!invitation || invitation.status !== 'accepted') {
-    if (invitationToken) {
+    if (invitationIdFromUrl) {
       setState('bootstrap');
       return;
     }
@@ -205,12 +211,12 @@ async function initialLoad() {
     if (authEmail) authEmail.textContent = currentSession.user?.email || 'Sesión autenticada';
 
     if (isDemoMode()) {
-      invitationToken = invitationToken || 'demo-invitation-token';
+      invitationIdFromUrl = invitationIdFromUrl || '20000000-0000-4000-8000-000000000001';
       setState('bootstrap');
       return;
     }
 
-    if (invitationToken) {
+    if (invitationIdFromUrl) {
       setState('bootstrap');
       return;
     }
@@ -223,7 +229,7 @@ async function initialLoad() {
 
 async function runBootstrap() {
   if (busy) return;
-  if (!invitationToken) {
+  if (!invitationIdFromUrl) {
     await hydrateFromOnboardingState().catch(showError);
     return;
   }
@@ -235,14 +241,14 @@ async function runBootstrap() {
         required_legal_documents: demoDocuments,
       };
     } else {
-      bootstrapResult = await bootstrapInvitation(invitationToken);
+      bootstrapResult = await bootstrapInvitationById(invitationIdFromUrl);
     }
 
     currentInvitationId = bootstrapResult?.invitation_id || currentInvitationId;
     requiredDocuments = normalizeDocuments(bootstrapResult?.required_legal_documents);
     acceptedDocumentIds = new Set();
-    scrubInvitationTokenFromAddressBar();
-    invitationToken = '';
+    scrubInvitationReferenceFromAddressBar();
+    invitationIdFromUrl = '';
 
     if (!requiredDocuments.length && !isDemoMode()) await hydrateFromOnboardingState();
     else {
