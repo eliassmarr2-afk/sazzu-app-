@@ -43,20 +43,21 @@ Internal ROAS/CPA/L1/L2/L3 and attribution analytics do not belong in this porta
 
 ### `index.html` — Dashboard
 
-Responsive Creator dashboard with:
+Responsive Creator dashboard with desktop sidebar, compact mobile header + bottom navigation, summary cards, `Requiere tu atención`, opportunities and live read-model hydration.
 
-- persistent desktop sidebar;
-- compact mobile header + five-item bottom navigation;
-- summary cards;
-- `Requiere tu atención` queue;
-- opportunity cards;
-- live read-model hydration when demo mode is disabled.
+Attention can now include:
 
-Opportunity actions route to the exact brief. `changes_requested` attention actions route directly to the exact Submission in `works/`.
+- requested creative changes;
+- missing rights declaration on the current READY version;
+- `flagged` rights clearance requiring Creator correction;
+- live formal offer;
+- payment-destination confirmation.
+
+Rights actions route directly to the exact Submission in `works/`.
 
 ### `auth/accept-invitation/` — Auth/onboarding
 
-Implements the 1M onboarding contract:
+Implements:
 
 `Auth → PCI bootstrap → exact legal documents → acceptance → workspace relationship ACTIVE → Creator portal`
 
@@ -69,7 +70,7 @@ Capabilities:
 - Creator-safe opportunity list;
 - search and participation-state filters;
 - open vs invite-only distinction;
-- exact brief detail;
+- exact accepted brief detail;
 - base acquisition price;
 - target number of assets (`slots_available` is not presented as remaining seats);
 - objective / angle / hook;
@@ -77,8 +78,7 @@ Capabilities:
 - acceptance criteria;
 - rights package snapshot;
 - performance-bonus policy;
-- pre-purchase revision allowance;
-- exact accepted revision.
+- pre-purchase revision allowance.
 
 Creator flow:
 
@@ -92,7 +92,7 @@ then
 
 `Participation ACTIVE → Crear mi entrega → Submission DRAFT`
 
-The page also reads existing Creator submissions and does not offer another accidental draft when a non-withdrawn Submission already exists.
+The page reads existing submissions and avoids accidental duplicate drafts.
 
 ### `works/` — Mis trabajos + version lineage
 
@@ -100,50 +100,45 @@ Responsive list/detail surface for Creator Submissions.
 
 List:
 
-- brief title from the exact accepted revision;
+- exact accepted brief title/revision;
 - concept label;
 - current state;
 - current version;
-- filters for action / review / closed;
-- search;
+- filters/search;
 - direct navigation by `?id=<submission_id>`.
 
 Detail:
 
 - Submission state;
 - exact accepted brief revision;
-- concept note;
 - immutable V1/V2/etc timeline;
 - original filename;
-- file size / duration / dimensions when known;
-- SHA-256 fingerprint when finalized;
-- technical invalidity when applicable;
-- Creator-visible Review decisions and feedback only.
+- file size / duration / dimensions;
+- finalized SHA-256;
+- technical invalidity;
+- Creator-visible Review decisions/feedback only;
+- Creator rights declaration + clearance state for the exact current version.
 
-Internal summaries, operator identities and internal notes are not requested or rendered.
+Internal summaries, reviewer identities and internal notes are not requested or rendered.
 
 ## Creator media upload flow
 
-`works/` connects the existing 1G backend upload contract to the Creator UI.
-
 ```text
-Submission DRAFT / CHANGES_REQUESTED
+DRAFT / CHANGES_REQUESTED
   ↓
-select MP4 or MOV
+select MP4/MOV
   ↓
-client validates type + <= 250 MiB
-  ↓
-read duration / dimensions
+client validation + video metadata
   ↓
 reserve exact immutable Version
   ↓
-backend returns signed TUS context
+signed TUS context
   ↓
-SHA-256 incremental Worker + TUS upload run in parallel
+SHA-256 Worker + TUS transfer in parallel
   ↓
 backend verifies exact Storage object / size / MIME
   ↓
-finalize_submission_version
+finalize
   ↓
 Version READY
 Submission SUBMITTED
@@ -151,109 +146,120 @@ Submission SUBMITTED
 
 For a requested revision:
 
+`V1 remains immutable → reserve V2 on a new path → V2 READY → SUBMITTED again`.
+
+### Upload transport/retry
+
+- `tus-js-client@4.3.1`;
+- direct Storage resumable endpoint;
+- signed `x-signature` token;
+- `x-upsert: false`;
+- 6 MiB chunks;
+- progress/retry/`findPreviousUploads()`;
+- custom fingerprint includes `submission_version_id`;
+- SHA-256 calculated incrementally in `hash-worker.js` using `hash-wasm@4.12.0` with 4 MiB slices;
+- hash and upload run concurrently;
+- signed reservation lives only in `sessionStorage` for the exact version.
+
+Within the same browser session, retries reuse the same version. Successful transfer + failed finalize retries verification/finalize only.
+
+If an `uploading` Version exists but browser signed context is gone/expired, the UI refuses to silently create another version. Full browser-loss recovery remains a runtime test-gate item and may require a narrow signed-context refresh route before pilot.
+
+## 1N.5 — Creator rights declaration + review/preselection context
+
+Rights declaration is factual evidence about an exact immutable `submission_version_id`; it is not the versioned legal agreement and does not transfer rights by itself.
+
+Current visible progression:
+
 ```text
-V1 READY
+Video READY
   ↓
-CHANGES_REQUESTED
+Creator declaration
   ↓
-V2 reserved on a new immutable path
+Rights clearance
   ↓
-V2 READY
+Creative preselection
   ↓
-SUBMITTED again
+Negotiation
 ```
 
-V1 is never overwritten.
+Creative review and rights clearance are distinct tracks. A version can be preselected while clearance is still pending, but a formal offer cannot advance until the required clearance is complete.
 
-### TUS transport
+If the Submission is `changes_requested`, the portal does not ask the Creator to spend time declaring the old version that must be replaced. The rights form appears for the new exact READY version.
 
-`upload-client.js` uses a pinned `tus-js-client@4.3.1` browser module.
+### Rights declaration schema v1
 
-Rules:
+PostgreSQL validates a strict schema, not merely a non-empty JSON object.
 
-- direct Storage TUS endpoint supplied by `pci-creator-api`;
-- signed token sent as `x-signature`;
-- `x-upsert: false`;
-- 6 MiB chunks from the server upload context;
-- progress callbacks;
-- retry delays;
-- `findPreviousUploads()` / resume;
-- custom fingerprint includes `submission_version_id` so the same local file cannot resume a different PCI version;
-- fingerprint removed after successful upload.
+Sections:
 
-### SHA-256
+- `origin`: Creator authorship/origin confirmation;
+- `third_party_assets`: whether external assets are present and authorization confirmation;
+- `music_audio`: use, source and commercial-use confirmation;
+- `ai`: whether generative AI was used, tool and optional description;
+- `people`: identifiable-person presence, adult confirmation and commercial permission;
+- `certification`: factual completeness/accuracy confirmation.
 
-`hash-worker.js` calculates SHA-256 incrementally using `hash-wasm@4.12.0` in a Web Worker with 4 MiB slices.
+Unexpected or missing keys are rejected by the database schema-v1 guard. The frontend performs matching usability validation before calling the command.
 
-The whole 250 MiB file is not intentionally loaded into the UI main thread just to calculate its fingerprint.
+The MVP does not accept material with identifiable minors.
 
-Hashing and TUS transfer run concurrently after the immutable version has been reserved.
+### Clearance visibility
 
-### Upload retry state
+`creator_submission_detail()` now returns for Creator-owned versions:
 
-A signed upload reservation is kept only in `sessionStorage`, scoped to the exact `submission_version_id`, with:
+- the Creator's own rights declaration;
+- declaration submission timestamp;
+- `rights_declaration_locked` boolean;
+- rights clearance status;
+- Creator-facing clearance history/reason.
 
-- signed upload context;
-- expected local filename / size / lastModified / MIME;
-- creation time;
-- whether the TUS transfer completed.
+It never returns `reviewed_by`, internal notes or internal review summaries.
 
-It is never stored in `localStorage` and must never be logged.
+A `flagged` clearance reason is intentionally Creator-facing corrective feedback. Protocol-private analysis belongs in `pci.internal_notes`.
 
-Within the same browser tab/session:
+After any Rights Grant exists, the declaration is locked by the database and the UI no longer offers editing.
 
-- a failed/interrupted TUS upload reuses the same reserved version;
-- the same local file is required for resume;
-- a completed upload with failed `finalize` retries only hash/verification/finalization;
-- no new V2/V3 is reserved merely because the first HTTP response was lost.
+If a declaration is edited before that lock, clearance returns to `pending` and Protocol must review it again.
 
-If a Version is already `uploading` but the browser no longer has a usable signed reservation (for example after a full browser/tab loss or token expiry), the current frontend **does not reserve another version silently**. It asks for the same file and can attempt backend finalization if the object had actually completed.
+### Save/refresh failure semantics
 
-A fully interrupted upload after complete loss of the browser-side signed context still requires runtime validation and likely a narrow signed-context refresh route before external pilot. This is deliberately tracked rather than hidden.
+A successful declaration POST is treated as success immediately in the portal. The UI updates its local copy to `pending` before attempting a fresh read.
+
+Therefore a later GET/read failure cannot incorrectly tell the Creator that the declaration failed or encourage an unnecessary re-submit.
 
 ## Frozen brief context invariants
 
-Creator work history must never change retroactively when Protocol publishes a later Consignment revision.
-
-Current read rules:
+Creator history never changes retroactively when Protocol publishes a later Consignment revision.
 
 - before participation: opportunity shows current published revision;
-- participation `invited` / `active`: opportunity shows `consignment_participations.consignment_revision_id`;
+- `invited` / `active` participation: opportunity shows `consignment_participations.consignment_revision_id`;
 - Submission list/detail always resolve the exact participation revision.
 
-Therefore a Submission created under Rev.1 remains visibly Rev.1 even if Protocol later publishes Rev.2.
+A Submission created under Rev.1 remains visibly Rev.1 after Protocol publishes Rev.2.
 
 ## Browser/API boundary
 
-`config.js` may eventually contain only safe public runtime configuration:
+`config.js` may eventually contain only safe public runtime configuration: Supabase URL, publishable key and PCI Edge Function URLs.
 
-- Supabase project URL;
-- Supabase **publishable** key;
-- PCI Edge Function public URLs.
+It must never contain service-role, invitation-HMAC, payment-encryption, worker or database secrets.
 
-It must never contain:
+Commercial writes continue through authenticated Edge Functions; no direct browser business-table writes were introduced.
 
-- `SUPABASE_SERVICE_ROLE_KEY`;
-- `PCI_INVITATION_TOKEN_KEY`;
-- `PCI_PAYMENT_DATA_KEY`;
-- `PCI_WORKER_SECRET`;
-- any database/service secret.
-
-`api-client.js` currently uses safe Creator reads and commands through PCI Edge Functions only. Mutation calls generate a UUID idempotency key and send the same value in `Idempotency-Key` and JSON.
-
-No Creator frontend performs direct commercial table writes.
+The rights module is separated from TUS/upload transport so rights-form evolution cannot interfere with media transfer logic.
 
 ## Dashboard live-data composition
 
-The dashboard composes existing safe Creator read models rather than introducing a broad dashboard RPC.
+The dashboard composes existing safe Creator read models.
 
-- open opportunities = current `creator_opportunities` items;
-- in review = submissions in `submitted` / `under_review`;
-- changes requested = submissions in `changes_requested`;
-- attention = change requests + live workspace offers + payment-destination confirmations needed;
-- amount receivable = each non-paid/non-cancelled Payable minus allocations belonging to confirmed payouts for that exact Payable.
+- open opportunities = current opportunity projection;
+- in review = `submitted` / `under_review` submissions;
+- changes requested = `changes_requested` submissions;
+- rights action = current READY version is missing declaration or clearance is `flagged`;
+- amount receivable = unpaid obligation minus confirmed payout allocations;
+- multiple currencies are never incorrectly summed.
 
-A partially paid obligation therefore does not inflate `Por cobrar` back to the original amount. Multiple currencies are never summed together.
+The work-list read model exposes only minimum rights-action fields; it intentionally does not return the full declaration to Dashboard.
 
 ## Demo/runtime rule
 
@@ -265,28 +271,28 @@ Before any real Creator pilot:
 2. apply all PCI migrations and Edge Functions;
 3. configure only the test publishable key + test function URLs;
 4. set `demoMode: false`;
-5. run 1M onboarding/Auth adversarial tests;
-6. test open + invite-only opportunity flows;
-7. test V1/V2 reservation, TUS resume, Storage verification and finalize;
-8. test refresh during upload, network loss, lost HTTP response, finalize retry and full tab/browser loss;
-9. verify no duplicate Version can be created from retries;
-10. run Creator Security Gate before pointing the portal to production.
+5. run onboarding/Auth adversarial tests;
+6. test opportunity/open/direct-invite flows;
+7. test V1/V2 TUS and retry/recovery cases;
+8. test rights schema valid/invalid payloads, resubmission, flagged/complete clearance and Rights Grant lock;
+9. test Creator A cannot read/modify Creator B rights evidence;
+10. run Creator Security Gate before production.
 
 ## Phase 1N completed slices
 
 - Dashboard desktop/mobile foundation;
 - Auth invitation + legal onboarding UX;
 - Dashboard live read-model composition;
-- Opportunities → exact Brief → Join/Accept invitation → Submission DRAFT;
-- **Mis trabajos → Submission detail → V1/V2 timeline → signed resumable upload → finalize → SUBMITTED**;
-- Creator-visible Review feedback inside Submission timeline.
+- Opportunities → exact Brief → Participation → Submission DRAFT;
+- Mis trabajos → Submission detail → V1/V2 → signed resumable upload → finalize → SUBMITTED;
+- Creator-visible creative Review feedback;
+- **Creator rights declaration → clearance context → preselection/commercial-readiness path**;
+- Dashboard rights-action queue.
 
 Phase 1N remains **IN PROGRESS / RUNTIME UNVALIDATED**.
 
 ## Remaining Phase 1N work
 
-- Creator rights-declaration UX on finalized versions;
-- Review/preselection next-action UX;
 - Conversations + formal-offer distinction;
 - Offer detail / reject / counter / accept UX;
 - Payments + payment-account confirmation + payout history/proofs;
@@ -296,6 +302,10 @@ Phase 1N remains **IN PROGRESS / RUNTIME UNVALIDATED**.
 
 ## Next slice
 
-**Creator rights declaration + review/preselection action context**
+**Conversations + formal offer UX**
 
-This is the missing Creator-facing bridge between a finalized version and the commercial flow. Once rights are declared and Protocol clears/preselects the exact version, the following slice can build Conversations + formal offers without skipping a required business state.
+Target distinction:
+
+`chat contextual ≠ contractual offer`
+
+The Creator must be able to talk with Protocol without confusing a message with an acquisition commitment, while a formal offer displays exact Version, price, currency, expiry, rights/payment snapshots and explicit `accept / reject / counter` actions.
