@@ -1,6 +1,8 @@
 import { getCreatorDashboardSnapshot, isDemoMode } from './api-client.js';
 
 const demoState = {
+  loading: false,
+  error: false,
   creator: { firstName: 'Tomás', notifications: 3 },
   metrics: {
     openOpportunities: 4,
@@ -38,7 +40,23 @@ const demoState = {
   ],
 };
 
-let state = structuredClone(demoState);
+const liveInitialState = {
+  loading: true,
+  error: false,
+  creator: { firstName: 'Creator', notifications: 0 },
+  metrics: {
+    openOpportunities: 0,
+    inReview: 0,
+    changesRequested: 0,
+    receivable: 0,
+    currency: 'ARS',
+    receivableDisplay: null,
+  },
+  attention: [],
+  opportunities: [],
+};
+
+let state = structuredClone(isDemoMode() ? demoState : liveInitialState);
 
 const palettes = [
   ['#ef3945', '#7c4434', '#251a18'],
@@ -198,7 +216,7 @@ function stateFromSnapshot(snapshot) {
   const confirmedByPayable = confirmedAmountByPayable(payouts);
 
   const outstanding = payables
-    .filter((item) => !['paid', 'cancelled'].includes(item?.status))
+    .filter((item) => !['paid', 'voided', 'cancelled'].includes(item?.status))
     .map((item) => ({
       ...item,
       remaining: Math.max((Number(item?.amount_due) || 0) - (confirmedByPayable.get(item?.payable_id) || 0), 0),
@@ -215,6 +233,8 @@ function stateFromSnapshot(snapshot) {
   ];
 
   return {
+    loading: false,
+    error: false,
     creator: {
       firstName: firstNameOf(snapshot?.identity?.display_name),
       notifications: attention.length,
@@ -236,7 +256,7 @@ function renderCreator() {
   document.querySelectorAll('[data-creator-first-name]').forEach((el) => { el.textContent = state.creator.firstName; });
   document.querySelectorAll('[data-notification-count]').forEach((el) => {
     el.textContent = String(state.creator.notifications);
-    el.hidden = state.creator.notifications <= 0;
+    el.hidden = state.loading || state.creator.notifications <= 0;
   });
   document.querySelectorAll('.pci-profile-chip__copy strong').forEach((el) => { el.textContent = state.creator.firstName; });
   document.querySelectorAll('.pci-avatar').forEach((el) => {
@@ -245,12 +265,19 @@ function renderCreator() {
 }
 
 function renderMetrics() {
-  const values = {
-    'open-opportunities': state.metrics.openOpportunities,
-    'in-review': state.metrics.inReview,
-    'changes-requested': state.metrics.changesRequested,
-    receivable: state.metrics.receivableDisplay || formatMoney(state.metrics.receivable, state.metrics.currency),
-  };
+  const values = state.loading
+    ? {
+      'open-opportunities': '—',
+      'in-review': '—',
+      'changes-requested': '—',
+      receivable: '—',
+    }
+    : {
+      'open-opportunities': state.metrics.openOpportunities,
+      'in-review': state.metrics.inReview,
+      'changes-requested': state.metrics.changesRequested,
+      receivable: state.metrics.receivableDisplay || formatMoney(state.metrics.receivable, state.metrics.currency),
+    };
   Object.entries(values).forEach(([name, value]) => {
     const el = document.querySelector(`[data-metric="${name}"]`);
     if (el) el.textContent = String(value);
@@ -260,7 +287,11 @@ function renderMetrics() {
 function renderAttention() {
   const root = document.querySelector('[data-attention-list]');
   if (!root) return;
-  if (!state.attention.length) {
+  if (state.loading) {
+    root.innerHTML = '<div class="pci-empty-state"><strong>Cargando tu actividad…</strong><span>Estamos consultando tus acciones pendientes en Protocol.</span></div>';
+  } else if (state.error) {
+    root.innerHTML = '<div class="pci-empty-state"><strong>No pudimos cargar tu actividad</strong><span>Tu sesión sigue segura. Reintentá recargando la página.</span></div>';
+  } else if (!state.attention.length) {
     root.innerHTML = '<div class="pci-empty-state"><strong>No tenés acciones pendientes</strong><span>Cuando Protocol pida cambios, una versión necesite declaración, llegue una oferta o falte un dato de cobro, va a aparecer acá.</span></div>';
   } else {
     root.innerHTML = state.attention.map((item) => `
@@ -280,12 +311,20 @@ function renderAttention() {
     `).join('');
   }
   const count = document.querySelector('[data-attention-count]');
-  if (count) count.textContent = `(${state.attention.length})`;
+  if (count) count.textContent = state.loading ? '' : `(${state.attention.length})`;
 }
 
 function renderOpportunities() {
   const root = document.querySelector('[data-opportunities]');
   if (!root) return;
+  if (state.loading) {
+    root.innerHTML = '<div class="pci-empty-state pci-empty-state--opportunities"><strong>Cargando oportunidades…</strong><span>Estamos buscando briefs disponibles para tu cuenta.</span></div>';
+    return;
+  }
+  if (state.error) {
+    root.innerHTML = '<div class="pci-empty-state pci-empty-state--opportunities"><strong>No pudimos cargar las oportunidades</strong><span>Reintentá recargando la página.</span></div>';
+    return;
+  }
   if (!state.opportunities.length) {
     root.innerHTML = '<div class="pci-empty-state pci-empty-state--opportunities"><strong>No hay oportunidades abiertas por ahora</strong><span>Cuando Protocol publique un brief compatible con tu cuenta, va a aparecer acá.</span></div>';
     return;
@@ -348,7 +387,9 @@ async function hydrateLiveDashboard() {
     state = stateFromSnapshot(snapshot);
     renderAll();
   } catch (error) {
-    console.error('[PCI Creator Portal] live dashboard unavailable; preserving local fallback', {
+    state = { ...structuredClone(liveInitialState), loading: false, error: true };
+    renderAll();
+    console.error('[PCI Creator Portal] live dashboard unavailable; demo content is never used as fallback', {
       code: error?.message || 'unknown_error', status: error?.status || null,
     });
   }
