@@ -6,6 +6,7 @@ window.PCI_CONFIG = Object.freeze({
   supabaseUrl: 'https://dgpmdqmdwqyiwhkbiakd.supabase.co',
   supabasePublishableKey: 'sb_publishable_TGcjjsn4UTMhr70Rjiz1gA_33--XXjR',
   onboardingApiUrl: 'https://dgpmdqmdwqyiwhkbiakd.supabase.co/functions/v1/pci-onboarding-api',
+  invitationApiUrl: 'https://dgpmdqmdwqyiwhkbiakd.supabase.co/functions/v1/pci-invitation-api',
   creatorApiUrl: 'https://dgpmdqmdwqyiwhkbiakd.supabase.co/functions/v1/pci-creator-api',
   dashboardUrl: '../../index.html',
 });
