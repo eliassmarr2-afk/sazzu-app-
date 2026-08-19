@@ -23,26 +23,26 @@
         <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
         <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
         <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
-        <a class="pci-nav__item" href="#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+        <a class="pci-nav__item" href="../payments/"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
       </nav>
       <div class="pci-sidebar__divider"></div>
       <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
-        <a class="pci-nav__item" href="#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
-        <a class="pci-nav__item" href="#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        <a class="pci-nav__item" href="../account/"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="../account/?section=support"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
       </nav>
-      <button class="pci-profile-chip" type="button">
+      <a class="pci-profile-chip" href="../account/" aria-label="Abrir cuenta de Creator">
         <span class="pci-avatar" data-creator-avatar>T</span>
         <span class="pci-profile-chip__copy"><strong data-creator-name>Tomás</strong><small><i></i> Creator</small></span>
         <span class="pci-profile-chip__chevron">⌄</span>
-      </button>
+      </a>
     </aside>
 
     <main class="pci-main pci-works-main">
       <header class="pci-mobile-header">
         <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
-        <span class="pci-brand__mark pci-brand__mark--mobile" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="../" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
         <span class="pci-mobile-page-title">Mis trabajos</span>
-        <span class="pci-avatar pci-avatar--small" data-creator-avatar>T</span>
+        <a class="pci-avatar pci-avatar--small" href="../account/" aria-label="Abrir cuenta" data-creator-avatar>T</a>
       </header>
 
       <section class="pci-works-shell">
@@ -97,22 +97,22 @@
       <a class="pci-bottom-nav__item" href="../opportunities/"><span>◁</span><small>Oportunidades</small></a>
       <a class="pci-bottom-nav__item is-active" href="./"><span>▣</span><small>Mis trabajos</small></a>
       <a class="pci-bottom-nav__item" href="../conversations/"><span>◌</span><small>Conversaciones</small></a>
-      <a class="pci-bottom-nav__item" href="#pagos"><span>▤</span><small>Pagos</small></a>
+      <a class="pci-bottom-nav__item" href="../payments/"><span>▤</span><small>Pagos</small></a>
     </nav>
 
     <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
       <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
       <aside class="pci-mobile-drawer__panel">
         <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
-        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close>×</button>
-        <nav class="pci-nav">
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
+        <nav class="pci-nav" aria-label="Menú móvil completo">
           <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
           <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
           <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
           <a class="pci-nav__item" href="../conversations/"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
-          <a class="pci-nav__item" href="#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
-          <a class="pci-nav__item" href="#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
-          <a class="pci-nav__item" href="#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+          <a class="pci-nav__item" href="../payments/"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="../account/"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="../account/?section=support"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
         </nav>
       </aside>
     </div>
@@ -120,7 +120,6 @@
     <div class="pci-work-toast" data-work-toast hidden></div>
   </div>
 
-  <script type="module" src="./works.js"></script>
-  <script type="module" src="./rights.js"></script>
+  <script type="module" src="./entry.js"></script>
 </body>
 </html>
