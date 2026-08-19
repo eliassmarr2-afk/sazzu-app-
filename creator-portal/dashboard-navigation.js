@@ -1,3 +1,5 @@
+import { getCreatorNegotiations, isDemoMode } from './api-client.js';
+
 function normalizeOpportunitySlotCopy(root = document) {
   root.querySelectorAll('.pci-opportunity-card__slots').forEach((element) => {
     const match = element.textContent.trim().match(/^(\d+)/);
@@ -9,7 +11,27 @@ function normalizeOpportunitySlotCopy(root = document) {
   });
 }
 
-document.addEventListener('click', (event) => {
+async function routeOfferToNegotiation(offerId) {
+  let negotiationId = null;
+
+  if (isDemoMode()) {
+    if (offerId === 'offer-1042') negotiationId = '71111111-1111-4111-8111-111111111111';
+  } else {
+    try {
+      const response = await getCreatorNegotiations();
+      const items = Array.isArray(response?.items) ? response.items : [];
+      negotiationId = items.find((item) => item?.live_offer?.offer_id === offerId)?.negotiation_id ?? null;
+    } catch {
+      negotiationId = null;
+    }
+  }
+
+  const url = new URL('./conversations/', window.location.href);
+  if (negotiationId) url.searchParams.set('id', negotiationId);
+  window.location.href = url.toString();
+}
+
+document.addEventListener('click', async (event) => {
   const target = event.target.closest('[data-portal-action-type]');
   if (!target) return;
   const id = target.getAttribute('data-portal-action');
@@ -27,6 +49,12 @@ document.addEventListener('click', (event) => {
     const url = new URL('./works/', window.location.href);
     url.searchParams.set('id', id);
     window.location.href = url.toString();
+    return;
+  }
+
+  if (type === 'offer') {
+    target.disabled = true;
+    await routeOfferToNegotiation(id);
   }
 });
 
