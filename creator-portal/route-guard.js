@@ -62,14 +62,24 @@ function redirectToSignIn(reason) {
   return redirectTo(signInUrl(), reason);
 }
 
+function relationshipsOf(state) {
+  return Array.isArray(state?.relationships) ? state.relationships : [];
+}
+
 function firstActiveRelationship(state) {
-  const relationships = Array.isArray(state?.relationships) ? state.relationships : [];
-  return relationships.find((item) => item?.status === 'active') || null;
+  return relationshipsOf(state).find((item) => item?.status === 'active') || null;
+}
+
+function hasPendingOnboardingRelationship(state) {
+  return relationshipsOf(state).some((item) => {
+    if (item?.status !== 'invited') return false;
+    const invitationStatus = String(item?.latest_invitation?.status || '');
+    return invitationStatus === 'accepted' || invitationStatus === 'pending';
+  });
 }
 
 function relationshipBlockState(state) {
-  const relationships = Array.isArray(state?.relationships) ? state.relationships : [];
-  return relationships.find((item) => ['restricted', 'suspended', 'closed'].includes(item?.status)) || null;
+  return relationshipsOf(state).find((item) => ['restricted', 'suspended', 'closed'].includes(item?.status)) || null;
 }
 
 function blockCopy(creatorStatus, relationshipStatus) {
@@ -186,6 +196,12 @@ async function resolvePortalAccess() {
     window.PCI_GUARD_CONTEXT = context;
     document.documentElement.setAttribute('data-pci-access', 'active');
     return context;
+  }
+
+  // A Creator may later have multiple workspaces. An invited relationship that can still
+  // complete onboarding must not be hidden by an unrelated restricted/closed relationship.
+  if (hasPendingOnboardingRelationship(state)) {
+    return redirectToOnboarding('onboarding_incomplete');
   }
 
   const relationshipBlocked = relationshipBlockState(state);
