@@ -1,5 +1,7 @@
 import { getPortalConfig, getSession, isDemoMode } from '../api-client.js';
 
+const retryKeys = new Map();
+
 function creatorApiUrl() {
   const config = getPortalConfig();
   const value = String(config.creatorApiUrl ?? '').replace(/\/+$/, '');
@@ -30,12 +32,25 @@ async function creatorRequest(path, options = {}) {
   return body ?? {};
 }
 
-function mutation(path, body = {}, idempotencyKey = crypto.randomUUID()) {
-  return creatorRequest(path, {
-    method: 'POST',
-    headers: { 'Idempotency-Key': idempotencyKey },
-    body: JSON.stringify({ ...body, idempotency_key: idempotencyKey }),
-  });
+async function mutation(path, body = {}, explicitIdempotencyKey = null) {
+  const fingerprint = `${path}:${JSON.stringify(body)}`;
+  const managed = !explicitIdempotencyKey;
+  const idempotencyKey = explicitIdempotencyKey || retryKeys.get(fingerprint) || crypto.randomUUID();
+  if (managed) retryKeys.set(fingerprint, idempotencyKey);
+
+  try {
+    const result = await creatorRequest(path, {
+      method: 'POST',
+      headers: { 'Idempotency-Key': idempotencyKey },
+      body: JSON.stringify({ ...body, idempotency_key: idempotencyKey }),
+    });
+    if (managed) retryKeys.delete(fingerprint);
+    return result;
+  } catch (error) {
+    const shouldKeepForRetry = !error?.status || Number(error.status) >= 500 || String(error?.message || '') === 'pci_command_already_processing';
+    if (managed && !shouldKeepForRetry) retryKeys.delete(fingerprint);
+    throw error;
+  }
 }
 
 export async function getCreatorPaymentAccounts() {
@@ -53,7 +68,7 @@ export async function getCreatorPaymentPayouts() {
   return creatorRequest('/v1/payouts', { method: 'GET' });
 }
 
-export async function createCreatorPaymentAccount(input, idempotencyKey = crypto.randomUUID()) {
+export async function createCreatorPaymentAccount(input, idempotencyKey = null) {
   const provider = String(input?.provider ?? '').trim().toLowerCase();
   const accountType = String(input?.account_type ?? 'transfer').trim().toLowerCase();
   const holderName = String(input?.holder_name ?? '').trim();
@@ -86,12 +101,12 @@ export async function createCreatorPaymentAccount(input, idempotencyKey = crypto
   }, idempotencyKey);
 }
 
-export async function deactivateCreatorPaymentAccount(paymentAccountId, idempotencyKey = crypto.randomUUID()) {
+export async function deactivateCreatorPaymentAccount(paymentAccountId, idempotencyKey = null) {
   if (isDemoMode()) return { ok: true, payment_account_id: paymentAccountId, status: 'inactive', demo: true };
   return mutation(`/v1/payment-accounts/${encodeURIComponent(paymentAccountId)}/deactivate`, {}, idempotencyKey);
 }
 
-export async function confirmCreatorPayableDestination(payableId, paymentAccountId, idempotencyKey = crypto.randomUUID()) {
+export async function confirmCreatorPayableDestination(payableId, paymentAccountId, idempotencyKey = null) {
   if (isDemoMode()) return { ok: true, payable_id: payableId, payment_account_id: paymentAccountId, status: 'ready_to_pay', confirmation_id: crypto.randomUUID(), demo: true };
   return mutation(`/v1/payables/${encodeURIComponent(payableId)}/confirm-payment-account`, {
     payment_account_id: paymentAccountId,
