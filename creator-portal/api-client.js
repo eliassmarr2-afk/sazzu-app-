@@ -7,13 +7,8 @@ function ensureBrowserConfig(requiredKeys = ['supabaseUrl', 'supabasePublishable
   if (missing.length) throw new Error(`pci_portal_config_missing:${missing.join(',')}`);
 }
 
-export function isDemoMode() {
-  return Boolean(config.demoMode);
-}
-
-export function getPortalConfig() {
-  return config;
-}
+export function isDemoMode() { return Boolean(config.demoMode); }
+export function getPortalConfig() { return config; }
 
 export async function getSupabaseClient() {
   ensureBrowserConfig();
@@ -22,13 +17,7 @@ export async function getSupabaseClient() {
     supabaseClientPromise = import('https://esm.sh/@supabase/supabase-js@2.102.0').then(({ createClient }) => createClient(
       config.supabaseUrl,
       config.supabasePublishableKey,
-      {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
-        },
-      },
+      { auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } },
     ));
   }
   return supabaseClientPromise;
@@ -36,10 +25,7 @@ export async function getSupabaseClient() {
 
 export async function getSession() {
   if (config.demoMode) {
-    return {
-      access_token: 'demo-session-token',
-      user: { id: '00000000-0000-4000-8000-000000000001', email: 'tomas@example.com' },
-    };
+    return { access_token: 'demo-session-token', user: { id: '00000000-0000-4000-8000-000000000001', email: 'tomas@example.com' } };
   }
   const client = await getSupabaseClient();
   const { data, error } = await client.auth.getSession();
@@ -56,20 +42,14 @@ export function onAuthStateChange(callback) {
     const result = client.auth.onAuthStateChange((event, session) => callback(event, session));
     subscription = result.data.subscription;
   });
-  return () => {
-    cancelled = true;
-    subscription?.unsubscribe?.();
-  };
+  return () => { cancelled = true; subscription?.unsubscribe?.(); };
 }
 
-function newIdempotencyKey() {
-  return crypto.randomUUID();
-}
+function newIdempotencyKey() { return crypto.randomUUID(); }
 
 async function requestJson(url, options = {}) {
   const session = await getSession();
   if (!session?.access_token) throw new Error('pci_auth_session_required');
-
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -78,7 +58,6 @@ async function requestJson(url, options = {}) {
       ...(options.headers ?? {}),
     },
   });
-
   let body = null;
   try { body = await response.json(); } catch { body = null; }
   if (!response.ok) {
@@ -127,36 +106,23 @@ export async function acceptLegalDocument(invitationId, legalDocument, idempoten
   });
 }
 
-export async function getCreatorOpportunities() {
-  if (config.demoMode) return null;
-  return creatorRequest('/v1/opportunities', { method: 'GET' });
-}
-
-export async function getCreatorSubmissions() {
-  if (config.demoMode) return null;
-  return creatorRequest('/v1/submissions', { method: 'GET' });
-}
-
-export async function getCreatorNegotiations() {
-  if (config.demoMode) return null;
-  return creatorRequest('/v1/negotiations', { method: 'GET' });
-}
-
-export async function getCreatorPayables() {
-  if (config.demoMode) return null;
-  return creatorRequest('/v1/payables', { method: 'GET' });
-}
+export async function getCreatorOpportunities() { return config.demoMode ? null : creatorRequest('/v1/opportunities', { method: 'GET' }); }
+export async function getCreatorSubmissions() { return config.demoMode ? null : creatorRequest('/v1/submissions', { method: 'GET' }); }
+export async function getCreatorNegotiations() { return config.demoMode ? null : creatorRequest('/v1/negotiations', { method: 'GET' }); }
+export async function getCreatorPayables() { return config.demoMode ? null : creatorRequest('/v1/payables', { method: 'GET' }); }
+export async function getCreatorPayouts() { return config.demoMode ? null : creatorRequest('/v1/payouts', { method: 'GET' }); }
 
 export async function getCreatorDashboardSnapshot() {
   if (config.demoMode) return null;
-  const [identity, opportunities, submissions, negotiations, payables] = await Promise.all([
+  const [identity, opportunities, submissions, negotiations, payables, payouts] = await Promise.all([
     getOnboardingState(),
     getCreatorOpportunities(),
     getCreatorSubmissions(),
     getCreatorNegotiations(),
     getCreatorPayables(),
+    getCreatorPayouts(),
   ]);
-  return { identity, opportunities, submissions, negotiations, payables };
+  return { identity, opportunities, submissions, negotiations, payables, payouts };
 }
 
 export async function signOut() {
