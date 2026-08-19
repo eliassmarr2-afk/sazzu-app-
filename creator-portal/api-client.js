@@ -1,10 +1,9 @@
 const config = window.PCI_CONFIG ?? {};
 let supabaseClientPromise = null;
 
-function ensureBrowserConfig() {
+function ensureBrowserConfig(requiredKeys = ['supabaseUrl', 'supabasePublishableKey']) {
   if (config.demoMode) return;
-  const required = ['supabaseUrl', 'supabasePublishableKey', 'onboardingApiUrl'];
-  const missing = required.filter((key) => !String(config[key] ?? '').trim());
+  const missing = requiredKeys.filter((key) => !String(config[key] ?? '').trim());
   if (missing.length) throw new Error(`pci_portal_config_missing:${missing.join(',')}`);
 }
 
@@ -91,14 +90,24 @@ async function requestJson(url, options = {}) {
   return body ?? {};
 }
 
+async function onboardingRequest(path, options = {}) {
+  ensureBrowserConfig(['supabaseUrl', 'supabasePublishableKey', 'onboardingApiUrl']);
+  return requestJson(`${config.onboardingApiUrl}${path}`, options);
+}
+
+async function creatorRequest(path, options = {}) {
+  ensureBrowserConfig(['supabaseUrl', 'supabasePublishableKey', 'creatorApiUrl']);
+  return requestJson(`${config.creatorApiUrl}${path}`, options);
+}
+
 export async function getOnboardingState() {
   if (config.demoMode) return null;
-  return requestJson(`${config.onboardingApiUrl}/v1/creator/state`, { method: 'GET' });
+  return onboardingRequest('/v1/creator/state', { method: 'GET' });
 }
 
 export async function bootstrapInvitation(invitationToken, idempotencyKey = newIdempotencyKey()) {
   if (config.demoMode) return null;
-  return requestJson(`${config.onboardingApiUrl}/v1/creator/bootstrap`, {
+  return onboardingRequest('/v1/creator/bootstrap', {
     method: 'POST',
     headers: { 'Idempotency-Key': idempotencyKey },
     body: JSON.stringify({ invitation_token: invitationToken, idempotency_key: idempotencyKey }),
@@ -107,7 +116,7 @@ export async function bootstrapInvitation(invitationToken, idempotencyKey = newI
 
 export async function acceptLegalDocument(invitationId, legalDocument, idempotencyKey = newIdempotencyKey()) {
   if (config.demoMode) return null;
-  return requestJson(`${config.onboardingApiUrl}/v1/creator/invitations/${encodeURIComponent(invitationId)}/legal-acceptances`, {
+  return onboardingRequest(`/v1/creator/invitations/${encodeURIComponent(invitationId)}/legal-acceptances`, {
     method: 'POST',
     headers: { 'Idempotency-Key': idempotencyKey },
     body: JSON.stringify({
@@ -116,6 +125,38 @@ export async function acceptLegalDocument(invitationId, legalDocument, idempoten
       idempotency_key: idempotencyKey,
     }),
   });
+}
+
+export async function getCreatorOpportunities() {
+  if (config.demoMode) return null;
+  return creatorRequest('/v1/opportunities', { method: 'GET' });
+}
+
+export async function getCreatorSubmissions() {
+  if (config.demoMode) return null;
+  return creatorRequest('/v1/submissions', { method: 'GET' });
+}
+
+export async function getCreatorNegotiations() {
+  if (config.demoMode) return null;
+  return creatorRequest('/v1/negotiations', { method: 'GET' });
+}
+
+export async function getCreatorPayables() {
+  if (config.demoMode) return null;
+  return creatorRequest('/v1/payables', { method: 'GET' });
+}
+
+export async function getCreatorDashboardSnapshot() {
+  if (config.demoMode) return null;
+  const [identity, opportunities, submissions, negotiations, payables] = await Promise.all([
+    getOnboardingState(),
+    getCreatorOpportunities(),
+    getCreatorSubmissions(),
+    getCreatorNegotiations(),
+    getCreatorPayables(),
+  ]);
+  return { identity, opportunities, submissions, negotiations, payables };
 }
 
 export async function signOut() {
