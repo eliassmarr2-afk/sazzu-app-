@@ -17,6 +17,15 @@ function onboardingUrl() {
   return new URL('auth/accept-invitation/', portalRootUrl());
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 function internalReturnValue() {
   const current = new URL(window.location.href);
   const root = portalRootUrl();
@@ -74,6 +83,8 @@ function blockCopy(creatorStatus, relationshipStatus) {
 
 function renderBlocked(state, relationship) {
   const copy = blockCopy(state?.creator_status, relationship?.status);
+  const creatorName = escapeHtml(state?.display_name || 'Creator');
+  const status = escapeHtml(state?.creator_status || relationship?.status || 'bloqueado');
   document.documentElement.setAttribute('data-pci-access', 'blocked');
   document.body.innerHTML = `
     <main class="pci-access-block" role="main">
@@ -83,8 +94,8 @@ function renderBlocked(state, relationship) {
         <h1 id="pci-access-title" tabindex="-1">${copy.title}</h1>
         <span>${copy.message}</span>
         <div class="pci-access-block__meta">
-          <div><small>Creator</small><strong>${String(state?.display_name || 'Creator')}</strong></div>
-          <div><small>Estado</small><strong>${String(state?.creator_status || relationship?.status || 'bloqueado')}</strong></div>
+          <div><small>Creator</small><strong>${creatorName}</strong></div>
+          <div><small>Estado</small><strong>${status}</strong></div>
         </div>
         <button type="button" data-pci-guard-sign-out>Cerrar sesión</button>
       </section>
