@@ -3,7 +3,7 @@
 **Phase:** 1N — Frontend foundation + Auth/onboarding UX  
 **Status:** IN PROGRESS  
 **Theme:** dark only  
-**Production:** not deployed  
+**Production:** not deployed
 
 ## Product boundary
 
@@ -39,7 +39,7 @@ The Creator dashboard is deliberately operational rather than analytical. It ans
 
 Internal ROAS/CPA/L1/L2/L3 and attribution analytics do not belong in this portal.
 
-## Current routes/files
+## Current surfaces
 
 ### `index.html`
 
@@ -71,7 +71,7 @@ State machine:
 
 Error is a separate terminal/retry state.
 
-The invitation token is removed from the visible URL after a successful PCI bootstrap.
+The raw PCI invitation token is removed from the visible URL after successful bootstrap. Legal-document links are restricted to `http:`, `https:` or safe relative/hash paths.
 
 ### `config.js`
 
@@ -93,36 +93,37 @@ It must never contain:
 
 ### `api-client.js`
 
-Browser auth/API adapter.
+Browser Auth/API adapter. Human JWTs are still validated server-side by PCI Edge Functions.
 
-Current real read mapping:
+Current Creator reads:
 
 - `GET pci-onboarding-api/v1/creator/state`
 - `GET pci-creator-api/v1/opportunities`
 - `GET pci-creator-api/v1/submissions`
 - `GET pci-creator-api/v1/negotiations`
 - `GET pci-creator-api/v1/payables`
+- `GET pci-creator-api/v1/payouts`
 
 Current onboarding commands:
 
 - `POST pci-onboarding-api/v1/creator/bootstrap`
 - `POST pci-onboarding-api/v1/creator/invitations/:id/legal-acceptances`
 
-Supabase Auth in browser uses a publishable key with session persistence, token refresh and URL-session detection. Human JWTs are still verified server-side by the Edge Functions.
+Supabase Auth in browser uses only a publishable key with session persistence, token refresh and URL-session detection.
 
 ## Dashboard live-data composition
 
-No new dashboard RPC was introduced in 1N foundation.
+No new dashboard RPC was introduced in 1N foundation. The UI composes the existing safe Creator read models in parallel.
 
-The UI composes the existing safe Creator read models in parallel:
+- open opportunities = current `creator_opportunities` items;
+- in review = submissions in `submitted` / `under_review`;
+- changes requested = submissions in `changes_requested`;
+- attention = change requests + live workspace offers + payment-destination confirmations needed;
+- amount receivable = each non-paid/non-cancelled Payable minus allocations belonging to **confirmed** payouts for that exact Payable.
 
-- open opportunity count = current `creator_opportunities` items;
-- in-review count = submissions in `submitted` / `under_review`;
-- changes count = submissions in `changes_requested`;
-- receivable = non-paid/non-cancelled Creator payables;
-- attention = change requests + live workspace offers + payment-destination confirmations needed.
+This means a partially paid obligation does not inflate the Creator's `Por cobrar` metric back to its original amount.
 
-If multiple currencies are simultaneously outstanding, the summary does not add unlike currencies; it displays `Ver pagos` instead.
+If multiple currencies are simultaneously outstanding, the dashboard never adds unlike currencies. It displays `Ver pagos` instead.
 
 ## Demo/runtime rule
 
@@ -135,12 +136,12 @@ When a disposable Supabase runtime is available:
 1. set a publishable key and test URLs;
 2. set `demoMode: false`;
 3. run the 1M onboarding test gate;
-4. verify dashboard read-model hydration;
+4. verify Dashboard read-model hydration;
 5. do not point this frontend at production until the Creator Security Gate passes.
 
 ## Remaining Phase 1N work
 
-The shell and onboarding foundation do **not** close 1N yet.
+The Dashboard shell and onboarding foundation do **not** close 1N yet.
 
 Remaining Creator screens:
 
@@ -154,4 +155,8 @@ Remaining Creator screens:
 - route-level session guard and active-relationship gate;
 - mobile interaction pass and accessibility pass.
 
-The next frontend slice should be **Opportunities → Brief → Join → Create Submission**, because it is the first task a newly activated Creator performs.
+## Next slice
+
+**Opportunities → Brief → Join → Create Submission**
+
+This is the first full task a newly activated Creator performs, so it is the next implementation slice inside Phase 1N.
