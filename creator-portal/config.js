@@ -13,12 +13,10 @@ window.PCI_CONFIG = Object.freeze({
 // Temporary compatibility shim while Phase 1N finishes replacing legacy hash placeholders.
 // It changes navigation only; it never reads auth/session/business data.
 (function normalizePortalLegacyRoutes() {
+  const configScriptUrl = document.currentScript?.src || '';
   function run() {
-    const marker = '/creator-portal/';
-    const index = window.location.pathname.indexOf(marker);
-    if (index < 0) return;
-    const rootPath = window.location.pathname.slice(0, index + marker.length);
-    const portalRoot = new URL(rootPath, window.location.origin);
+    if (!configScriptUrl) return;
+    const portalRoot = new URL('./', configScriptUrl);
     const replacements = {
       '#pagos': new URL('payments/', portalRoot).toString(),
       '../#pagos': new URL('payments/', portalRoot).toString(),
