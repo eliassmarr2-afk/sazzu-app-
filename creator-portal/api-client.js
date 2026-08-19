@@ -112,6 +112,11 @@ export async function getCreatorNegotiations() { return config.demoMode ? null :
 export async function getCreatorPayables() { return config.demoMode ? null : creatorRequest('/v1/payables', { method: 'GET' }); }
 export async function getCreatorPayouts() { return config.demoMode ? null : creatorRequest('/v1/payouts', { method: 'GET' }); }
 
+export async function getCreatorSubmissionDetail(submissionId) {
+  if (config.demoMode) return null;
+  return creatorRequest(`/v1/submissions/${encodeURIComponent(submissionId)}`, { method: 'GET' });
+}
+
 export async function joinCreatorOpportunity(consignmentId, idempotencyKey = newIdempotencyKey()) {
   if (config.demoMode) {
     return {
@@ -145,6 +150,75 @@ export async function createCreatorSubmission(consignmentId, conceptLabel = null
       consignment_id: consignmentId,
       concept_label: String(conceptLabel ?? '').trim() || null,
       concept_metadata: conceptMetadata && typeof conceptMetadata === 'object' && !Array.isArray(conceptMetadata) ? conceptMetadata : {},
+      idempotency_key: idempotencyKey,
+    }),
+  });
+}
+
+export async function reserveCreatorSubmissionVersion(submissionId, file, idempotencyKey = newIdempotencyKey()) {
+  const name = String(file?.name ?? '').trim();
+  const mimeType = String(file?.type ?? '').trim().toLowerCase();
+  if (!name) throw new Error('pci_upload_file_name_required');
+  if (!['video/mp4', 'video/quicktime'].includes(mimeType)) throw new Error('pci_video_mime_not_allowed');
+
+  if (config.demoMode) {
+    const versionId = crypto.randomUUID();
+    return {
+      ok: true,
+      submission_id: submissionId,
+      submission_version_id: versionId,
+      version_number: 1,
+      status: 'uploading',
+      storage_bucket: 'pci-submissions',
+      storage_path: `demo/${submissionId}/${versionId}/${mimeType === 'video/quicktime' ? 'original.mov' : 'original.mp4'}`,
+      mime_type: mimeType,
+      upload: {
+        protocol: 'tus',
+        endpoint: 'demo://pci-storage',
+        bucket_name: 'pci-submissions',
+        object_name: `demo/${submissionId}/${versionId}`,
+        content_type: mimeType,
+        signature_token: 'demo-signature',
+        signature_header: 'x-signature',
+        chunk_size_bytes: 6 * 1024 * 1024,
+        upsert: false,
+        signed_token_ttl_seconds: 7200,
+      },
+      demo: true,
+    };
+  }
+
+  return creatorRequest(`/v1/submissions/${encodeURIComponent(submissionId)}/versions`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({
+      original_filename: name,
+      mime_type: mimeType,
+      idempotency_key: idempotencyKey,
+    }),
+  });
+}
+
+export async function finalizeCreatorSubmissionVersion(submissionVersionId, metadata, idempotencyKey = newIdempotencyKey()) {
+  const payload = metadata && typeof metadata === 'object' && !Array.isArray(metadata) ? metadata : {};
+  if (config.demoMode) {
+    return {
+      ok: true,
+      submission_version_id: submissionVersionId,
+      version_status: 'ready',
+      submission_status: 'submitted',
+      sha256: payload.sha256 || null,
+      demo: true,
+    };
+  }
+  return creatorRequest(`/v1/versions/${encodeURIComponent(submissionVersionId)}/finalize`, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({
+      sha256: payload.sha256,
+      duration_seconds: payload.duration_seconds ?? null,
+      width: payload.width ?? null,
+      height: payload.height ?? null,
       idempotency_key: idempotencyKey,
     }),
   });
