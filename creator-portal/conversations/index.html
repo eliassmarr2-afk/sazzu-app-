@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Conversaciones · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./conversations.css" />
+  <script src="../config.js"></script>
+</head>
+<body>
+  <div class="pci-app">
+    <aside class="pci-sidebar" aria-label="Navegación principal">
+      <a class="pci-brand pci-brand--link" href="../" aria-label="Protocol Creative Insights · Inicio">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+      <nav class="pci-nav" aria-label="Secciones del portal">
+        <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item" href="../#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+      </nav>
+      <div class="pci-sidebar__divider"></div>
+      <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
+        <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+      </nav>
+      <button class="pci-profile-chip" type="button">
+        <span class="pci-avatar" data-creator-avatar>T</span>
+        <span class="pci-profile-chip__copy"><strong data-creator-name>Tomás</strong><small><i></i> Creator</small></span>
+        <span class="pci-profile-chip__chevron">⌄</span>
+      </button>
+    </aside>
+
+    <main class="pci-main pci-conversations-main">
+      <header class="pci-mobile-header">
+        <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
+        <a class="pci-brand__mark pci-brand__mark--mobile" href="../" aria-label="Ir a Inicio"><i></i><i></i><i></i><i></i></a>
+        <span class="pci-mobile-section-title">Conversaciones</span>
+      </header>
+
+      <section class="pci-conversations-shell">
+        <div class="pci-conversation-loading" data-loading-state>
+          <span class="pci-conversation-spinner"></span>
+          <p>Cargando conversaciones…</p>
+        </div>
+
+        <section class="pci-conversation-list-view" data-list-view hidden>
+          <header class="pci-conversations-header">
+            <div>
+              <p class="pci-eyebrow">Creator Portal</p>
+              <h1>Conversaciones</h1>
+              <p>Hablá con Protocol sobre trabajos preseleccionados y revisá acuerdos comerciales formales.</p>
+            </div>
+          </header>
+
+          <div class="pci-conversation-toolbar">
+            <label class="pci-conversation-search">
+              <span aria-hidden="true">⌕</span>
+              <input type="search" placeholder="Buscar por brief o trabajo…" data-conversation-search />
+            </label>
+            <div class="pci-conversation-filters" aria-label="Filtrar conversaciones">
+              <button class="is-active" type="button" data-conversation-filter="all">Todas</button>
+              <button type="button" data-conversation-filter="action">Requieren acción</button>
+              <button type="button" data-conversation-filter="open">Abiertas</button>
+              <button type="button" data-conversation-filter="closed">Cerradas</button>
+            </div>
+          </div>
+
+          <div class="pci-conversation-count"><strong data-conversation-count>0</strong><span> conversaciones</span></div>
+          <div class="pci-conversation-grid" data-conversation-grid></div>
+          <div class="pci-conversation-empty" data-conversation-empty hidden>
+            <strong>No encontramos conversaciones con ese filtro.</strong>
+            <span>Las negociaciones aparecen cuando Protocol abre un canal comercial sobre una entrega preseleccionada.</span>
+          </div>
+        </section>
+
+        <section class="pci-conversation-detail-view" data-detail-view hidden>
+          <button class="pci-conversation-back" type="button" data-back-to-conversations>← Volver a Conversaciones</button>
+          <div class="pci-conversation-detail-layout">
+            <section class="pci-chat-panel" data-chat-panel></section>
+            <aside class="pci-commercial-panel" data-commercial-panel></aside>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <nav class="pci-bottom-nav" aria-label="Navegación móvil">
+      <a class="pci-bottom-nav__item" href="../"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item" href="../opportunities/"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item" href="../works/"><span>▣</span><small>Mis trabajos</small></a>
+      <a class="pci-bottom-nav__item is-active" href="./"><span>◌</span><small>Conversaciones</small></a>
+      <a class="pci-bottom-nav__item" href="../#pagos"><span>▤</span><small>Pagos</small></a>
+    </nav>
+
+    <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
+      <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
+      <aside class="pci-mobile-drawer__panel">
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
+        <nav class="pci-nav" aria-label="Menú móvil completo">
+          <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item" href="../works/"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item" href="../#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="../#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="../#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        </nav>
+      </aside>
+    </div>
+
+    <div class="pci-conversation-toast" data-conversation-toast hidden></div>
+  </div>
+
+  <dialog class="pci-offer-dialog" data-offer-dialog>
+    <form method="dialog" class="pci-offer-dialog__frame" data-offer-dialog-frame>
+      <button class="pci-offer-dialog__close" value="cancel" aria-label="Cerrar">×</button>
+      <div data-offer-dialog-content></div>
+    </form>
+  </dialog>
+
+  <dialog class="pci-counter-dialog" data-counter-dialog>
+    <form method="dialog" class="pci-counter-dialog__frame" data-counter-form>
+      <button class="pci-offer-dialog__close" value="cancel" aria-label="Cerrar">×</button>
+      <span class="pci-commercial-kicker">CONTRAOFERTA</span>
+      <h2>Proponer otro importe</h2>
+      <p>La versión, derechos y condiciones base siguen siendo los mismos. Solo proponés un importe distinto y una nota comercial.</p>
+      <label class="pci-counter-field"><span>Importe</span><input type="number" min="1" step="1" name="counter_amount" required /></label>
+      <label class="pci-counter-field"><span>Nota (opcional)</span><textarea name="counter_note" maxlength="2000" placeholder="Ej.: puedo avanzar por este importe considerando una ronda adicional de edición."></textarea></label>
+      <div data-counter-error></div>
+      <div class="pci-counter-actions"><button type="button" class="pci-commercial-button" data-counter-cancel>Cancelar</button><button type="submit" class="pci-commercial-button is-primary" data-counter-submit>Enviar contraoferta</button></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./conversations.js"></script>
+</body>
+</html>
