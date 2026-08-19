@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Mis trabajos · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./works.css" />
+  <script src="../config.js"></script>
+</head>
+<body>
+  <div class="pci-app">
+    <aside class="pci-sidebar" aria-label="Navegación principal">
+      <a class="pci-brand pci-brand--link" href="../" aria-label="Protocol Creative Insights · Inicio">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+      <nav class="pci-nav" aria-label="Secciones del portal">
+        <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item" href="#conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item" href="#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+      </nav>
+      <div class="pci-sidebar__divider"></div>
+      <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
+        <a class="pci-nav__item" href="#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+      </nav>
+      <button class="pci-profile-chip" type="button">
+        <span class="pci-avatar" data-creator-avatar>T</span>
+        <span class="pci-profile-chip__copy"><strong data-creator-name>Tomás</strong><small><i></i> Creator</small></span>
+        <span class="pci-profile-chip__chevron">⌄</span>
+      </button>
+    </aside>
+
+    <main class="pci-main pci-works-main">
+      <header class="pci-mobile-header">
+        <button class="pci-icon-button" type="button" data-mobile-menu aria-label="Abrir menú">☰</button>
+        <span class="pci-brand__mark pci-brand__mark--mobile" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-mobile-page-title">Mis trabajos</span>
+        <span class="pci-avatar pci-avatar--small" data-creator-avatar>T</span>
+      </header>
+
+      <section class="pci-works-shell">
+        <div class="pci-work-loading" data-loading-state>
+          <span class="pci-work-spinner"></span>
+          <p>Cargando tus trabajos…</p>
+        </div>
+
+        <section class="pci-work-list-view" data-list-view hidden>
+          <header class="pci-works-header">
+            <div>
+              <p class="pci-eyebrow">Creator Portal</p>
+              <h1>Mis trabajos</h1>
+              <p>Seguí cada entrega, versión y devolución de Protocol desde un solo lugar.</p>
+            </div>
+            <a class="pci-primary-link" href="../opportunities/">Ver oportunidades</a>
+          </header>
+
+          <div class="pci-work-toolbar">
+            <label class="pci-work-search">
+              <span aria-hidden="true">⌕</span>
+              <input type="search" placeholder="Buscar por brief o idea…" data-work-search />
+            </label>
+            <div class="pci-work-filters" aria-label="Filtrar trabajos">
+              <button class="is-active" type="button" data-work-filter="all">Todos</button>
+              <button type="button" data-work-filter="action">Requieren acción</button>
+              <button type="button" data-work-filter="review">En revisión</button>
+              <button type="button" data-work-filter="closed">Cerrados</button>
+            </div>
+          </div>
+
+          <div class="pci-work-count"><strong data-work-count>0</strong><span> trabajos</span></div>
+          <div class="pci-work-grid" data-work-grid></div>
+          <div class="pci-work-empty" data-work-empty hidden>
+            <strong>No encontramos trabajos con ese filtro.</strong>
+            <span>Podés volver a ver todos o revisar las oportunidades abiertas.</span>
+          </div>
+        </section>
+
+        <section class="pci-work-detail-view" data-detail-view hidden>
+          <button class="pci-back-link" type="button" data-back-to-work-list>← Volver a Mis trabajos</button>
+          <div class="pci-work-detail-layout">
+            <div class="pci-work-detail-main" data-work-detail-main></div>
+            <aside class="pci-work-detail-side" data-work-detail-side></aside>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <nav class="pci-bottom-nav" aria-label="Navegación móvil">
+      <a class="pci-bottom-nav__item" href="../"><span>⌂</span><small>Inicio</small></a>
+      <a class="pci-bottom-nav__item" href="../opportunities/"><span>◁</span><small>Oportunidades</small></a>
+      <a class="pci-bottom-nav__item is-active" href="./"><span>▣</span><small>Mis trabajos</small></a>
+      <a class="pci-bottom-nav__item" href="#conversaciones"><span>◌</span><small>Conversaciones</small></a>
+      <a class="pci-bottom-nav__item" href="#pagos"><span>▤</span><small>Pagos</small></a>
+    </nav>
+
+    <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
+      <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
+      <aside class="pci-mobile-drawer__panel">
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
+        <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close>×</button>
+        <nav class="pci-nav">
+          <a class="pci-nav__item" href="../"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="../opportunities/"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item is-active" href="./"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item" href="#conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item" href="#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+        </nav>
+      </aside>
+    </div>
+
+    <div class="pci-work-toast" data-work-toast hidden></div>
+  </div>
+
+  <script type="module" src="./works.js"></script>
+</body>
+</html>
