@@ -10,13 +10,24 @@ function normalizeOpportunitySlotCopy(root = document) {
 }
 
 document.addEventListener('click', (event) => {
-  const target = event.target.closest('[data-portal-action-type="opportunity"]');
+  const target = event.target.closest('[data-portal-action-type]');
   if (!target) return;
   const id = target.getAttribute('data-portal-action');
-  if (!id) return;
-  const url = new URL('./opportunities/', window.location.href);
-  url.searchParams.set('id', id);
-  window.location.href = url.toString();
+  const type = target.getAttribute('data-portal-action-type');
+  if (!id || !type) return;
+
+  if (type === 'opportunity') {
+    const url = new URL('./opportunities/', window.location.href);
+    url.searchParams.set('id', id);
+    window.location.href = url.toString();
+    return;
+  }
+
+  if (type === 'changes_requested') {
+    const url = new URL('./works/', window.location.href);
+    url.searchParams.set('id', id);
+    window.location.href = url.toString();
+  }
 });
 
 const opportunitiesRoot = document.querySelector('[data-opportunities]');
