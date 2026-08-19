@@ -10,7 +10,7 @@ window.PCI_CONFIG = Object.freeze({
   dashboardUrl: '../../index.html',
 });
 
-// Shared non-business bootstrap: accessibility layer + compatibility navigation.
+// Shared non-business bootstrap: access-paint guard + accessibility + compatibility navigation.
 // It never reads auth/session/business data.
 (function bootstrapCreatorPortalShell() {
   const configScriptUrl = document.currentScript?.src || '';
@@ -22,7 +22,13 @@ window.PCI_CONFIG = Object.freeze({
     : '';
   const isAuthSurface = relativePath.startsWith('auth/');
 
-  if (!isAuthSurface) document.documentElement.setAttribute('data-pci-access', 'checking');
+  if (!isAuthSurface) {
+    document.documentElement.setAttribute('data-pci-access', 'checking');
+    const paintGuard = document.createElement('style');
+    paintGuard.setAttribute('data-pci-paint-guard', '');
+    paintGuard.textContent = 'html[data-pci-access="checking"] body{background:#0f0f10}html[data-pci-access="checking"] .pci-app{visibility:hidden}';
+    document.head.appendChild(paintGuard);
+  }
 
   const accessibility = document.createElement('link');
   accessibility.rel = 'stylesheet';
