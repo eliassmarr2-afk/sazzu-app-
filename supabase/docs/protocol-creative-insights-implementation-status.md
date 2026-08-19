@@ -13,7 +13,7 @@ Backend phases through **1M** remain code-complete. Phase 1N is implementing the
 
 Current lifecycle represented in code:
 
-`Protocol invitation → Supabase Auth → exact legal acceptance → Creator ACTIVE → opportunity/brief → participation → Submission → immutable V1/V2 upload → creative review/revisions → Creator rights declaration → Protocol rights clearance → preselection → negotiation → immutable formal offer/counteroffer → atomic acceptance → Purchase + Payable + Rights pending_payment → payment destination confirmation → manual payout → Payable paid → Rights active → Creative Asset provisioning → worker copy → Asset available → Submission acquired → Purchase settled.`
+`Protocol invitation → Supabase Auth → exact legal acceptance → Creator ACTIVE → opportunity/brief → participation → Submission → immutable V1/V2 upload → creative review/revisions → Creator rights declaration → Protocol rights clearance → preselection → negotiation/messages → immutable formal offer/counteroffer → atomic acceptance → Purchase + Payable + Rights pending_payment → payment destination confirmation → manual payout → Payable paid → Rights active → Creative Asset provisioning → worker copy → Asset available → Submission acquired → Purchase settled.`
 
 Meta Ads execution remains explicitly out of scope.
 
@@ -26,8 +26,8 @@ Meta Ads execution remains explicitly out of scope.
 - Browser clients never receive `service_role`.
 - Creator identity is derived server-side from Supabase Auth.
 - Auth is not authorization; commercial commands require valid Creator/workspace state.
-- Accepted brief revisions, media versions, declarations, reviews, offers, purchases and payment evidence retain immutable/append-only history where required.
-- Production remains untouched until disposable-runtime validation and the Creator Security Gate are complete.
+- Accepted brief revisions, versions, declarations, reviews, offers, purchases and payment evidence remain immutable/append-only where required.
+- Production remains untouched until disposable-runtime validation and Creator Security Gate completion.
 
 ## API/machine surfaces
 
@@ -38,10 +38,10 @@ Internal Protocol API for review, rights clearance, negotiation/offers, payments
 External Creator API for opportunities, participation, submissions, signed upload/finalization, rights declaration, negotiation/offers and payment actions/visibility.
 
 ### `pci-onboarding-api`
-Invitation/Auth/legal bootstrap only. It intentionally exposes no commercial commands.
+Invitation/Auth/legal bootstrap only. No commercial commands.
 
 ### `pci-worker`
-Internal machine-only surface for outbox side effects, currently Creative Asset promotion.
+Internal machine-only outbox worker, currently including Creative Asset promotion.
 
 ## Creator Portal visual/product boundary
 
@@ -66,125 +66,139 @@ Creators never receive Protocol Data's internal sidebar, ROAS/CPA/L1/L2/L3 analy
 
 ### 1N.1 — Dashboard foundation
 
-Implemented desktop/mobile Creator shell, summary cards, `Requiere tu atención`, opportunities and demo/live safe hydration.
+Desktop/mobile Creator shell, summary cards, `Requiere tu atención`, opportunities and safe demo/live hydration.
 
-The Dashboard composes safe read models and calculates receivable net of confirmed payout allocations. Multiple currencies are not incorrectly summed.
+Dashboard calculates receivable net of confirmed payout allocations and never sums unlike currencies.
 
 ### 1N.2 — Auth/onboarding UX
 
-Implemented:
-
 `Invite → Auth → PCI bootstrap → exact legal acceptance → workspace relationship ACTIVE → Dashboard`
 
-Browser uses only a Supabase publishable key. Raw PCI invitation token is removed from the visible URL after bootstrap.
+Browser uses only a Supabase publishable key. Raw invitation token is removed from the visible URL after bootstrap.
 
 ### 1N.3 — Opportunities → Brief → Participation → Submission DRAFT
 
-Implemented Creator-safe opportunity search/filters, exact accepted brief, open join, invite-only acceptance, exact revision preservation, existing-Submission detection and DRAFT creation.
+Implemented safe opportunity search/filters, exact frozen brief, open join, invite-only acceptance, revision preservation, existing-Submission detection and DRAFT creation.
 
-`slots_available` is shown as the number of assets Protocol seeks to acquire, not fake remaining Creator seats.
+`slots_available` is communicated as the number of assets Protocol seeks to acquire, not fake remaining Creator seats.
 
 ### 1N.4 — Mis trabajos → V1/V2 → signed TUS → finalize
 
 Implemented:
 
-`DRAFT / CHANGES_REQUESTED → select MP4/MOV → validate → reserve exact Version → signed TUS + incremental SHA-256 → backend Storage verification → finalize → Version READY → Submission SUBMITTED`
+`DRAFT / CHANGES_REQUESTED → select MP4/MOV → validate → reserve exact Version → signed TUS + incremental SHA-256 → Storage verification → finalize → Version READY → Submission SUBMITTED`
 
-For requested revisions, V1 remains immutable and V2 gets a new backend-generated path.
+V1 remains immutable when V2 is created.
 
-Upload safeguards include:
+Upload safeguards:
 
 - `tus-js-client@4.3.1`;
-- signed `x-signature` token;
+- signed `x-signature`;
 - `x-upsert:false`;
 - 6 MiB chunks;
 - resume fingerprint scoped by `submission_version_id`;
-- SHA-256 Web Worker using `hash-wasm@4.12.0`;
+- SHA-256 Web Worker with `hash-wasm@4.12.0`;
 - signed reservation only in `sessionStorage`;
-- retry/finalize semantics that do not create accidental V2/V3.
+- retries/finalize do not create accidental V2/V3.
 
-Full browser-loss recovery for a genuinely incomplete TUS transfer remains a runtime test-gate item.
+Full browser-loss recovery for a genuinely incomplete TUS upload remains a runtime test-gate item.
 
-### 1N.5 — Rights declaration + review/preselection context
-
-Implemented inside `creator-portal/works/`.
+### 1N.5 — Rights declaration + clearance/preselection context
 
 Visible progression:
 
-```text
-Version READY
-  ↓
-Creator rights/origin declaration
-  ↓
-Protocol rights clearance
-  ↓
-Creative preselection
-  ↓
-Ready for negotiation
-```
+`Version READY → Creator factual rights/origin declaration → Protocol clearance → Creative preselection → ready for negotiation`
 
-Creative review and rights clearance remain separate tracks. Preselection is not a purchase and does not bypass clearance.
+Creative review and rights clearance remain separate tracks.
 
-When the Submission is `changes_requested`, the portal does not ask the Creator to declare the old version that must be replaced; declaration is requested after the replacement V becomes READY.
+Rights declaration schema v1 validates:
 
-#### Rights declaration schema v1
-
-The database now validates a strict factual schema:
-
-- Creator authorship/origin;
+- origin/authorship;
 - third-party assets + authorization;
-- music/audio source + commercial-use confirmation;
-- generative-AI use + tool;
-- identifiable people + adult/permission confirmations;
+- music/audio + commercial-use confirmation;
+- generative AI + tool;
+- identifiable people + adult/permission confirmation;
 - factual accuracy certification.
 
-The frontend performs matching local validation before sending the command.
+Missing/unexpected keys are rejected. The MVP excludes identifiable minors.
 
-The declaration is evidence about an exact `submission_version_id`. It is not the Creator legal agreement and does not transfer rights by itself.
+The declaration is evidence for an exact Version; it is not a transfer of rights. Any existing Rights Grant locks later edits.
 
-Any existing Rights Grant locks the declaration against further edits.
+Creator-safe detail exposes declaration/clearance history without reviewer identities, internal notes or internal summaries.
 
-Editing before that lock resets clearance to `pending`, requiring Protocol review again.
+Dashboard attention includes missing declaration and `flagged` clearance, but not ordinary `pending` clearance after Creator submission.
 
-#### Creator-safe clearance projection
+### 1N.6 — Conversations + Formal Offer UX
 
-`creator_submission_detail()` now returns:
+Implemented route:
 
-- Creator's own declaration;
-- declaration submission timestamp;
-- `rights_declaration_locked`;
-- current clearance status;
-- append-only Creator-facing clearance history/reason.
+`creator-portal/conversations/`
 
-It does not return Protocol reviewer identity, internal notes or internal summaries.
+Primary product rule:
 
-A `flagged` clearance reason is explicitly Creator-facing corrective feedback. Private analysis belongs in `pci.internal_notes`.
+> Chat contextual is not contractual. A Formal Offer is a distinct commercial object.
 
-#### Dashboard rights actions
+Desktop separates chat and Commercial Agreement into different columns. Mobile renders the Formal Offer as a structured commercial block above chat, never as a message bubble.
 
-`creator_submissions()` exposes only minimum list-safe rights state, not the declaration JSON.
+Conversation list/detail supports:
 
-Dashboard `Requiere tu atención` now includes:
+- exact accepted brief title/revision;
+- exact current Version context;
+- Creator-safe message history;
+- message composer for open negotiations;
+- live-offer action state;
+- immutable offer history.
 
-- missing declaration on current READY version;
-- `flagged` clearance requiring Creator correction.
+Formal Offer UI displays:
 
-A normal `pending` clearance after declaration is not shown as Creator work because the next action belongs to Protocol.
+- amount/currency;
+- proposed-by side;
+- exact Version number;
+- filename;
+- SHA-256;
+- Version identifier;
+- expiry;
+- rights snapshot;
+- payment snapshot;
+- bonus/performance snapshot;
+- commercial terms.
 
-#### Save/refresh semantics
+Actions:
 
-After a declaration command returns success, the UI immediately reflects `pending`. A later GET refresh failure cannot falsely report that the declaration failed.
+- message;
+- reject live workspace offer;
+- counter live workspace offer;
+- two-step accept confirmation.
 
-## Exact brief/version invariants retained
+Creator counteroffer preserves exact Version, item terms, rights and payment snapshots; only amount + optional note change.
 
-- Before participation → current published Consignment revision.
-- Invited/active participation → exact `consignment_participations.consignment_revision_id`.
-- Submission list/detail → exact participation revision forever.
-- V1/V2 media byte identity remains immutable after READY.
-- A formal offer can reference only the exact current READY version explicitly preselected by Protocol.
-- Rights declaration becomes immutable once any Rights Grant exists.
+A live Creator counteroffer renders as `esperando Protocol` and exposes no action buttons against the Creator's own offer.
 
-## New Phase 1N support migrations
+A `sent` offer whose `expires_at` is already elapsed is treated as expired/non-actionable by frontend even before the expiration worker persists the state. Backend revalidates on command execution.
+
+Acceptance uses the existing atomic 1J command:
+
+`Offer accepted + Purchase agreed + Payable awaiting_confirmation + Rights pending_payment + Negotiation closed`
+
+The Creator UI cannot independently create those objects and does not claim Rights are active after acceptance.
+
+Dashboard `OFERTA PENDIENTE` resolves the offer to the exact negotiation before navigation.
+
+Detailed 1N.6 test gate lives in `creator-portal/conversations/README.md`.
+
+## Exact brief/version/commercial invariants retained
+
+- before participation → current published Consignment revision;
+- invited/active participation → exact participation revision;
+- Submission list/detail → exact participation revision forever;
+- media byte identity immutable after READY;
+- formal offer references only exact current READY version preselected by Protocol;
+- offer item carries V#/SHA/filename snapshot through counteroffers;
+- rights declaration immutable after any Rights Grant;
+- chat messages cannot mutate offer terms;
+- acceptance remains an atomic backend transaction.
+
+## Phase 1N support migrations
 
 After backend Phase 1M:
 
@@ -195,18 +209,19 @@ After backend Phase 1M:
 - `20260819_051_pci_creator_rights_declaration_v1_and_safe_projection.sql`
 - `20260819_052_pci_creator_rights_declaration_required_keys_hardening.sql`
 - `20260819_053_pci_creator_submissions_rights_action_projection.sql`
+- `20260819_054_pci_creator_negotiation_commercial_projection.sql`
 
-All prior PCI migrations `001–046` remain part of the branch.
+Migrations `052` and `053` were explicitly re-read after a compare display anomaly and contain the expected SQL.
 
-None have been applied to production.
+All previous PCI migrations remain in the branch. None have been applied to production.
 
 ## Safe browser boundary
 
 `creator-portal/config.js` remains `demoMode:true` while runtime validation is deferred.
 
-Browser config may eventually contain only Supabase URL, publishable key and Edge Function URLs.
+Browser config may contain only Supabase URL, publishable key and Edge Function public URLs.
 
-It must never contain service-role, PCI invitation-HMAC, payment-encryption, worker or database secrets.
+It must never contain service-role, invitation-HMAC, payment-encryption, worker or database secrets.
 
 Commercial writes continue through authenticated PCI Edge Functions. No direct browser business-table writes were added.
 
@@ -216,40 +231,42 @@ Everything remains **Git-only / runtime-unvalidated**.
 
 The concentrated disposable-runtime window still must prove:
 
-- SQL compilation and migration order;
+- SQL compilation/migration ordering;
 - Edge Function runtime/CORS;
-- Auth redirects and onboarding email behavior;
-- signed TUS against private Storage;
+- Auth redirect/onboarding email behavior;
+- private signed TUS Storage behavior;
 - MIME/size observations;
-- mobile resumable behavior;
-- network/refresh/full-browser-loss upload recovery;
-- rights schema valid/invalid payloads;
-- rights resubmission/flagged/complete/lock behavior;
+- mobile resumable upload behavior;
+- network/refresh/full-browser-loss recovery;
+- rights schema/clearance/lock behavior;
+- negotiation message idempotency;
+- expired/superseded/live offer behavior;
+- counteroffer snapshot preservation;
+- atomic acceptance retry/double-click/lost-response behavior;
 - Creator A/B cross-account/BOLA isolation;
 - payment encryption/decryption;
+- payout lifecycle;
 - asset worker promotion;
-- complete state-transition/idempotency lifecycle.
+- full state-transition lifecycle.
+
+A local automated JavaScript syntax check for the new Conversations files was attempted but not executed because the container could not retrieve the GitHub branch directly in that environment. The files received connected/manual review only; this does not change `RUNTIME UNVALIDATED` status.
 
 The paid Supabase development branch remains deliberately deferred and must not be created without explicit cost confirmation/approval.
 
 ## Security gate before external Creator launch
 
-No Creator pilot before disposable-runtime validation, adversarial Auth/BOLA/Storage tests, legacy public/authenticated RPC audit/hardening, secret/cron cleanup where required, runtime deletion after testing and explicit production approval.
+No Creator pilot before disposable-runtime validation, Auth/BOLA/Storage adversarial tests, legacy public/authenticated RPC audit/hardening, secret/cron cleanup where required, runtime deletion after testing and explicit production approval.
 
 ## Next Phase 1N slice
 
-**1N.6 — Conversations + formal offer UX**
-
-Primary UX rule:
-
-> Chat contextual is not contractual. A formal offer is a distinct commercial object.
+**1N.7 — Payments + payment-account confirmation + payout history/proofs**
 
 Target Creator flow:
 
-`Preselected + clearance complete → Negotiation → messages → formal offer card → exact Version/price/currency/rights/payment/expiry → accept / reject / counter`.
+`Offer accepted → Purchase/Payable visible → awaiting_confirmation → create/select payout destination → confirm exact destination → ready_to_pay → Protocol transfer → payout history/proof → paid`.
 
-The UI must make it visually impossible to confuse a chat message with a binding acquisition offer.
+The Creator frontend must never set a Payable to `paid` or activate Rights. Those transitions remain authoritative backend operations.
 
-After that: Payments + payment-account confirmation/history, My Account, route/security consistency and final mobile/accessibility pass.
+After 1N.7: My Account, route/session/active-relationship consistency and final mobile/accessibility pass.
 
 Phase 1N remains **IN PROGRESS / RUNTIME UNVALIDATED**.
