@@ -1,5 +1,6 @@
 const config = window.PCI_CONFIG ?? {};
 let supabaseClientPromise = null;
+let creatorSubmissionsReadPromise = null;
 
 function ensureBrowserConfig(requiredKeys = ['supabaseUrl', 'supabasePublishableKey']) {
   if (config.demoMode) return;
@@ -107,7 +108,14 @@ export async function acceptLegalDocument(invitationId, legalDocument, idempoten
 }
 
 export async function getCreatorOpportunities() { return config.demoMode ? null : creatorRequest('/v1/opportunities', { method: 'GET' }); }
-export async function getCreatorSubmissions() { return config.demoMode ? null : creatorRequest('/v1/submissions', { method: 'GET' }); }
+export async function getCreatorSubmissions() {
+  if (config.demoMode) return null;
+  if (!creatorSubmissionsReadPromise) {
+    creatorSubmissionsReadPromise = creatorRequest('/v1/submissions', { method: 'GET' });
+    setTimeout(() => { creatorSubmissionsReadPromise = null; }, 0);
+  }
+  return creatorSubmissionsReadPromise;
+}
 export async function getCreatorNegotiations() { return config.demoMode ? null : creatorRequest('/v1/negotiations', { method: 'GET' }); }
 export async function getCreatorPayables() { return config.demoMode ? null : creatorRequest('/v1/payables', { method: 'GET' }); }
 export async function getCreatorPayouts() { return config.demoMode ? null : creatorRequest('/v1/payouts', { method: 'GET' }); }
