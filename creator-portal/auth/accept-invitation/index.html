@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Activar cuenta · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="../../onboarding.css" />
+  <script src="../../config.js"></script>
+</head>
+<body class="pci-onboarding-page">
+  <main class="pci-onboarding-shell">
+    <section class="pci-onboarding-brand" aria-label="Protocol Creative Insights">
+      <div class="pci-brand pci-onboarding-brand__inner">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </div>
+      <div class="pci-onboarding-brand__message">
+        <p class="pci-eyebrow pci-eyebrow--visible">CREATOR PORTAL</p>
+        <h1>Tu trabajo.<br />Tus condiciones.<br />Tus pagos.</h1>
+        <p>Protocol Creative Insights organiza oportunidades, revisiones, ofertas y cobros en un solo lugar.</p>
+      </div>
+      <p class="pci-onboarding-trust">Mientras no te paguemos, tu video sigue siendo tuyo.</p>
+    </section>
+
+    <section class="pci-onboarding-content">
+      <div class="pci-onboarding-card" data-onboarding-root>
+        <div class="pci-onboarding-progress" aria-label="Progreso de activación">
+          <span class="is-active" data-progress-step="auth"><i>1</i>Acceso</span>
+          <b></b>
+          <span data-progress-step="terms"><i>2</i>Condiciones</span>
+          <b></b>
+          <span data-progress-step="ready"><i>3</i>Listo</span>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="loading">
+          <span class="pci-spinner" aria-hidden="true"></span>
+          <h2>Estamos validando tu acceso</h2>
+          <p>Comprobamos tu sesión y la invitación de Protocol.</p>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="auth-required" hidden>
+          <span class="pci-state-icon pci-state-icon--blue" aria-hidden="true">→</span>
+          <p class="pci-onboarding-kicker">PASO 1 DE 3</p>
+          <h2>Ingresá desde tu invitación</h2>
+          <p>Necesitamos una sesión válida de Supabase Auth antes de vincular tu cuenta de Creator.</p>
+          <button class="pci-primary-button" type="button" data-retry-auth>Volver a comprobar</button>
+          <small>Si abriste este enlace desde otro navegador, volvé al correo de invitación y abrilo nuevamente.</small>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="bootstrap" hidden>
+          <span class="pci-state-icon pci-state-icon--blue" aria-hidden="true">✓</span>
+          <p class="pci-onboarding-kicker">ACCESO VALIDADO</p>
+          <h2>Activemos tu perfil de Creator</h2>
+          <p>Tu identidad ya fue autenticada. Ahora vinculamos esta sesión con la invitación exacta que te envió Protocol.</p>
+          <div class="pci-identity-card">
+            <span class="pci-avatar">T</span>
+            <div><strong data-auth-email>—</strong><small>Cuenta autenticada</small></div>
+          </div>
+          <button class="pci-primary-button" type="button" data-bootstrap>Continuar</button>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="terms" hidden>
+          <p class="pci-onboarding-kicker">PASO 2 DE 3</p>
+          <h2>Revisá las condiciones</h2>
+          <p>Para trabajar con Protocol necesitás aceptar estas versiones exactas. Cada aceptación queda registrada con su versión y hash.</p>
+          <div class="pci-legal-list" data-legal-list></div>
+          <label class="pci-legal-confirmation">
+            <input type="checkbox" data-legal-confirm-all />
+            <span>Leí y acepto los documentos indicados arriba.</span>
+          </label>
+          <button class="pci-primary-button" type="button" data-accept-terms disabled>Aceptar y activar mi cuenta</button>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="ready" hidden>
+          <span class="pci-state-icon pci-state-icon--green" aria-hidden="true">✓</span>
+          <p class="pci-onboarding-kicker">CUENTA ACTIVA</p>
+          <h2>Ya podés trabajar con Protocol</h2>
+          <p>Tu perfil quedó activo. Desde ahora vas a poder ver oportunidades, entregar creativos, responder revisiones y seguir tus pagos.</p>
+          <div class="pci-ready-summary">
+            <div><span>Estado</span><strong>Creator activo</strong></div>
+            <div><span>Acceso</span><strong>Oportunidades habilitadas</strong></div>
+          </div>
+          <a class="pci-primary-button pci-primary-button--link" href="../../index.html">Entrar a Creative Insights</a>
+        </div>
+
+        <div class="pci-onboarding-state" data-state="error" hidden>
+          <span class="pci-state-icon pci-state-icon--red" aria-hidden="true">!</span>
+          <p class="pci-onboarding-kicker">NO PUDIMOS ACTIVAR EL ACCESO</p>
+          <h2 data-error-title>La invitación no pudo validarse</h2>
+          <p data-error-message>El enlace puede haber vencido, sido revocado o corresponder a otra cuenta.</p>
+          <button class="pci-secondary-button pci-secondary-button--wide" type="button" data-retry>Reintentar</button>
+          <small data-error-code></small>
+        </div>
+      </div>
+
+      <footer class="pci-onboarding-footer">
+        <span>Protocol Creative Insights</span>
+        <span>·</span>
+        <button type="button" data-sign-out>Cerrar sesión</button>
+      </footer>
+    </section>
+  </main>
+
+  <script type="module" src="../../onboarding.js"></script>
+</body>
+</html>
