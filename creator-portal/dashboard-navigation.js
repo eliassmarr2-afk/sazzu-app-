@@ -23,7 +23,7 @@ document.addEventListener('click', (event) => {
     return;
   }
 
-  if (type === 'changes_requested') {
+  if (type === 'changes_requested' || type === 'rights_declaration') {
     const url = new URL('./works/', window.location.href);
     url.searchParams.set('id', id);
     window.location.href = url.toString();
