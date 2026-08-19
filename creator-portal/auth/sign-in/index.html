@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f0f10" />
+  <title>Ingresar · Protocol Creative Insights</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <link rel="stylesheet" href="./sign-in.css" />
+  <script src="../../config.js"></script>
+</head>
+<body class="pci-sign-in-page">
+  <main class="pci-sign-in-shell">
+    <section class="pci-sign-in-brand" aria-label="Protocol Creative Insights">
+      <a class="pci-brand" href="../../" aria-label="Protocol Creative Insights">
+        <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
+      </a>
+      <div class="pci-sign-in-brand__copy">
+        <p class="pci-eyebrow">CREATOR PORTAL</p>
+        <h1>Volvé a tu trabajo<br />sin recordar contraseñas.</h1>
+        <p>Te enviamos un enlace de acceso al correo asociado a tu cuenta de Creator.</p>
+      </div>
+      <span>El login no crea cuentas nuevas. El alta sigue requiriendo una invitación de Protocol.</span>
+    </section>
+
+    <section class="pci-sign-in-content">
+      <div class="pci-sign-in-card" data-sign-in-root>
+        <div data-sign-in-state="loading">
+          <span class="pci-sign-in-spinner" aria-hidden="true"></span>
+          <h2>Estamos revisando tu sesión</h2>
+          <p>Si seguís autenticado, vas a entrar directamente.</p>
+        </div>
+
+        <div data-sign-in-state="form" hidden>
+          <p class="pci-sign-in-kicker">ACCESO PARA CREATORS</p>
+          <h2>Ingresar con Magic Link</h2>
+          <p data-sign-in-context>Usá el mismo correo con el que Protocol activó tu perfil.</p>
+          <form data-sign-in-form>
+            <label><span>Correo</span><input type="email" name="email" autocomplete="email" maxlength="320" required placeholder="tu@email.com" /></label>
+            <div class="pci-sign-in-error" data-sign-in-error hidden></div>
+            <button class="pci-sign-in-primary" type="submit" data-sign-in-submit>Enviar enlace de acceso</button>
+          </form>
+          <small>Si todavía no sos Creator, necesitás abrir la invitación original de Protocol.</small>
+        </div>
+
+        <div data-sign-in-state="sent" hidden>
+          <span class="pci-sign-in-state-icon" aria-hidden="true">✉</span>
+          <p class="pci-sign-in-kicker">REVISÁ TU CORREO</p>
+          <h2>Te enviamos instrucciones de acceso</h2>
+          <p>Si ese correo está habilitado para ingresar, vas a recibir un Magic Link. El enlace es de un solo uso.</p>
+          <button class="pci-sign-in-secondary" type="button" data-sign-in-again>Usar otro correo</button>
+          <a class="pci-sign-in-primary pci-sign-in-primary--link" href="../../" data-demo-enter hidden>Entrar al portal demo</a>
+        </div>
+
+        <div data-sign-in-state="unlinked" hidden>
+          <span class="pci-sign-in-state-icon pci-sign-in-state-icon--warn" aria-hidden="true">!</span>
+          <p class="pci-sign-in-kicker">SIN ACCESO PCI</p>
+          <h2>Esta cuenta no está vinculada a un Creator</h2>
+          <p>El login no puede vincular cuentas por sí solo. Para una primera activación necesitás usar una invitación válida de Protocol.</p>
+          <button class="pci-sign-in-secondary" type="button" data-sign-out>Usar otra cuenta</button>
+        </div>
+
+        <div data-sign-in-state="error" hidden>
+          <span class="pci-sign-in-state-icon pci-sign-in-state-icon--warn" aria-hidden="true">!</span>
+          <p class="pci-sign-in-kicker">NO PUDIMOS CONTINUAR</p>
+          <h2>El acceso no está disponible ahora</h2>
+          <p data-sign-in-error-message>Reintentá en unos instantes.</p>
+          <button class="pci-sign-in-secondary" type="button" data-sign-in-retry>Reintentar</button>
+        </div>
+      </div>
+
+      <footer class="pci-sign-in-footer">
+        <span>Protocol Creative Insights</span>
+        <a href="../accept-invitation/">Tengo una invitación nueva</a>
+      </footer>
+    </section>
+  </main>
+
+  <script type="module" src="./sign-in.js"></script>
+</body>
+</html>
