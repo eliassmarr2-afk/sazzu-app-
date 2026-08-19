@@ -5,6 +5,7 @@ const config = getPortalConfig();
 const output = document.querySelector('#output');
 const sessionState = document.querySelector('#session-state');
 const operatorEmail = document.querySelector('#operator-email');
+const operatorPassword = document.querySelector('#operator-password');
 
 function clean(value) { return String(value ?? '').trim(); }
 function show(value) { output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2); }
@@ -53,6 +54,19 @@ async function refreshSession() {
   sessionState.className = 'ok';
   sessionState.textContent = `Sesión válida · ${session.user?.email || 'sin email'} · ${session.user?.id || ''}`;
   return session;
+}
+
+async function signInWithPassword() {
+  const email = clean(operatorEmail.value).toLowerCase();
+  const password = String(operatorPassword?.value ?? '');
+  if (!email) throw new Error('operator_email_required');
+  if (!password) throw new Error('operator_password_required');
+  const client = await getSupabaseClient();
+  const { data, error } = await client.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  if (operatorPassword) operatorPassword.value = '';
+  await refreshSession();
+  show({ ok: true, signed_in: Boolean(data?.session?.access_token), user: data?.user ? { id: data.user.id, email: data.user.email } : null });
 }
 
 async function sendMagicLink() {
@@ -146,17 +160,18 @@ function bind(selector, handler) {
     try { await handler(); }
     catch (error) {
       console.error(error);
-      show({ ok: false, code: error?.message || 'runtime_harness_error', status: error?.status || null, payload: error?.payload || null });
+      show({ ok: false, code: error?.message || 'runtime_harness_error', status: error?.status || error?.statusCode || null, payload: error?.payload || null });
     } finally { button.disabled = false; }
   });
 }
 
+bind('#sign-in-password', signInWithPassword);
 bind('#send-link', sendMagicLink);
 bind('#refresh-session', refreshSession);
 bind('#verify-operator', verifyOperator);
 bind('#publish-legal', publishLegalDocuments);
 bind('#invite-creator', inviteCreator);
 bind('#list-invitations', listInvitations);
-bind('#sign-out', async () => { await signOut(); await refreshSession(); show('Sesión cerrada.'); });
+bind('#sign-out', async () => { await signOut(); if (operatorPassword) operatorPassword.value = ''; await refreshSession(); show('Sesión cerrada.'); });
 
 refreshSession().catch((error) => show({ ok: false, code: error?.message || 'session_check_failed' }));
