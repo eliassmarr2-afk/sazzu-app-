@@ -2,7 +2,6 @@ import {
   acceptLegalDocument,
   bootstrapInvitation,
   getOnboardingState,
-  getPortalConfig,
   getSession,
   isDemoMode,
   onAuthStateChange,
@@ -17,7 +16,6 @@ const legalList = document.querySelector('[data-legal-list]');
 const confirmAll = document.querySelector('[data-legal-confirm-all]');
 const acceptButton = document.querySelector('[data-accept-terms]');
 const authEmail = document.querySelector('[data-auth-email]');
-const config = getPortalConfig();
 
 let currentSession = null;
 let invitationToken = new URL(window.location.href).searchParams.get('pci_invitation') || '';
@@ -77,26 +75,6 @@ function normalizeDocuments(value) {
   return Array.isArray(value) ? value.filter((item) => item && item.legal_document_id && item.document_hash) : [];
 }
 
-function renderLegalDocuments() {
-  if (!legalList) return;
-  legalList.innerHTML = requiredDocuments.map((doc) => {
-    const accepted = acceptedDocumentIds.has(doc.legal_document_id);
-    const safeTitle = String(doc.title || doc.document_type || 'Documento');
-    const version = String(doc.document_version || '—');
-    const shortHash = String(doc.document_hash || '').slice(0, 10);
-    const contentRef = String(doc.content_ref || '');
-    return `
-      <article class="pci-legal-document${accepted ? ' is-accepted' : ''}">
-        <div class="pci-legal-document__copy">
-          <strong>${escapeHtml(safeTitle)}${accepted ? ' · Aceptado' : ''}</strong>
-          <span>Versión ${escapeHtml(version)} · ${escapeHtml(shortHash)}…</span>
-        </div>
-        ${contentRef ? `<a class="pci-legal-document__action" href="${escapeAttribute(contentRef)}" target="_blank" rel="noopener noreferrer">Ver documento</a>` : ''}
-      </article>
-    `;
-  }).join('');
-}
-
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -106,8 +84,36 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
-function escapeAttribute(value) {
-  return escapeHtml(value);
+function safeDocumentHref(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  if (raw.startsWith('#') || raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../')) return raw;
+  try {
+    const url = new URL(raw);
+    return ['https:', 'http:'].includes(url.protocol) ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function renderLegalDocuments() {
+  if (!legalList) return;
+  legalList.innerHTML = requiredDocuments.map((doc) => {
+    const accepted = acceptedDocumentIds.has(doc.legal_document_id);
+    const safeTitle = String(doc.title || doc.document_type || 'Documento');
+    const version = String(doc.document_version || '—');
+    const shortHash = String(doc.document_hash || '').slice(0, 10);
+    const contentRef = safeDocumentHref(doc.content_ref);
+    return `
+      <article class="pci-legal-document${accepted ? ' is-accepted' : ''}">
+        <div class="pci-legal-document__copy">
+          <strong>${escapeHtml(safeTitle)}${accepted ? ' · Aceptado' : ''}</strong>
+          <span>Versión ${escapeHtml(version)} · ${escapeHtml(shortHash)}…</span>
+        </div>
+        ${contentRef ? `<a class="pci-legal-document__action" href="${escapeHtml(contentRef)}" target="_blank" rel="noopener noreferrer">Ver documento</a>` : ''}
+      </article>
+    `;
+  }).join('');
 }
 
 function showError(error) {
@@ -184,11 +190,8 @@ async function hydrateFromOnboardingState() {
   acceptedDocumentIds = new Set(Array.isArray(invitation.accepted_legal_document_ids) ? invitation.accepted_legal_document_ids : []);
   renderLegalDocuments();
 
-  if (requiredDocuments.every((doc) => acceptedDocumentIds.has(doc.legal_document_id))) {
-    setState('ready');
-  } else {
-    setState('terms');
-  }
+  if (requiredDocuments.every((doc) => acceptedDocumentIds.has(doc.legal_document_id))) setState('ready');
+  else setState('terms');
 }
 
 async function initialLoad() {
@@ -241,9 +244,8 @@ async function runBootstrap() {
     scrubInvitationTokenFromAddressBar();
     invitationToken = '';
 
-    if (!requiredDocuments.length && !isDemoMode()) {
-      await hydrateFromOnboardingState();
-    } else {
+    if (!requiredDocuments.length && !isDemoMode()) await hydrateFromOnboardingState();
+    else {
       renderLegalDocuments();
       setState('terms');
     }
