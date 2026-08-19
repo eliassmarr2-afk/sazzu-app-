@@ -66,7 +66,8 @@ begin
   for update;
 
   if v_consignment.visibility = 'invite_only' then
-    if v_participation.participation_id is null or v_participation.status <> 'invited' then
+    if v_participation.participation_id is null
+       or v_participation.status not in ('invited','active') then
       raise exception using errcode = '42501', message = 'pci_consignment_invitation_required';
     end if;
     -- An invite is consent to one exact published brief revision. If Protocol
@@ -186,4 +187,4 @@ revoke all on function pci_api.join_consignment(uuid,uuid,uuid,uuid) from public
 grant execute on function pci_api.join_consignment(uuid,uuid,uuid,uuid) to service_role;
 
 comment on function pci_api.join_consignment(uuid,uuid,uuid,uuid) is
-  'Creator joins an open consignment or accepts an existing invite-only participation. Invite-only acceptance is bound to the exact invited revision.';
+  'Creator joins an open consignment or accepts an existing invite-only participation. Invite-only acceptance is bound to the exact invited revision and supports safe idempotent retries after activation.';
