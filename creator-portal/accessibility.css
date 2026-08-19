@@ -1,5 +1,13 @@
 /* Protocol Creative Insights · Phase 1N.8 final cross-surface accessibility/mobile layer */
 
+html[data-pci-access="checking"] body {
+  background: #0f0f10;
+}
+
+html[data-pci-access="checking"] .pci-app {
+  visibility: hidden;
+}
+
 :focus-visible {
   outline: 2px solid #2479ff;
   outline-offset: 3px;
