@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#0f0f10" />
   <title>Protocol Creative Insights · Creator Portal</title>
   <link rel="stylesheet" href="./styles.css" />
+  <script src="./config.js"></script>
 </head>
 <body>
   <div class="pci-app" data-pci-app>
@@ -20,32 +21,18 @@
       </div>
 
       <nav class="pci-nav" aria-label="Secciones del portal">
-        <a class="pci-nav__item is-active" href="#inicio" data-nav="inicio">
-          <span class="pci-nav__icon" aria-hidden="true">⌂</span><span>Inicio</span>
-        </a>
-        <a class="pci-nav__item" href="#oportunidades" data-nav="oportunidades">
-          <span class="pci-nav__icon" aria-hidden="true">◁</span><span>Oportunidades</span>
-        </a>
-        <a class="pci-nav__item" href="#trabajos" data-nav="trabajos">
-          <span class="pci-nav__icon" aria-hidden="true">▣</span><span>Mis trabajos</span>
-        </a>
-        <a class="pci-nav__item" href="#conversaciones" data-nav="conversaciones">
-          <span class="pci-nav__icon" aria-hidden="true">◌</span><span>Conversaciones</span>
-        </a>
-        <a class="pci-nav__item" href="#pagos" data-nav="pagos">
-          <span class="pci-nav__icon" aria-hidden="true">▤</span><span>Pagos</span>
-        </a>
+        <a class="pci-nav__item is-active" href="#inicio" data-nav="inicio"><span class="pci-nav__icon" aria-hidden="true">⌂</span><span>Inicio</span></a>
+        <a class="pci-nav__item" href="#oportunidades" data-nav="oportunidades"><span class="pci-nav__icon" aria-hidden="true">◁</span><span>Oportunidades</span></a>
+        <a class="pci-nav__item" href="#trabajos" data-nav="trabajos"><span class="pci-nav__icon" aria-hidden="true">▣</span><span>Mis trabajos</span></a>
+        <a class="pci-nav__item" href="#conversaciones" data-nav="conversaciones"><span class="pci-nav__icon" aria-hidden="true">◌</span><span>Conversaciones</span></a>
+        <a class="pci-nav__item" href="#pagos" data-nav="pagos"><span class="pci-nav__icon" aria-hidden="true">▤</span><span>Pagos</span></a>
       </nav>
 
       <div class="pci-sidebar__divider"></div>
 
       <nav class="pci-nav pci-nav--secondary" aria-label="Cuenta">
-        <a class="pci-nav__item" href="#cuenta" data-nav="cuenta">
-          <span class="pci-nav__icon" aria-hidden="true">○</span><span>Mi cuenta</span>
-        </a>
-        <a class="pci-nav__item" href="#soporte" data-nav="soporte">
-          <span class="pci-nav__icon" aria-hidden="true">?</span><span>Soporte</span>
-        </a>
+        <a class="pci-nav__item" href="#cuenta" data-nav="cuenta"><span class="pci-nav__icon" aria-hidden="true">○</span><span>Mi cuenta</span></a>
+        <a class="pci-nav__item" href="#soporte" data-nav="soporte"><span class="pci-nav__icon" aria-hidden="true">?</span><span>Soporte</span></a>
       </nav>
 
       <button class="pci-profile-chip" type="button" aria-label="Abrir cuenta de Creator">
@@ -76,37 +63,19 @@
         </header>
 
         <section class="pci-metrics" aria-label="Resumen">
-          <article class="pci-metric-card">
-            <div><span>ABIERTAS</span><strong data-metric="open-opportunities">4</strong><small>Nuevas oportunidades</small></div>
-            <span class="pci-metric-card__icon pci-metric-card__icon--blue" aria-hidden="true">↯</span>
-          </article>
-          <article class="pci-metric-card">
-            <div><span>EN REVISIÓN</span><strong data-metric="in-review">2</strong><small>Tus videos en revisión</small></div>
-            <span class="pci-metric-card__icon pci-metric-card__icon--amber" aria-hidden="true">◷</span>
-          </article>
-          <article class="pci-metric-card">
-            <div><span>CAMBIOS SOLICITADOS</span><strong data-metric="changes-requested">1</strong><small>Requieren tu atención</small></div>
-            <span class="pci-metric-card__icon pci-metric-card__icon--purple" aria-hidden="true">✎</span>
-          </article>
-          <article class="pci-metric-card">
-            <div><span>POR COBRAR</span><strong data-metric="receivable">$85.000</strong><small>Pendiente de cobro</small></div>
-            <span class="pci-metric-card__icon pci-metric-card__icon--green" aria-hidden="true">$</span>
-          </article>
+          <article class="pci-metric-card"><div><span>ABIERTAS</span><strong data-metric="open-opportunities">4</strong><small>Nuevas oportunidades</small></div><span class="pci-metric-card__icon pci-metric-card__icon--blue" aria-hidden="true">↯</span></article>
+          <article class="pci-metric-card"><div><span>EN REVISIÓN</span><strong data-metric="in-review">2</strong><small>Tus videos en revisión</small></div><span class="pci-metric-card__icon pci-metric-card__icon--amber" aria-hidden="true">◷</span></article>
+          <article class="pci-metric-card"><div><span>CAMBIOS SOLICITADOS</span><strong data-metric="changes-requested">1</strong><small>Requieren tu atención</small></div><span class="pci-metric-card__icon pci-metric-card__icon--purple" aria-hidden="true">✎</span></article>
+          <article class="pci-metric-card"><div><span>POR COBRAR</span><strong data-metric="receivable">$85.000</strong><small>Pendiente de cobro</small></div><span class="pci-metric-card__icon pci-metric-card__icon--green" aria-hidden="true">$</span></article>
         </section>
 
         <section class="pci-section" aria-labelledby="attention-title">
-          <div class="pci-section__header">
-            <h2 id="attention-title">REQUIERE TU ATENCIÓN</h2>
-            <button class="pci-link-button" type="button">Ver todo <span data-attention-count>(2)</span> →</button>
-          </div>
+          <div class="pci-section__header"><h2 id="attention-title">REQUIERE TU ATENCIÓN</h2><button class="pci-link-button" type="button">Ver todo <span data-attention-count>(2)</span> →</button></div>
           <div class="pci-attention-list" data-attention-list></div>
         </section>
 
         <section class="pci-section" id="oportunidades" aria-labelledby="opportunities-title">
-          <div class="pci-section__header">
-            <h2 id="opportunities-title">OPORTUNIDADES PARA VOS</h2>
-            <button class="pci-link-button" type="button">Ver todas</button>
-          </div>
+          <div class="pci-section__header"><h2 id="opportunities-title">OPORTUNIDADES PARA VOS</h2><button class="pci-link-button" type="button">Ver todas</button></div>
           <div class="pci-opportunities" data-opportunities></div>
         </section>
       </section>
@@ -123,24 +92,21 @@
     <div class="pci-mobile-drawer" data-mobile-drawer aria-hidden="true">
       <div class="pci-mobile-drawer__scrim" data-mobile-menu-close></div>
       <aside class="pci-mobile-drawer__panel">
-        <div class="pci-brand">
-          <span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-          <span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span>
-        </div>
+        <div class="pci-brand"><span class="pci-brand__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pci-brand__copy"><strong>PROTOCOL</strong><small>CREATIVE INSIGHTS</small></span></div>
         <button class="pci-icon-button pci-mobile-drawer__close" type="button" data-mobile-menu-close aria-label="Cerrar menú">×</button>
         <nav class="pci-nav" aria-label="Menú móvil completo">
-          <a class="pci-nav__item is-active" href="#inicio"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
-          <a class="pci-nav__item" href="#oportunidades"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
-          <a class="pci-nav__item" href="#trabajos"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
-          <a class="pci-nav__item" href="#conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
-          <a class="pci-nav__item" href="#pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
-          <a class="pci-nav__item" href="#cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
-          <a class="pci-nav__item" href="#soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
+          <a class="pci-nav__item is-active" href="#inicio" data-nav="inicio"><span class="pci-nav__icon">⌂</span><span>Inicio</span></a>
+          <a class="pci-nav__item" href="#oportunidades" data-nav="oportunidades"><span class="pci-nav__icon">◁</span><span>Oportunidades</span></a>
+          <a class="pci-nav__item" href="#trabajos" data-nav="trabajos"><span class="pci-nav__icon">▣</span><span>Mis trabajos</span></a>
+          <a class="pci-nav__item" href="#conversaciones" data-nav="conversaciones"><span class="pci-nav__icon">◌</span><span>Conversaciones</span></a>
+          <a class="pci-nav__item" href="#pagos" data-nav="pagos"><span class="pci-nav__icon">▤</span><span>Pagos</span></a>
+          <a class="pci-nav__item" href="#cuenta" data-nav="cuenta"><span class="pci-nav__icon">○</span><span>Mi cuenta</span></a>
+          <a class="pci-nav__item" href="#soporte" data-nav="soporte"><span class="pci-nav__icon">?</span><span>Soporte</span></a>
         </nav>
       </aside>
     </div>
   </div>
 
-  <script src="./app.js" defer></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
