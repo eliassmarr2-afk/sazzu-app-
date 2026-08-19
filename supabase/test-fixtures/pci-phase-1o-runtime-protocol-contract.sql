@@ -5,6 +5,11 @@
 -- Protocol Data schema. PCI migrations reference the workspace/membership contract,
 -- so this fixture recreates only that minimal structural dependency, with no
 -- production rows or business data.
+--
+-- Security note: these tables live in the exposed `public` schema only because the
+-- PCI foreign-key/operator contract references the production public objects by name.
+-- The disposable fixture therefore mirrors PCI's backend-only posture: RLS enabled,
+-- no anon/authenticated table privileges, and service_role-only operational access.
 
 create table if not exists public.protocol_workspaces (
   workspace_id text primary key,
@@ -27,7 +32,16 @@ create table if not exists public.protocol_workspace_members (
   primary key (user_id, workspace_id)
 );
 
+alter table public.protocol_workspaces enable row level security;
+alter table public.protocol_workspace_members enable row level security;
+
+revoke all privileges on table public.protocol_workspaces from public, anon, authenticated;
+revoke all privileges on table public.protocol_workspace_members from public, anon, authenticated;
+
+grant select, insert, update, delete on table public.protocol_workspaces to service_role;
+grant select, insert, update, delete on table public.protocol_workspace_members to service_role;
+
 comment on table public.protocol_workspaces is
-  'Phase 1O TEST fixture matching the production Protocol workspace contract. No production data.';
+  'Phase 1O TEST fixture matching the production Protocol workspace contract. No production data. Backend-only in the disposable runtime.';
 comment on table public.protocol_workspace_members is
-  'Phase 1O TEST fixture matching the production Protocol membership contract. No production data.';
+  'Phase 1O TEST fixture matching the production Protocol membership contract. No production data. Backend-only in the disposable runtime.';
