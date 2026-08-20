@@ -250,7 +250,7 @@ async function performUpload() {
   if (stored && !stored.expired && !fileMatchesStored(state.file, stored)) { setUploadMessage('Para reanudar esta versión seleccioná exactamente el mismo archivo que comenzó la carga.', 'error'); return; }
   if (pending?.original_filename && pending.original_filename !== state.file.name) { setUploadMessage(`Esta versión fue reservada para “${pending.original_filename}”. Seleccioná ese mismo archivo.`, 'error'); return; }
 
-  state.busy = true; const action = document.querySelector('[data-start-upload]'); if (action) { action.disabled = true; action.textContent = 'Procesando…'; } setUploadMessage('');
+  state.busy = true; const action = document.querySelector('[data-start-upload]'); const actionLabel = action?.textContent || ''; if (action) { action.disabled = true; action.textContent = 'Procesando…'; } setUploadMessage('');
   try {
     setProgress(2, 'Validando video', 'Leyendo duración y resolución sin subir todavía'); const metadata = await readVideoMetadata(state.file);
     let reservation = (stored && !stored.expired ? stored.reservation : null) ?? state.activeReservation;
@@ -294,7 +294,7 @@ async function performUpload() {
   } catch (error) {
     const message = friendlyError(error); setUploadMessage(message, 'error'); showToast(message, true);
   } finally {
-    state.busy = false; state.uploadAbortController = null; const currentAction = document.querySelector('[data-start-upload]'); if (currentAction) currentAction.disabled = !state.file;
+    state.busy = false; state.uploadAbortController = null; const currentAction = document.querySelector('[data-start-upload]'); if (currentAction) { currentAction.disabled = !state.file; if (state.file && actionLabel) currentAction.textContent = actionLabel; }
   }
 }
 
