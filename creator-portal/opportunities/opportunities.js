@@ -490,7 +490,7 @@ async function createSubmission(event) {
   event.preventDefault();
   if (state.busy) return;
   const item = selectedOpportunity();
-  const form = event.currentTarget;
+  const form = event.target;
   if (!item || !(form instanceof HTMLFormElement)) return;
   const submitButton = form.querySelector('[data-create-submission]');
   const errorRoot = document.querySelector('[data-action-error]');
