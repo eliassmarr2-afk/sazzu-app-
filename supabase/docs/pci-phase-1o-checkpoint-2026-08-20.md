@@ -1,9 +1,11 @@
 # Protocol Creative Insights — Phase 1O Runtime Checkpoint
 
 **Fecha:** 2026-08-20  
-**Estado:** runtime validation activa  
+**Estado:** Phase 1O runtime lifecycle COMPLETE
 **Branch:** `feature/protocol-creative-insights-backend`  
 **Producción:** NO TOCAR / sin cambios de esta fase
+
+**Nota de cierre:** las secciones 1–11 conservan el snapshot intermedio de validación. El estado final autoritativo está en la sección 12; cualquier estado “current”, “al cierre” o pendiente anterior debe leerse como histórico.
 
 ---
 
@@ -257,21 +259,21 @@ Después de este cambio, la V1 subió y finalizó correctamente.
 
 ---
 
-## 8. Importante: cambio LOCAL todavía no commiteado
+## 8. Estado final del cambio de frontend
 
-Para forzar la descarga del uploader nuevo durante la prueba, en el worktree local del usuario se modificó:
+Durante la validación se usó temporalmente un cache-bust sobre el import de `upload-client.js` para forzar módulos frescos.
 
-`creator-portal/works/works.js`
-
-Import local actual esperado:
+Antes del cierre final ese cache-bust fue retirado. El import volvió a:
 
 ```js
-} from '../upload-client.js?v=1o-tus-sign-20260820c';
+} from '../upload-client.js';
 ```
 
-Este cache-bust quedó local y NO debe perderse accidentalmente con `git reset --hard` hasta decidir si se conserva o se reemplaza por una estrategia de versionado/build más limpia.
+El cambio que sí se conserva en `creator-portal/works/works.js` es el fix funcional de `performUpload()`: después de un fallo temprano de metadata/preflight, el botón recupera su label normal en lugar de quedar visualmente en `Procesando...`.
 
-El uploader nativo sí está commiteado en branch (`96fe4d1...`).
+El uploader TUS nativo permanece commiteado desde `96fe4d1`.
+
+No usar `git reset --hard` sobre trabajo local no auditado en futuras sesiones.
 
 ---
 
@@ -362,7 +364,7 @@ Por tanto NO existe V2 fantasma y no hay cleanup pendiente.
 
 Cuando falla esta validación temprana, el botón queda visualmente en `Procesando...` en vez de restaurar su estado normal.
 
-Pendiente corregir ese estado de UI.
+Corregido en el cierre de 1O: `performUpload()` restaura el label normal del botón después de un fallo temprano de metadata/preflight. El fix funcional forma parte del diff final auditado.
 
 ### Nota de producto/prueba
 
@@ -370,49 +372,60 @@ Para continuar con Rights no conviene usar otro video descargado. La V2 debe ser
 
 ---
 
-## 12. Próximo movimiento exacto
+## 12. Cierre final de Phase 1O
 
-Continuar desde `changes_requested` con una V2 válida.
+El movimiento que originalmente figuraba como pendiente fue completado.
 
-Orden recomendado:
+Cadena final validada en el runtime descartable:
 
-1. Corregir bug visual de botón `Procesando...` después de fallo de metadata preflight.
-2. Usar un MP4/MOV propio y reproducible por Chrome.
-3. `Subir V2`.
-4. Verificar:
-   - exactly one V2
-   - V1 intacta
-   - V2 READY
-   - V2 física en Storage
-   - current_version_id = V2
-   - Submission vuelve a submitted según contrato
-5. Completar Rights declaration REAL sobre V2.
-6. Verificar declaration JSON + timestamp + `rights_clearance_status=pending`.
-7. Ejecutar admin clearance review.
-8. Llevar clearance a `complete`.
-9. Revisión creativa/preselection según estado permitido después de V2.
-10. Validar que preselection ≠ purchase.
-11. Continuar negociación/oferta/acceptance.
-12. Validar Purchase → Payable → Payout → Paid → Rights ACTIVE → Asset acquisition física por Worker.
+`V2 READY → Rights declaration → Clearance COMPLETE → PRESELECTED → Negotiation → Formal Offer → Creator ACCEPT → Purchase AGREED → Payable READY_TO_PAY → Payout CONFIRMED → Payable PAID → Rights ACTIVE → Asset PROVISIONING → Worker physical copy → Asset AVAILABLE → Submission ACQUIRED → Purchase SETTLED`
+
+Evidencia final principal:
+
+- V2: `70bd1eb0-9f27-4c1f-956c-71e9caf36d09`
+- Purchase: `e23015f0-25cd-4164-9680-51d98e8736ef`
+- Payable: `25ccf7ac-46c9-47e4-918c-e2f9bca92ff3`
+- Payout: `c883c9bf-f3be-4952-ac59-9971c3065390`
+- Rights Grant: `c05bed09-44fc-4ad3-9635-c7828acafefc`
+- Creative Asset: `504a429e-ca2e-4329-83a5-09d0049742cd`
+- final asset SHA-256: `2e80992585a18c9dfcefc7b53a81ddb1c6b0fbee100539613c268d25142dda8d`
+- final size: `2434338` bytes
+- final MIME: `video/mp4`
+- asset status: `available`
+- Submission final: `acquired`
+- Purchase final: `settled`
+- Rights final: `active`
+
+El Worker realizó una copia física server-side entre buckets privados, verificó metadata del objeto destino y preservó el objeto fuente V2.
+
+Producción `cuuzsbhpjmjbbnghtiny` permaneció sin mutaciones.
+
+Los límites de lifecycle quedaron demostrados:
+
+- preselection ≠ purchase;
+- Formal Offer SENT ≠ purchase;
+- Offer acceptance ≠ Rights ACTIVE;
+- payment destination confirmation ≠ payment;
+- Payout initiated ≠ confirmed payment;
+- Rights ACTIVE solo después de Payable PAID;
+- acquisition solo después de promoción física verificada.
 
 ---
 
-## 13. Pendientes de Phase 1O todavía abiertos
+## 13. Follow-ups no bloqueantes
 
-No cerrar 1O hasta validar explícitamente:
+Phase 1O core runtime está cerrada.
 
-- V2 real + rights declaration válida
-- clearance real por API/DB
-- preselection real por human Edge/admin path
-- negotiation / offer / acceptance through runtime HTTP where applicable
-- payment account encryption through runtime HTTP
-- payout flow through HTTP/runtime
-- worker physical Storage copy to acquired library bucket
-- acquired asset AVAILABLE
-- rights grant ACTIVE after payment
-- SMTP real/custom transport separately (built-in SMTP rate limit impidió validarlo)
-- evaluar/activar Auth leaked password protection WARN en test project si corresponde
-- documentar que INFO `RLS enabled no policy` es intencional deny-all
+Quedan como trabajos separados:
+
+- SMTP/custom invitation transport real;
+- revisión de leaked-password protection en Auth del proyecto descartable;
+- mantener documentado que INFO `RLS enabled no policy` es deny-all intencional;
+- definir scheduler/runner permanente para `pci-worker` antes de un piloto externo;
+- security review específica antes de exponer el Creator Portal a un piloto externo;
+- probar explícitamente reanudación TUS después de una interrupción real si se exige como gate de piloto;
+- cubrir por HTTP variantes Rights negativas de resubmit/flag que no formaron parte del happy path final;
+- cubrir por HTTP variantes de payout partial/failed/reversed que no formaron parte del happy path final.
 
 ---
 
@@ -433,4 +446,4 @@ No cerrar 1O hasta validar explícitamente:
 
 ## 15. Checkpoint corto para pegar en un nuevo chat
 
-> Estamos continuando Protocol Creative Insights, Phase 1O, en `feature/protocol-creative-insights-backend`, usando el Supabase descartable `dgpmdqmdwqyiwhkbiakd`; producción no se toca. Creator Auth/onboarding/legal ya pasaron. Opportunity/Participation/Submission reales pasaron. V1 (`52dbb643-60a0-4b84-8e34-44e8a0cf6409`) subió físicamente a Storage privado y quedó READY después de reemplazar `tus-js-client/esm.sh` por uploader TUS nativo en commit `96fe4d1`. La rights declaration de V1 se bloqueó correctamente porque era un archivo de laboratorio y quedó vacía. Protocol ejecutó `start_review → request_changes`, Submission `a7266afd-7fbf-4ae9-9f43-c37684de33f6` está `changes_requested`, revisión 1/1, V1 intacta, Portal muestra `Subir V2`. Un intento de V2 falló en `readVideoMetadata` al 2%, antes de reservar V2; DB sigue con solo V1. Pendiente: arreglar botón que queda `Procesando...`, subir una V2 propia válida, declarar rights sobre V2, clearance, preselection, negotiation, payment, rights ACTIVE y worker physical acquisition. En el worktree local hay un cache-bust NO commiteado en `creator-portal/works/works.js`: import `../upload-client.js?v=1o-tus-sign-20260820c`; no hacer reset hard sin preservarlo.
+> Protocol Creative Insights Phase 1O está COMPLETA en `feature/protocol-creative-insights-backend`, usando exclusivamente el Supabase descartable `dgpmdqmdwqyiwhkbiakd`; producción `cuuzsbhpjmjbbnghtiny` no fue tocada. La cadena real llegó hasta V2 READY → Rights/Clearance → PRESELECTED → Negotiation → Formal Offer → Creator ACCEPT → Purchase/Payable → payout sintético confirmado → Payable PAID → Rights ACTIVE → Worker physical Storage promotion → Asset AVAILABLE → Submission ACQUIRED → Purchase SETTLED. V2 `70bd1eb0-9f27-4c1f-956c-71e9caf36d09`, Purchase `e23015f0-25cd-4164-9680-51d98e8736ef`, Asset `504a429e-ca2e-4329-83a5-09d0049742cd`. `works.js` conserva únicamente el fix funcional de restauración del botón; el cache-bust temporal ya fue retirado. `runtime-test-admin` queda como harness explícitamente fail-closed al project ref descartable. SMTP/Auth/scheduler y las variantes HTTP TUS-resume, Rights negativas y payout partial/failed/reversed quedan como follow-ups no bloqueantes.

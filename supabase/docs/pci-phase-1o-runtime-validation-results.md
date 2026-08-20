@@ -1,10 +1,39 @@
 # Protocol Creative Insights — Phase 1O runtime validation results
 
-**Date:** 2026-08-19  
-**Status:** IN PROGRESS — DB / Storage / Data API / authorization / human Edge boot validated; authenticated Edge flow + custom-secret paths pending  
+**Date:** 2026-08-20
+**Status:** COMPLETE — end-to-end disposable-runtime lifecycle validated through real HTTP, payment lifecycle and physical Worker Storage promotion
 **Production mutation:** NONE  
 **Disposable runtime:** `protocol-creative-insights-runtime-test` (`dgpmdqmdwqyiwhkbiakd`)  
 **Runtime type:** second Free Supabase project, isolated from production
+
+## Final authoritative closure — 2026-08-20
+
+Phase 1O is **COMPLETE** for the disposable-runtime lifecycle. The historical sections below are preserved as chronology; any older statement that authenticated Edge paths, payment encryption, payout, Worker deployment, physical promotion, or acquisition were pending is superseded by this closure.
+
+Validated final chain:
+
+`Creator real → Auth/JWT → V2 READY → truthful Rights declaration → Clearance COMPLETE → PRESELECTED → Negotiation → Formal Offer → Creator ACCEPT → Purchase AGREED → Payable READY_TO_PAY → synthetic Payout INITIATED/CONFIRMED → Payable PAID → Rights ACTIVE → Asset PROVISIONING → Worker physical copy → Asset AVAILABLE → Submission ACQUIRED → Purchase SETTLED`
+
+Final evidence:
+- V2 `70bd1eb0-9f27-4c1f-956c-71e9caf36d09`
+- Purchase `e23015f0-25cd-4164-9680-51d98e8736ef`
+- Payable `25ccf7ac-46c9-47e4-918c-e2f9bca92ff3`
+- Payout `c883c9bf-f3be-4952-ac59-9971c3065390`
+- Rights Grant `c05bed09-44fc-4ad3-9635-c7828acafefc`
+- Creative Asset `504a429e-ca2e-4329-83a5-09d0049742cd`
+- SHA-256 `2e80992585a18c9dfcefc7b53a81ddb1c6b0fbee100539613c268d25142dda8d`
+- `2434338` bytes, `video/mp4`
+- Worker verification `supabase_server_copy_plus_object_metadata`
+- Storage copy mode `server_side_cross_bucket`
+- source V2 preserved; destination object exists; outbox completed in one attempt.
+
+Boundaries proven: preselection ≠ purchase; Formal Offer SENT ≠ purchase; acceptance ≠ Rights ACTIVE; destination confirmation ≠ payment; payout registration ≠ confirmation; Rights activate only after Payable PAID; acquisition completes only after verified physical promotion.
+
+The payout was synthetic runtime-only; no real external money moved. Production `cuuzsbhpjmjbbnghtiny` was not mutated. `PCI_INVITATION_TOKEN_KEY` is obsolete and must not be reintroduced.
+
+Non-blocking follow-ups: custom SMTP/real invitation transport; leaked-password-protection review in the disposable Auth project; intentional INFO `RLS enabled no policy`; long-term `pci-worker` scheduler/runner; explicit interrupted-upload TUS resume/retry validation; Rights negative resubmit/flag HTTP variants; partial/failed/reversed payout HTTP variants.
+
+---
 
 ## Executive checkpoint
 
@@ -362,36 +391,22 @@ The mostly empty disposable runtime reports INFO-only findings such as FKs witho
 
 No performance WARN/ERROR currently blocks 1O. Index decisions remain deferred until representative seeded traffic can be measured with `EXPLAIN (ANALYZE, BUFFERS)`.
 
-## Custom secrets still required
+## Historical runtime gaps — superseded by final closure
 
-The following paths remain intentionally incomplete until disposable-runtime secrets can be configured safely:
+At this earlier point in the run, disposable-runtime custom secrets and several real HTTP paths had not yet been exercised. That state is preserved only as chronology.
 
-- `PCI_PAYMENT_DATA_KEY` — Creator encryption + Admin decryption of exact payment identifier;
-- `PCI_CREATOR_ALLOWED_ORIGINS` — deployed non-local Creator Portal origin;
-- `PCI_ADMIN_ALLOWED_ORIGINS` — deployed Protocol origin;
-- `PCI_CREATOR_APP_URL` — invitation redirect;
-- `PCI_INVITATION_TOKEN_KEY` — deterministic invitation token derivation;
-- `PCI_ONBOARDING_ALLOWED_ORIGINS` — deployed onboarding origin;
-- `PCI_WORKER_SECRET` — custom worker authentication.
+The final closure above supersedes those pending items: Creator/Admin JWT paths, payment destination encryption/decryption, `demoMode:false`, real signed TUS upload/finalize, Rights clearance, payout confirmation, `pci-worker` custom-secret authentication, physical server-side Storage copy, acquisition and settlement were subsequently validated.
 
-Standard `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` are supplied by the Edge runtime and the three human APIs bundle/activate successfully.
+`PCI_INVITATION_TOKEN_KEY` was removed from the design and must not be reintroduced.
 
-## Still unproven / next runtime block
-
-Phase 1O is **not complete**.
-
-Still required:
-
-- configure disposable custom secrets through an approved secret-management path;
-- authenticated JWT calls into Creator/Admin/Onboarding handlers;
-- real invitation email + returning Magic Link behavior;
-- real signed TUS upload/resume/finalize against Storage;
-- Rights invalid/valid/resubmit/flag/complete behavior through HTTP;
-- AES-GCM payment destination encryption/decryption through Edge;
-- partial/failed/reversed payout HTTP paths;
-- deploy `pci-worker` with its secret and prove real server-side Storage copy;
-- Creator Portal with `demoMode:false` on desktop/mobile;
-- Creator Security Gate against the legacy production authenticated/public surface before any external pilot.
+Still separate from the completed core lifecycle:
+- explicit interrupted-upload TUS resume/retry validation;
+- Rights negative resubmit/flag HTTP variants;
+- partial/failed/reversed payout HTTP variants;
+- custom SMTP / real invitation transport;
+- leaked-password-protection review in the disposable Auth project;
+- external-pilot security review against the legacy production surface;
+- long-term scheduler/runner for `pci-worker`.
 
 ## Production rule
 
