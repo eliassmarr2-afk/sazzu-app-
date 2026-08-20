@@ -28,6 +28,7 @@
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{background:var(--pci-bg);color-scheme:dark;scrollbar-gutter:stable}
 body{
   margin:0;
