@@ -111,9 +111,10 @@ export async function uploadSignedTus(file, reservation, { onProgress, onStatus,
     return { url: 'demo://uploaded' };
   }
 
-  const endpoint = String(uploadContext.endpoint || '');
+  const rawEndpoint = String(uploadContext.endpoint || '').replace(/\/+$/, '');
   const signatureToken = String(uploadContext.signature_token || '');
   const signatureHeader = String(uploadContext.signature_header || 'x-signature');
+  const endpoint = signatureToken && !rawEndpoint.endsWith('/sign') ? `${rawEndpoint}/sign` : rawEndpoint;
   const bucketName = String(uploadContext.bucket_name || '');
   const objectName = String(uploadContext.object_name || '');
   const contentType = String(uploadContext.content_type || inferPciVideoMime(file) || '');
