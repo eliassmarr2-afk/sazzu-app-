@@ -55,6 +55,160 @@
   </section>
 
   <section class="card">
+    <h2>5. Rights clearance · V2</h2>
+    <p>Acción administrativa limitada al runtime descartable.</p>
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Versión: <code>70bd1eb0-9f27-4c1f-956c-71e9caf36d09</code><br>
+      Acción: <code>pending → complete</code>
+    </p>
+    <button id="complete-rights-clearance">Completar clearance de V2</button>
+    <p class="muted">Esta acción no crea una compra ni activa derechos comerciales.</p>
+  </section>
+
+  <section class="card">
+    <h2>6. Creative review · V2</h2>
+    <p>Validación administrativa de la versión actual antes de negociación.</p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Submission: <code>a7266afd-7fbf-4ae9-9f43-c37684de33f6</code><br>
+      V2 esperada: <code>70bd1eb0-9f27-4c1f-956c-71e9caf36d09</code>
+    </p>
+
+    <p class="muted">
+      Paso A: <code>submitted → under_review</code><br>
+      Paso B: <code>under_review → preselected</code>
+    </p>
+
+    <div class="row">
+      <button id="start-v2-review">Iniciar revisión de V2</button>
+      <button id="preselect-v2" class="secondary">Preseleccionar V2</button>
+    </div>
+
+    <p class="muted">
+      La preselección no crea una compra, payable, payout ni Rights Grant.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>7. Negotiation · V2</h2>
+    <p>Abre la negociación comercial después de la preselección.</p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Submission: <code>a7266afd-7fbf-4ae9-9f43-c37684de33f6</code><br>
+      V2 esperada: <code>70bd1eb0-9f27-4c1f-956c-71e9caf36d09</code><br>
+      Estado requerido: <code>preselected</code>
+    </p>
+
+    <button id="open-v2-negotiation">Abrir negociación</button>
+
+    <p class="muted">
+      Esta acción no envía una oferta y no crea compra, payable, payout ni Rights Grant.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>8. Formal Offer · V2</h2>
+    <p>Envía la oferta formal de compra sobre la versión exacta validada.</p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Negotiation: <code>08e4a156-8e7b-4775-9723-63b0fe31851e</code><br>
+      V2: <code>70bd1eb0-9f27-4c1f-956c-71e9caf36d09</code><br>
+      Monto: <code>ARS 30.000</code>
+    </p>
+
+    <p class="muted">
+      Rights: <code>purchased_asset_only</code><br>
+      Uso previo a compra: <code>evaluation_only</code><br>
+      Activación: <code>after_payment</code><br>
+      Bonus: <code>disabled</code>
+    </p>
+
+    <button id="send-v2-formal-offer">Enviar oferta formal</button>
+
+    <p class="muted">
+      Enviar la oferta no crea todavía Purchase, Payable, Payout ni Rights Grant.
+      Esos efectos requieren aceptación del Creator.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>9. Payment execution</h2>
+    <p>Lee el contexto privado necesario para ejecutar el pago. No registra ninguna transferencia.</p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Payable: <code>25ccf7ac-46c9-47e4-918c-e2f9bca92ff3</code><br>
+      Importe esperado: <code>ARS 30.000</code><br>
+      Estado requerido: <code>ready_to_pay</code>
+    </p>
+
+    <button id="read-payment-execution-context">Ver contexto de pago</button>
+
+    <p class="muted">
+      Lectura sensible y puntual. Este paso no crea Payout, no marca el Payable como pagado
+      y no activa Rights.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>10. Synthetic payout · Runtime</h2>
+
+    <p>
+      Registra una transferencia sintética exclusivamente para validar
+      el lifecycle de Phase 1O.
+    </p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Payable: <code>25ccf7ac-46c9-47e4-918c-e2f9bca92ff3</code><br>
+      Importe: <code>ARS 30.000</code><br>
+      Provider: <code>runtime_test</code><br>
+      Method: <code>synthetic_transfer</code><br>
+      Estado requerido: <code>ready_to_pay</code>
+    </p>
+
+    <button id="register-synthetic-payout">
+      Registrar payout sintético
+    </button>
+
+    <p class="muted">
+      No mueve dinero externo. Debe crear un Payout <code>initiated</code>
+      y mover el Payable a <code>processing</code>.
+      No confirma el pago y no debe activar Rights todavía.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>11. Confirm synthetic payout</h2>
+
+    <p>
+      Confirma el payout sintético previamente registrado en este runtime.
+    </p>
+
+    <p class="muted">
+      Workspace: <code>pci-runtime-test</code><br>
+      Payable: <code>25ccf7ac-46c9-47e4-918c-e2f9bca92ff3</code><br>
+      Payout: <code>c883c9bf-f3be-4952-ac59-9971c3065390</code><br>
+      Importe: <code>ARS 30.000</code><br>
+      Estado requerido del payout: <code>initiated</code>
+    </p>
+
+    <button id="confirm-synthetic-payout">
+      Confirmar payout sintético
+    </button>
+
+    <p class="muted">
+      Runtime solamente. No mueve dinero externo.
+      Al cubrir el Payable completo, esta acción debe llevarlo a
+      <code>paid</code> y activar el lifecycle post-pago.
+    </p>
+  </section>
+
+  <section class="card">
     <h2>Resultado</h2>
     <pre id="output">Sin acciones todavía.</pre>
   </section>
