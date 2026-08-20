@@ -1,6 +1,6 @@
-const TUS_CLIENT_URL = 'https://esm.sh/tus-js-client@4.3.1';
 const MAX_VIDEO_BYTES = 250 * 1024 * 1024;
 const TUS_CHUNK_BYTES = 6 * 1024 * 1024;
+const TUS_VERSION = '1.0.0';
 
 export function inferPciVideoMime(file) {
   const reported = String(file?.type ?? '').trim().toLowerCase();
@@ -93,6 +93,120 @@ export function hashVideoFile(file, { onProgress } = {}) {
   });
 }
 
+function encodeTusMetadata(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ''));
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
+function buildTusMetadata({ bucketName, objectName, contentType }) {
+  return [
+    ['bucketName', bucketName],
+    ['objectName', objectName],
+    ['contentType', contentType],
+    ['cacheControl', '3600'],
+  ].map(([key, value]) => `${key} ${encodeTusMetadata(value)}`).join(',');
+}
+
+function tusUploadUrlKey(versionId) {
+  return `pci:tus-upload-url:${versionId}`;
+}
+
+function loadTusUploadUrl(versionId) {
+  try { return localStorage.getItem(tusUploadUrlKey(versionId)) || null; } catch { return null; }
+}
+
+function saveTusUploadUrl(versionId, url) {
+  try { localStorage.setItem(tusUploadUrlKey(versionId), url); } catch { /* best effort */ }
+}
+
+function clearTusUploadUrl(versionId) {
+  try { localStorage.removeItem(tusUploadUrlKey(versionId)); } catch { /* best effort */ }
+}
+
+function tusHeaders(signatureHeader, signatureToken) {
+  return {
+    'Tus-Resumable': TUS_VERSION,
+    [signatureHeader]: signatureToken,
+    'x-upsert': 'false',
+  };
+}
+
+function tusHttpError(code, response) {
+  const error = new Error(code);
+  error.http_status = Number(response?.status) || 0;
+  return error;
+}
+
+async function getExistingTusOffset(uploadUrl, signatureHeader, signatureToken, signal) {
+  const response = await fetch(uploadUrl, {
+    method: 'HEAD',
+    headers: tusHeaders(signatureHeader, signatureToken),
+    signal,
+  });
+
+  if (response.status === 404 || response.status === 410) return null;
+  if (!response.ok) throw tusHttpError('pci_tus_head_failed', response);
+
+  const offset = Number(response.headers.get('Upload-Offset'));
+  if (!Number.isFinite(offset) || offset < 0) throw new Error('pci_tus_offset_invalid');
+  return offset;
+}
+
+async function createTusUpload({ endpoint, file, bucketName, objectName, contentType, signatureHeader, signatureToken, signal }) {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      ...tusHeaders(signatureHeader, signatureToken),
+      'Upload-Length': String(file.size),
+      'Upload-Metadata': buildTusMetadata({ bucketName, objectName, contentType }),
+    },
+    signal,
+  });
+
+  if (!response.ok) throw tusHttpError('pci_tus_create_failed', response);
+
+  const location = response.headers.get('Location');
+  if (!location) throw new Error('pci_tus_location_missing');
+  return new URL(location, endpoint).toString();
+}
+
+async function patchTusUpload({ uploadUrl, file, startOffset, chunkSize, signatureHeader, signatureToken, signal, onProgress, onStatus }) {
+  let offset = startOffset;
+  const total = file.size;
+  onStatus?.(offset > 0 ? 'resuming' : 'uploading');
+  onProgress?.(offset, total);
+
+  while (offset < total) {
+    if (signal?.aborted) throw new DOMException('Upload aborted', 'AbortError');
+
+    const end = Math.min(total, offset + chunkSize);
+    const body = file.slice(offset, end);
+    const response = await fetch(uploadUrl, {
+      method: 'PATCH',
+      headers: {
+        ...tusHeaders(signatureHeader, signatureToken),
+        'Upload-Offset': String(offset),
+        'Content-Type': 'application/offset+octet-stream',
+      },
+      body,
+      signal,
+    });
+
+    if (!response.ok) throw tusHttpError('pci_tus_patch_failed', response);
+
+    const nextOffset = Number(response.headers.get('Upload-Offset'));
+    if (!Number.isFinite(nextOffset) || nextOffset <= offset || nextOffset > total) {
+      throw new Error('pci_tus_offset_invalid');
+    }
+
+    offset = nextOffset;
+    onStatus?.('uploading');
+    onProgress?.(offset, total);
+  }
+}
+
 export async function uploadSignedTus(file, reservation, { onProgress, onStatus, signal } = {}) {
   const uploadContext = reservation?.upload ?? {};
   if (uploadContext.protocol !== 'tus') throw new Error('pci_upload_protocol_invalid');
@@ -119,61 +233,55 @@ export async function uploadSignedTus(file, reservation, { onProgress, onStatus,
   const objectName = String(uploadContext.object_name || '');
   const contentType = String(uploadContext.content_type || inferPciVideoMime(file) || '');
   const versionId = String(reservation?.submission_version_id || '');
+  const chunkSize = Number(uploadContext.chunk_size_bytes) || TUS_CHUNK_BYTES;
 
   if (!endpoint || !signatureToken || !bucketName || !objectName || !contentType || !versionId) {
     throw new Error('pci_upload_context_invalid');
   }
 
-  const tus = await import(TUS_CLIENT_URL);
+  let uploadUrl = loadTusUploadUrl(versionId);
+  let offset = null;
 
-  return new Promise((resolve, reject) => {
-    const upload = new tus.Upload(file, {
+  if (uploadUrl) {
+    offset = await getExistingTusOffset(uploadUrl, signatureHeader, signatureToken, signal);
+    if (offset == null) {
+      clearTusUploadUrl(versionId);
+      uploadUrl = null;
+    } else {
+      onStatus?.('resuming');
+    }
+  }
+
+  if (!uploadUrl) {
+    uploadUrl = await createTusUpload({
       endpoint,
-      retryDelays: [0, 3000, 5000, 10000, 20000],
-      headers: {
-        [signatureHeader]: signatureToken,
-        'x-upsert': 'false',
-      },
-      metadata: {
-        bucketName,
-        objectName,
-        contentType,
-        cacheControl: '3600',
-      },
-      uploadDataDuringCreation: true,
-      removeFingerprintOnSuccess: true,
-      chunkSize: Number(uploadContext.chunk_size_bytes) || TUS_CHUNK_BYTES,
-      fingerprint: async () => `pci:${versionId}:${file.name}:${file.size}:${file.lastModified}`,
-      onError(error) {
-        onStatus?.('error');
-        reject(error instanceof Error ? error : new Error('pci_tus_upload_failed'));
-      },
-      onProgress(bytesUploaded, bytesTotal) {
-        onStatus?.('uploading');
-        onProgress?.(bytesUploaded, bytesTotal);
-      },
-      onSuccess() {
-        onStatus?.('uploaded');
-        resolve({ url: upload.url || null });
-      },
+      file,
+      bucketName,
+      objectName,
+      contentType,
+      signatureHeader,
+      signatureToken,
+      signal,
     });
+    saveTusUploadUrl(versionId, uploadUrl);
+    offset = 0;
+  }
 
-    const abort = () => {
-      upload.abort(false).finally(() => reject(new DOMException('Upload aborted', 'AbortError')));
-    };
-    signal?.addEventListener('abort', abort, { once: true });
-
-    upload.findPreviousUploads()
-      .then((previousUploads) => {
-        if (signal?.aborted) return;
-        if (previousUploads.length) {
-          upload.resumeFromPreviousUpload(previousUploads[0]);
-          onStatus?.('resuming');
-        }
-        upload.start();
-      })
-      .catch((error) => reject(error instanceof Error ? error : new Error('pci_tus_resume_lookup_failed')));
+  await patchTusUpload({
+    uploadUrl,
+    file,
+    startOffset: Number(offset) || 0,
+    chunkSize,
+    signatureHeader,
+    signatureToken,
+    signal,
+    onProgress,
+    onStatus,
   });
+
+  clearTusUploadUrl(versionId);
+  onStatus?.('uploaded');
+  return { url: uploadUrl };
 }
 
 export const PCI_VIDEO_MAX_BYTES = MAX_VIDEO_BYTES;
