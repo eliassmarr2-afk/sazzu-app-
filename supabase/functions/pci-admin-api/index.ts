@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+import { handleOperatorReadRoute } from "./operator-reads.ts";
 
 type JsonRecord = Record<string, unknown>;
 type SupabaseAdmin = ReturnType<typeof createClient>;
@@ -232,6 +233,16 @@ Deno.serve(async (request) => {
   if (!user) return json(request, { ok: false, code: "unauthorized", message: "Se requiere una sesión válida de Protocol Data." }, 401);
 
   const path = normalizePathname(new URL(request.url));
+
+  const operatorReadResponse = await handleOperatorReadRoute({
+    request,
+    path,
+    admin,
+    userId: user.id,
+    respond: (body, status = 200) => json(request, body, status),
+  });
+  if (operatorReadResponse) return operatorReadResponse;
+
   let match: RegExpMatchArray | null;
 
   // Existing Review read models.
