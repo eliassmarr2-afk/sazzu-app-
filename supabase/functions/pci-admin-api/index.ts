@@ -121,6 +121,24 @@ function parseDate(value: unknown): string | null | false {
   return Number.isFinite(millis) ? new Date(millis).toISOString() : false;
 }
 
+function parseOptionalPositiveInteger(
+  value: unknown,
+): number | null | false {
+  if (
+    value === null ||
+    value === undefined ||
+    clean(value) === ""
+  ) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isSafeInteger(parsed) && parsed > 0
+    ? parsed
+    : false;
+}
+
 function base64UrlToBytes(value: string): Uint8Array {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
@@ -154,6 +172,7 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const message = clean(error?.message);
   const known = [
     "pci_operator_context_required", "pci_workspace_access_denied",
+    "pci_consignment_not_found", "pci_consignment_not_publishable", "pci_consignment_revision_required", "pci_consignment_revision_not_publishable", "pci_consignment_title_required", "pci_invalid_consignment_visibility", "pci_invalid_submission_limit", "pci_invalid_version_limit", "pci_invalid_consignment_window",
     "pci_submission_not_found", "pci_submission_version_not_found", "pci_submission_version_not_ready", "pci_submission_version_storage_invalid",
     "pci_review_context_required", "pci_submission_not_reviewable", "pci_submission_current_version_required", "pci_submission_current_version_not_ready", "pci_submission_review_decision_not_allowed", "pci_creator_feedback_required", "pci_submission_participation_invalid", "pci_submission_brief_revision_invalid", "pci_pre_purchase_revision_limit_reached", "pci_rejection_reason_invalid", "pci_internal_note_context_required", "pci_internal_note_body_required",
     "pci_negotiation_context_required", "pci_negotiation_not_found", "pci_negotiation_already_open", "pci_negotiation_reopen_required", "pci_negotiation_not_closed", "pci_negotiation_not_open", "pci_negotiation_purchase_exists", "pci_negotiation_close_reason_invalid", "pci_negotiation_message_context_required", "pci_negotiation_message_invalid", "pci_submission_not_preselected",
@@ -169,13 +188,15 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_operation_failed";
 
   if (["pci_operator_context_required", "pci_workspace_access_denied"].includes(code)) return { code, status: 403 };
-  if (["pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_parent_offer_not_found", "pci_payable_not_found", "pci_payout_not_found"].includes(code)) return { code, status: 404 };
+  if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_parent_offer_not_found", "pci_payable_not_found", "pci_payout_not_found"].includes(code)) return { code, status: 404 };
   if ([
+    "pci_consignment_not_publishable", "pci_consignment_revision_required", "pci_consignment_revision_not_publishable",
     "pci_submission_version_not_ready", "pci_submission_version_storage_invalid", "pci_submission_not_reviewable", "pci_submission_current_version_required", "pci_submission_current_version_not_ready", "pci_submission_review_decision_not_allowed", "pci_pre_purchase_revision_limit_reached",
     "pci_negotiation_already_open", "pci_negotiation_reopen_required", "pci_negotiation_not_closed", "pci_negotiation_not_open", "pci_negotiation_purchase_exists", "pci_submission_not_preselected", "pci_parent_offer_not_live", "pci_live_offer_exists", "pci_another_offer_is_live", "pci_rights_clearance_incomplete", "pci_submission_version_hash_required", "pci_admin_can_only_reject_creator_offer", "pci_admin_can_only_withdraw_workspace_offer", "pci_offer_not_live", "pci_rights_declaration_required",
     "pci_payable_not_ready_to_pay", "pci_payable_destination_not_confirmed", "pci_payable_destination_confirmation_mismatch", "pci_purchase_not_payable", "pci_payout_exceeds_remaining_balance", "pci_payout_reference_duplicate", "pci_payout_not_confirmable", "pci_payout_allocation_required", "pci_multi_payable_payout_not_supported", "pci_payable_not_processing", "pci_payout_destination_snapshot_mismatch", "pci_payout_not_failable", "pci_payout_not_reversible", "pci_payout_reversal_requires_incident_after_rights_activation", "pci_payout_proof_not_available", "pci_command_already_processing", "pci_idempotency_conflict",
   ].includes(code)) return { code, status: 409 };
   if ([
+    "pci_consignment_title_required", "pci_invalid_consignment_visibility", "pci_invalid_submission_limit", "pci_invalid_version_limit", "pci_invalid_consignment_window",
     "pci_creator_feedback_required", "pci_submission_participation_invalid", "pci_submission_brief_revision_invalid", "pci_rejection_reason_invalid", "pci_internal_note_body_required", "pci_negotiation_close_reason_invalid", "pci_negotiation_message_invalid", "pci_offer_amount_invalid", "pci_offer_currency_invalid", "pci_offer_expiry_invalid", "pci_offer_rights_snapshot_required", "pci_offer_payment_terms_required", "pci_rights_clearance_status_invalid", "pci_rights_clearance_reason_required",
     "pci_payout_amount_invalid", "pci_payout_provider_invalid", "pci_payout_method_invalid", "pci_payout_reference_required", "pci_payout_transferred_at_invalid", "pci_payout_proof_bucket_invalid", "pci_payout_proof_context_invalid", "pci_payout_proof_path_invalid", "pci_payout_failure_reason_invalid", "pci_payout_reversal_reason_invalid",
   ].includes(code)) return { code, status: 422 };
@@ -268,6 +289,320 @@ Deno.serve(async (request) => {
     const validated = validateWorkspaceAndSubmission(request, match[1], match[2], reqId);
     if (validated instanceof Response) return validated;
     return rpcJson(request, admin, "admin_submission_detail", { p_actor_user_id: user.id, p_workspace_id: validated.workspaceId, p_submission_id: validated.submissionId }, reqId);
+  }
+
+  // Consignment commands.
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments$/i);
+  if (request.method === "POST" && match) {
+    const reqId = requestId();
+    const workspaceId = decodeURIComponent(match[1]);
+
+    if (!isWorkspaceId(workspaceId)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_workspace_id",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const payload = await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const unexpected = rejectUnexpected(
+      payload,
+      [
+        "revision",
+        "visibility",
+        "max_submissions_per_creator",
+        "max_versions_per_submission",
+        "opens_at",
+        "closes_at",
+        "idempotency_key",
+      ],
+    );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const idem = idempotencyKey(request, payload);
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const revision = objectValue(payload.revision);
+
+    if (!revision) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_consignment_revision",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const revisionUnexpected = rejectUnexpected(
+      revision,
+      [
+        "title",
+        "summary",
+        "objective",
+        "creative_angle",
+        "hook_guidance",
+        "format_requirements",
+        "acceptance_criteria",
+        "subject_type",
+        "subject_ref",
+        "subject_snapshot",
+        "base_price_amount",
+        "currency",
+        "slots_available",
+        "performance_bonus_policy",
+        "pre_purchase_revision_limit",
+        "rights_package_snapshot",
+      ],
+    );
+
+    if (revisionUnexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_revision_fields",
+          fields: revisionUnexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    if (!clean(revision.title)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_consignment_title_required",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    const visibility =
+      clean(payload.visibility).toLowerCase() || "open";
+
+    if (!["open", "invite_only"].includes(visibility)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_invalid_consignment_visibility",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    const maxSubmissions =
+      parseOptionalPositiveInteger(
+        payload.max_submissions_per_creator,
+      );
+
+    const maxVersions =
+      parseOptionalPositiveInteger(
+        payload.max_versions_per_submission,
+      );
+
+    if (maxSubmissions === false) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_invalid_submission_limit",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    if (maxVersions === false) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_invalid_version_limit",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    const opensAt = parseDate(payload.opens_at);
+    const closesAt = parseDate(payload.closes_at);
+
+    if (opensAt === false || closesAt === false) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_consignment_datetime",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    if (
+      opensAt &&
+      closesAt &&
+      Date.parse(closesAt) <= Date.parse(opensAt)
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_invalid_consignment_window",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    return rpcJson(
+      request,
+      admin,
+      "create_consignment",
+      {
+        p_actor_user_id: user.id,
+        p_workspace_id: workspaceId,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+        p_revision: revision,
+        p_visibility: visibility,
+        p_max_submissions_per_creator: maxSubmissions,
+        p_max_versions_per_submission: maxVersions,
+        p_opens_at: opensAt,
+        p_closes_at: closesAt,
+      },
+      reqId,
+      201,
+    );
+  }
+
+  match = path.match(
+    /^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/publish$/i,
+  );
+
+  if (request.method === "POST" && match) {
+    const reqId = requestId();
+
+    const validated = validateWorkspaceAndUuid(
+      request,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      reqId,
+    );
+
+    if (validated instanceof Response) {
+      return validated;
+    }
+
+    const payload = await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const unexpected = rejectUnexpected(
+      payload,
+      ["idempotency_key"],
+    );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const idem = idempotencyKey(request, payload);
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    return rpcJson(
+      request,
+      admin,
+      "publish_consignment",
+      {
+        p_actor_user_id: user.id,
+        p_workspace_id: validated.workspaceId,
+        p_consignment_id: validated.id,
+        p_idempotency_key: idem,
+        p_request_id: reqId,
+      },
+      reqId,
+    );
   }
 
   // Review commands.
