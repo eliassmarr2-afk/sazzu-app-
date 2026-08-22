@@ -43,6 +43,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_workspace_access_denied",
     "pci_consignment_not_found",
     "pci_submission_not_found",
+    "pci_negotiation_not_found",
     "pci_purchase_not_found",
     "pci_workspace_creator_not_found",
     "pci_creative_asset_not_found",
@@ -60,6 +61,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
   if ([
     "pci_consignment_not_found",
     "pci_submission_not_found",
+    "pci_negotiation_not_found",
     "pci_purchase_not_found",
     "pci_workspace_creator_not_found",
     "pci_creative_asset_not_found",
@@ -181,6 +183,37 @@ export async function handleOperatorReadRoute({
       p_status: status,
       p_limit: limit,
       p_offset: offset,
+    }, requestId);
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/negotiations$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspace(respond, match[1], requestId);
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(respond, admin, "admin_negotiations", {
+      p_actor_user_id: userId,
+      p_workspace_id: validated.workspaceId,
+    }, requestId);
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/negotiations\/([0-9a-f-]+)$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_negotiation_id",
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(respond, admin, "admin_negotiation_detail", {
+      p_actor_user_id: userId,
+      p_workspace_id: validated.workspaceId,
+      p_negotiation_id: validated.id,
     }, requestId);
   }
 
