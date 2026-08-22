@@ -45,6 +45,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_submission_not_found",
     "pci_negotiation_not_found",
     "pci_purchase_not_found",
+    "pci_payout_not_found",
     "pci_workspace_creator_not_found",
     "pci_creative_asset_not_found",
     "pci_asset_not_available",
@@ -63,6 +64,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_submission_not_found",
     "pci_negotiation_not_found",
     "pci_purchase_not_found",
+    "pci_payout_not_found",
     "pci_workspace_creator_not_found",
     "pci_creative_asset_not_found",
   ].includes(code)) {
@@ -215,6 +217,100 @@ export async function handleOperatorReadRoute({
       p_workspace_id: validated.workspaceId,
       p_negotiation_id: validated.id,
     }, requestId);
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/purchases$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspace(
+      respond,
+      match[1],
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_purchases",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+      },
+      requestId,
+    );
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/payables$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspace(
+      respond,
+      match[1],
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_payables",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+      },
+      requestId,
+    );
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/payouts$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspace(
+      respond,
+      match[1],
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_payouts",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+      },
+      requestId,
+    );
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/payouts\/([0-9a-f-]+)$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+
+    const validated =
+      validateWorkspaceAndUuid(
+        respond,
+        match[1],
+        match[2],
+        "invalid_payout_id",
+        requestId,
+      );
+
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_payout_detail",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+        p_payout_id: validated.id,
+      },
+      requestId,
+    );
   }
 
   match = path.match(/^\/v1\/workspaces\/([^/]+)\/purchases\/([0-9a-f-]+)$/i);
