@@ -280,6 +280,31 @@ export async function handleOperatorReadRoute({
     }, requestId);
   }
 
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/lifecycle$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_consignment_lifecycle_context",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+        p_consignment_id: validated.id,
+      },
+      requestId,
+    );
+  }
+
   match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/draft$/i);
   if (request.method === "POST" && match) {
     const requestId = crypto.randomUUID();
