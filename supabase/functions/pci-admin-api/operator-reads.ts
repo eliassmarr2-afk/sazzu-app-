@@ -31,6 +31,25 @@ function parseIntegerParam(value: string | null, fallback: number): number | nul
   return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
+function parseOptionalPositiveInteger(value: unknown): number | null | false {
+  if (value === null || value === undefined || clean(value) === "") return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : false;
+}
+
+function parseDate(value: unknown): string | null | false {
+  const raw = clean(value);
+  if (!raw) return null;
+  const millis = Date.parse(raw);
+  return Number.isFinite(millis) ? new Date(millis).toISOString() : false;
+}
+
+function objectValue(value: unknown): JsonRecord | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as JsonRecord
+    : null;
+}
+
 async function parseObject(request: Request): Promise<JsonRecord | null> {
   try {
     const value = await request.json();
@@ -60,6 +79,13 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_consignment_not_found",
     "pci_consignment_revision_context_required",
     "pci_consignment_revision_not_publishable",
+    "pci_consignment_initial_draft_not_editable",
+    "pci_consignment_title_required",
+    "pci_consignment_matching_tags_invalid",
+    "pci_invalid_consignment_visibility",
+    "pci_invalid_submission_limit",
+    "pci_invalid_version_limit",
+    "pci_invalid_consignment_window",
     "pci_command_already_processing",
     "pci_idempotency_conflict",
     "pci_submission_not_found",
@@ -92,6 +118,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
   }
   if ([
     "pci_consignment_revision_not_publishable",
+    "pci_consignment_initial_draft_not_editable",
     "pci_command_already_processing",
     "pci_idempotency_conflict",
     "pci_asset_not_available",
@@ -101,6 +128,12 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
   }
   if ([
     "pci_consignment_revision_context_required",
+    "pci_consignment_title_required",
+    "pci_consignment_matching_tags_invalid",
+    "pci_invalid_consignment_visibility",
+    "pci_invalid_submission_limit",
+    "pci_invalid_version_limit",
+    "pci_invalid_consignment_window",
     "pci_submission_status_invalid",
     "pci_workspace_creator_status_invalid",
     "pci_pagination_invalid",
@@ -193,6 +226,119 @@ export async function handleOperatorReadRoute({
       p_actor_user_id: userId,
       p_workspace_id: validated.workspaceId,
       p_consignment_id: validated.id,
+    }, requestId);
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/draft$/i);
+  if (request.method === "POST" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) {
+      return respond({ ok: false, code: "invalid_json", request_id: requestId }, 400);
+    }
+
+    const allowed = new Set([
+      "idempotency_key",
+      "revision",
+      "visibility",
+      "max_submissions_per_creator",
+      "max_versions_per_submission",
+      "opens_at",
+      "closes_at",
+    ]);
+    const unexpected = Object.keys(payload).filter((key) => !allowed.has(key));
+    if (unexpected.length) {
+      return respond({
+        ok: false,
+        code: "unexpected_fields",
+        fields: unexpected,
+        request_id: requestId,
+      }, 400);
+    }
+
+    const idem = idempotencyKey(request, payload);
+    if (!idem) {
+      return respond({
+        ok: false,
+        code: "idempotency_key_required",
+        request_id: requestId,
+      }, 400);
+    }
+
+    const revision = objectValue(payload.revision);
+    if (!revision) {
+      return respond({
+        ok: false,
+        code: "pci_consignment_revision_context_required",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const visibility = clean(payload.visibility).toLowerCase();
+    if (!['open', 'invite_only'].includes(visibility)) {
+      return respond({
+        ok: false,
+        code: "pci_invalid_consignment_visibility",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const maxSubmissions = parseOptionalPositiveInteger(payload.max_submissions_per_creator);
+    if (maxSubmissions === false) {
+      return respond({
+        ok: false,
+        code: "pci_invalid_submission_limit",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const maxVersions = parseOptionalPositiveInteger(payload.max_versions_per_submission);
+    if (maxVersions === false) {
+      return respond({
+        ok: false,
+        code: "pci_invalid_version_limit",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const opensAt = parseDate(payload.opens_at);
+    const closesAt = parseDate(payload.closes_at);
+    if (opensAt === false || closesAt === false) {
+      return respond({
+        ok: false,
+        code: "pci_invalid_consignment_window",
+        request_id: requestId,
+      }, 422);
+    }
+    if (opensAt && closesAt && Date.parse(closesAt) <= Date.parse(opensAt)) {
+      return respond({
+        ok: false,
+        code: "pci_invalid_consignment_window",
+        request_id: requestId,
+      }, 422);
+    }
+
+    return rpcResponse(respond, admin, "admin_update_initial_consignment_draft", {
+      p_actor_user_id: userId,
+      p_workspace_id: validated.workspaceId,
+      p_consignment_id: validated.id,
+      p_revision: revision,
+      p_visibility: visibility,
+      p_max_submissions_per_creator: maxSubmissions,
+      p_max_versions_per_submission: maxVersions,
+      p_opens_at: opensAt,
+      p_closes_at: closesAt,
+      p_idempotency_key: idem,
+      p_request_id: requestId,
     }, requestId);
   }
 
