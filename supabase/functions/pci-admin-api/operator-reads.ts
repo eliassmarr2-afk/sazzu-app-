@@ -12,6 +12,26 @@ type HandlerContext = {
   respond: Respond;
 };
 
+const CONSIGNMENT_REVISION_FIELDS = new Set([
+  "title",
+  "summary",
+  "objective",
+  "creative_angle",
+  "hook_guidance",
+  "matching_tags",
+  "format_requirements",
+  "acceptance_criteria",
+  "subject_type",
+  "subject_ref",
+  "subject_snapshot",
+  "base_price_amount",
+  "currency",
+  "slots_available",
+  "performance_bonus_policy",
+  "pre_purchase_revision_limit",
+  "rights_package_snapshot",
+]);
+
 function clean(value: unknown): string {
   return String(value ?? "").trim();
 }
@@ -66,6 +86,33 @@ function idempotencyKey(request: Request, payload?: JsonRecord): string | null {
   return isUuid(value) ? value.toLowerCase() : null;
 }
 
+function normalizeMatchingTags(value: unknown): string[] | null {
+  const rawTags = value ?? [];
+  if (
+    !Array.isArray(rawTags) ||
+    rawTags.length > 20 ||
+    rawTags.some(
+      (tag) =>
+        typeof tag !== "string" ||
+        !clean(tag) ||
+        clean(tag).length > 60,
+    )
+  ) {
+    return null;
+  }
+
+  const result: string[] = [];
+  const seen = new Set<string>();
+  for (const rawTag of rawTags) {
+    const tag = clean(rawTag);
+    const key = tag.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(tag);
+  }
+  return result;
+}
+
 async function rpc(admin: SupabaseAdmin, name: string, args: JsonRecord) {
   const { data, error } = await admin.schema("pci_api").rpc(name, args);
   return { data, error: error ? { message: error.message, code: error.code } : null };
@@ -77,6 +124,8 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_operator_context_required",
     "pci_workspace_access_denied",
     "pci_consignment_not_found",
+    "pci_consignment_not_publishable",
+    "pci_consignment_revision_required",
     "pci_consignment_revision_context_required",
     "pci_consignment_revision_not_publishable",
     "pci_consignment_initial_draft_not_editable",
@@ -117,6 +166,8 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     return { code, status: 404 };
   }
   if ([
+    "pci_consignment_not_publishable",
+    "pci_consignment_revision_required",
     "pci_consignment_revision_not_publishable",
     "pci_consignment_initial_draft_not_editable",
     "pci_command_already_processing",
@@ -283,8 +334,42 @@ export async function handleOperatorReadRoute({
       }, 422);
     }
 
+    const revisionUnexpected = Object.keys(revision).filter(
+      (key) => !CONSIGNMENT_REVISION_FIELDS.has(key),
+    );
+    if (revisionUnexpected.length) {
+      return respond({
+        ok: false,
+        code: "unexpected_revision_fields",
+        fields: revisionUnexpected,
+        request_id: requestId,
+      }, 400);
+    }
+
+    if (!clean(revision.title)) {
+      return respond({
+        ok: false,
+        code: "pci_consignment_title_required",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const matchingTags = normalizeMatchingTags(revision.matching_tags);
+    if (!matchingTags) {
+      return respond({
+        ok: false,
+        code: "pci_consignment_matching_tags_invalid",
+        request_id: requestId,
+      }, 422);
+    }
+
+    const normalizedRevision: JsonRecord = {
+      ...revision,
+      matching_tags: matchingTags,
+    };
+
     const visibility = clean(payload.visibility).toLowerCase();
-    if (!['open', 'invite_only'].includes(visibility)) {
+    if (!["open", "invite_only"].includes(visibility)) {
       return respond({
         ok: false,
         code: "pci_invalid_consignment_visibility",
@@ -331,12 +416,57 @@ export async function handleOperatorReadRoute({
       p_actor_user_id: userId,
       p_workspace_id: validated.workspaceId,
       p_consignment_id: validated.id,
-      p_revision: revision,
+      p_revision: normalizedRevision,
       p_visibility: visibility,
       p_max_submissions_per_creator: maxSubmissions,
       p_max_versions_per_submission: maxVersions,
       p_opens_at: opensAt,
       p_closes_at: closesAt,
+      p_idempotency_key: idem,
+      p_request_id: requestId,
+    }, requestId);
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/publish$/i);
+  if (request.method === "POST" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    const payload = await parseObject(request);
+    if (!payload) {
+      return respond({ ok: false, code: "invalid_json", request_id: requestId }, 400);
+    }
+
+    const unexpected = Object.keys(payload).filter((key) => key !== "idempotency_key");
+    if (unexpected.length) {
+      return respond({
+        ok: false,
+        code: "unexpected_fields",
+        fields: unexpected,
+        request_id: requestId,
+      }, 400);
+    }
+
+    const idem = idempotencyKey(request, payload);
+    if (!idem) {
+      return respond({
+        ok: false,
+        code: "idempotency_key_required",
+        request_id: requestId,
+      }, 400);
+    }
+
+    return rpcResponse(respond, admin, "publish_consignment", {
+      p_actor_user_id: userId,
+      p_workspace_id: validated.workspaceId,
+      p_consignment_id: validated.id,
       p_idempotency_key: idem,
       p_request_id: requestId,
     }, requestId);
