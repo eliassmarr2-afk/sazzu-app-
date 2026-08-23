@@ -125,9 +125,16 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_workspace_access_denied",
     "pci_consignment_not_found",
     "pci_consignment_not_publishable",
+    "pci_consignment_not_open",
     "pci_consignment_revision_required",
     "pci_consignment_revision_context_required",
     "pci_consignment_revision_not_publishable",
+    "pci_consignment_revision_not_published",
+    "pci_consignment_invite_context_required",
+    "pci_consignment_invite_creator_ids_invalid",
+    "pci_consignment_invitation_mode_required",
+    "pci_consignment_creator_not_eligible",
+    "pci_consignment_creator_participation_conflict",
     "pci_consignment_initial_draft_not_editable",
     "pci_consignment_title_required",
     "pci_consignment_matching_tags_invalid",
@@ -149,48 +156,73 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_workspace_creator_status_invalid",
     "pci_pagination_invalid",
   ];
-  const code = known.find((candidate) => message.includes(candidate)) ?? "pci_read_failed";
 
-  if (["pci_operator_context_required", "pci_workspace_access_denied"].includes(code)) {
+  const code =
+    known.find((candidate) => message.includes(candidate)) ??
+    "pci_read_failed";
+
+  if (
+    [
+      "pci_operator_context_required",
+      "pci_workspace_access_denied",
+    ].includes(code)
+  ) {
     return { code, status: 403 };
   }
-  if ([
-    "pci_consignment_not_found",
-    "pci_submission_not_found",
-    "pci_negotiation_not_found",
-    "pci_purchase_not_found",
-    "pci_payout_not_found",
-    "pci_workspace_creator_not_found",
-    "pci_creative_asset_not_found",
-  ].includes(code)) {
+
+  if (
+    [
+      "pci_consignment_not_found",
+      "pci_submission_not_found",
+      "pci_negotiation_not_found",
+      "pci_purchase_not_found",
+      "pci_payout_not_found",
+      "pci_workspace_creator_not_found",
+      "pci_creative_asset_not_found",
+    ].includes(code)
+  ) {
     return { code, status: 404 };
   }
-  if ([
-    "pci_consignment_not_publishable",
-    "pci_consignment_revision_required",
-    "pci_consignment_revision_not_publishable",
-    "pci_consignment_initial_draft_not_editable",
-    "pci_command_already_processing",
-    "pci_idempotency_conflict",
-    "pci_asset_not_available",
-    "pci_asset_rights_not_active",
-  ].includes(code)) {
+
+  if (
+    [
+      "pci_consignment_not_publishable",
+      "pci_consignment_not_open",
+      "pci_consignment_revision_required",
+      "pci_consignment_revision_not_publishable",
+      "pci_consignment_revision_not_published",
+      "pci_consignment_invitation_mode_required",
+      "pci_consignment_creator_participation_conflict",
+      "pci_consignment_initial_draft_not_editable",
+      "pci_command_already_processing",
+      "pci_idempotency_conflict",
+      "pci_asset_not_available",
+      "pci_asset_rights_not_active",
+    ].includes(code)
+  ) {
     return { code, status: 409 };
   }
-  if ([
-    "pci_consignment_revision_context_required",
-    "pci_consignment_title_required",
-    "pci_consignment_matching_tags_invalid",
-    "pci_invalid_consignment_visibility",
-    "pci_invalid_submission_limit",
-    "pci_invalid_version_limit",
-    "pci_invalid_consignment_window",
-    "pci_submission_status_invalid",
-    "pci_workspace_creator_status_invalid",
-    "pci_pagination_invalid",
-  ].includes(code)) {
+
+  if (
+    [
+      "pci_consignment_revision_context_required",
+      "pci_consignment_invite_context_required",
+      "pci_consignment_invite_creator_ids_invalid",
+      "pci_consignment_creator_not_eligible",
+      "pci_consignment_title_required",
+      "pci_consignment_matching_tags_invalid",
+      "pci_invalid_consignment_visibility",
+      "pci_invalid_submission_limit",
+      "pci_invalid_version_limit",
+      "pci_invalid_consignment_window",
+      "pci_submission_status_invalid",
+      "pci_workspace_creator_status_invalid",
+      "pci_pagination_invalid",
+    ].includes(code)
+  ) {
     return { code, status: 422 };
   }
+
   return { code, status: 400 };
 }
 
@@ -300,6 +332,146 @@ export async function handleOperatorReadRoute({
         p_actor_user_id: userId,
         p_workspace_id: validated.workspaceId,
         p_consignment_id: validated.id,
+      },
+      requestId,
+    );
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/invitations$/i);
+  if (request.method === "POST" && match) {
+    const requestId = crypto.randomUUID();
+
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+
+    if (validated instanceof Response) {
+      return validated;
+    }
+
+    const payload = await parseObject(request);
+
+    if (!payload) {
+      return respond(
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: requestId,
+        },
+        400,
+      );
+    }
+
+    const allowed = new Set([
+      "creator_ids",
+      "idempotency_key",
+    ]);
+
+    const unexpected = Object.keys(payload).filter(
+      (key) => !allowed.has(key),
+    );
+
+    if (unexpected.length) {
+      return respond(
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: requestId,
+        },
+        400,
+      );
+    }
+
+    const idem = idempotencyKey(
+      request,
+      payload,
+    );
+
+    if (!idem) {
+      return respond(
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: requestId,
+        },
+        400,
+      );
+    }
+
+    if (
+      !Array.isArray(payload.creator_ids) ||
+      payload.creator_ids.length < 1 ||
+      payload.creator_ids.length > 50
+    ) {
+      return respond(
+        {
+          ok: false,
+          code:
+            "pci_consignment_invite_creator_ids_invalid",
+          request_id: requestId,
+        },
+        422,
+      );
+    }
+
+    const creatorIds: string[] = [];
+    const seen = new Set<string>();
+
+    for (const rawCreatorId of payload.creator_ids) {
+      const creatorId =
+        clean(rawCreatorId).toLowerCase();
+
+      if (!isUuid(creatorId)) {
+        return respond(
+          {
+            ok: false,
+            code:
+              "pci_consignment_invite_creator_ids_invalid",
+            request_id: requestId,
+          },
+          422,
+        );
+      }
+
+      if (seen.has(creatorId)) {
+        continue;
+      }
+
+      seen.add(creatorId);
+      creatorIds.push(creatorId);
+    }
+
+    if (
+      creatorIds.length < 1 ||
+      creatorIds.length > 50
+    ) {
+      return respond(
+        {
+          ok: false,
+          code:
+            "pci_consignment_invite_creator_ids_invalid",
+          request_id: requestId,
+        },
+        422,
+      );
+    }
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_invite_consignment_creators",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+        p_consignment_id: validated.id,
+        p_creator_ids: creatorIds,
+        p_idempotency_key: idem,
+        p_request_id: requestId,
       },
       requestId,
     );
