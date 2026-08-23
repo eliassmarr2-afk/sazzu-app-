@@ -12,6 +12,8 @@ const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:5173",
   "http://localhost:5500",
   "http://127.0.0.1:5500",
+  "http://localhost:5503",
+  "http://127.0.0.1:5503",
 ];
 const ENV_ALLOWED_ORIGINS = (Deno.env.get("PCI_ONBOARDING_ALLOWED_ORIGINS") ?? "")
   .split(",")
@@ -120,15 +122,16 @@ function mapRpcError(error: { message?: string; code?: string } | null): { code:
   const message = clean(error?.message);
   const known = [
     "pci_workspace_access_denied", "pci_operator_context_required",
-    "pci_required_legal_documents_missing", "pci_creator_invitation_context_required", "pci_creator_invitation_email_invalid", "pci_creator_display_name_invalid", "pci_creator_legal_name_invalid", "pci_creator_invitation_expiry_invalid",
+    "pci_required_legal_documents_missing", "pci_creator_invitation_context_required", "pci_creator_invitation_email_invalid", "pci_creator_display_name_invalid", "pci_creator_legal_name_invalid", "pci_creator_invitation_expiry_invalid", "pci_creator_invitation_revocation_context_invalid",
     "pci_creator_closed", "pci_creator_suspended", "pci_workspace_creator_closed", "pci_workspace_creator_not_invitable", "pci_workspace_creator_already_active",
-    "pci_creator_invitation_not_found", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_delivered", "pci_creator_invitation_expired", "pci_creator_invitation_email_mismatch", "pci_creator_invitation_user_mismatch", "pci_creator_auth_already_linked_elsewhere", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited",
+    "pci_creator_invitation_not_found", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_delivered",
+    "pci_creator_invitation_revocation_context_invalid", "pci_creator_invitation_not_revocable", "pci_creator_invitation_expired", "pci_creator_invitation_email_mismatch", "pci_creator_invitation_user_mismatch", "pci_creator_auth_already_linked_elsewhere", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited",
     "pci_creator_bootstrap_context_invalid", "pci_command_already_processing", "pci_idempotency_conflict",
   ];
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_invitation_operation_failed";
   if (["pci_workspace_access_denied", "pci_operator_context_required", "pci_creator_invitation_email_mismatch", "pci_creator_invitation_user_mismatch", "pci_creator_auth_already_linked_elsewhere"].includes(code)) return { code, status: 403 };
   if (code === "pci_creator_invitation_not_found") return { code, status: 404 };
-  if (["pci_required_legal_documents_missing", "pci_creator_closed", "pci_creator_suspended", "pci_workspace_creator_closed", "pci_workspace_creator_not_invitable", "pci_workspace_creator_already_active", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_delivered", "pci_creator_invitation_expired", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited", "pci_command_already_processing", "pci_idempotency_conflict"].includes(code)) return { code, status: 409 };
+  if (["pci_required_legal_documents_missing", "pci_creator_closed", "pci_creator_suspended", "pci_workspace_creator_closed", "pci_workspace_creator_not_invitable", "pci_workspace_creator_already_active", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_delivered", "pci_creator_invitation_expired", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited", "pci_creator_invitation_not_revocable", "pci_command_already_processing", "pci_idempotency_conflict"].includes(code)) return { code, status: 409 };
   if (["pci_creator_invitation_email_invalid", "pci_creator_display_name_invalid", "pci_creator_legal_name_invalid", "pci_creator_invitation_expiry_invalid"].includes(code)) return { code, status: 422 };
   return { code, status: 400 };
 }
@@ -181,6 +184,165 @@ Deno.serve(async (request) => {
       return json(request, { ok: false, code: mapped.code, request_id: reqId }, mapped.status);
     }
     return json(request, { ...((result.data ?? {}) as JsonRecord), request_id: reqId }, 200);
+  }
+
+  // PCI 2.1H.1B.2A · PROTOCOL DATA INVITATIONS
+  match = path.match(
+    /^\/v1\/admin\/workspaces\/([^/]+)\/invitations\/([0-9a-f-]+)\/revoke$/i
+  );
+
+  if (request.method === "POST" && match) {
+    const reqId = requestId();
+    const workspaceId =
+      decodeURIComponent(match[1]);
+    const invitationId =
+      match[2].toLowerCase();
+
+    if (!isWorkspaceId(workspaceId)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_workspace_id",
+          request_id: reqId
+        },
+        400
+      );
+    }
+
+    if (!isUuid(invitationId)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_invitation_id",
+          request_id: reqId
+        },
+        400
+      );
+    }
+
+    const payload =
+      await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId
+        },
+        400
+      );
+    }
+
+    const unexpected =
+      rejectUnexpected(
+        payload,
+        [
+          "reason",
+          "idempotency_key"
+        ]
+      );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId
+        },
+        400
+      );
+    }
+
+    const reason =
+      clean(payload.reason);
+
+    const idem =
+      idempotencyKey(
+        request,
+        payload
+      );
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: reqId
+        },
+        400
+      );
+    }
+
+    if (
+      !reason ||
+      reason.length > 500
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code:
+            "pci_creator_invitation_revocation_context_invalid",
+          request_id: reqId
+        },
+        422
+      );
+    }
+
+    const result =
+      await rpc(
+        admin,
+        "admin_revoke_creator_invitation",
+        {
+          p_actor_user_id:
+            user.id,
+          p_workspace_id:
+            workspaceId,
+          p_invitation_id:
+            invitationId,
+          p_reason:
+            reason,
+          p_idempotency_key:
+            idem,
+          p_request_id:
+            reqId
+        }
+      );
+
+    if (result.error) {
+      const mapped =
+        mapRpcError(
+          result.error
+        );
+
+      return json(
+        request,
+        {
+          ok: false,
+          code: mapped.code,
+          request_id: reqId
+        },
+        mapped.status
+      );
+    }
+
+    return json(
+      request,
+      {
+        ...(
+          (result.data ?? {})
+        ),
+        request_id: reqId
+      },
+      200
+    );
   }
 
   match = path.match(/^\/v1\/admin\/workspaces\/([^/]+)\/invitations$/);
