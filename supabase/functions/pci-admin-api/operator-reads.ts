@@ -31,6 +31,22 @@ function parseIntegerParam(value: string | null, fallback: number): number | nul
   return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
+async function parseObject(request: Request): Promise<JsonRecord | null> {
+  try {
+    const value = await request.json();
+    return value && typeof value === "object" && !Array.isArray(value)
+      ? value as JsonRecord
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function idempotencyKey(request: Request, payload?: JsonRecord): string | null {
+  const value = clean(request.headers.get("idempotency-key")) || clean(payload?.idempotency_key);
+  return isUuid(value) ? value.toLowerCase() : null;
+}
+
 async function rpc(admin: SupabaseAdmin, name: string, args: JsonRecord) {
   const { data, error } = await admin.schema("pci_api").rpc(name, args);
   return { data, error: error ? { message: error.message, code: error.code } : null };
@@ -42,6 +58,10 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_operator_context_required",
     "pci_workspace_access_denied",
     "pci_consignment_not_found",
+    "pci_consignment_revision_context_required",
+    "pci_consignment_revision_not_publishable",
+    "pci_command_already_processing",
+    "pci_idempotency_conflict",
     "pci_submission_not_found",
     "pci_negotiation_not_found",
     "pci_purchase_not_found",
@@ -70,10 +90,21 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
   ].includes(code)) {
     return { code, status: 404 };
   }
-  if (["pci_asset_not_available", "pci_asset_rights_not_active"].includes(code)) {
+  if ([
+    "pci_consignment_revision_not_publishable",
+    "pci_command_already_processing",
+    "pci_idempotency_conflict",
+    "pci_asset_not_available",
+    "pci_asset_rights_not_active",
+  ].includes(code)) {
     return { code, status: 409 };
   }
-  if (["pci_submission_status_invalid", "pci_workspace_creator_status_invalid", "pci_pagination_invalid"].includes(code)) {
+  if ([
+    "pci_consignment_revision_context_required",
+    "pci_submission_status_invalid",
+    "pci_workspace_creator_status_invalid",
+    "pci_pagination_invalid",
+  ].includes(code)) {
     return { code, status: 422 };
   }
   return { code, status: 400 };
@@ -162,6 +193,63 @@ export async function handleOperatorReadRoute({
       p_actor_user_id: userId,
       p_workspace_id: validated.workspaceId,
       p_consignment_id: validated.id,
+    }, requestId);
+  }
+
+  match = path.match(
+    /^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/revisions\/([0-9a-f-]+)\/publish$/i,
+  );
+  if (request.method === "POST" && match) {
+    const requestId = crypto.randomUUID();
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+    if (validated instanceof Response) return validated;
+
+    const revisionId = match[3].toLowerCase();
+    if (!isUuid(revisionId)) {
+      return respond({
+        ok: false,
+        code: "invalid_consignment_revision_id",
+        request_id: requestId,
+      }, 400);
+    }
+
+    const payload = await parseObject(request);
+    if (!payload) {
+      return respond({ ok: false, code: "invalid_json", request_id: requestId }, 400);
+    }
+
+    const unexpected = Object.keys(payload).filter((key) => key !== "idempotency_key");
+    if (unexpected.length) {
+      return respond({
+        ok: false,
+        code: "unexpected_fields",
+        fields: unexpected,
+        request_id: requestId,
+      }, 400);
+    }
+
+    const idem = idempotencyKey(request, payload);
+    if (!idem) {
+      return respond({
+        ok: false,
+        code: "idempotency_key_required",
+        request_id: requestId,
+      }, 400);
+    }
+
+    return rpcResponse(respond, admin, "admin_publish_consignment_revision", {
+      p_actor_user_id: userId,
+      p_workspace_id: validated.workspaceId,
+      p_consignment_id: validated.id,
+      p_consignment_revision_id: revisionId,
+      p_idempotency_key: idem,
+      p_request_id: requestId,
     }, requestId);
   }
 
