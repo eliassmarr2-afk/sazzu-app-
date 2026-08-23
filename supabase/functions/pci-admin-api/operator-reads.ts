@@ -128,6 +128,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
     "pci_consignment_not_open",
     "pci_consignment_revision_required",
     "pci_consignment_revision_context_required",
+    "pci_consignment_matching_context_required",
     "pci_consignment_revision_not_publishable",
     "pci_consignment_revision_not_published",
     "pci_consignment_invite_context_required",
@@ -206,6 +207,7 @@ function readRpcError(error: { message?: string; code?: string } | null): { code
   if (
     [
       "pci_consignment_revision_context_required",
+      "pci_consignment_matching_context_required",
       "pci_consignment_invite_context_required",
       "pci_consignment_invite_creator_ids_invalid",
       "pci_consignment_creator_not_eligible",
@@ -328,6 +330,35 @@ export async function handleOperatorReadRoute({
       respond,
       admin,
       "admin_consignment_lifecycle_context",
+      {
+        p_actor_user_id: userId,
+        p_workspace_id: validated.workspaceId,
+        p_consignment_id: validated.id,
+      },
+      requestId,
+    );
+  }
+
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/consignments\/([0-9a-f-]+)\/candidates$/i);
+  if (request.method === "GET" && match) {
+    const requestId = crypto.randomUUID();
+
+    const validated = validateWorkspaceAndUuid(
+      respond,
+      match[1],
+      match[2],
+      "invalid_consignment_id",
+      requestId,
+    );
+
+    if (validated instanceof Response) {
+      return validated;
+    }
+
+    return rpcResponse(
+      respond,
+      admin,
+      "admin_consignment_matching_candidates",
       {
         p_actor_user_id: userId,
         p_workspace_id: validated.workspaceId,
