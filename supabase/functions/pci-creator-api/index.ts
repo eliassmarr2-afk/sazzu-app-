@@ -124,7 +124,7 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const message = clean(error?.message);
   const known = [
     "pci_creator_not_linked", "pci_creator_not_active", "pci_creator_workspace_access_denied",
-    "pci_consignment_not_found", "pci_consignment_not_open", "pci_consignment_invitation_required", "pci_active_participation_required",
+    "pci_consignment_not_found", "pci_consignment_not_open", "pci_consignment_invitation_required", "pci_consignment_invitation_not_pending", "pci_decline_consignment_invitation_context_required", "pci_active_participation_required",
     "pci_submission_not_found", "pci_submission_limit_reached", "pci_submission_version_not_found", "pci_submission_version_not_allowed", "pci_version_limit_reached",
     "pci_video_mime_not_allowed", "pci_video_size_invalid", "pci_sha256_invalid", "pci_storage_object_not_verified", "pci_submission_version_mime_mismatch", "pci_submission_version_not_finalizable", "pci_submission_version_not_invalidatable", "pci_invalidation_reason_invalid", "pci_ready_submission_version_immutable",
     "pci_negotiation_message_context_required", "pci_negotiation_message_invalid", "pci_negotiation_not_found", "pci_negotiation_not_open",
@@ -136,6 +136,8 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
     "pci_payout_not_found", "pci_payout_proof_not_available", "pci_command_already_processing", "pci_idempotency_conflict",
   ];
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_operation_failed";
+  if (code === "pci_consignment_invitation_not_pending") return { code, status: 409 };
+  if (code === "pci_decline_consignment_invitation_context_required") return { code, status: 422 };
   if (["pci_creator_not_linked", "pci_creator_not_active", "pci_creator_workspace_access_denied", "pci_consignment_invitation_required", "pci_active_participation_required"].includes(code)) return { code, status: 403 };
   if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_payment_account_not_found", "pci_payable_not_found", "pci_payout_not_found"].includes(code)) return { code, status: 404 };
   if ([
@@ -293,6 +295,17 @@ Deno.serve(async (request) => {
     if (!isUuid(id)) return json(request, { ok: false, code: "invalid_consignment_id", request_id: reqId }, 400);
     if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
     return rpcJson(request, admin, "join_consignment", { p_actor_user_id: user.id, p_consignment_id: id, p_idempotency_key: idem, p_request_id: reqId }, reqId);
+  }
+
+  match = path.match(/^\/v1\/consignments\/([0-9a-f-]+)\/decline$/i);
+  if (request.method === "POST" && match) {
+    const reqId = requestId(), id = match[1].toLowerCase(), payload = await parseObject(request);
+    if (!payload) return json(request, { ok: false, code: "invalid_json", request_id: reqId }, 400);
+    const unexpected = rejectUnexpected(payload, ["idempotency_key"]), idem = idempotencyKey(request, payload);
+    if (unexpected.length) return json(request, { ok: false, code: "unexpected_fields", fields: unexpected, request_id: reqId }, 400);
+    if (!isUuid(id)) return json(request, { ok: false, code: "invalid_consignment_id", request_id: reqId }, 400);
+    if (!idem) return json(request, { ok: false, code: "idempotency_key_required", request_id: reqId }, 400);
+    return rpcJson(request, admin, "decline_consignment_invitation", { p_actor_user_id: user.id, p_consignment_id: id, p_idempotency_key: idem, p_request_id: reqId }, reqId);
   }
 
   if (request.method === "POST" && path === "/v1/submissions") {
