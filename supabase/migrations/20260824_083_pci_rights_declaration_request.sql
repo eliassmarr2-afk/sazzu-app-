@@ -54,16 +54,25 @@ begin
 
   perform pci.require_active_workspace_member(p_actor_user_id, p_workspace_id);
 
-  select sv, s
-  into v_version, v_submission
+  select sv.* into v_version
   from pci.submission_versions sv
   join pci.submissions s on s.submission_id = sv.submission_id
   where sv.submission_version_id = p_submission_version_id
     and s.workspace_id = p_workspace_id
-  for update of sv, s;
+  for update of sv;
 
   if v_version.submission_version_id is null then
     raise exception using errcode = 'P0002', message = 'pci_submission_version_not_found';
+  end if;
+
+  select s.* into v_submission
+  from pci.submissions s
+  where s.submission_id = v_version.submission_id
+    and s.workspace_id = p_workspace_id
+  for update;
+
+  if v_submission.submission_id is null then
+    raise exception using errcode = 'P0002', message = 'pci_submission_not_found';
   end if;
 
   if v_submission.current_version_id is distinct from v_version.submission_version_id then
