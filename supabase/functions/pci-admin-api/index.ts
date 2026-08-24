@@ -285,6 +285,104 @@ Deno.serve(async (request) => {
     return rpcJson(request, admin, "admin_submission_review_context", { p_actor_user_id: user.id, p_workspace_id: validated.workspaceId, p_submission_id: validated.submissionId }, reqId);
   }
 
+  match = path.match(/^\/v1\/workspaces\/([^/]+)\/submission-versions\/([0-9a-f-]+)\/playback$/i);
+  if (request.method === "POST" && match) {
+    const reqId = requestId();
+
+    const validated = validateWorkspaceAndUuid(
+      request,
+      match[1],
+      match[2],
+      "invalid_submission_version_id",
+      reqId,
+    );
+
+    if (validated instanceof Response) return validated;
+
+    const context = await rpc(
+      admin,
+      "admin_submission_version_playback_context",
+      {
+        p_actor_user_id: user.id,
+        p_workspace_id: validated.workspaceId,
+        p_submission_version_id: validated.id,
+      },
+    );
+
+    if (context.error) {
+      const mapped = rpcErrorCode(context.error);
+
+      return json(
+        request,
+        {
+          ok: false,
+          code: mapped.code,
+          request_id: reqId,
+        },
+        mapped.status,
+      );
+    }
+
+    const value = (context.data ?? {}) as JsonRecord;
+    const bucket = clean(value.storage_bucket);
+    const storagePath = clean(value.storage_path);
+
+    if (bucket !== "pci-submissions" || !storagePath) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "submission_version_playback_context_unavailable",
+          request_id: reqId,
+        },
+        409,
+      );
+    }
+
+    const { data, error } = await admin
+      .storage
+      .from(bucket)
+      .createSignedUrl(storagePath, 600);
+
+    if (error || !data?.signedUrl) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "submission_version_playback_url_failed",
+          request_id: reqId,
+        },
+        500,
+      );
+    }
+
+    return json(
+      request,
+      {
+        ok: true,
+        request_id: reqId,
+        submission_id: value.submission_id,
+        submission_status: value.submission_status,
+        submission_version_id: value.submission_version_id,
+        version_number: value.version_number,
+        version_status: value.version_status,
+        rights_clearance_status: value.rights_clearance_status,
+        original_filename: value.original_filename,
+        mime_type: value.mime_type,
+        file_size_bytes: value.file_size_bytes,
+        duration_seconds: value.duration_seconds,
+        width: value.width,
+        height: value.height,
+        sha256: value.sha256,
+        playback: {
+          signed_url: data.signedUrl,
+          expires_in_seconds: 600,
+        },
+      },
+      200,
+    );
+  }
+
   match = path.match(/^\/v1\/workspaces\/([^/]+)\/submissions\/([0-9a-f-]+)$/i);
   if (request.method === "GET" && match) {
     const reqId = requestId();
