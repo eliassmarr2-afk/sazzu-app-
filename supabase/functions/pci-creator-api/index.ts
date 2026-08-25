@@ -124,6 +124,7 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const message = clean(error?.message);
   const known = [
     "pci_creator_not_linked", "pci_creator_not_active", "pci_creator_workspace_access_denied",
+    "pci_creator_registration_context_required", "pci_creator_registration_name_invalid", "pci_creator_registration_country_invalid", "pci_creator_registration_specialty_invalid", "pci_creator_registration_verified_email_required", "pci_creator_registration_email_already_linked", "pci_creator_registration_existing_account_blocked", "pci_creator_registration_relationship_blocked", "pci_workspace_not_found",
     "pci_consignment_not_found", "pci_consignment_not_open", "pci_consignment_invitation_required", "pci_consignment_invitation_not_pending", "pci_decline_consignment_invitation_context_required", "pci_active_participation_required",
     "pci_submission_not_found", "pci_submission_limit_reached", "pci_submission_version_not_found", "pci_submission_version_not_allowed", "pci_version_limit_reached",
     "pci_video_mime_not_allowed", "pci_video_size_invalid", "pci_sha256_invalid", "pci_storage_object_not_verified", "pci_submission_version_mime_mismatch", "pci_submission_version_not_finalizable", "pci_submission_version_not_invalidatable", "pci_invalidation_reason_invalid", "pci_ready_submission_version_immutable",
@@ -138,6 +139,10 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_operation_failed";
   if (code === "pci_consignment_invitation_not_pending") return { code, status: 409 };
   if (code === "pci_decline_consignment_invitation_context_required") return { code, status: 422 };
+  if (code === "pci_creator_registration_verified_email_required") return { code, status: 403 };
+  if (code === "pci_workspace_not_found") return { code, status: 404 };
+  if (["pci_creator_registration_email_already_linked", "pci_creator_registration_existing_account_blocked", "pci_creator_registration_relationship_blocked"].includes(code)) return { code, status: 409 };
+  if (["pci_creator_registration_context_required", "pci_creator_registration_name_invalid", "pci_creator_registration_country_invalid", "pci_creator_registration_specialty_invalid"].includes(code)) return { code, status: 422 };
   if (["pci_creator_not_linked", "pci_creator_not_active", "pci_creator_workspace_access_denied", "pci_consignment_invitation_required", "pci_active_participation_required"].includes(code)) return { code, status: 403 };
   if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_payment_account_not_found", "pci_payable_not_found", "pci_payout_not_found"].includes(code)) return { code, status: 404 };
   if ([
@@ -242,6 +247,175 @@ Deno.serve(async (request) => {
   const user = await requireUser(request, admin);
   if (!user) return json(request, { ok: false, code: "unauthorized", message: "Se requiere una sesión válida de Protocol Creative Insights." }, 401);
   const path = normalizePathname(new URL(request.url));
+
+  /* PCI 2.1S.2 · CREATOR SELF REGISTRATION ROUTE
+     Session authentication happens above this point.
+     Email is intentionally not accepted from the browser:
+     creator_self_register resolves it from auth.users.
+  */
+  if (
+    request.method === "POST" &&
+    path === "/v1/registration"
+  ) {
+    const reqId = requestId();
+    const payload = await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const unexpected = rejectUnexpected(
+      payload,
+      [
+        "workspace_id",
+        "display_name",
+        "country",
+        "primary_specialty",
+        "idempotency_key",
+      ],
+    );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const workspaceId =
+      clean(payload.workspace_id);
+
+    const displayName =
+      clean(payload.display_name);
+
+    const country =
+      clean(payload.country);
+
+    const primarySpecialty =
+      clean(payload.primary_specialty);
+
+    const idem =
+      idempotencyKey(
+        request,
+        payload,
+      );
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    if (
+      !workspaceId ||
+      workspaceId.length > 120
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_creator_registration_context_required",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    if (
+      displayName.length < 2 ||
+      displayName.length > 120
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_creator_registration_name_invalid",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    if (
+      country.length < 2 ||
+      country.length > 80
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_creator_registration_country_invalid",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    if (
+      primarySpecialty.length < 2 ||
+      primarySpecialty.length > 60
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "pci_creator_registration_specialty_invalid",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    return rpcJson(
+      request,
+      admin,
+      "creator_self_register",
+      {
+        p_actor_user_id:
+          user.id,
+
+        p_workspace_id:
+          workspaceId,
+
+        p_display_name:
+          displayName,
+
+        p_country:
+          country,
+
+        p_primary_specialty:
+          primarySpecialty,
+
+        p_idempotency_key:
+          idem,
+
+        p_request_id:
+          reqId,
+      },
+      reqId,
+      201,
+    );
+  }
 
   const simpleReads: Record<string, string> = {
     "/v1/opportunities": "creator_opportunities",
