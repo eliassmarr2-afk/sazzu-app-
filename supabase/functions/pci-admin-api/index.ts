@@ -172,6 +172,7 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const message = clean(error?.message);
   const known = [
     "pci_operator_context_required", "pci_workspace_access_denied",
+    "pci_creator_application_review_context_required", "pci_creator_application_review_decision_invalid", "pci_creator_not_found", "pci_creator_application_not_found", "pci_creator_application_not_pending", "pci_creator_application_already_reviewed", "pci_creator_application_required_legal_documents_missing",
     "pci_creator_operational_profile_context_required", "pci_workspace_creator_not_found", "pci_creator_provider_tier_invalid", "pci_creator_specialty_tags_invalid", "pci_creator_limit_invalid",
     "pci_consignment_not_found", "pci_consignment_not_publishable", "pci_consignment_revision_required", "pci_consignment_revision_not_publishable", "pci_consignment_revision_context_required", "pci_consignment_revision_not_creatable", "pci_consignment_revision_draft_exists", "pci_consignment_revision_not_editable", "pci_consignment_title_required", "pci_consignment_matching_tags_invalid", "pci_invalid_consignment_visibility", "pci_invalid_submission_limit", "pci_invalid_version_limit", "pci_invalid_consignment_window",
     "pci_submission_not_found", "pci_submission_version_not_found", "pci_submission_version_not_ready", "pci_submission_version_storage_invalid",
@@ -189,14 +190,16 @@ function rpcErrorCode(error: { message?: string; code?: string } | null): { code
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_operation_failed";
 
   if (["pci_operator_context_required", "pci_workspace_access_denied"].includes(code)) return { code, status: 403 };
-  if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_parent_offer_not_found", "pci_payable_not_found", "pci_payout_not_found", "pci_workspace_creator_not_found"].includes(code)) return { code, status: 404 };
+  if (["pci_consignment_not_found", "pci_submission_not_found", "pci_submission_version_not_found", "pci_negotiation_not_found", "pci_offer_not_found", "pci_parent_offer_not_found", "pci_payable_not_found", "pci_payout_not_found", "pci_workspace_creator_not_found", "pci_creator_not_found", "pci_creator_application_not_found"].includes(code)) return { code, status: 404 };
   if ([
+    "pci_creator_application_not_pending", "pci_creator_application_already_reviewed", "pci_creator_application_required_legal_documents_missing",
     "pci_consignment_not_publishable", "pci_consignment_revision_required", "pci_consignment_revision_not_publishable", "pci_consignment_revision_not_creatable", "pci_consignment_revision_draft_exists", "pci_consignment_revision_not_editable",
     "pci_submission_version_not_ready", "pci_submission_version_storage_invalid", "pci_submission_not_reviewable", "pci_submission_current_version_required", "pci_submission_current_version_not_ready", "pci_submission_review_decision_not_allowed", "pci_pre_purchase_revision_limit_reached",
     "pci_negotiation_already_open", "pci_negotiation_reopen_required", "pci_negotiation_not_closed", "pci_negotiation_not_open", "pci_negotiation_purchase_exists", "pci_submission_not_preselected", "pci_parent_offer_not_live", "pci_live_offer_exists", "pci_another_offer_is_live", "pci_rights_clearance_incomplete", "pci_submission_version_hash_required", "pci_admin_can_only_reject_creator_offer", "pci_admin_can_only_withdraw_workspace_offer", "pci_offer_not_live", "pci_rights_declaration_required",
     "pci_payable_not_ready_to_pay", "pci_payable_destination_not_confirmed", "pci_payable_destination_confirmation_mismatch", "pci_purchase_not_payable", "pci_payout_exceeds_remaining_balance", "pci_payout_reference_duplicate", "pci_payout_not_confirmable", "pci_payout_allocation_required", "pci_multi_payable_payout_not_supported", "pci_payable_not_processing", "pci_payout_destination_snapshot_mismatch", "pci_payout_not_failable", "pci_payout_not_reversible", "pci_payout_reversal_requires_incident_after_rights_activation", "pci_payout_proof_not_available", "pci_command_already_processing", "pci_idempotency_conflict",
   ].includes(code)) return { code, status: 409 };
   if ([
+    "pci_creator_application_review_context_required", "pci_creator_application_review_decision_invalid",
     "pci_creator_provider_tier_invalid", "pci_creator_specialty_tags_invalid", "pci_creator_limit_invalid",
     "pci_consignment_revision_context_required", "pci_consignment_title_required", "pci_consignment_matching_tags_invalid", "pci_invalid_consignment_visibility", "pci_invalid_submission_limit", "pci_invalid_version_limit", "pci_invalid_consignment_window",
     "pci_creator_feedback_required", "pci_submission_participation_invalid", "pci_submission_brief_revision_invalid", "pci_rejection_reason_invalid", "pci_internal_note_body_required", "pci_negotiation_close_reason_invalid", "pci_negotiation_message_invalid", "pci_offer_amount_invalid", "pci_offer_currency_invalid", "pci_offer_expiry_invalid", "pci_offer_rights_snapshot_required", "pci_offer_payment_terms_required", "pci_rights_clearance_status_invalid", "pci_rights_clearance_reason_required",
@@ -390,6 +393,174 @@ Deno.serve(async (request) => {
     if (validated instanceof Response) return validated;
     return rpcJson(request, admin, "admin_submission_detail", { p_actor_user_id: user.id, p_workspace_id: validated.workspaceId, p_submission_id: validated.submissionId }, reqId);
   }
+
+  /* PCI 2.1T.2 · CREATOR APPLICATION REVIEW ROUTES */
+
+  match = path.match(
+    /^\/v1\/workspaces\/([^/]+)\/creators\/([0-9a-f-]+)\/application$/i,
+  );
+
+  if (request.method === "GET" && match) {
+    const reqId = requestId();
+
+    const validated =
+      validateWorkspaceAndUuid(
+        request,
+        match[1],
+        match[2],
+        "invalid_creator_id",
+        reqId,
+      );
+
+    if (validated instanceof Response) {
+      return validated;
+    }
+
+    return rpcJson(
+      request,
+      admin,
+      "admin_creator_application_context",
+      {
+        p_actor_user_id:
+          user.id,
+
+        p_workspace_id:
+          validated.workspaceId,
+
+        p_creator_id:
+          validated.id,
+      },
+      reqId,
+    );
+  }
+
+
+  match = path.match(
+    /^\/v1\/workspaces\/([^/]+)\/creators\/([0-9a-f-]+)\/application\/review$/i,
+  );
+
+  if (request.method === "POST" && match) {
+    const reqId = requestId();
+
+    const validated =
+      validateWorkspaceAndUuid(
+        request,
+        match[1],
+        match[2],
+        "invalid_creator_id",
+        reqId,
+      );
+
+    if (validated instanceof Response) {
+      return validated;
+    }
+
+    const payload =
+      await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const unexpected =
+      rejectUnexpected(
+        payload,
+        [
+          "decision",
+          "idempotency_key",
+        ],
+      );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const decision =
+      clean(
+        payload.decision,
+      ).toLowerCase();
+
+    if (
+      ![
+        "approved",
+        "rejected",
+      ].includes(decision)
+    ) {
+      return json(
+        request,
+        {
+          ok: false,
+          code:
+            "pci_creator_application_review_decision_invalid",
+          request_id: reqId,
+        },
+        422,
+      );
+    }
+
+    const idem =
+      idempotencyKey(
+        request,
+        payload,
+      );
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code:
+            "idempotency_key_required",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    return rpcJson(
+      request,
+      admin,
+      "admin_review_creator_application",
+      {
+        p_actor_user_id:
+          user.id,
+
+        p_workspace_id:
+          validated.workspaceId,
+
+        p_creator_id:
+          validated.id,
+
+        p_decision:
+          decision,
+
+        p_idempotency_key:
+          idem,
+
+        p_request_id:
+          reqId,
+      },
+      reqId,
+    );
+  }
+
 
   // Creator workspace-scoped operational profile.
   match = path.match(
