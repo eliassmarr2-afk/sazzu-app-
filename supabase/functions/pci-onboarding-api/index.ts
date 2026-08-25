@@ -137,16 +137,18 @@ function mapRpcError(error: { message?: string; code?: string } | null): { code:
     "pci_creator_closed", "pci_creator_suspended", "pci_workspace_creator_closed", "pci_workspace_creator_not_invitable", "pci_workspace_creator_already_active",
     "pci_creator_invitation_not_found", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_revocable", "pci_invitation_delivery_context_invalid",
     "pci_creator_bootstrap_context_invalid", "pci_creator_invitation_expired", "pci_creator_invitation_email_mismatch", "pci_creator_invitation_user_mismatch", "pci_creator_auth_already_linked_elsewhere", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited",
-    "pci_legal_acceptance_context_invalid", "pci_creator_not_linked", "pci_creator_not_activatable", "pci_creator_invitation_not_bootstrapped", "pci_legal_document_not_required_by_invitation", "pci_legal_document_hash_mismatch", "pci_legal_document_not_found", "pci_legal_document_snapshot_mismatch",
+    "pci_legal_acceptance_context_invalid", "pci_registration_legal_acceptance_context_invalid", "pci_creator_not_linked", "pci_creator_not_activatable", "pci_workspace_creator_not_found", "pci_creator_invitation_not_bootstrapped", "pci_legal_document_not_required_by_invitation", "pci_legal_document_not_required_by_registration", "pci_registration_relationship_not_pending", "pci_registration_application_not_approved", "pci_registration_legal_snapshot_missing", "pci_registration_legal_acceptance_conflict", "pci_workspace_creator_activation_requires_onboarding_basis", "pci_workspace_creator_activation_requires_legal_acceptance", "pci_legal_document_hash_mismatch", "pci_legal_document_not_found", "pci_legal_document_snapshot_mismatch",
     "pci_creator_invitation_revocation_context_invalid", "pci_command_already_processing", "pci_idempotency_conflict",
   ];
   const code = known.find((candidate) => message.includes(candidate)) ?? "pci_onboarding_operation_failed";
   if (["pci_workspace_access_denied", "pci_operator_context_required", "pci_creator_invitation_email_mismatch", "pci_creator_invitation_user_mismatch", "pci_creator_auth_already_linked_elsewhere", "pci_creator_not_linked", "pci_creator_not_activatable"].includes(code)) return { code, status: 403 };
-  if (["pci_creator_invitation_not_found", "pci_legal_document_not_found"].includes(code)) return { code, status: 404 };
+  if (["pci_creator_invitation_not_found", "pci_workspace_creator_not_found", "pci_legal_document_not_found"].includes(code)) return { code, status: 404 };
   if ([
+    "pci_registration_relationship_not_pending", "pci_registration_application_not_approved", "pci_registration_legal_snapshot_missing", "pci_legal_document_not_required_by_registration", "pci_registration_legal_acceptance_conflict", "pci_workspace_creator_activation_requires_onboarding_basis", "pci_workspace_creator_activation_requires_legal_acceptance",
     "pci_required_legal_documents_missing", "pci_creator_closed", "pci_creator_suspended", "pci_workspace_creator_closed", "pci_workspace_creator_not_invitable", "pci_workspace_creator_already_active", "pci_creator_invitation_not_pending", "pci_creator_invitation_not_revocable", "pci_creator_invitation_expired", "pci_creator_invitation_relationship_invalid", "pci_creator_invitation_relationship_not_invited", "pci_creator_invitation_not_bootstrapped", "pci_legal_document_not_required_by_invitation", "pci_legal_document_hash_mismatch", "pci_legal_document_snapshot_mismatch", "pci_command_already_processing", "pci_idempotency_conflict",
   ].includes(code)) return { code, status: 409 };
   if ([
+    "pci_registration_legal_acceptance_context_invalid",
     "pci_legal_document_type_invalid", "pci_legal_document_version_invalid", "pci_legal_document_title_invalid", "pci_legal_document_hash_invalid", "pci_legal_document_content_ref_invalid", "pci_creator_invitation_email_invalid", "pci_creator_display_name_invalid", "pci_creator_legal_name_invalid", "pci_creator_invitation_expiry_invalid",
   ].includes(code)) return { code, status: 422 };
   return { code, status: 400 };
@@ -234,6 +236,168 @@ Deno.serve(async (request) => {
       p_request_id: reqId,
     }, reqId, 201);
   }
+
+  /* PCI 2.1T.5 · SELF-REGISTRATION LEGAL ACCEPTANCE ROUTE */
+
+  if (
+    request.method === "POST" &&
+    path === "/v1/creator/registration/legal-acceptances"
+  ) {
+    const reqId =
+      requestId();
+
+    const payload =
+      await parseObject(request);
+
+    if (!payload) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_json",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const unexpected =
+      rejectUnexpected(
+        payload,
+        [
+          "workspace_id",
+          "legal_document_id",
+          "document_hash",
+          "idempotency_key",
+        ],
+      );
+
+    if (unexpected.length) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "unexpected_fields",
+          fields: unexpected,
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const workspaceId =
+      clean(
+        payload.workspace_id
+      );
+
+    const legalDocumentId =
+      clean(
+        payload.legal_document_id
+      ).toLowerCase();
+
+    const documentHash =
+      clean(
+        payload.document_hash
+      ).toLowerCase();
+
+    const idem =
+      idempotencyKey(
+        request,
+        payload,
+      );
+
+    if (!isWorkspaceId(workspaceId)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_workspace_id",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    if (!isUuid(legalDocumentId)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_legal_document_id",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    if (!isSha256(documentHash)) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "invalid_document_hash",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    if (!idem) {
+      return json(
+        request,
+        {
+          ok: false,
+          code: "idempotency_key_required",
+          request_id: reqId,
+        },
+        400,
+      );
+    }
+
+    const userAgent =
+      clean(
+        request.headers.get(
+          "user-agent"
+        )
+      ).slice(
+        0,
+        1000,
+      ) || null;
+
+    return rpcJson(
+      request,
+      admin,
+      "creator_accept_registration_legal_document",
+      {
+        p_actor_user_id:
+          user.id,
+
+        p_workspace_id:
+          workspaceId,
+
+        p_legal_document_id:
+          legalDocumentId,
+
+        p_document_hash:
+          documentHash,
+
+        p_accepted_from_ip:
+          null,
+
+        p_accepted_user_agent:
+          userAgent,
+
+        p_idempotency_key:
+          idem,
+
+        p_request_id:
+          reqId,
+      },
+      reqId,
+      201,
+    );
+  }
+
 
   match = path.match(/^\/v1\/admin\/workspaces\/([^/]+)\/legal-documents$/);
   if (request.method === "POST" && match) {
