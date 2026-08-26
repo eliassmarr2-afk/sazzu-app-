@@ -55,6 +55,12 @@ async function safeSecretEquals(received: string, expected: string): Promise<boo
   return diff === 0;
 }
 
+async function schedulerSecret(admin: SupabaseAdmin): Promise<string> {
+  const { data, error } = await admin.schema("pci_api").rpc("worker_scheduler_secret");
+  if (error) return "";
+  return clean(data);
+}
+
 async function parseBody(request: Request): Promise<JsonRecord> {
   const text = await request.text();
   if (!text.trim()) return {};
@@ -233,8 +239,19 @@ Deno.serve(async (request) => {
   const path = normalizePathname(new URL(request.url));
   if (path !== "/v1/run") return json({ ok: false, code: "route_not_found" }, 404);
 
-  if (!PCI_WORKER_SECRET) return json({ ok: false, code: "worker_not_configured" }, 503);
-  const authorized = await safeSecretEquals(clean(request.headers.get("x-pci-worker-secret")), PCI_WORKER_SECRET);
+  let admin: SupabaseAdmin;
+  try {
+    admin = adminClient();
+  } catch {
+    return json({ ok: false, code: "worker_not_configured" }, 503);
+  }
+
+  const receivedSecret = clean(request.headers.get("x-pci-worker-secret"));
+  let authorized = await safeSecretEquals(receivedSecret, PCI_WORKER_SECRET);
+  if (!authorized) {
+    const vaultSchedulerSecret = await schedulerSecret(admin);
+    authorized = await safeSecretEquals(receivedSecret, vaultSchedulerSecret);
+  }
   if (!authorized) return json({ ok: false, code: "unauthorized" }, 401);
 
   let payload: JsonRecord;
@@ -250,13 +267,6 @@ Deno.serve(async (request) => {
   const requestedMax = payload.max_jobs == null ? 1 : Number(payload.max_jobs);
   if (!Number.isInteger(requestedMax) || requestedMax < 1 || requestedMax > 5) {
     return json({ ok: false, code: "invalid_max_jobs" }, 400);
-  }
-
-  let admin: SupabaseAdmin;
-  try {
-    admin = adminClient();
-  } catch {
-    return json({ ok: false, code: "worker_not_configured" }, 503);
   }
 
   const workerId = `pci-worker:${crypto.randomUUID()}`;
