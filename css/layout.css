@@ -48,8 +48,8 @@
 }
 
 @media (max-width:760px){
-  :root{--sidebarW:0px}
-  .sidebar{display:none}
-  .main{width:100%;margin-left:0}
+  :root{--sidebarW:72px}
+  .sidebar{display:flex;width:var(--sidebarW);min-width:var(--sidebarW)}
+  .main{width:calc(100% - var(--sidebarW));margin-left:var(--sidebarW)}
   .appHeader{padding-inline:16px}
 }
