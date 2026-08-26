@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="view-transition" content="same-origin" />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#0f0f10" />
+  <meta name="theme-color" content="#131314" />
   <title>Pedidos · Protocol Data</title>
 
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/layout.css" />
-  <link rel="stylesheet" href="../css/panel.css" />
   <link rel="stylesheet" href="../css/sidebar.css" />
-  <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/pedidos.css" />
 </head>
 
@@ -23,44 +21,35 @@
 
       <main class="main" aria-label="Contenido principal">
         <header class="appHeader pdTopbar" aria-label="Encabezado general">
-          <div class="pdTopbar__brand">Protocol Data</div>
-
-          <div class="pdWorkspaceSwitch" aria-label="Workspace actual: Al Paso Store">
-            <span class="pdWorkspaceSwitch__copy">
-              <strong>Al Paso Store</strong>
-              <small>Workspace</small>
+          <div class="pdTopbar__title">
+            <span class="pdTopbar__spark" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 2c.4 4.3 2.7 6.6 7 7-4.3.4-6.6 2.7-7 7-.4-4.3-2.7-6.6-7-7 4.3-.4 6.6-2.7 7-7Z"/><path d="M19 15c.2 2.1 1.3 3.2 3.4 3.4-2.1.2-3.2 1.3-3.4 3.4-.2-2.1-1.3-3.2-3.4-3.4 2.1-.2 3.2-1.3 3.4-3.4Z"/></svg>
             </span>
-            <span class="pdWorkspaceSwitch__avatar" aria-hidden="true">A</span>
-            <span class="pdWorkspaceSwitch__chevron" aria-hidden="true">⌄</span>
+            <strong>Protocol Data</strong>
           </div>
+          <span class="pdWorkspacePill" aria-label="Workspace actual: Al Paso Store">Al Paso Store</span>
         </header>
 
         <section class="ordersWorkspace">
           <header class="ordersPageHeader">
-            <div>
-              <h1>Pedidos</h1>
-              <p>Centro operativo de ventas, cobros y estado logístico.</p>
-            </div>
+            <span class="ordersEyebrow">Operator console</span>
+            <h1>Pedidos</h1>
+            <p>Centro operativo de ventas, cobros y estado logístico.</p>
           </header>
 
           <section class="ordersToolbar" aria-label="Herramientas de pedidos">
-            <header class="ordersBlockHeader">
-              <div class="ordersBlockHeader__copy">
-                <h2>Herramientas</h2>
-                <span>Buscá, filtrá y acotá el período operativo.</span>
-              </div>
-            </header>
-
             <div class="ordersToolbar__main">
               <label class="ordersSearchField" for="ordersSearch">
-                <span class="ordersSearchField__icon" aria-hidden="true">⌕</span>
+                <span class="ordersSearchField__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+                </span>
                 <input id="ordersSearch" type="search" placeholder="Buscar por ID, email, cliente, SKU o tracking…" autocomplete="off" />
               </label>
 
               <div class="dateFilter" id="dateFilter">
                 <button class="dateFilter__btn" id="btnToggleDates" type="button" aria-haspopup="true" aria-expanded="false">
                   <span>Fechas</span>
-                  <span aria-hidden="true">⌄</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
                 </button>
 
                 <div class="dateFilter__panel" id="datePanel" aria-label="Selector de fechas" hidden>
@@ -87,11 +76,13 @@
                 </div>
               </div>
 
-              <button class="ordersClear" id="btnClearOrders" type="button">Limpiar</button>
+              <button class="ordersClear" id="btnClearOrders" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+                <span>Limpiar</span>
+              </button>
             </div>
 
             <div class="ordersQuickFilters" aria-label="Filtros rápidos por estado">
-              <span class="ordersQuickFilters__label">Estado</span>
               <button class="filterPill" type="button" data-quick="pendiente">Pendiente</button>
               <button class="filterPill" type="button" data-quick="despachado">Despachado</button>
               <button class="filterPill" type="button" data-quick="entregado">Entregado</button>
@@ -107,9 +98,9 @@
               </div>
 
               <div class="ordersPager" aria-label="Paginación de pedidos">
-                <button class="pagerBtn pagerBtn--icon" id="btnPrevOrders" type="button" disabled aria-label="Anterior">‹</button>
+                <button class="pagerBtn" id="btnPrevOrders" type="button" disabled aria-label="Anterior">‹</button>
                 <div class="pagerMeta" id="ordersPagerMeta">—</div>
-                <button class="pagerBtn pagerBtn--icon pagerBtn--primary" id="btnNextOrders" type="button" disabled aria-label="Siguiente">›</button>
+                <button class="pagerBtn" id="btnNextOrders" type="button" disabled aria-label="Siguiente">›</button>
               </div>
             </header>
 
