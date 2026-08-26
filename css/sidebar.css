@@ -1,6 +1,6 @@
 .sidebar{
   display:grid;
-  grid-template-columns:var(--pd-global-rail-w) var(--pd-module-rail-w);
+  grid-template-columns:var(--pd-module-rail-w);
   overflow:hidden;
   background:#131314;
   color:#aeb4bb;
