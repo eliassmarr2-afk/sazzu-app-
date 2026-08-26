@@ -304,6 +304,7 @@ body[data-page="pedidos"] .ordersList{
   overflow:visible;
   padding:0;
 }
+body[data-page="pedidos"] .ordersList>.u-muted{display:block;padding:18px 16px}
 body[data-page="pedidos"] .ordersList .listItem{
   display:flex;
   min-height:88px;
@@ -437,7 +438,9 @@ body[data-page="pedidos"] #backendBuildWarn{
   body[data-page="pedidos"] .ordersPageHeader h1{font-size:25px}
   body[data-page="pedidos"] .ordersToolbar__main{grid-template-columns:1fr}
   body[data-page="pedidos"] .ordersClear{grid-column:auto}
-  body[data-page="pedidos"] .dateFilter,.dateFilter__btn,body[data-page="pedidos"] .ordersClear{width:100%}
+  body[data-page="pedidos"] .dateFilter,
+  body[data-page="pedidos"] .dateFilter__btn,
+  body[data-page="pedidos"] .ordersClear{width:100%}
   body[data-page="pedidos"] .dateFilter__panel{right:auto;left:0;width:min(360px,calc(100vw - 100px))}
   body[data-page="pedidos"] .ordersQuickFilters{align-items:flex-start;flex-wrap:wrap}
   body[data-page="pedidos"] .ordersQuickFilters__label{width:100%}
