@@ -1,7 +1,6 @@
 :root{
-  --pd-global-rail-w:62px;
   --pd-module-rail-w:74px;
-  --sidebarW:136px;
+  --sidebarW:74px;
   --appHeaderH:80px;
 }
 
@@ -48,9 +47,8 @@ body.sidebar-force-collapsed .sidebar{width:var(--sidebarW)!important}
 
 @media (max-width:900px){
   :root{
-    --pd-global-rail-w:56px;
     --pd-module-rail-w:66px;
-    --sidebarW:122px;
+    --sidebarW:66px;
     --appHeaderH:72px;
   }
   .appHeader{padding-inline:24px}
@@ -58,9 +56,8 @@ body.sidebar-force-collapsed .sidebar{width:var(--sidebarW)!important}
 
 @media (max-width:640px){
   :root{
-    --pd-global-rail-w:52px;
     --pd-module-rail-w:60px;
-    --sidebarW:112px;
+    --sidebarW:60px;
     --appHeaderH:68px;
   }
   .appHeader{padding-inline:18px}
