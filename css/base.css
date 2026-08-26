@@ -1,55 +1,57 @@
 :root{
-  --blue:#2479ff;
-  --blue-strong:#3d8aff;
-  --blue-soft:rgba(36,121,255,.16);
+  --blue:#0b57d0;
+  --blue-accent:#1a73e8;
+  --blue-text:#8ab4f8;
+  --blue-soft:rgba(26,115,232,.22);
 
-  --bg:#0f0f10;
-  --bg-deep:#090a0b;
-  --card:#1a1b1e;
-  --surface:#1a1b1e;
-  --surface-2:#202227;
-  --surface-3:#141518;
+  --bg:#131314;
+  --bg-deep:#060606;
+  --card:#1e1f20;
+  --surface:#1e1f20;
+  --surface-2:#28292a;
+  --surface-3:#202124;
 
-  --text:#f5f6f8;
-  --text-2:#c9cbd1;
-  --muted:#8d9099;
+  --text:#e8eaed;
+  --text-2:#c4c7c5;
+  --muted:#9aa0a6;
+  --muted-2:#777a80;
 
-  --border:#303238;
-  --border-soft:#26282d;
+  --border:#3c4043;
+  --border-soft:#2a2b2d;
 
-  --green:#45d481;
-  --green-soft:rgba(69,212,129,.13);
-  --amber:#ffad32;
-  --amber-soft:rgba(255,173,50,.14);
-  --red:#ff5f67;
-  --red-soft:rgba(255,95,103,.13);
-  --purple:#c26bff;
-  --purple-soft:rgba(194,107,255,.14);
+  --green:#81c995;
+  --green-soft:rgba(52,168,83,.18);
+  --amber:#fdd663;
+  --amber-soft:rgba(251,188,4,.16);
+  --red:#f28b82;
+  --red-soft:rgba(234,67,53,.16);
+  --purple:#c58af9;
+  --purple-soft:rgba(161,66,244,.18);
 
-  --radius:5px;
-  --radiusSm:5px;
+  --radius:18px;
+  --radiusSm:10px;
   --gap:16px;
-
   --shadow:none;
   --shadowSoft:none;
 
-  --font:'Montserrat','Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --font:Arial,"Helvetica Neue",Helvetica,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{
   min-height:100%;
-  background:var(--bg);
-  color-scheme:dark;
-  font-size:16px;
   overflow-y:scroll;
   scrollbar-gutter:stable;
+  background:#131314;
+  color-scheme:dark;
+  font-size:16px;
 }
 body{
   min-height:100vh;
   margin:0;
   overflow-y:scroll;
-  background:var(--bg);
+  background:#131314;
   color:var(--text);
   font-family:var(--font);
   font-size:14px;
@@ -66,14 +68,10 @@ a{color:inherit;text-decoration:none}
 small{color:var(--muted)}
 button,input,select,textarea{font:inherit}
 button{color:inherit}
-input,select,textarea{
-  border:1px solid var(--border-soft);
-  background:var(--surface-3);
-  color:var(--text);
-}
-input::placeholder,textarea::placeholder{color:#696d76}
+input,select,textarea{color:var(--text)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-  outline:2px solid var(--blue);
+  outline:2px solid var(--blue-text);
   outline-offset:2px;
 }
 
@@ -81,45 +79,45 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .u-sectionLabel{
   color:var(--muted);
   font-size:10px;
-  font-weight:700;
-  letter-spacing:.08em;
+  font-weight:500;
+  letter-spacing:.04em;
   text-transform:uppercase;
 }
 .u-pill{
   display:inline-flex;
   align-items:center;
-  gap:8px;
-  min-height:26px;
-  padding:0 9px;
-  border-radius:4px;
+  gap:7px;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
   background:var(--blue-soft);
-  color:#6ba7ff;
+  color:var(--blue-text);
   font-size:11px;
-  font-weight:700;
+  font-weight:500;
 }
 .u-card{
   overflow:hidden;
-  border:1px solid var(--border);
+  border:0;
   border-radius:var(--radius);
-  background:linear-gradient(180deg,#1c1e22,#191a1d);
+  background:var(--surface);
   box-shadow:none;
 }
 .u-cardInner{padding:18px}
 .u-cardInner--tight{padding:16px}
 
-::selection{background:rgba(36,121,255,.35);color:#fff}
+::selection{background:rgba(138,180,248,.28);color:#fff}
 
-::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{
   border:3px solid transparent;
   border-radius:999px;
-  background:#35383f;
+  background:#3c4043;
   background-clip:padding-box;
 }
-::-webkit-scrollbar-thumb:hover{background:#474b54;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:#5f6368;background-clip:padding-box}
 
-::view-transition-old(root){animation:pdFadeOut .12s ease both}
-::view-transition-new(root){animation:pdFadeIn .14s ease both}
+::view-transition-old(root){animation:pdFadeOut .10s ease both}
+::view-transition-new(root){animation:pdFadeIn .12s ease both}
 @keyframes pdFadeOut{from{opacity:1}to{opacity:0}}
 @keyframes pdFadeIn{from{opacity:0}to{opacity:1}}
