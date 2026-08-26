@@ -1,5 +1,15 @@
-/* Capa global de compatibilidad.
-   La identidad visual vive en base.css, layout.css y los CSS de cada módulo. */
+/* Overrides seguros (sin romper layout base) */
 
-body{font-family:var(--font)}
-.pageTitle h1{color:var(--text)}
+/* Si querés que los títulos principales sean azules en Home */
+.pageTitle h1{
+  color: var(--blue);
+}
+
+/* Si querés ajustar un poquito el espaciado general */
+.main{
+  /* opcional: nada por defecto */
+}
+/* TIPOGRAFÍA GLOBAL */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
