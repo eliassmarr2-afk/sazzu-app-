@@ -1,0 +1,2166 @@
+/* =========================================================
+   PUBLICIDAD UTM · DARK
+   SLIDE · CREAR CONJUNTO DE AUDIENCIAS
+
+   Capa exclusivamente visual.
+   No modifica lógica, estructura, eventos ni dimensiones.
+   ========================================================= */
+
+/* ─────────────────────────────────────────────────────────
+   SUPERFICIE GENERAL
+   Un único fondo liso para evitar capas visuales duplicadas.
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide {
+  color-scheme: dark !important;
+
+  --set-slide-bg: #171717;
+  --set-slide-header: #1c1c1c;
+  --set-slide-surface: #202020;
+  --set-slide-surface-raised: #262626;
+  --set-slide-surface-soft: #2d2d2d;
+  --set-slide-border: #484848;
+  --set-slide-border-soft: #363636;
+  --set-slide-text: #f5f5f5;
+  --set-slide-text-soft: #b8b8b8;
+  --set-slide-text-muted: #929292;
+  --set-slide-blue: #4f7fff;
+  --set-slide-blue-main: #2479ff;
+  --set-slide-green: #62deb0;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldSlide__backdrop {
+  background: rgba(3, 5, 9, .82) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldSlide__panel {
+  background: var(--set-slide-bg) !important;
+  color: var(--set-slide-text) !important;
+
+  border-left: 1px solid #333333 !important;
+  box-shadow: -24px 0 60px rgba(0, 0, 0, .54) !important;
+
+  background-image: none !important;
+}
+
+/* Header y cuerpo comparten superficies lisas */
+
+.pubUtmAudienceSetSlide .pubUtmFieldSlide__head,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetSlide__head {
+  background: var(--set-slide-header) !important;
+  color: var(--set-slide-text) !important;
+
+  border-bottom: 1px solid var(--set-slide-border-soft) !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldSlide__body,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetSlide__body {
+  background: var(--set-slide-bg) !important;
+  color: var(--set-slide-text) !important;
+
+  background-image: none !important;
+}
+
+/* Evita una segunda gran placa detrás del layout */
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetLayout,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetBuilder {
+  background: transparent !important;
+  color: var(--set-slide-text) !important;
+
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   IDENTIDAD DEL HEADER
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmCard__eyebrow {
+  color: #a6a6a6 !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmCard__title,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetSlide__head h2 {
+  color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetHeaderActions
+.pubUtmAudienceSetHeaderSearch {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetHeaderSearch::placeholder {
+  color: #949494 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BOTONES
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmBtn {
+  background: #232323 !important;
+  color: #eeeeee !important;
+
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmBtn:hover {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+
+  border-color: #686868 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmBtn--primary {
+  background: var(--set-slide-blue-main) !important;
+  color: #ffffff !important;
+
+  border-color: var(--set-slide-blue-main) !important;
+  box-shadow: 0 9px 22px rgba(36, 121, 255, .24) !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmBtn--primary:hover {
+  background: #327fff !important;
+  border-color: #327fff !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmBtn:disabled {
+  background: #303030 !important;
+  color: #767676 !important;
+
+  border-color: #3f3f3f !important;
+  box-shadow: none !important;
+
+  opacity: .72 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PANEL IZQUIERDO · DEFINICIÓN Y PREVIEW
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel {
+  background: var(--set-slide-surface) !important;
+  color: var(--set-slide-text) !important;
+
+  border: 1px solid var(--set-slide-border) !important;
+  box-shadow: none !important;
+
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel__section {
+  background: transparent !important;
+  color: var(--set-slide-text) !important;
+
+  border-color: var(--set-slide-border-soft) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel__section + .pubUtmAudienceSetPanel__section {
+  border-top-color: var(--set-slide-border-soft) !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel h3,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel strong {
+  color: #f7f7f7 !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel p,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetPanel small {
+  color: var(--set-slide-text-soft) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   FORMULARIO
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetForm__field > span,
+.pubUtmAudienceSetSlide .pubUtmAudienceSetForm label > span {
+  color: #b8b8b8 !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldControl,
+.pubUtmAudienceSetSlide input.pubUtmFieldControl,
+.pubUtmAudienceSetSlide textarea.pubUtmFieldControl,
+.pubUtmAudienceSetSlide select.pubUtmFieldControl {
+  background: #1b1b1b !important;
+  color: #f4f4f4 !important;
+
+  border-color: #505050 !important;
+  box-shadow: none !important;
+
+  caret-color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldControl:hover {
+  border-color: #656565 !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmFieldControl:focus {
+  background: #1d1d1d !important;
+  color: #ffffff !important;
+
+  border-color: var(--set-slide-blue) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(79, 127, 255, .13) !important;
+
+  outline: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmFieldControl::placeholder {
+  color: #818181 !important;
+  opacity: 1 !important;
+}
+
+/* Textarea */
+
+.pubUtmAudienceSetSlide textarea.pubUtmFieldControl {
+  resize: vertical;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SELECTS NATIVOS
+   Clasificación comercial y Prioridad.
+   Mantienen intacta su lógica y valores.
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="canal_sugerido"],
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="prioridad_conjunto"] {
+  color-scheme: dark !important;
+
+  background-color: #1b1b1b !important;
+  color: #f4f4f4 !important;
+
+  border-color: #555555 !important;
+  accent-color: var(--set-slide-blue-main) !important;
+
+  cursor: pointer !important;
+}
+
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="canal_sugerido"]:focus,
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="prioridad_conjunto"]:focus {
+  background-color: #202020 !important;
+  border-color: var(--set-slide-blue) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(79, 127, 255, .14) !important;
+}
+
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="canal_sugerido"] option,
+.pubUtmAudienceSetSlide
+select.pubUtmFieldControl[name="prioridad_conjunto"] option {
+  background: #181818 !important;
+  color: #f5f5f5 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PREVIEW OPERATIVO
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Preview"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="preview"] {
+  color: var(--set-slide-text) !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Preview"] > *,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="preview"] > * {
+  background: var(--set-slide-surface-raised) !important;
+  color: var(--set-slide-text) !important;
+
+  border-color: #4c4c4c !important;
+  box-shadow: none !important;
+
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Preview"] span,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="preview"] span {
+  color: var(--set-slide-text-soft) !important;
+}
+
+/* KPI y tarjetas pequeñas del preview */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Kpi"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Stat"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Metric"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Summary"] {
+  background: var(--set-slide-surface-raised) !important;
+  color: var(--set-slide-text) !important;
+
+  border-color: #4d4d4d !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* Chips de familias */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Chip"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Tag"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Pill"] {
+  background: rgba(49, 175, 117, .16) !important;
+  color: #68d5a1 !important;
+
+  border-color: rgba(49, 175, 117, .20) !important;
+}
+
+/* Acciones azules inferiores */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Action"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel [class*="Cta"] {
+  background: var(--set-slide-blue-main) !important;
+  color: #ffffff !important;
+
+  border-color: var(--set-slide-blue-main) !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   COLUMNA DE AUDIENCIAS
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetBuilder__list,
+.pubUtmAudienceSetSlide [data-audience-set-list] {
+  background: transparent !important;
+  color: var(--set-slide-text) !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__list > .pubUtmCard__eyebrow {
+  color: #a4a4a4 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   TARJETAS DE AUDIENCIA
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetCard {
+  background: var(--set-slide-surface) !important;
+  color: var(--set-slide-text) !important;
+
+  border: 1px solid var(--set-slide-border) !important;
+  box-shadow: none !important;
+
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide .pubUtmAudienceSetCard:hover {
+  background: #242424 !important;
+
+  border-color: #606060 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22) !important;
+
+  transform: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard.is-selected {
+  background: #202a38 !important;
+  color: #ffffff !important;
+
+  border-color: var(--set-slide-blue) !important;
+
+  box-shadow:
+    inset 4px 0 0 var(--set-slide-blue-main),
+    0 12px 30px rgba(0, 0, 0, .24) !important;
+
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard .pubUtmCard__title,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard h3,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard strong {
+  color: #f7f7f7 !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard p,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard small,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="description"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="meta"] {
+  color: #b7b7b7 !important;
+}
+
+/* Ícono principal */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Icon"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="icon"] {
+  background-color: #292929 !important;
+  color: var(--set-slide-blue) !important;
+
+  border-color: #393939 !important;
+  box-shadow: none !important;
+}
+
+/* Marcador circular */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard input[type="checkbox"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard input[type="radio"] {
+  accent-color: var(--set-slide-blue-main) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BADGES Y CHIPS DE LAS AUDIENCIAS
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard .pubUtmBadge,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Badge"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="badge"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Pill"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="pill"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Chip"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="chip"] {
+  background: #303030 !important;
+  color: #e5e5e5 !important;
+
+  border-color: #454545 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="success"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="green"] {
+  background: rgba(49, 175, 117, .17) !important;
+  color: #67d59f !important;
+
+  border-color: rgba(49, 175, 117, .22) !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="blue"] {
+  background: rgba(79, 127, 255, .16) !important;
+  color: #82a4ff !important;
+
+  border-color: rgba(79, 127, 255, .22) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   MÉTRICAS Y BLOQUES INTERNOS
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Stats"] > *,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="stats"] > *,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Metrics"] > *,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="metrics"] > *,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Condition"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="condition"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Family"],
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="family"] {
+  background: var(--set-slide-surface-raised) !important;
+  color: #f1f1f1 !important;
+
+  border-color: #4b4b4b !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Stats"] span,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="stats"] span,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="Metrics"] span,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard [class*="metrics"] span {
+  color: #aaaaaa !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   COLUMNA LATERAL / RESUMEN DE SELECCIÓN
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side {
+  color: var(--set-slide-text) !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side > *,
+.pubUtmAudienceSetSlide
+[data-audience-set-summary],
+.pubUtmAudienceSetSlide
+[data-audience-set-preview] {
+  background: var(--set-slide-surface) !important;
+  color: var(--set-slide-text) !important;
+
+  border-color: var(--set-slide-border) !important;
+  box-shadow: none !important;
+
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side h3,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side strong {
+  color: #f7f7f7 !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side p,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetBuilder__side span {
+  color: var(--set-slide-text-soft) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CORNER BADGE
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCornerBadge {
+  background: #303030 !important;
+  color: #f1f1f1 !important;
+
+  border-color: #4b4b4b !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetCard.is-selected
+.pubUtmAudienceSetCornerBadge {
+  background: var(--set-slide-blue-main) !important;
+  color: #ffffff !important;
+
+  border-color: var(--set-slide-blue-main) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBARS
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+.pubUtmFieldSlide__body,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel,
+.pubUtmAudienceSetSlide
+[data-audience-set-list] {
+  scrollbar-color: #505050 #202020 !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmFieldSlide__body::-webkit-scrollbar-track,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel::-webkit-scrollbar-track,
+.pubUtmAudienceSetSlide
+[data-audience-set-list]::-webkit-scrollbar-track {
+  background: #202020 !important;
+}
+
+.pubUtmAudienceSetSlide
+.pubUtmFieldSlide__body::-webkit-scrollbar-thumb,
+.pubUtmAudienceSetSlide
+.pubUtmAudienceSetPanel::-webkit-scrollbar-thumb,
+.pubUtmAudienceSetSlide
+[data-audience-set-list]::-webkit-scrollbar-thumb {
+  background: #505050 !important;
+  border-color: #202020 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   DEFENSA FINAL
+   Elimina gradientes claros únicamente dentro de este slide.
+   ───────────────────────────────────────────────────────── */
+
+.pubUtmAudienceSetSlide
+:is(
+  .pubUtmFieldSlide__panel,
+  .pubUtmFieldSlide__head,
+  .pubUtmFieldSlide__body,
+  .pubUtmAudienceSetLayout,
+  .pubUtmAudienceSetPanel,
+  .pubUtmAudienceSetPanel__section,
+  .pubUtmAudienceSetCard,
+  .pubUtmAudienceSetBuilder__side
+) {
+  background-image: none !important;
+}
+
+/* =========================================================
+   FIN · DARK · SLIDE CREAR CONJUNTO DE AUDIENCIAS
+   ========================================================= */
+
+/* INICIO · CORRECCIÓN DARK EXACTA · CONSTRUCTOR V2 */
+
+/* =========================================================
+   ESTADO DE SLIDE ABIERTO
+   ========================================================= */
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmGlobalSearch {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   FONDO GENERAL LISO
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmFieldSlide__panel,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmFieldSlide__body,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetSlide__body,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder__list {
+  background-color: #171717 !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetSlide__head,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmFieldSlide__head.pubUtmAudienceSetSlide__head {
+  background: #1c1c1c !important;
+  color: #f5f5f5 !important;
+  border-bottom-color: #3d3d3d !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetHeaderIdentityV2 .pubUtmCard__eyebrow {
+  color: #9d9d9d !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetHeaderIdentityV2 .pubUtmCard__title {
+  color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetHeaderIdentityV2__icon {
+  background: #2479ff !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   BOTÓN FILTROS Y POPOVER
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterWrapV2 button,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterButtonV2 {
+  background: #232323 !important;
+  color: #eeeeee !important;
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterWrapV2 button:hover,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterButtonV2:hover {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #656565 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 {
+  background: #1d1d1d !important;
+  color: #f5f5f5 !important;
+  border-color: #494949 !important;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, .52) !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2::before {
+  background: #1d1d1d !important;
+  border-color: #494949 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__head,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__body,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__section {
+  background: transparent !important;
+  color: #f5f5f5 !important;
+  border-color: #393939 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 strong {
+  color: #f5f5f5 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 p {
+  color: #aaaaaa !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 button {
+  background: #292929 !important;
+  color: #dedede !important;
+  border-color: #494949 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 button.is-active,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2 button[aria-pressed="true"] {
+  background: #2479ff !important;
+  color: #ffffff !important;
+  border-color: #2479ff !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__activity {
+  background: #242424 !important;
+  color: #f5f5f5 !important;
+  border-top: 1px solid #3d3d3d !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__activity strong {
+  color: #f5f5f5 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFilterPopoverV2__activity span {
+  color: #aaaaaa !important;
+}
+
+/* =========================================================
+   COLUMNA IZQUIERDA
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel__section {
+  background: transparent !important;
+  color: #f5f5f5 !important;
+  border-color: #3b3b3b !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel .pubUtmCard__eyebrow {
+  color: #9d9d9d !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel .pubUtmCard__title {
+  color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetForm__field > span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFormLabelV2 {
+  color: #bdbdbd !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel .pubUtmFieldControl {
+  background: #1a1a1a !important;
+  color: #f5f5f5 !important;
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel .pubUtmFieldControl::placeholder {
+  color: #858585 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPanel .pubUtmFieldControl:focus {
+  background: #1d1d1d !important;
+  color: #ffffff !important;
+  border-color: #4f7fff !important;
+  box-shadow: 0 0 0 3px rgba(79, 127, 255, .14) !important;
+}
+
+/* Aviso del formulario */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetForm__notice {
+  background: #292929 !important;
+  color: #b7b7b7 !important;
+  border-color: #454545 !important;
+  box-shadow: none !important;
+}
+
+/* Separador antes de clasificación */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetForm__grid {
+  border-top-color: #3d3d3d !important;
+}
+
+/* =========================================================
+   SMART SELECT · TRIGGER
+   Clasificación comercial y prioridad
+   ========================================================= */
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__trigger {
+  background: #242424 !important;
+  color: #f5f5f5 !important;
+  border: 1px solid #505050 !important;
+  box-shadow: none !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__trigger:hover {
+  background: #292929 !important;
+  border-color: #656565 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect.is-open
+.pubUtmSmartSelect__trigger {
+  background: #292929 !important;
+  border-color: #4f7fff !important;
+  box-shadow: 0 0 0 3px rgba(79, 127, 255, .13) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__copy strong {
+  color: #f5f5f5 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__copy em,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__copy small {
+  color: #aaaaaa !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__chevron {
+  color: #9ca8bb !important;
+}
+
+/* =========================================================
+   SMART SELECT · MODAL / MENÚ
+   ========================================================= */
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__menu {
+  background: #171717 !important;
+  color: #f5f5f5 !important;
+
+  border: 1px solid #494949 !important;
+  border-radius: 28px !important;
+
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, .68),
+    inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+
+  background-image: none !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__head,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__menuHead {
+  background: #191919 !important;
+  color: #ffffff !important;
+
+  border-bottom: 1px solid #3d3d3d !important;
+  border-radius: 28px 28px 0 0 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__head strong,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__menuHead strong {
+  color: #ffffff !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__close {
+  background: #2b2b31 !important;
+  color: #c9c9cf !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__close:hover {
+  background: #36363d !important;
+  color: #ffffff !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__options {
+  background: #171717 !important;
+  scrollbar-color: #505050 #171717 !important;
+}
+
+/* Opciones */
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option] {
+  background: transparent !important;
+  color: #f2f2f2 !important;
+
+  border: 1px solid transparent !important;
+  border-radius: 22px !important;
+
+  box-shadow: none !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option:hover,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option]:hover {
+  background: #242424 !important;
+  border-color: #333333 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option.is-selected,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option.is-active,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option[aria-selected="true"],
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option].is-selected,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option][aria-selected="true"] {
+  background: #20324e !important;
+  color: #ffffff !important;
+
+  border-color: rgba(79, 127, 255, .20) !important;
+
+  box-shadow:
+    inset 5px 0 0 #2479ff !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option strong,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option] strong {
+  color: #f5f5f5 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__option em,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) [data-smart-select-option] em {
+  color: #a9a9a9 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__activeDot {
+  background: #2479ff !important;
+  border-color: rgba(79, 127, 255, .28) !important;
+  box-shadow: 0 0 0 7px rgba(36, 121, 255, .15) !important;
+}
+
+/* Iconos de clasificación */
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon {
+  background: #292929 !important;
+  border-color: #4a4a4a !important;
+  box-shadow: none !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--green {
+  background: rgba(52, 184, 118, .17) !important;
+  color: #48c88b !important;
+  border-color: rgba(72, 200, 139, .42) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--orange {
+  background: rgba(225, 127, 49, .17) !important;
+  color: #e68b44 !important;
+  border-color: rgba(230, 139, 68, .42) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--blue {
+  background: rgba(68, 159, 222, .17) !important;
+  color: #56a9df !important;
+  border-color: rgba(86, 169, 223, .42) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--indigo {
+  background: rgba(65, 98, 223, .18) !important;
+  color: #5678ed !important;
+  border-color: rgba(86, 120, 237, .42) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--violet {
+  background: rgba(126, 78, 223, .18) !important;
+  color: #9569eb !important;
+  border-color: rgba(149, 105, 235, .42) !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--gray,
+body[data-page="publicidad-utm"]:has(
+  .pubUtmAudienceSetSlide.is-open
+) .pubUtmSmartSelect__icon--slate {
+  background: #292c31 !important;
+  color: #9ba5b5 !important;
+  border-color: #4b515c !important;
+}
+
+/* =========================================================
+   PREVIEW IZQUIERDO
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__intro,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetSelectedItemV2 {
+  background: #262626 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2 strong,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetSelectedItemV2 strong {
+  color: #f5f5f5 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2 span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2 p,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetSelectedItemV2 span {
+  color: #aaaaaa !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__stats div {
+  background: #292929 !important;
+  color: #f5f5f5 !important;
+  border-color: #494949 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__stats span {
+  color: #a2a2a2 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__stats strong {
+  color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__families {
+  background: #292929 !important;
+  color: #f5f5f5 !important;
+  border-color: #494949 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__families strong {
+  color: #a2a2a2 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetPreviewV2__families span {
+  background: rgba(49, 175, 117, .17) !important;
+  color: #68d5a1 !important;
+  border-color: rgba(49, 175, 117, .20) !important;
+}
+
+/* Globo inferior */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFloatingBubbleV2 {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+  border-color: #494949 !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .48) !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFloatingBubbleV2 strong {
+  color: #f5f5f5 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetFloatingBubbleV2 span {
+  color: #aaaaaa !important;
+}
+
+/* =========================================================
+   TARJETAS DE AUDIENCIAS V2
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2 {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:hover {
+  background: #242424 !important;
+  border-color: #606060 !important;
+  transform: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2.is-selected {
+  background: #202a38 !important;
+  border-color: #4f7fff !important;
+  box-shadow:
+    inset 4px 0 0 #2479ff,
+    0 12px 30px rgba(0, 0, 0, .24) !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__title {
+  color: #ffffff !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta span {
+  color: #aaaaaa !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__icon {
+  background: #292929 !important;
+  color: #4f7fff !important;
+  border-color: #393939 !important;
+  box-shadow: none !important;
+}
+
+/* Fecha */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__date {
+  background: #292929 !important;
+  color: #e9e9e9 !important;
+  border-color: #484848 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__date span {
+  color: #9f9f9f !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__date strong {
+  color: #f2f2f2 !important;
+}
+
+/* Chips */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips em {
+  background: #303030 !important;
+  color: #e6e6e6 !important;
+  border-color: #444444 !important;
+}
+
+/* Miembros */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members {
+  background: #292929 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members strong {
+  color: #f5f5f5 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members span {
+  color: #aaaaaa !important;
+}
+
+/* Grid de métricas */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid > div,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow {
+  background: #292929 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow span {
+  color: #a0a0a0 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid strong,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem strong,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow strong {
+  color: #f5f5f5 !important;
+}
+
+/* Condiciones */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions {
+  background: #292929 !important;
+  color: #f5f5f5 !important;
+  border-color: #484848 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions span {
+  color: #a0a0a0 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions strong,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions p {
+  color: #f5f5f5 !important;
+}
+
+/* Ayuda Parámetro UTM */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2 {
+  background: #303030 !important;
+  color: #bfc7d5 !important;
+  border-color: #4c4c4c !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2:hover,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2:focus {
+  background: #25334a !important;
+  color: #79a0ff !important;
+  border-color: rgba(79, 127, 255, .45) !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2 > span {
+  background: rgba(79, 127, 255, .17) !important;
+  color: #79a0ff !important;
+}
+
+/* Radios de selección */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2 input[type="radio"],
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2 input[type="checkbox"] {
+  accent-color: #2479ff !important;
+}
+
+/* =========================================================
+   DEFENSA FINAL CONTRA PLACAS BLANCAS
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+:is(
+  .pubUtmAudienceSetPanel,
+  .pubUtmAudienceSetForm__notice,
+  .pubUtmAudienceSetPreviewV2,
+  .pubUtmAudienceSetPreviewV2__intro,
+  .pubUtmAudienceSetPreviewV2__families,
+  .pubUtmAudienceSetSelectedItemV2,
+  .pubUtmAudienceSetFloatingBubbleV2,
+  .pubUtmAudienceSetCardV2,
+  .pubUtmAudienceSetCardV2__members,
+  .pubUtmAudienceSetCardV2__conditions,
+  .pubUtmAudienceSetCardV2__date,
+  .pubUtmAudienceSetCard__metaItem,
+  .pubUtmAudienceSetCard__summaryRow
+) {
+  background-image: none !important;
+}
+
+/* FIN · CORRECCIÓN DARK EXACTA · CONSTRUCTOR V2 */
+
+/* INICIO · AJUSTE EXACTO · CANVAS Y CARDS DE AUDIENCIAS */
+
+/* =========================================================
+   1. CANVAS DERECHO COMPLETAMENTE OSCURO
+
+   En la referencia no existe una placa blanca detrás de las
+   cards. Toda la zona de selección forma una superficie
+   carbón continua.
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout > :not(.pubUtmAudienceSetPanel),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder__list,
+
+.pubUtmAudienceSetSlide.is-open
+[data-audience-set-list],
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetEntry,
+
+.pubUtmAudienceSetSlide.is-open
+[class*="AudienceSet"][class*="Canvas"],
+
+.pubUtmAudienceSetSlide.is-open
+[class*="AudienceSet"][class*="Stage"],
+
+.pubUtmAudienceSetSlide.is-open
+[class*="AudienceSet"][class*="List"]:not(
+  .pubUtmAudienceSetSelectedItemV2
+) {
+  background: #171717 !important;
+  background-color: #171717 !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/* La separación entre columna izquierda y derecha también
+   debe ser oscura, no blanca. */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout {
+  background: #171717 !important;
+  background-image: none !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout > :not(.pubUtmAudienceSetPanel) {
+  border-color: #343434 !important;
+}
+
+/* Elimina placas decorativas claras de wrappers */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout > :not(.pubUtmAudienceSetPanel)::before,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetLayout > :not(.pubUtmAudienceSetPanel)::after,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder__list::before,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetBuilder__list::after,
+
+.pubUtmAudienceSetSlide.is-open
+[data-audience-set-list]::before,
+
+.pubUtmAudienceSetSlide.is-open
+[data-audience-set-list]::after {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   2. TARJETA PRINCIPAL DE AUDIENCIA
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard {
+  background: #202020 !important;
+  background-color: #202020 !important;
+  background-image: none !important;
+
+  color: #f5f5f5 !important;
+
+  border-color: #484848 !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   3. SELECCIÓN: CONTORNO AZUL, SIN FONDO AZUL
+
+   Incluye todos los estados posibles del componente sin
+   alterar la lógica que los aplica.
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2.is-selected,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2.is-active,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2[aria-selected="true"],
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2[data-selected="true"],
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:has(
+  input[type="radio"]:checked
+),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:has(
+  input[type="checkbox"]:checked
+),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:has(
+  [aria-checked="true"]
+),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard.is-selected,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard:has(
+  input[type="radio"]:checked
+),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard:has(
+  input[type="checkbox"]:checked
+) {
+  background: #202020 !important;
+  background-color: #202020 !important;
+  background-image: none !important;
+
+  border-color: #2479ff !important;
+
+  box-shadow:
+    0 0 0 1px #2479ff,
+    0 12px 28px rgba(0, 0, 0, .24) !important;
+}
+
+/* Hover oscuro, sin mover tarjeta */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:hover,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard:hover {
+  background: #232323 !important;
+  background-image: none !important;
+
+  transform: none !important;
+}
+
+/* El hover no debe borrar el borde de selección */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2.is-selected:hover,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2:has(
+  input:checked
+):hover {
+  background: #202020 !important;
+  border-color: #2479ff !important;
+
+  box-shadow:
+    0 0 0 1px #2479ff,
+    0 12px 28px rgba(0, 0, 0, .24) !important;
+}
+
+/* =========================================================
+   4. BLOQUES INTERNOS
+
+   No se modifica display, grid, tamaños ni padding.
+   Únicamente superficies, bordes y texto.
+   ========================================================= */
+
+/* Contenedores compactos: transparentes para que no formen
+   una placa clara alrededor de sus propias tarjetas. */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/* Cada KPI o bloque interior queda carbón elevado */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid > *,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact > *,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact > *,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions {
+  background: #292929 !important;
+  background-color: #292929 !important;
+  background-image: none !important;
+
+  color: #f3f3f3 !important;
+
+  border-color: #464646 !important;
+  box-shadow: none !important;
+}
+
+/* Refuerzo para cualquier article/section interno que el
+   renderer utilice como KPI. */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid > article,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid > section,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact > article,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact > section,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact > article,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact > section {
+  background: #292929 !important;
+  background-color: #292929 !important;
+  background-image: none !important;
+
+  border-color: #464646 !important;
+}
+
+/* =========================================================
+   5. TIPOGRAFÍA INTERNA
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions span {
+  color: #a3a3a3 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__bodyCompact strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaItem strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__summaryRow strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__members strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__conditions p {
+  color: #f5f5f5 !important;
+}
+
+/* =========================================================
+   6. FILA DE CHIPS
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips {
+  background: #2c2c2c !important;
+  background-image: none !important;
+  border-color: #3e3e3e !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips > *,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips span,
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__chips em {
+  color: #e5e5e5 !important;
+}
+
+/* =========================================================
+   7. FECHA Y PARÁMETRO UTM
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__date {
+  background: #292929 !important;
+  background-image: none !important;
+
+  border-color: #464646 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2 {
+  background: #303030 !important;
+  color: #c6cbd4 !important;
+
+  border-color: #4b4b4b !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetRawHelpV2 > span {
+  background: rgba(79, 127, 255, .17) !important;
+  color: #7fa1ff !important;
+}
+
+/* =========================================================
+   8. FAMILIAS
+
+   La caja es oscura. Solo las etiquetas mantienen verde.
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid
+[class*="famil"],
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCard__metaCompact
+[class*="famil"] {
+  background: #292929 !important;
+  color: #f3f3f3 !important;
+
+  border-color: #464646 !important;
+}
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid
+[class*="famil"] em,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid
+[class*="famil"] b,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__grid
+[class*="famil"] i {
+  background: rgba(49, 175, 117, .17) !important;
+  color: #68d5a1 !important;
+}
+
+/* =========================================================
+   9. CÍRCULO DE SELECCIÓN
+
+   Se conserva el círculo azul ya funcional.
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2 input[type="radio"],
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2 input[type="checkbox"] {
+  accent-color: #2479ff !important;
+}
+
+/* FIN · AJUSTE EXACTO · CANVAS Y CARDS DE AUDIENCIAS */
+
+/* INICIO · FIX EXACTO · META CARDS Y MODAL DE CREACIÓN */
+
+/* =========================================================
+   1. TARJETAS INTERNAS SIN CLASE
+   Familias · Nivel · Madre
+   ========================================================= */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/* Los tres DIV directos detectados por consola */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div {
+  background: #292929 !important;
+  background-color: #292929 !important;
+  background-image: none !important;
+
+  color: #f5f5f5 !important;
+
+  border: 1px solid #464646 !important;
+  box-shadow: none !important;
+}
+
+/* Título pequeño: FAMILIAS / NIVEL / MADRE */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div > span:first-child {
+  color: #9f9f9f !important;
+}
+
+/* Valor principal */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div > strong,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div > b,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div > p {
+  color: #f5f5f5 !important;
+}
+
+/* Cualquier valor simple que no sea el rótulo */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta > div > span:not(:first-child) {
+  color: #e8e8e8 !important;
+}
+
+/* Los badges de familias pueden conservar verde */
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta
+> div:first-child
+> span:not(:first-child),
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta
+> div:first-child
+> div
+> span,
+
+.pubUtmAudienceSetSlide.is-open
+.pubUtmAudienceSetCardV2__meta
+> div:first-child
+> div
+> em {
+  background: rgba(49, 175, 117, .17) !important;
+  color: #68d5a1 !important;
+
+  border-color: rgba(49, 175, 117, .22) !important;
+}
+
+/* =========================================================
+   2. MODAL CONFIRMACIÓN / CREACIÓN EXITOSA
+   Solo afecta el modal del conjunto de audiencias.
+   ========================================================= */
+
+.pubUtmAudienceSetSaveModal {
+  color-scheme: dark !important;
+}
+
+/* Fondo exterior desenfocado */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__backdrop {
+  background: rgba(5, 7, 11, .78) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Panel principal */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__dialog,
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__panel {
+  background: #242424 !important;
+  background-color: #242424 !important;
+  background-image: none !important;
+
+  color: #f5f5f5 !important;
+
+  border: 1px solid #484848 !important;
+  border-radius: 5px !important;
+
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, .58) !important;
+}
+
+/* Encabezado */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__head,
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__header {
+  background: transparent !important;
+  background-image: none !important;
+
+  border-color: #3d3d3d !important;
+}
+
+/* Eyebrow */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmCard__eyebrow,
+
+.pubUtmAudienceSetSaveModal
+[class*="__eyebrow"] {
+  color: #9da7b8 !important;
+}
+
+/* Títulos */
+
+.pubUtmAudienceSetSaveModal h1,
+.pubUtmAudienceSetSaveModal h2,
+.pubUtmAudienceSetSaveModal h3,
+.pubUtmAudienceSetSaveModal
+[class*="__title"] {
+  color: #ffffff !important;
+}
+
+/* Texto secundario */
+
+.pubUtmAudienceSetSaveModal p,
+.pubUtmAudienceSetSaveModal small,
+.pubUtmAudienceSetSaveModal
+[class*="__description"],
+.pubUtmAudienceSetSaveModal
+[class*="__text"] {
+  color: #b8b8b8 !important;
+}
+
+/* Negritas dentro del texto */
+
+.pubUtmAudienceSetSaveModal p strong,
+.pubUtmAudienceSetSaveModal
+[class*="__description"] strong,
+.pubUtmAudienceSetSaveModal
+[class*="__text"] strong {
+  color: #f5f5f5 !important;
+}
+
+/* Bloque informativo interior */
+
+.pubUtmAudienceSetSaveModal
+[class*="__notice"],
+
+.pubUtmAudienceSetSaveModal
+[class*="__summary"],
+
+.pubUtmAudienceSetSaveModal
+[class*="__info"],
+
+.pubUtmAudienceSetSaveModal
+[class*="__detail"],
+
+.pubUtmAudienceSetSaveModal
+[class*="__message"] {
+  background: #2d2d2d !important;
+  background-color: #2d2d2d !important;
+  background-image: none !important;
+
+  color: #d5d5d5 !important;
+
+  border-color: #484848 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSaveModal
+[class*="__notice"] strong,
+
+.pubUtmAudienceSetSaveModal
+[class*="__summary"] strong,
+
+.pubUtmAudienceSetSaveModal
+[class*="__info"] strong,
+
+.pubUtmAudienceSetSaveModal
+[class*="__detail"] strong,
+
+.pubUtmAudienceSetSaveModal
+[class*="__message"] strong {
+  color: #f5f5f5 !important;
+}
+
+/* Ícono azul de confirmación */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__icon,
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__icon--primary {
+  background: rgba(36, 121, 255, .16) !important;
+  color: #68a0ff !important;
+
+  border-color: rgba(36, 121, 255, .28) !important;
+  box-shadow: none !important;
+}
+
+/* Ícono verde de creación correcta */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__icon--success,
+
+.pubUtmAudienceSetSaveModal
+[class*="__icon--success"] {
+  background: rgba(49, 175, 117, .17) !important;
+  color: #68d5a1 !important;
+
+  border-color: rgba(49, 175, 117, .26) !important;
+}
+
+/* Pie y acciones */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__actions,
+
+.pubUtmAudienceSetSaveModal
+[class*="__actions"] {
+  background: transparent !important;
+  border-color: #3d3d3d !important;
+}
+
+/* Botón cancelar */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__actions button:first-child,
+
+.pubUtmAudienceSetSaveModal
+[class*="__actions"] button:first-child {
+  background: #303030 !important;
+  color: #f1f1f1 !important;
+
+  border-color: #4b4b4b !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__actions button:first-child:hover,
+
+.pubUtmAudienceSetSaveModal
+[class*="__actions"] button:first-child:hover {
+  background: #383838 !important;
+  border-color: #606060 !important;
+}
+
+/* Confirmar creación / Entendido */
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__actions button:last-child,
+
+.pubUtmAudienceSetSaveModal
+[class*="__actions"] button:last-child {
+  background: #2479ff !important;
+  color: #ffffff !important;
+
+  border-color: #2479ff !important;
+  box-shadow: none !important;
+}
+
+.pubUtmAudienceSetSaveModal
+.pubUtmReglaDeleteModal__actions button:last-child:hover,
+
+.pubUtmAudienceSetSaveModal
+[class*="__actions"] button:last-child:hover {
+  background: #418aff !important;
+  border-color: #418aff !important;
+}
+
+/* Defensa final contra fondo blanco */
+
+.pubUtmAudienceSetSaveModal
+:is(
+  .pubUtmReglaDeleteModal__dialog,
+  .pubUtmReglaDeleteModal__panel,
+  .pubUtmReglaDeleteModal__head,
+  .pubUtmReglaDeleteModal__header,
+  .pubUtmReglaDeleteModal__body,
+  .pubUtmReglaDeleteModal__actions
+) {
+  background-image: none !important;
+}
+
+/* FIN · FIX EXACTO · META CARDS Y MODAL DE CREACIÓN */

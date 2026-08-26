@@ -101,6 +101,21 @@
 
   window.__protocolLogisticaPedidosState = state;
 
+  /* ==========================================================
+     Protocol Data · Logística · Email Activity UI
+     ========================================================== */
+
+  if (
+    !state.emailActivityByTracking ||
+    typeof state.emailActivityByTracking !== 'object'
+  ) {
+    state.emailActivityByTracking = {};
+  }
+
+  if (typeof state.emailActivityError !== 'string') {
+    state.emailActivityError = '';
+  }
+
   const statusLabels = {
     recibido: 'Recibido',
     despachado: 'Despachado',
@@ -152,6 +167,399 @@
     const res = await c.rpc(name, args || {});
     if (res.error) throw res.error;
     return res.data;
+  }
+
+  async function invokeStatusEmailEvent(eventId) {
+    const id = String(eventId || '').trim();
+    if (!id) return null;
+
+    const c = client();
+    if (!c) throw new Error('Supabase no configurado');
+
+    const res = await c.functions.invoke(
+      'send-logistics-status-email',
+      {
+        body: {
+          event_id: id,
+          send: true
+        }
+      }
+    );
+
+    if (res.error) throw res.error;
+    return res.data || null;
+  }
+
+
+  const emailActivityStatusOrder = [
+    'despachado',
+    'en_camino',
+    'entregado'
+  ];
+
+  const emailActivityStatusLabels = {
+    despachado: 'Despachado',
+    en_camino: 'En camino',
+    entregado: 'Entregado'
+  };
+
+  function emailEventsForTracking(trackingId) {
+    const key = String(trackingId || '')
+      .trim()
+      .toUpperCase();
+
+    const items =
+      state.emailActivityByTracking &&
+      state.emailActivityByTracking[key];
+
+    return Array.isArray(items) ? items : [];
+  }
+
+  function latestEmailEvent(order) {
+    const items = emailEventsForTracking(
+      order && order.tracking_id
+    );
+
+    return items.length ? items[0] : null;
+  }
+
+  function getEmailCommunicationState(event) {
+    if (!event) return null;
+
+    const deliveryEvent =
+      String(event.delivery_event || '').toLowerCase();
+
+    const providerEvent =
+      String(event.last_provider_event || '').toLowerCase();
+
+    const sendStatus =
+      String(event.status || '').toLowerCase();
+
+    const errorEvents = [
+      'hard_bounce',
+      'soft_bounce',
+      'blocked',
+      'invalid',
+      'error'
+    ];
+
+    if (
+      sendStatus === 'failed' ||
+      sendStatus === 'error' ||
+      errorEvents.includes(deliveryEvent) ||
+      errorEvents.includes(providerEvent)
+    ) {
+      return {
+        key: 'error',
+        label: 'Error'
+      };
+    }
+
+    if (
+      Number(event.click_count || 0) > 0 ||
+      event.first_clicked_at
+    ) {
+      return {
+        key: 'click',
+        label: 'Clic'
+      };
+    }
+
+    if (event.first_opened_at) {
+      return {
+        key: 'opened',
+        label: 'Abierto'
+      };
+    }
+
+    if (event.delivered_at) {
+      return {
+        key: 'delivered',
+        label: 'Entregado'
+      };
+    }
+
+    if (sendStatus === 'sent') {
+      return {
+        key: 'sent',
+        label: 'Enviado'
+      };
+    }
+
+    return null;
+  }
+
+  function renderEmailIndicator(order) {
+    const event = latestEmailEvent(order);
+    const communication =
+      getEmailCommunicationState(event);
+
+    if (!communication) return '';
+
+    return (
+      '<span class="logPedidosEmailSignal ' +
+        'logPedidosEmailSignal--' +
+        esc(communication.key) +
+      '">' +
+        '<span class="logPedidosEmailSignal__dot" ' +
+          'aria-hidden="true"></span>' +
+        '<span>Email · ' +
+          esc(communication.label) +
+        '</span>' +
+      '</span>'
+    );
+  }
+
+  function formatEmailActivityTime(value) {
+    if (!value) return '';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    try {
+      return new Intl.DateTimeFormat(
+        'es-AR',
+        {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }
+      )
+        .format(date)
+        .replace(',', ' ·');
+    } catch (error) {
+      return String(value);
+    }
+  }
+
+  function emailActivityStep(label, timestamp) {
+    const done = Boolean(timestamp);
+    const time = formatEmailActivityTime(timestamp);
+
+    return (
+      '<div class="logPedidosEmailStep' +
+        (done ? ' is-done' : '') +
+      '">' +
+        '<span class="logPedidosEmailStep__mark" ' +
+          'aria-hidden="true">' +
+          (done ? '✓' : '—') +
+        '</span>' +
+        '<div>' +
+          '<strong>' + esc(label) + '</strong>' +
+          '<span>' +
+            esc(time || 'Pendiente') +
+          '</span>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderEmailActivitySlide(order) {
+    const container = q('#logPedidoEmailActivity');
+
+    if (!container || !order) return;
+
+    const allEvents =
+      emailEventsForTracking(order.tracking_id);
+
+    container.innerHTML =
+      emailActivityStatusOrder
+        .map((status) => {
+          const events =
+            allEvents.filter(
+              (event) => event.to_status === status
+            );
+
+          const latest =
+            events.length ? events[0] : null;
+
+          if (!latest) {
+            return (
+              '<div class="logPedidosEmailActivity__state">' +
+                '<div class="logPedidosEmailActivity__stateHead">' +
+                  '<strong>' +
+                    esc(emailActivityStatusLabels[status]) +
+                  '</strong>' +
+                '</div>' +
+                '<span class="logPedidosEmailActivity__empty">' +
+                  '— Todavía no enviado' +
+                '</span>' +
+              '</div>'
+            );
+          }
+
+          const communication =
+            getEmailCommunicationState(latest);
+
+          const eventCountLabel =
+            events.length > 1
+              ? events.length + ' envíos'
+              : '';
+
+          const statusBadge =
+            communication
+              ? (
+                  '<span class="logPedidosEmailActivity__badge ' +
+                    'logPedidosEmailActivity__badge--' +
+                    esc(communication.key) +
+                  '">' +
+                    esc(communication.label) +
+                  '</span>'
+                )
+              : '';
+
+          return (
+            '<div class="logPedidosEmailActivity__state">' +
+
+              '<div class="logPedidosEmailActivity__stateHead">' +
+                '<div>' +
+                  '<strong>' +
+                    esc(emailActivityStatusLabels[status]) +
+                  '</strong>' +
+                  (
+                    eventCountLabel
+                      ? '<span>' +
+                          esc(eventCountLabel) +
+                        '</span>'
+                      : ''
+                  ) +
+                '</div>' +
+
+                statusBadge +
+              '</div>' +
+
+              '<div class="logPedidosEmailActivity__steps">' +
+
+                emailActivityStep(
+                  'Enviado',
+                  latest.sent_at
+                ) +
+
+                emailActivityStep(
+                  'Entregado',
+                  latest.delivered_at
+                ) +
+
+                emailActivityStep(
+                  'Abierto',
+                  latest.first_opened_at
+                ) +
+
+                emailActivityStep(
+                  'Clic',
+                  latest.last_clicked_at ||
+                  latest.first_clicked_at
+                ) +
+
+              '</div>' +
+
+            '</div>'
+          );
+        })
+        .join('');
+  }
+
+  function renderEmailActivityForOpenSlide() {
+    const slide = q('#logPedidosSlide');
+
+    if (
+      !slide ||
+      !slide.classList.contains('is-open')
+    ) {
+      return;
+    }
+
+    const trackingId =
+      q('#logPedidoEditTrackingId')?.value || '';
+
+    const order =
+      state.orders.find(
+        (item) => item.tracking_id === trackingId
+      );
+
+    if (order) {
+      renderEmailActivitySlide(order);
+    }
+  }
+
+  async function loadEmailActivityForOrders(options) {
+    const opts = options || {};
+
+    const trackingIds =
+      state.orders
+        .map((order) =>
+          String(order.tracking_id || '')
+            .trim()
+            .toUpperCase()
+        )
+        .filter(Boolean);
+
+    if (!state.live || !trackingIds.length) {
+      state.emailActivityByTracking = {};
+      state.emailActivityError = '';
+
+      if (opts.render !== false) {
+        renderTable();
+        renderEmailActivityForOpenSlide();
+      }
+
+      return;
+    }
+
+    try {
+      const result = await rpc(
+        'protocol_logistics_status_email_activity_list',
+        {
+          input_tracking_ids: trackingIds
+        }
+      );
+
+      const items =
+        Array.isArray(result && result.items)
+          ? result.items
+          : [];
+
+      const grouped = {};
+
+      items.forEach((item) => {
+        const key =
+          String(item.tracking_id || '')
+            .trim()
+            .toUpperCase();
+
+        if (!key) return;
+
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+
+        grouped[key].push(item);
+      });
+
+      state.emailActivityByTracking = grouped;
+      state.emailActivityError = '';
+
+    } catch (error) {
+      state.emailActivityError =
+        error && error.message
+          ? error.message
+          : 'No se pudo leer la actividad de emails.';
+
+      console.warn(
+        '[Logística Email Activity]',
+        error
+      );
+    }
+
+    if (opts.render !== false) {
+      renderTable();
+      renderEmailActivityForOpenSlide();
+    }
   }
 
   function esc(value) {
@@ -417,7 +825,7 @@
         '<td><div class="logPedidosMiniStack"><strong>' + esc(order.producto) + '</strong><span>Banner ' + esc(order.banner_id) + '</span></div></td>' +
         '<td>' + getPaymentBadge(order) + '<br><span>' + esc(payment.main || '$0,00') + '</span>' + (payment.sub ? '<br><span>' + esc(payment.sub) + '</span>' : '') + '</td>' +
         '<td>' + getShippingBadge(order) + '</td>' +
-        '<td><span class="logPedidosBadge ' + getStatusClass(order.estado_logistico) + '">' + esc(statusLabels[order.estado_logistico] || order.estado_logistico) + '</span><br><span>' + esc(order.banda_horaria_estimada || 'A confirmar') + '</span></td>' +
+        '<td><span class="logPedidosBadge ' + getStatusClass(order.estado_logistico) + '">' + esc(statusLabels[order.estado_logistico] || order.estado_logistico) + '</span><br><span>' + esc(order.banda_horaria_estimada || 'A confirmar') + '</span>' + renderEmailIndicator(order) + '</td>' +
         '<td><span>' + esc(order.banner_id || '--') + '</span></td>' +
         '<td>' + (order.issue_active ? '<span class="logPedidosBadge logPedidosBadge--red">' + esc(order.issue_type || 'Intervenido') + '</span>' : '<span class="logPedidosBadge logPedidosBadge--gray">Sin incidencia</span>') + '</td>' +
         '<td><span>' + esc(order.observacion_publica || '--') + '</span></td>' +
@@ -454,6 +862,11 @@
       state.total = Number((result && result.total) || state.orders.length || 0);
       state.live = true;
       state.error = '';
+
+
+      await loadEmailActivityForOrders({
+        render: false
+      });
 
       if (!opts.silent) toast('Pedidos sincronizados desde Supabase.', 'success');
     } catch (error) {
@@ -495,6 +908,8 @@
 
     const subtitle = q('#logPedidosSlideSubtitle');
     if (subtitle) subtitle.textContent = order.tracking_id + ' · ' + order.cliente;
+
+    renderEmailActivitySlide(order);
   }
 
   function openSlide(trackingId) {
@@ -508,6 +923,12 @@
     slide.setAttribute('aria-hidden', 'false');
     document.documentElement.classList.add('logPedidosLock');
     document.body.classList.add('logPedidosLock');
+
+    if (state.live) {
+      void loadEmailActivityForOrders({
+        render: true
+      });
+    }
   }
 
   function closeSlide() {
@@ -567,7 +988,80 @@
     draft.estado_visual_index = statusIndex(draft.estado_logistico);
     draft.fecha_ultima_actualizacion = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
-    state.saving = true;
+    const previousStatus = order.estado_logistico || '';
+    const nextStatus = draft.estado_logistico || '';
+
+    const statusTransition =
+      Boolean(previousStatus) &&
+      Boolean(nextStatus) &&
+      previousStatus !== nextStatus;
+
+    let statusConfirmContext = null;
+
+    if (statusTransition) {
+      const statusConfirm =
+        window.ProtocolLogisticsStatusConfirm ||
+        window.ProtocolDeliveryConfirm;
+
+      if (
+        !statusConfirm ||
+        typeof statusConfirm.confirm !== 'function'
+      ) {
+        toast(
+          'No se pudo abrir la confirmación del cambio de estado. El pedido no fue modificado.',
+          'error'
+        );
+
+        return;
+      }
+
+      statusConfirmContext = {
+        trackingId,
+
+        previousStatus,
+        nextStatus,
+
+        orderLabel:
+          order.shopify_order_name ||
+          order.order_name ||
+          order.order_number ||
+          order.order_id ||
+          trackingId,
+
+        customer:
+          order.cliente ||
+          order.customer_name ||
+          '',
+
+        email:
+          order.email_cliente ||
+          order.customer_email ||
+          '',
+
+        product:
+          draft.producto ||
+          order.producto ||
+          ''
+      };
+
+      state.saving = true;
+
+      closeSlide();
+
+      const confirmed =
+        await statusConfirm.confirm(
+          statusConfirmContext
+        );
+
+      if (!confirmed) {
+        state.saving = false;
+        return;
+      }
+    } else {
+      state.saving = true;
+    }
+
+    let statusEmailEventId = null;
 
     try {
       if (state.live) {
@@ -590,12 +1084,94 @@
         if (!result || result.status !== 'ok') {
           throw new Error((result && result.message) || 'No se pudo actualizar el pedido.');
         }
+
+          if (
+            result.status_email_queued === true &&
+            result.status_email_event_id
+          ) {
+            statusEmailEventId =
+              String(result.status_email_event_id).trim() ||
+              null;
+          }
       }
 
       Object.assign(order, draft);
       closeSlide();
       renderAll();
-      toast(state.live ? 'Pedido actualizado en Supabase.' : 'Pedido actualizado en modo local.', 'success');
+
+      if (
+        state.live &&
+        statusEmailEventId
+      ) {
+        void invokeStatusEmailEvent(
+          statusEmailEventId
+        )
+          .then((emailResult) => {
+            const emailStatus =
+              emailResult &&
+              emailResult.status;
+
+            if (state.live) {
+              void loadEmailActivityForOrders({
+                render: true
+              });
+            }
+
+            if (
+              emailStatus !== 'sent' &&
+              emailStatus !== 'already_sent'
+            ) {
+              console.warn(
+                '[Logística Status Email] Pedido guardado, email pendiente o no confirmado.',
+                {
+                  eventId: statusEmailEventId,
+                  result: emailResult
+                }
+              );
+            }
+          })
+          .catch((emailError) => {
+            console.warn(
+              '[Logística Status Email] Pedido guardado. El evento queda disponible para reintento.',
+              {
+                eventId: statusEmailEventId,
+                error: emailError
+              }
+            );
+          });
+      }
+
+      if (
+        statusTransition &&
+        statusConfirmContext
+      ) {
+        const statusConfirm =
+          window.ProtocolLogisticsStatusConfirm ||
+          window.ProtocolDeliveryConfirm;
+
+        if (
+          statusConfirm &&
+          typeof statusConfirm.success === 'function'
+        ) {
+          statusConfirm.success(
+            statusConfirmContext
+          );
+        } else {
+          toast(
+            state.live
+              ? 'Pedido actualizado en Supabase.'
+              : 'Pedido actualizado en modo local.',
+            'success'
+          );
+        }
+      } else {
+        toast(
+          state.live
+            ? 'Pedido actualizado en Supabase.'
+            : 'Pedido actualizado en modo local.',
+          'success'
+        );
+      }
     } catch (error) {
       console.warn('[Logística Pedidos Update]', error);
       toast(error && error.message ? error.message : 'No se pudo guardar el pedido.', 'error');

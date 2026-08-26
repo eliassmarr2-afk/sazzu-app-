@@ -1,0 +1,535 @@
+/* =========================================================
+   INICIO · Publicidad UTM · Buscador global
+   Módulo aislado: no modifica dimensiones del dashboard.
+   ========================================================= */
+
+.pubUtmHeaderPremium__actions {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.pubUtmGlobalSearch {
+  position: absolute !important;
+  top: 56px !important;
+  right: 0 !important;
+  /*
+ * AJUSTE · Buscador global detrás de slides
+ * Mantiene el buscador sobre el contenido normal,
+ * pero debajo de overlays y slides de Publicidad UTM.
+ */
+z-index: 60 !important;
+
+  width: min(520px, calc(100vw - 190px)) !important;
+
+  font-family: inherit !important;
+}
+
+.pubUtmGlobalSearch__form {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.pubUtmGlobalSearch__field {
+  position: relative !important;
+  min-width: 0 !important;
+}
+
+.pubUtmGlobalSearch__icon {
+  position: absolute !important;
+  top: 50% !important;
+  left: 13px !important;
+  transform: translateY(-50%) !important;
+
+  width: 17px !important;
+  height: 17px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: #8390a5 !important;
+  pointer-events: none !important;
+}
+
+.pubUtmGlobalSearch__icon svg {
+  width: 17px !important;
+  height: 17px !important;
+  display: block !important;
+}
+
+.pubUtmGlobalSearch__input {
+  width: 100% !important;
+  height: 40px !important;
+  min-width: 0 !important;
+
+  padding: 0 42px 0 40px !important;
+
+  border: 1px solid rgba(15, 23, 42, .12) !important;
+  border-radius: 5px !important;
+  outline: none !important;
+
+  background: #ffffff !important;
+  color: #172033 !important;
+
+  box-shadow:
+    0 8px 22px rgba(15, 23, 42, .08),
+    inset 0 0 0 1px rgba(255, 255, 255, .5) !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease !important;
+}
+
+.pubUtmGlobalSearch__input::placeholder {
+  color: #98a2b3 !important;
+  opacity: 1 !important;
+}
+
+.pubUtmGlobalSearch__input:focus {
+  border-color: rgba(36, 121, 255, .72) !important;
+  box-shadow:
+    0 0 0 3px rgba(36, 121, 255, .10),
+    0 10px 24px rgba(15, 23, 42, .09) !important;
+}
+
+.pubUtmGlobalSearch__clear {
+  position: absolute !important;
+  top: 50% !important;
+  right: 8px !important;
+  transform: translateY(-50%) !important;
+
+  width: 27px !important;
+  height: 27px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+
+  background: transparent !important;
+  color: #98a2b3 !important;
+  cursor: pointer !important;
+
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.pubUtmGlobalSearch__clear:hover {
+  background: #f2f4f7 !important;
+  color: #344054 !important;
+}
+
+.pubUtmGlobalSearch__submit {
+  height: 40px !important;
+  min-width: 82px !important;
+
+  padding: 0 15px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid #2479ff !important;
+  border-radius: 5px !important;
+
+  background: #2479ff !important;
+  color: #ffffff !important;
+
+  box-shadow: 0 8px 18px rgba(36, 121, 255, .20) !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+
+  cursor: pointer !important;
+}
+
+.pubUtmGlobalSearch__submit:hover {
+  filter: brightness(.98) !important;
+}
+
+.pubUtmGlobalSearch__submit:disabled {
+  cursor: wait !important;
+  opacity: .72 !important;
+}
+
+.pubUtmGlobalSearch__results {
+  position: absolute !important;
+  top: 48px !important;
+  right: 0 !important;
+  z-index: 61 !important;
+
+  width: min(680px, calc(100vw - 190px)) !important;
+  max-height: min(620px, calc(100vh - 190px)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+
+  padding: 12px !important;
+
+  border: 1px solid rgba(15, 23, 42, .10) !important;
+  border-radius: 5px !important;
+
+  background: #ffffff !important;
+  color: #172033 !important;
+
+  box-shadow: 0 22px 54px rgba(15, 23, 42, .20) !important;
+}
+
+.pubUtmGlobalSearch__results[hidden] {
+  display: none !important;
+}
+
+.pubUtmGlobalSearch__head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+
+  padding: 4px 4px 11px !important;
+  margin-bottom: 10px !important;
+
+  border-bottom: 1px solid rgba(15, 23, 42, .08) !important;
+}
+
+.pubUtmGlobalSearch__head strong {
+  color: #172033 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.pubUtmGlobalSearch__head span {
+  color: #667085 !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+.pubUtmGlobalSearch__section + .pubUtmGlobalSearch__section {
+  margin-top: 14px !important;
+}
+
+.pubUtmGlobalSearch__sectionTitle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  margin: 0 3px 7px !important;
+
+  color: #8793a8 !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+.pubUtmGlobalSearch__list {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+.pubUtmGlobalSearchUser,
+.pubUtmGlobalSearchEntity {
+  border: 1px solid rgba(15, 23, 42, .08) !important;
+  border-radius: 5px !important;
+  background: #f8fafc !important;
+}
+
+.pubUtmGlobalSearchUser {
+  padding: 11px !important;
+}
+
+.pubUtmGlobalSearchUser__top {
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.pubUtmGlobalSearchAvatar {
+  width: 38px !important;
+  height: 38px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  background:
+    hsl(var(--pubutm-search-avatar-hue, 214) 68% 48%) !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+.pubUtmGlobalSearchUser__identity {
+  min-width: 0 !important;
+}
+
+.pubUtmGlobalSearchUser__identity strong {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #172033 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.pubUtmGlobalSearchUser__identity span {
+  display: block !important;
+  margin-top: 3px !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #667085 !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+}
+
+.pubUtmGlobalSearchUser__order {
+  text-align: right !important;
+}
+
+.pubUtmGlobalSearchUser__order strong {
+  display: block !important;
+  color: #172033 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.pubUtmGlobalSearchUser__order span {
+  display: block !important;
+  margin-top: 3px !important;
+  color: #667085 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.pubUtmGlobalSearchUser__metrics {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+
+  margin-top: 10px !important;
+}
+
+.pubUtmGlobalSearchChip {
+  min-height: 23px !important;
+  padding: 0 7px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+
+  border-radius: 5px !important;
+  background: #eef2f7 !important;
+  color: #475467 !important;
+
+  font-size: 10px !important;
+  font-weight: 800 !important;
+}
+
+.pubUtmGlobalSearchChip--blue {
+  background: #eaf3ff !important;
+  color: #2479ff !important;
+}
+
+.pubUtmGlobalSearchChip--green {
+  background: #e8f8ee !important;
+  color: #22834c !important;
+}
+
+.pubUtmGlobalSearchChip--warning {
+  background: #fff4df !important;
+  color: #a15c00 !important;
+}
+
+.pubUtmGlobalSearchRelations {
+  display: grid !important;
+  gap: 5px !important;
+
+  max-height: 170px !important;
+  overflow-y: auto !important;
+
+  margin-top: 9px !important;
+  padding-top: 9px !important;
+
+  border-top: 1px solid rgba(15, 23, 42, .07) !important;
+}
+
+.pubUtmGlobalSearchRelation {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 9px !important;
+  align-items: center !important;
+
+  min-height: 34px !important;
+  padding: 6px 8px !important;
+
+  border-radius: 5px !important;
+  background: #ffffff !important;
+}
+
+.pubUtmGlobalSearchRelation__copy {
+  min-width: 0 !important;
+}
+
+.pubUtmGlobalSearchRelation__copy strong {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #344054 !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+}
+
+.pubUtmGlobalSearchRelation__copy span {
+  display: block !important;
+  margin-top: 2px !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #7b8799 !important;
+  font-size: 9px !important;
+  font-weight: 650 !important;
+}
+
+.pubUtmGlobalSearchLocate {
+  min-height: 27px !important;
+  padding: 0 8px !important;
+
+  border: 1px solid rgba(36, 121, 255, .20) !important;
+  border-radius: 5px !important;
+
+  background: #f2f7ff !important;
+  color: #2479ff !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+
+  cursor: pointer !important;
+}
+
+.pubUtmGlobalSearchEntity {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+
+  padding: 10px 11px !important;
+}
+
+.pubUtmGlobalSearchEntity__copy {
+  min-width: 0 !important;
+}
+
+.pubUtmGlobalSearchEntity__copy strong {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #172033 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.pubUtmGlobalSearchEntity__copy span {
+  display: block !important;
+  margin-top: 3px !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: #667085 !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+}
+
+.pubUtmGlobalSearchEmpty {
+  padding: 26px 16px !important;
+  text-align: center !important;
+}
+
+.pubUtmGlobalSearchEmpty strong {
+  display: block !important;
+  color: #172033 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.pubUtmGlobalSearchEmpty p {
+  margin: 6px 0 0 !important;
+  color: #667085 !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+.pubUtmGlobalSearchHighlight {
+  outline: 3px solid rgba(36, 121, 255, .30) !important;
+  outline-offset: 3px !important;
+}
+
+@media (max-width: 1120px) {
+  .pubUtmGlobalSearch {
+    width: min(460px, calc(100vw - 140px)) !important;
+  }
+
+  .pubUtmGlobalSearch__results {
+    width: min(620px, calc(100vw - 140px)) !important;
+  }
+}
+
+/* =========================================================
+   FIN · Publicidad UTM · Buscador global
+   ========================================================= */
+
+
+/* INICIO · Buscador debajo del slide de audiencia */
+.pubUtmPage:has(
+  [data-pubutm-audience-detail-slide].is-open
+) .pubUtmGlobalSearch,
+[data-page="publicidad-utm"]:has(
+  [data-pubutm-audience-detail-slide].is-open
+) .pubUtmGlobalSearch {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* FIN · Buscador debajo del slide de audiencia */
+
+/* PUB_UTM_HIDE_GLOBAL_SEARCH_ON_OPEN_SLIDE_V2
+   Ajuste exclusivamente visual:
+   el buscador desaparece mientras un slide está abierto.
+*/
+
+body:has(.pubUtmPanelSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmFieldSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmValuesSelectorSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmValuesManagerSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmReglasSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmReglasEditorSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmAudienceDetailSlide.is-open) .pubUtmGlobalSearch,
+body:has(.pubUtmAudienceSetDetailSlide.is-open) .pubUtmGlobalSearch {
+  display: none !important;
+}
+

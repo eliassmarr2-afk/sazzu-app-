@@ -512,3 +512,250 @@ body.logPedidosLock {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================
+   Protocol Data · Logística · Email Activity UI
+   ========================================================== */
+
+.logPedidosEmailSignal {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #536176;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.logPedidosEmailSignal__dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.logPedidosEmailSignal--sent {
+  color: #2479ff;
+}
+
+.logPedidosEmailSignal--delivered {
+  color: #16803a;
+}
+
+.logPedidosEmailSignal--opened {
+  color: #6750c9;
+}
+
+.logPedidosEmailSignal--click {
+  color: #0f8f69;
+}
+
+.logPedidosEmailSignal--error {
+  color: #c93434;
+}
+
+.logPedidosEmailActivityCard {
+  overflow: visible;
+}
+
+.logPedidosEmailActivity {
+  display: grid;
+  gap: 0;
+}
+
+.logPedidosEmailActivity__state {
+  display: grid;
+  gap: 9px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.logPedidosEmailActivity__state:first-child {
+  padding-top: 2px;
+  border-top: 0;
+}
+
+.logPedidosEmailActivity__state:last-child {
+  padding-bottom: 2px;
+}
+
+.logPedidosEmailActivity__stateHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.logPedidosEmailActivity__stateHead > div {
+  min-width: 0;
+}
+
+.logPedidosEmailActivity__stateHead strong,
+.logPedidosEmailActivity__stateHead span {
+  display: block;
+}
+
+.logPedidosEmailActivity__stateHead strong {
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.logPedidosEmailActivity__stateHead > div > span {
+  margin-top: 2px;
+  color: #7b8797;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.logPedidosEmailActivity__badge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: #f1f4f8;
+  color: #536176;
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.logPedidosEmailActivity__badge--sent {
+  background: rgba(36, 121, 255, 0.10);
+  color: #2479ff;
+}
+
+.logPedidosEmailActivity__badge--delivered {
+  background: rgba(22, 128, 58, 0.10);
+  color: #16803a;
+}
+
+.logPedidosEmailActivity__badge--opened {
+  background: rgba(103, 80, 201, 0.10);
+  color: #6750c9;
+}
+
+.logPedidosEmailActivity__badge--click {
+  background: rgba(15, 143, 105, 0.10);
+  color: #0f8f69;
+}
+
+.logPedidosEmailActivity__badge--error {
+  background: rgba(201, 52, 52, 0.10);
+  color: #c93434;
+}
+
+.logPedidosEmailActivity__empty {
+  color: #8a94a3;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.logPedidosEmailActivity__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.logPedidosEmailStep {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 6px;
+  border-radius: 5px;
+  background: #f7f8fb;
+  padding: 8px;
+  color: #8a94a3;
+}
+
+.logPedidosEmailStep.is-done {
+  color: #1f2937;
+}
+
+.logPedidosEmailStep__mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e8ecf2;
+  color: #7b8797;
+  font-size: 9px;
+  font-weight: 950;
+}
+
+.logPedidosEmailStep.is-done .logPedidosEmailStep__mark {
+  background: rgba(36, 121, 255, 0.12);
+  color: #2479ff;
+}
+
+.logPedidosEmailStep > div {
+  min-width: 0;
+}
+
+.logPedidosEmailStep strong,
+.logPedidosEmailStep span {
+  display: block;
+}
+
+.logPedidosEmailStep strong {
+  overflow: hidden;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logPedidosEmailStep > div > span {
+  margin-top: 3px;
+  overflow: hidden;
+  color: #7b8797;
+  font-size: 9px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .logPedidosEmailActivity__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* ==========================================================
+   Protocol Data · Email Activity UI · Dark contrast
+   ========================================================== */
+
+body[data-page="logistica"].logistica-dark
+.logPedidosEmailActivity__stateHead strong {
+  color: #f3f4f6 !important;
+}
+
+body[data-page="logistica"].logistica-dark
+.logPedidosEmailActivity__stateHead > div > span {
+  color: #aeb7c4 !important;
+}
+
+body[data-page="logistica"].logistica-dark
+.logPedidosEmailActivity__empty {
+  color: #c4cad4 !important;
+}
+
+body[data-page="logistica"].logistica-dark
+.logPedidosEmailActivity__state {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-page="logistica"].logistica-dark
+.logPedidosEmailActivityCard
+.logPedidosForm__cardHead span {
+  color: #b7bec9 !important;
+}

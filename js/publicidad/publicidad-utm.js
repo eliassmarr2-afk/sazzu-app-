@@ -63,6 +63,13 @@ root: null,
 audienceSetMembersPayload: null,
 audienceSetMembersSearch: "",
 audienceSetMembersView: "por_audiencia",
+
+/* INICIO · STATE · Miembros del detalle de audiencia */
+audienceDetailMembersPayload: null,
+audienceDetailMembersSearch: "",
+audienceDetailMembersRequestId: 0,
+/* FIN · STATE · Miembros del detalle de audiencia */
+
 /* FIN · STATE · Miembros de conjuntos de audiencias */
 
 /* INICIO · STATE · Comparador por parámetro UTM */
@@ -103,6 +110,25 @@ function initPublicidadUtm_() {
   if (!root) return;
 
   STATE.root = root;
+
+  /* INICIO · Puente seguro · Buscador global → detalle audiencia */
+  window.__PUB_UTM_OPEN_AUDIENCE_DETAIL__ = function (
+    audienceId,
+    focusMode
+  ) {
+    const value = String(audienceId || "").trim();
+
+    if (!value) return false;
+
+    openAudienceDetailSlide_(
+      root,
+      value,
+      focusMode || "members"
+    );
+
+    return true;
+  };
+  /* FIN · Puente seguro · Buscador global → detalle audiencia */
 
   /* INICIO · Shell visual premium · Primer pantallazo */
 ensurePubUtmDashboardShell_(root);
@@ -1901,7 +1927,7 @@ function loadAllPubUtmData_(root) {
 
   Promise.all([
     jsonpRequest_(apiBase, { action: "getPublicidadUtmDashboard" }),
-    jsonpRequest_(apiBase, { action: "getPublicidadUtmCamposConfig" }),
+    loadPublicidadUtmCamposSupabase_(),
 
     /* INICIO · Supabase · Conjuntos UTM para panel */
     loadPublicidadUtmConjuntosSupabase_().catch(function (err) {
@@ -2208,6 +2234,112 @@ function resolveApiBase_() {
     });
   }
   
+
+  /* =========================================================
+     INICIO · Supabase · Campos y valores UTM
+     ========================================================= */
+
+  function loadPublicidadUtmCamposSupabase_() {
+    const config =
+      resolvePublicidadUtmSupabaseConfig_();
+
+    if (!config.ok) {
+      return Promise.resolve({
+        ok: false,
+        source: "rpc_panel_utm_listar_campos",
+        error: config.error
+      });
+    }
+
+    return supabaseRpcRequest_(
+      config,
+      "rpc_panel_utm_listar_campos",
+      {}
+    );
+  }
+
+
+  function savePublicidadUtmCampoSupabase_(payload) {
+    const config =
+      resolvePublicidadUtmSupabaseConfig_();
+
+    if (!config.ok) {
+      return Promise.resolve({
+        ok: false,
+        source: "rpc_panel_utm_guardar_campo",
+        error: config.error
+      });
+    }
+
+    return supabaseRpcRequest_(
+      config,
+      "rpc_panel_utm_guardar_campo",
+      {
+        p_payload: payload || {}
+      }
+    );
+  }
+
+
+  function loadPublicidadUtmValoresSupabase_(
+    campoUtm
+  ) {
+    const config =
+      resolvePublicidadUtmSupabaseConfig_();
+
+    if (!config.ok) {
+      return Promise.resolve({
+        ok: false,
+        source: "rpc_panel_utm_listar_valores",
+        error: config.error
+      });
+    }
+
+    const field = String(
+      campoUtm || ""
+    ).trim();
+
+    const rpcPayload = {};
+
+    if (field) {
+      rpcPayload.p_campo_utm = field;
+    }
+
+    return supabaseRpcRequest_(
+      config,
+      "rpc_panel_utm_listar_valores",
+      rpcPayload
+    );
+  }
+
+
+  function savePublicidadUtmValorSupabase_(
+    payload
+  ) {
+    const config =
+      resolvePublicidadUtmSupabaseConfig_();
+
+    if (!config.ok) {
+      return Promise.resolve({
+        ok: false,
+        source: "rpc_panel_utm_guardar_valor",
+        error: config.error
+      });
+    }
+
+    return supabaseRpcRequest_(
+      config,
+      "rpc_panel_utm_guardar_valor",
+      {
+        p_payload: payload || {}
+      }
+    );
+  }
+
+  /* =========================================================
+     FIN · Supabase · Campos y valores UTM
+     ========================================================= */
+
   function resolvePublicidadUtmSupabaseConfig_() {
     const cfg = window.SAZZU_SUPABASE_CONFIG || {};
     const rawUrl = String(cfg.url || "").trim();
@@ -2878,7 +3010,151 @@ function ejecutarEnvioConjuntoAPapelera_(root, id, button) {
      FIN · Supabase · Lectura conjuntos UTM panel
      ========================================================= */
 
-     /* INICIO · Supabase · Miembros reales de conjunto */
+     /* =========================================================
+   INICIO · Supabase · Miembros reales de audiencia
+   Fuente: rpc_panel_utm_listar_miembros_audiencia
+   ========================================================= */
+
+function loadPublicidadUtmMiembrosAudienciaSupabase_(audienciaId, busqueda) {
+  const config = resolvePublicidadUtmSupabaseConfig_();
+  const rawId = String(audienciaId || "").trim();
+
+  if (!rawId) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_listar_miembros_audiencia",
+      error: "Falta audiencia_id para cargar miembros."
+    });
+  }
+
+  if (!config.ok) {
+    return Promise.resolve({
+      ok: false,
+      source: "rpc_panel_utm_listar_miembros_audiencia",
+      error: config.error
+    });
+  }
+
+  const isCodigoAudiencia = /^AUD-/i.test(rawId);
+
+  return supabaseRpcRequest_(
+    config,
+    "rpc_panel_utm_listar_miembros_audiencia",
+    {
+      p_audiencia_id: isCodigoAudiencia ? null : rawId,
+      p_codigo_audiencia: isCodigoAudiencia ? rawId : null,
+      p_busqueda: busqueda || null,
+      p_limit: 1000,
+      p_offset: 0
+    }
+  ).then(function (payload) {
+    if (!payload || payload.ok !== true) {
+      return {
+        ok: false,
+        source: "rpc_panel_utm_listar_miembros_audiencia",
+        error: payload && payload.error
+          ? payload.error
+          : "La RPC de miembros de audiencia no devolvió ok=true.",
+        raw: payload
+      };
+    }
+
+    return normalizePublicidadUtmMiembrosAudienciaSupabase_(payload);
+  });
+}
+
+function normalizePublicidadUtmMiembrosAudienciaSupabase_(payload) {
+  const data = payload || {};
+  const rawItems = Array.isArray(data.items)
+    ? data.items
+    : (Array.isArray(data.miembros) ? data.miembros : []);
+
+  const items = rawItems.map(function (item) {
+    const nombre = String(
+      item.nombre_cliente ||
+      item.nombre ||
+      item.email_cliente ||
+      item.email ||
+      "Usuario sin nombre"
+    ).trim();
+
+    const email = String(
+      item.email_cliente ||
+      item.email ||
+      ""
+    ).trim();
+
+    const pedido = String(
+      item.numero_pedido ||
+      item.ultimo_numero_pedido ||
+      item.primera_numero_pedido ||
+      item.pedido ||
+      ""
+    ).trim();
+
+    return Object.assign({}, item, {
+      member_id:
+        item.member_id ||
+        item.cliente_key ||
+        item.cliente_id ||
+        email ||
+        pedido,
+
+      cliente_id:
+        item.cliente_id ||
+        item.cliente_key ||
+        item.member_id ||
+        email ||
+        pedido,
+
+      nombre: nombre,
+      nombre_cliente: nombre,
+
+      email: email,
+      email_cliente: email,
+
+      pedido: pedido,
+      numero_pedido: pedido,
+
+      ventas_asociadas: Number(
+        item.ventas_asociadas ||
+        item.ventas_match_count ||
+        0
+      ),
+
+      facturacion_asociada: Number(
+        item.facturacion_asociada ||
+        item.facturacion_total ||
+        item.monto_total ||
+        0
+      ),
+
+      ultima_fecha_compra:
+        item.ultima_fecha_compra ||
+        item.fecha_ultima_compra ||
+        item.fecha_ultimo_match ||
+        "",
+
+      origen_datos: "supabase"
+    });
+  });
+
+  return Object.assign({}, data, {
+    audiencia: data.audiencia || {},
+    summary: data.summary || {},
+    condiciones: Array.isArray(data.condiciones)
+      ? data.condiciones
+      : [],
+    items: items,
+    miembros: items
+  });
+}
+
+/* =========================================================
+   FIN · Supabase · Miembros reales de audiencia
+   ========================================================= */
+
+/* INICIO · Supabase · Miembros reales de conjunto */
 function loadPublicidadUtmMiembrosConjuntoSupabase_(conjuntoId, busqueda) {
   const config = resolvePublicidadUtmSupabaseConfig_();
   const rawId = String(conjuntoId || "").trim();
@@ -12024,40 +12300,62 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     return el ? String(el.value || "").trim() : "";
   }
   
+
   function saveCampoEditor_(root) {
-    const slide = root.querySelector("[data-pubutm-field-slide]");
+    const slide = root.querySelector(
+      "[data-pubutm-field-slide]"
+    );
+
     if (!slide) return;
-  
+
     const payload = collectCampoEditorPayload_(slide);
     if (!payload) return;
-  
-    const saveBtn = slide.querySelector("[data-field-save-btn]");
-    const oldText = saveBtn ? saveBtn.textContent : "";
-  
+
+    const saveBtn = slide.querySelector(
+      "[data-field-save-btn]"
+    );
+
+    const oldText = saveBtn
+      ? saveBtn.textContent
+      : "";
+
     if (saveBtn) {
       saveBtn.disabled = true;
       saveBtn.textContent = "Guardando...";
     }
-  
-    jsonpRequest_(resolveApiBase_(), Object.assign({
-      action: "savePublicidadUtmCampoConfig"
-    }, payload))
+
+    savePublicidadUtmCampoSupabase_(payload)
       .then(function (res) {
         if (!res || res.ok !== true) {
-          throw new Error((res && res.error) ? res.error : "No se pudo guardar el campo.");
+          throw new Error(
+            res && res.error
+              ? res.error
+              : "No se pudo guardar el campo."
+          );
         }
-  
+
         closeCampoEditor_(root);
-        alert("Campo guardado correctamente: " + (res.campo_utm || "—"));
+
+        alert(
+          "Campo guardado correctamente: "
+          + (res.campo_utm || "—")
+        );
+
         loadAllPubUtmData_(root);
       })
       .catch(function (err) {
-        alert(String(err || "Error desconocido al guardar el campo."));
+        alert(
+          String(
+            err
+            || "Error desconocido al guardar el campo."
+          )
+        );
       })
       .finally(function () {
         if (saveBtn) {
           saveBtn.disabled = false;
-          saveBtn.textContent = oldText || "Guardar campo";
+          saveBtn.textContent =
+            oldText || "Guardar campo";
         }
       });
   }
@@ -12158,6 +12456,33 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
               <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-values-change-field>
                 Cambiar campo
               </button>
+
+              <div
+                class="pubUtmValuesViewTabs"
+                role="tablist"
+                aria-label="Estado de los valores"
+              >
+                <button
+                  type="button"
+                  class="pubUtmValuesViewTabs__tab is-active"
+                  role="tab"
+                  aria-selected="true"
+                  data-values-view-tab="active"
+                >
+                  Activo
+                </button>
+
+                <button
+                  type="button"
+                  class="pubUtmValuesViewTabs__tab"
+                  role="tab"
+                  aria-selected="false"
+                  data-values-view-tab="archived"
+                >
+                  Archivados
+                </button>
+              </div>
+
               <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-values-manager-close="1">
                 Cerrar
               </button>
@@ -12219,6 +12544,22 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
                 <div class="pubUtmHeader__actions">
                   <button type="button" class="pubUtmBtn pubUtmBtn--primary" data-values-new>
                     Nuevo valor
+                  </button>
+
+                  <button
+                    type="button"
+                    class="pubUtmBtn pubUtmBtn--ghost pubUtmCopyFieldBtn"
+                    data-values-copy-field
+                    title="Copiar campo"
+                    aria-label="Copiar campo"
+                  >
+                    <span class="pubUtmCopyFieldBtn__icon" data-copy-icon aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+                        <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path>
+                      </svg>
+                    </span>
+                    <span>Copiar campo</span>
                   </button>
                 </div>
               </div>
@@ -12402,6 +12743,89 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
         };
       }
   
+      const copyFieldBtn = managerSlide.querySelector(
+        "[data-values-copy-field]"
+      );
+
+      if (copyFieldBtn) {
+        copyFieldBtn.onclick = function () {
+          const config = STATE.valoresConfig || {};
+          const defaults = config.defaults || {};
+
+          const field = String(
+            config.campo_seleccionado ||
+            defaults.campo_utm ||
+            ""
+          ).trim();
+
+          if (!field) return;
+
+          copyPubUtmText_(field)
+            .then(function () {
+              showPubUtmCopyFeedback_(copyFieldBtn);
+            })
+            .catch(function (error) {
+              console.warn(
+                "[Publicidad UTM] No se pudo copiar el campo.",
+                error
+              );
+            });
+        };
+      }
+
+      if (managerSlide.dataset.valuesCopyBound !== "1") {
+        managerSlide.dataset.valuesCopyBound = "1";
+
+        managerSlide.addEventListener("click", function (event) {
+          const copyValueBtn = event.target.closest(
+            "[data-values-copy-value]"
+          );
+
+          if (!copyValueBtn) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          const value = copyValueBtn.getAttribute(
+            "data-values-copy-value"
+          ) || "";
+
+          copyPubUtmText_(value)
+            .then(function () {
+              showPubUtmCopyFeedback_(copyValueBtn);
+            })
+            .catch(function (error) {
+              console.warn(
+                "[Publicidad UTM] No se pudo copiar el valor.",
+                error
+              );
+            });
+        });
+      }
+
+      managerSlide.querySelectorAll(
+        "[data-values-view-tab]"
+      ).forEach(function (tabButton) {
+        tabButton.onclick = function () {
+          const requestedView =
+            tabButton.getAttribute(
+              "data-values-view-tab"
+            ) === "archived"
+              ? "archived"
+              : "active";
+
+          managerSlide.dataset.valuesView =
+            requestedView;
+
+          if (STATE.valoresConfig) {
+            renderValoresManager_(
+              root,
+              STATE.valoresConfig
+            );
+          }
+        };
+      });
+
       const newBtn = managerSlide.querySelector("[data-values-new]");
       if (newBtn) {
         newBtn.onclick = function () {
@@ -12459,34 +12883,55 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     }
   }
   
+
   function openValoresFieldSelector_(root, preselectedField) {
-    const selectorSlide = root.querySelector("[data-pubutm-values-selector-slide]");
+    const selectorSlide = root.querySelector(
+      "[data-pubutm-values-selector-slide]"
+    );
+
     if (selectorSlide) {
       selectorSlide.classList.add("is-open");
-      selectorSlide.classList.remove("is-stack-behind");
-      selectorSlide.setAttribute("aria-hidden", "false");
+      selectorSlide.classList.remove(
+        "is-stack-behind"
+      );
+      selectorSlide.setAttribute(
+        "aria-hidden",
+        "false"
+      );
     }
-  
-    renderValoresFieldSelectorLoading_(root, preselectedField);
-  
-    const params = { action: "getPublicidadUtmValoresConfig" };
-    if (preselectedField) params.campo_utm = preselectedField;
-  
-    jsonpRequest_(resolveApiBase_(), params)
+
+    renderValoresFieldSelectorLoading_(
+      root,
+      preselectedField
+    );
+
+    loadPublicidadUtmValoresSupabase_(
+      preselectedField || ""
+    )
       .then(function (res) {
         if (!res || res.ok !== true) {
-          throw new Error((res && res.error) ? res.error : "No se pudo cargar la selección de valores.");
+          throw new Error(
+            res && res.error
+              ? res.error
+              : "No se pudo cargar la selección de valores."
+          );
         }
-  
+
         STATE.valoresConfig = res;
         renderValoresFieldSelector_(root, res);
       })
       .catch(function (err) {
-        alert(String(err || "Error desconocido al cargar valores permitidos."));
+        alert(
+          String(
+            err
+            || "Error desconocido al cargar valores permitidos."
+          )
+        );
+
         closeValoresFieldSelector_(root);
       });
   }
-  
+
   function closeValoresFieldSelector_(root) {
     const selectorSlide = root.querySelector("[data-pubutm-values-selector-slide]");
     const managerSlide = root.querySelector("[data-pubutm-values-manager-slide]");
@@ -12605,43 +13050,72 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     if (openBtn) openBtn.disabled = false;
   }
   
+
   function loadValoresManagerForField_(root, field) {
-    const selectorSlide = root.querySelector("[data-pubutm-values-selector-slide]");
-    const managerSlide = root.querySelector("[data-pubutm-values-manager-slide]");
-  
+    const selectorSlide = root.querySelector(
+      "[data-pubutm-values-selector-slide]"
+    );
+
+    const managerSlide = root.querySelector(
+      "[data-pubutm-values-manager-slide]"
+    );
+
     if (selectorSlide) {
-      selectorSlide.classList.add("is-open", "is-stack-behind");
-      selectorSlide.setAttribute("aria-hidden", "false");
+      selectorSlide.classList.add(
+        "is-open",
+        "is-stack-behind"
+      );
+
+      selectorSlide.setAttribute(
+        "aria-hidden",
+        "false"
+      );
     }
-  
+
     if (managerSlide) {
       managerSlide.classList.add("is-open");
-      managerSlide.setAttribute("aria-hidden", "false");
-      managerSlide.setAttribute("data-current-field", field || "");
+
+      managerSlide.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      managerSlide.setAttribute(
+        "data-current-field",
+        field || ""
+      );
+
+      managerSlide.dataset.valuesView = "active";
     }
-  
+
     renderValoresManagerLoading_(root, field);
-  
-    const params = {
-      action: "getPublicidadUtmValoresConfig",
-      campo_utm: field
-    };
-  
-    jsonpRequest_(resolveApiBase_(), params)
+
+    loadPublicidadUtmValoresSupabase_(field)
       .then(function (res) {
         if (!res || res.ok !== true) {
-          throw new Error((res && res.error) ? res.error : "No se pudo cargar la gestión de valores.");
+          throw new Error(
+            res && res.error
+              ? res.error
+              : "No se pudo cargar la gestión de valores."
+          );
         }
-  
+
         STATE.valoresConfig = res;
         renderValoresManager_(root, res);
       })
       .catch(function (err) {
-        alert(String(err || "Error desconocido al cargar la gestión de valores."));
+        alert(
+          String(
+            err
+            || "Error desconocido al cargar "
+            + "la gestión de valores."
+          )
+        );
+
         closeValoresManager_(root);
       });
   }
-  
+
   function closeValoresManager_(root) {
     const managerSlide = root.querySelector("[data-pubutm-values-manager-slide]");
     const selectorSlide = root.querySelector("[data-pubutm-values-selector-slide]");
@@ -12660,13 +13134,201 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     closeValorEditor_(root);
   }
   
+  /* =========================================================
+     Publicidad UTM · Copiar campos y valores
+     Alcance aislado: slide Gestionar valores.
+     ========================================================= */
+
+  function copyPubUtmTextLegacy_(text) {
+    return new Promise(function (resolve, reject) {
+      const textarea = document.createElement("textarea");
+
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.setAttribute("aria-hidden", "true");
+
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      textarea.style.top = "0";
+      textarea.style.opacity = "0";
+
+      document.body.appendChild(textarea);
+
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+
+      try {
+        const copied = document.execCommand("copy");
+
+        if (!copied) {
+          throw new Error("El navegador no confirmó la copia.");
+        }
+
+        resolve(true);
+      } catch (error) {
+        reject(error);
+      } finally {
+        textarea.remove();
+      }
+    });
+  }
+
+  function copyPubUtmText_(value) {
+    const text = String(value == null ? "" : value).trim();
+
+    if (!text) {
+      return Promise.reject(
+        new Error("No hay contenido disponible para copiar.")
+      );
+    }
+
+    if (
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText === "function"
+    ) {
+      return navigator.clipboard.writeText(text).catch(function () {
+        return copyPubUtmTextLegacy_(text);
+      });
+    }
+
+    return copyPubUtmTextLegacy_(text);
+  }
+
+  function showPubUtmCopyFeedback_(button) {
+    if (!button) return;
+
+    const icon = button.querySelector("[data-copy-icon]");
+
+    if (icon && !button.dataset.copyIconOriginal) {
+      button.dataset.copyIconOriginal = icon.innerHTML;
+    }
+
+    if (!button.dataset.copyTitleOriginal) {
+      button.dataset.copyTitleOriginal =
+        button.getAttribute("title") || "";
+    }
+
+    if (button.__pubUtmCopyFeedbackTimer) {
+      window.clearTimeout(button.__pubUtmCopyFeedbackTimer);
+    }
+
+    button.classList.add("is-copied");
+    button.setAttribute("title", "Copiado");
+
+    if (icon) {
+      icon.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6"></path>
+        </svg>
+      `;
+    }
+
+    button.__pubUtmCopyFeedbackTimer = window.setTimeout(function () {
+      button.classList.remove("is-copied");
+
+      button.setAttribute(
+        "title",
+        button.dataset.copyTitleOriginal || ""
+      );
+
+      if (icon) {
+        icon.innerHTML =
+          button.dataset.copyIconOriginal || "";
+      }
+    }, 1100);
+  }
+
+  function isValorArchivado_(item) {
+    const libraryState = String(
+      item && item.estado_biblioteca || ""
+    )
+      .trim()
+      .toLowerCase();
+
+    if (libraryState === "archivado") {
+      return true;
+    }
+
+    const activeState = String(
+      item && item.activo || ""
+    )
+      .trim()
+      .toLowerCase();
+
+    return ![
+      "sí",
+      "si",
+      "true",
+      "1",
+      "activo"
+    ].includes(activeState);
+  }
+
+
+  function updateValoresViewTabs_(
+    slide,
+    currentView
+  ) {
+    if (!slide) return;
+
+    slide.querySelectorAll(
+      "[data-values-view-tab]"
+    ).forEach(function (tabButton) {
+      const tabView =
+        tabButton.getAttribute(
+          "data-values-view-tab"
+        );
+
+      const selected =
+        tabView === currentView;
+
+      tabButton.classList.toggle(
+        "is-active",
+        selected
+      );
+
+      tabButton.setAttribute(
+        "aria-selected",
+        selected ? "true" : "false"
+      );
+    });
+  }
+
+
   function renderValoresManager_(root, payload) {
     const slide = root.querySelector("[data-pubutm-values-manager-slide]");
     if (!slide) return;
   
     const resumen = payload.resumen_campo || {};
-    const valores = Array.isArray(payload.valores) ? payload.valores : [];
+
+    const allValues =
+      Array.isArray(payload.valores)
+        ? payload.valores
+        : [];
+
+    const currentView =
+      slide.dataset.valuesView === "archived"
+        ? "archived"
+        : "active";
+
+    const valores = allValues.filter(
+      function (value) {
+        const archived =
+          isValorArchivado_(value);
+
+        return currentView === "archived"
+          ? archived
+          : !archived;
+      }
+    );
+
     const catalogos = payload.catalogos || {};
+
+    updateValoresViewTabs_(
+      slide,
+      currentView
+    );
   
     setText_(slide, "[data-values-manager-title]", "Valores permitidos · " + (payload.campo_seleccionado || "—"));
     setText_(slide, "[data-values-summary-title]", payload.campo_seleccionado || "—");
@@ -12683,24 +13345,84 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     if (!valores.length) {
       body.innerHTML = `
         <tr>
-          <td colspan="8">Todavía no hay valores cargados para este campo.</td>
+          <td colspan="8">
+            ${
+              currentView === "archived"
+                ? "Todavía no hay valores archivados para este campo."
+                : "Todavía no hay valores activos para este campo."
+            }
+          </td>
         </tr>
       `;
     } else {
       body.innerHTML = valores.map(function (v) {
         return `
           <tr data-value-id="${escapeHtml_(v.valor_permitido || "")}">
-            <td><strong>${escapeHtml_(v.valor_permitido || "—")}</strong></td>
+            <td class="pubUtmValueCell">
+              <strong class="pubUtmValueCell__text">${escapeHtml_(v.valor_permitido || "—")}</strong>
+
+              <button
+                type="button"
+                class="pubUtmCopyIconBtn"
+                data-values-copy-value="${escapeHtml_(v.valor_permitido || "")}"
+                title="Copiar valor"
+                aria-label="Copiar valor ${escapeHtml_(v.valor_permitido || "")}"
+              >
+                <span data-copy-icon aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+                    <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path>
+                  </svg>
+                </span>
+              </button>
+            </td>
             <td>${escapeHtml_(v.descripcion_funcional || "—")}</td>
             <td>${escapeHtml_(v.categoria || "—")}</td>
             <td>${renderSiNoPill_(v.activo)}</td>
             <td>${renderSiNoPill_(v.requiere_match_exacto)}</td>
             <td>${escapeHtml_(v.aplica_a || "—")}</td>
             <td>${escapeHtml_(formatDateTimeAr_(v.fecha_actualizacion) || "—")}</td>
-            <td>
-              <button type="button" class="pubUtmBtn pubUtmBtn--ghost" data-value-action="edit" data-value-id="${escapeHtml_(v.valor_permitido || "")}">
-                Editar
-              </button>
+            <td class="pubUtmValueActionCell">
+              ${
+                currentView === "archived"
+                  ? `
+                    <span class="pubUtmArchivedValueBadge">
+                      Archivado
+                    </span>
+                  `
+                  : `
+                    <div class="pubUtmValueActions">
+                      <button
+                        type="button"
+                        class="pubUtmBtn pubUtmBtn--ghost"
+                        data-value-action="edit"
+                        data-value-id="${escapeHtml_(v.valor_permitido || "")}"
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        type="button"
+                        class="pubUtmValueArchiveBtn"
+                        data-value-archive-open="${escapeHtml_(v.valor_permitido || "")}"
+                        data-value-archive-field="${escapeHtml_(v.campo_utm || payload.campo_seleccionado || "")}"
+                        title="Eliminar valor"
+                        aria-label="Eliminar valor ${escapeHtml_(v.valor_permitido || "")}"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="#EA3323"
+                          aria-hidden="true"
+                        >
+                          <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  `
+              }
             </td>
           </tr>
         `;
@@ -12801,41 +13523,67 @@ setFieldInputValue_(form, "peso_analitico", source.peso_analitico != null ? sour
     };
   }
   
+
   function saveValorEditor_(root) {
     const payload = collectValorEditorPayload_(root);
     if (!payload) return;
-  
-    const slide = root.querySelector("[data-pubutm-values-manager-slide]");
-    const saveBtn = slide ? slide.querySelector("[data-values-editor-save]") : null;
-    const oldText = saveBtn ? saveBtn.textContent : "";
-  
+
+    const slide = root.querySelector(
+      "[data-pubutm-values-manager-slide]"
+    );
+
+    const saveBtn = slide
+      ? slide.querySelector(
+          "[data-values-editor-save]"
+        )
+      : null;
+
+    const oldText = saveBtn
+      ? saveBtn.textContent
+      : "";
+
     if (saveBtn) {
       saveBtn.disabled = true;
       saveBtn.textContent = "Guardando...";
     }
-  
-    jsonpRequest_(resolveApiBase_(), Object.assign({
-      action: "savePublicidadUtmValorConfig"
-    }, payload))
+
+    savePublicidadUtmValorSupabase_(payload)
       .then(function (res) {
         if (!res || res.ok !== true) {
-          throw new Error((res && res.error) ? res.error : "No se pudo guardar el valor.");
+          throw new Error(
+            res && res.error
+              ? res.error
+              : "No se pudo guardar el valor."
+          );
         }
-  
-        alert("Valor guardado correctamente: " + (res.valor_permitido || "—"));
-        return loadValoresManagerForField_(root, payload.campo_utm);
+
+        alert(
+          "Valor guardado correctamente: "
+          + (res.valor_permitido || "—")
+        );
+
+        return loadValoresManagerForField_(
+          root,
+          payload.campo_utm
+        );
       })
       .catch(function (err) {
-        alert(String(err || "Error desconocido al guardar el valor."));
+        alert(
+          String(
+            err
+            || "Error desconocido al guardar el valor."
+          )
+        );
       })
       .finally(function () {
         if (saveBtn) {
           saveBtn.disabled = false;
-          saveBtn.textContent = oldText || "Guardar valor";
+          saveBtn.textContent =
+            oldText || "Guardar valor";
         }
       });
   }
-  
+
   /* INICIO · ensureReglasAudienciasEntryPoint_ · Bind reglas sin card separada */
 function ensureReglasAudienciasEntryPoint_(root) {
   const panel = findTabPanel_(root, "conjuntos");
@@ -15516,6 +16264,8 @@ function openAudienceDetailSlide_(root, audienceInput, focusMode) {
 
   const main = root.closest("main") || root;
   main.classList.add("pubUtmSlideOpen");
+
+  loadAudienceDetailMembersForSlide_(root, audience);
 }
 
 function closeAudienceDetailSlide_(root) {
@@ -15525,6 +16275,10 @@ function closeAudienceDetailSlide_(root) {
   slide.classList.remove("is-open");
   slide.setAttribute("aria-hidden", "true");
   slide.removeAttribute("data-current-audience-id");
+
+  STATE.audienceDetailMembersRequestId += 1;
+  STATE.audienceDetailMembersPayload = null;
+  STATE.audienceDetailMembersSearch = "";
 
   const main = root.closest("main") || root;
   main.classList.remove("pubUtmSlideOpen");
@@ -15719,7 +16473,14 @@ function toAudienceDetailReadableCase_(value) {
   
     decorateAudienceDetailCreateSetButton_(slide);
     decorateAudienceDetailCards_(slide);
-    injectAudienceMembersOperationalNote_(slide);
+
+    const obsoleteMembersNote = slide.querySelector(
+      "[data-audience-members-note]"
+    );
+
+    if (obsoleteMembersNote) {
+      obsoleteMembersNote.remove();
+    }
   }
   
   function decorateAudienceDetailCreateSetButton_(slide) {
@@ -15983,7 +16744,13 @@ function renderAudienceDetailActions_(audience) {
 }
 
 function renderAudienceDetailComposition_(audience) {
-  const condiciones = Array.isArray(audience.condiciones) ? audience.condiciones : [];
+  const condiciones = Array.isArray(audience.condiciones)
+    ? audience.condiciones
+    : (
+        Array.isArray(audience.condiciones_json)
+          ? audience.condiciones_json
+          : []
+      );
 
   return `
     <div class="pubUtmAudienceDetailCard__head">
@@ -16011,37 +16778,654 @@ function renderAudienceDetailComposition_(audience) {
   `;
 }
 
-function renderAudienceDetailMembers_(audience) {
-  return `
-    <div class="pubUtmAudienceDetailCard__head">
-      <div>
-        <div class="pubUtmCard__eyebrow">Miembros</div>
-        <h3>Resumen de miembros y ventas</h3>
+function renderAudienceDetailMembers_(audience, payload, errorMessage) {
+  const a = audience || {};
+
+  if (errorMessage) {
+    return `
+      <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+        <div class="pubUtmAudienceMembersHead__copy">
+          <div class="pubUtmCard__eyebrow">Miembros</div>
+          <h3>No se pudieron cargar los usuarios</h3>
+        </div>
       </div>
+
+      <div class="pubUtmAudienceMembersEmpty pubUtmAudienceMembersEmpty--error">
+        <strong>Error al consultar Supabase</strong>
+        <span>${escapeHtml_(String(errorMessage || "Error desconocido."))}</span>
+      </div>
+    `;
+  }
+
+  if (!payload) {
+    return `
+      <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+        <div class="pubUtmAudienceMembersHead__copy">
+          <div class="pubUtmCard__eyebrow">Miembros</div>
+          <h3>Cargando usuarios vinculados</h3>
+        </div>
+      </div>
+
+      <div class="pubUtmAudienceMembersLoading">
+        <div class="pubUtmSkeletonLine pubUtmSkeletonLine--lg"></div>
+        <div class="pubUtmSkeletonLine"></div>
+        <div class="pubUtmSkeletonLine pubUtmSkeletonLine--sm"></div>
+      </div>
+    `;
+  }
+
+  const summary = payload.summary || {};
+  const members = Array.isArray(payload.items)
+    ? payload.items
+    : [];
+
+  const filtered = filterAudienceDetailMembers_(
+    members,
+    STATE.audienceDetailMembersSearch
+  );
+
+  const total = Number(
+    summary.miembros_actuales_count ||
+    payload.total ||
+    members.length ||
+    a.cantidad_miembros ||
+    0
+  );
+
+  const ventas = Number(
+    summary.ventas_match_count ||
+    a.ventas_asociadas ||
+    0
+  );
+
+  const facturacion = Number(
+    summary.facturacion_total ||
+    a.facturacion_asociada ||
+    0
+  );
+
+  const displayName = buildAudienceDetailMembersName_(
+    a,
+    payload
+  );
+
+  return `
+    <div class="pubUtmAudienceDetailCard__head pubUtmAudienceMembersHead">
+      <div class="pubUtmAudienceMembersHead__copy">
+        <div class="pubUtmCard__eyebrow">
+          Miembros · ${formatInteger_(total)} usuarios
+        </div>
+
+        <h3>${escapeHtml_(displayName)}</h3>
+      </div>
+
+      ${renderAudienceDetailMembersHelp_(a, payload)}
     </div>
 
-    <div class="pubUtmAudienceDetailMiniGrid">
+    <div class="pubUtmAudienceDetailMiniGrid pubUtmAudienceMembersStats">
       <div class="pubUtmMiniStat">
-        <span class="pubUtmMiniStat__label">Miembros</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.cantidad_miembros || 0)}</strong>
+        <span class="pubUtmMiniStat__label">Usuarios</span>
+        <strong class="pubUtmMiniStat__value">
+          ${formatInteger_(total)}
+        </strong>
       </div>
 
       <div class="pubUtmMiniStat">
         <span class="pubUtmMiniStat__label">Ventas asociadas</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.ventas_asociadas || 0)}</strong>
+        <strong class="pubUtmMiniStat__value">
+          ${formatInteger_(ventas)}
+        </strong>
       </div>
 
       <div class="pubUtmMiniStat">
-        <span class="pubUtmMiniStat__label">Clientes únicos</span>
-        <strong class="pubUtmMiniStat__value">${formatInteger_(audience.clientes_unicos || 0)}</strong>
+        <span class="pubUtmMiniStat__label">Facturación</span>
+        <strong class="pubUtmMiniStat__value">
+          ${formatMoneyAr_(facturacion)}
+        </strong>
       </div>
     </div>
 
-    <p class="pubUtmPanelSlide__text" style="margin-top:14px;">
-      Esta primera versión muestra el resumen operativo. La tabla profunda de miembros se conectará luego
-      con un endpoint específico para no sobrecargar el dashboard principal.
-    </p>
+    <div class="pubUtmAudienceMembersToolbar">
+      <label class="pubUtmAudienceMembersSearch">
+        <span class="pubUtmAudienceMembersSearch__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle
+              cx="10.5"
+              cy="10.5"
+              r="6.5"
+              stroke="currentColor"
+              stroke-width="1.8"
+            ></circle>
+            <path
+              d="m15.5 15.5 4 4"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            ></path>
+          </svg>
+        </span>
+
+        <input
+          type="search"
+          data-audience-members-search
+          value="${escapeHtml_(STATE.audienceDetailMembersSearch || "")}"
+          placeholder="Buscar por nombre, correo o pedido"
+          autocomplete="off"
+          aria-label="Buscar usuarios de esta audiencia"
+        >
+      </label>
+
+      <span class="pubUtmAudienceMembersToolbar__count">
+        <strong data-audience-members-visible>
+          ${formatInteger_(filtered.length)}
+        </strong>
+        visibles
+      </span>
+    </div>
+
+    <div
+      class="pubUtmAudienceMembersList"
+      data-audience-members-list
+    >
+      ${renderAudienceDetailMemberRows_(filtered)}
+    </div>
   `;
+}
+
+function loadAudienceDetailMembersForSlide_(root, audience) {
+  const slide = root.querySelector(
+    "[data-pubutm-audience-detail-slide]"
+  );
+
+  if (!slide || !audience) return;
+
+  const audienciaId = String(
+    audience.audiencia_id ||
+    audience.codigo_audiencia ||
+    ""
+  ).trim();
+
+  const membersNode = slide.querySelector(
+    "[data-audience-detail-members]"
+  );
+
+  if (!audienciaId || !membersNode) return;
+
+  const requestId =
+    Number(STATE.audienceDetailMembersRequestId || 0) + 1;
+
+  STATE.audienceDetailMembersRequestId = requestId;
+  STATE.audienceDetailMembersPayload = null;
+  STATE.audienceDetailMembersSearch = "";
+
+  membersNode.innerHTML = renderAudienceDetailMembers_(
+    audience,
+    null,
+    null
+  );
+
+  loadPublicidadUtmMiembrosAudienciaSupabase_(
+    audienciaId,
+    null
+  )
+    .then(function (payload) {
+      const activeId = String(
+        slide.getAttribute("data-current-audience-id") || ""
+      ).trim();
+
+      if (
+        requestId !== STATE.audienceDetailMembersRequestId ||
+        activeId !== String(audience.audiencia_id || "").trim()
+      ) {
+        return;
+      }
+
+      if (!payload || payload.ok !== true) {
+        throw new Error(
+          payload && payload.error
+            ? payload.error
+            : "No se pudieron cargar los miembros."
+        );
+      }
+
+      STATE.audienceDetailMembersPayload = payload;
+
+      membersNode.innerHTML = renderAudienceDetailMembers_(
+        audience,
+        payload,
+        null
+      );
+
+      attachAudienceDetailMembersEvents_(root, audience);
+
+      const composition = slide.querySelector(
+        "[data-audience-detail-composition]"
+      );
+
+      if (
+        composition &&
+        Array.isArray(payload.condiciones) &&
+        payload.condiciones.length
+      ) {
+        composition.innerHTML = renderAudienceDetailComposition_(
+          Object.assign({}, audience, {
+            condiciones: payload.condiciones,
+            condiciones_json: payload.condiciones,
+            cantidad_condiciones: payload.condiciones.length
+          })
+        );
+      }
+
+      console.info(
+        "[Publicidad UTM] Miembros de audiencia cargados:",
+        audienciaId,
+        payload.total || 0
+      );
+    })
+    .catch(function (error) {
+      if (
+        requestId !== STATE.audienceDetailMembersRequestId
+      ) {
+        return;
+      }
+
+      membersNode.innerHTML = renderAudienceDetailMembers_(
+        audience,
+        null,
+        error && error.message
+          ? error.message
+          : String(error || "Error desconocido.")
+      );
+    });
+}
+
+function attachAudienceDetailMembersEvents_(root, audience) {
+  const slide = root.querySelector(
+    "[data-pubutm-audience-detail-slide]"
+  );
+
+  if (!slide) return;
+
+  const search = slide.querySelector(
+    "[data-audience-members-search]"
+  );
+
+  if (search) {
+    search.oninput = function () {
+      STATE.audienceDetailMembersSearch = String(
+        search.value || ""
+      ).trim().toLowerCase();
+
+      const payload =
+        STATE.audienceDetailMembersPayload || {};
+
+      const items = Array.isArray(payload.items)
+        ? payload.items
+        : [];
+
+      const filtered = filterAudienceDetailMembers_(
+        items,
+        STATE.audienceDetailMembersSearch
+      );
+
+      const list = slide.querySelector(
+        "[data-audience-members-list]"
+      );
+
+      const count = slide.querySelector(
+        "[data-audience-members-visible]"
+      );
+
+      if (list) {
+        list.innerHTML =
+          renderAudienceDetailMemberRows_(filtered);
+        list.scrollTop = 0;
+      }
+
+      if (count) {
+        count.textContent = formatInteger_(
+          filtered.length
+        );
+      }
+    };
+  }
+
+  const helpButton = slide.querySelector(
+    "[data-audience-members-help]"
+  );
+
+  if (helpButton) {
+    helpButton.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const wrap = helpButton.closest(
+        ".pubUtmAudienceMembersHelp"
+      );
+
+      if (!wrap) return;
+
+      const willOpen = !wrap.classList.contains("is-open");
+
+      wrap.classList.toggle("is-open", willOpen);
+      helpButton.setAttribute(
+        "aria-expanded",
+        willOpen ? "true" : "false"
+      );
+    };
+
+    helpButton.onkeydown = function (event) {
+      if (event.key !== "Escape") return;
+
+      const wrap = helpButton.closest(
+        ".pubUtmAudienceMembersHelp"
+      );
+
+      if (wrap) {
+        wrap.classList.remove("is-open");
+      }
+
+      helpButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      helpButton.blur();
+    };
+  }
+}
+
+function buildAudienceDetailMembersName_(audience, payload) {
+  const detail = Object.assign(
+    {},
+    audience || {},
+    (payload && payload.audiencia) || {}
+  );
+
+  const rawName = String(
+    detail.nombre_audiencia || ""
+  ).trim();
+
+  const id = String(
+    detail.audiencia_id ||
+    detail.codigo_audiencia ||
+    ""
+  ).trim();
+
+  const genericName =
+    !rawName ||
+    rawName === id ||
+    /^AUD-/i.test(rawName);
+
+  if (!genericName) {
+    return buildAudienceDetailReadableName_(detail);
+  }
+
+  const condiciones = Array.isArray(payload.condiciones)
+    ? payload.condiciones
+    : (
+        Array.isArray(detail.condiciones_json)
+          ? detail.condiciones_json
+          : []
+      );
+
+  const values = condiciones
+    .map(function (condition) {
+      return String(
+        condition.valor_utm || ""
+      ).trim();
+    })
+    .filter(Boolean)
+    .map(function (value) {
+      return buildAudienceDetailValueLabel_(
+        humanizeLabel_(value)
+      );
+    });
+
+  if (values.length) {
+    return values.join(" · ");
+  }
+
+  return (
+    detail.codigo_audiencia ||
+    detail.audiencia_id ||
+    "Audiencia automática"
+  );
+}
+
+function renderAudienceDetailMembersHelp_(audience, payload) {
+  const condiciones = Array.isArray(payload.condiciones)
+    ? payload.condiciones
+    : (
+        Array.isArray(audience.condiciones_json)
+          ? audience.condiciones_json
+          : (
+              Array.isArray(audience.condiciones)
+                ? audience.condiciones
+                : []
+            )
+      );
+
+  return `
+    <div class="pubUtmAudienceMembersHelp">
+      <button
+        type="button"
+        class="pubUtmAudienceMembersHelp__button"
+        data-audience-members-help
+        aria-label="Ver parámetros de esta audiencia"
+        aria-expanded="false"
+        aria-controls="pubUtmAudienceMembersTooltip"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.8"
+          ></circle>
+          <path
+            d="M9.9 9.2a2.3 2.3 0 0 1 4.4 1c0 1.8-2.3 2-2.3 3.6"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          ></path>
+          <circle
+            cx="12"
+            cy="17.2"
+            r="1"
+            fill="currentColor"
+          ></circle>
+        </svg>
+      </button>
+
+      <div
+        id="pubUtmAudienceMembersTooltip"
+        class="pubUtmAudienceMembersTooltip"
+        role="tooltip"
+      >
+        <strong>Parámetros de la audiencia</strong>
+
+        ${
+          condiciones.length
+            ? condiciones.map(function (condition) {
+                return `
+                  <div class="pubUtmAudienceMembersTooltip__row">
+                    <span>
+                      ${escapeHtml_(condition.campo_utm || "Parámetro")}
+                    </span>
+                    <em>
+                      ${escapeHtml_(condition.valor_utm || "—")}
+                    </em>
+                  </div>
+                `;
+              }).join("")
+            : `
+              <p>
+                No hay parámetros visibles para esta audiencia.
+              </p>
+            `
+        }
+      </div>
+    </div>
+  `;
+}
+
+function filterAudienceDetailMembers_(members, query) {
+  const list = Array.isArray(members)
+    ? members
+    : [];
+
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
+
+  if (!q) return list;
+
+  return list.filter(function (member) {
+    const haystack = [
+      member.nombre_cliente,
+      member.nombre,
+      member.email_cliente,
+      member.email,
+      member.cliente_key,
+      member.member_id,
+      member.numero_pedido,
+      member.pedido,
+      member.primera_numero_pedido,
+      member.ultimo_numero_pedido
+    ].join(" ").toLowerCase();
+
+    return haystack.indexOf(q) !== -1;
+  });
+}
+
+function renderAudienceDetailMemberRows_(members) {
+  const list = Array.isArray(members)
+    ? members
+    : [];
+
+  if (!list.length) {
+    return `
+      <div class="pubUtmAudienceMembersEmpty">
+        <strong>Sin resultados</strong>
+        <span>
+          No hay usuarios que coincidan con la búsqueda actual.
+        </span>
+      </div>
+    `;
+  }
+
+  return list.map(function (member) {
+    const name = String(
+      member.nombre_cliente ||
+      member.nombre ||
+      member.email_cliente ||
+      member.email ||
+      "Usuario sin nombre"
+    ).trim();
+
+    const email = String(
+      member.email_cliente ||
+      member.email ||
+      "Sin correo"
+    ).trim();
+
+    const pedido = String(
+      member.numero_pedido ||
+      member.ultimo_numero_pedido ||
+      member.primera_numero_pedido ||
+      member.pedido ||
+      ""
+    ).trim();
+
+    const ventas = Number(
+      member.ventas_asociadas ||
+      member.ventas_match_count ||
+      0
+    );
+
+    const facturacion = Number(
+      member.facturacion_asociada ||
+      member.facturacion_total ||
+      member.monto_total ||
+      0
+    );
+
+    const initial = (
+      name ||
+      email ||
+      "U"
+    ).charAt(0).toUpperCase();
+
+    const avatarColor =
+      getAudienceDetailMemberAvatarColor_(member);
+
+    return `
+      <article class="pubUtmAudienceMemberRow">
+        <div
+          class="pubUtmAudienceMemberRow__avatar"
+          style="--pub-utm-audience-avatar:${avatarColor};"
+          aria-hidden="true"
+        >
+          ${escapeHtml_(initial || "U")}
+        </div>
+
+        <div class="pubUtmAudienceMemberRow__identity">
+          <strong>${escapeHtml_(name)}</strong>
+          <span>${escapeHtml_(email)}</span>
+        </div>
+
+        <div class="pubUtmAudienceMemberRow__details">
+          <span>
+            ${pedido ? escapeHtml_(pedido) : "Sin pedido"}
+            · ${formatInteger_(ventas)}
+            ${ventas === 1 ? "venta" : "ventas"}
+          </span>
+
+          <strong>${formatMoneyAr_(facturacion)}</strong>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function getAudienceDetailMemberAvatarColor_(member) {
+  const palette = [
+    "#2479FF",
+    "#7A5AF8",
+    "#12B76A",
+    "#F79009",
+    "#E54D8C",
+    "#0BA5EC",
+    "#F04438",
+    "#667085",
+    "#875BF7",
+    "#039855"
+  ];
+
+  const seed = String(
+    (member && (
+      member.email_cliente ||
+      member.email ||
+      member.nombre_cliente ||
+      member.nombre ||
+      member.cliente_key ||
+      member.member_id
+    )) ||
+    "usuario"
+  );
+
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (
+      (hash * 31) +
+      seed.charCodeAt(index)
+    ) >>> 0;
+  }
+
+  return palette[hash % palette.length];
 }
 
 function renderAudienceDetailOrigin_(audience) {

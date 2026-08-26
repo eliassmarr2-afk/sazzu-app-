@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="../css/productos-combos.css">
   <link rel="stylesheet" href="../css/productos-extras.css">
   <link rel="stylesheet" href="../css/productos-extras-selector.css">
+  <link rel="stylesheet" href="../css/productos-rentabilidad.css">
   <link rel="stylesheet" href="../css/components/dropdowns.css">
 </head>
 
@@ -546,18 +547,356 @@ style="display:none;"
           <!-- PANEL: RENTABILIDAD -->
           <section
             id="prodPanelRentabilidad"
-            class="prodPanelTab"
+            class="prodPanelTab prodRentPanel"
             role="tabpanel"
             aria-labelledby="prodTabRentabilidad"
             style="display:none;"
           >
-            <div class="prodPlaceholderCard">
-              <div class="prodPlaceholderCard__eyebrow">Próxima capa operativa</div>
-              <h3 class="prodPlaceholderCard__title">Rentabilidad</h3>
-              <p class="prodPlaceholderCard__text">
-                Aquí vamos a cruzar estructura de costos, márgenes, ofertas y escenarios reales por tipo de venta.
-              </p>
+            <div class="prodRentShell">
+
+              <div class="prodRentHeader">
+                <div>
+                  <div class="prodRentHeader__eyebrow">Performance comercial</div>
+                  <h2 class="prodRentHeader__title">Rentabilidad por oferta y tipo de venta</h2>
+                  <p class="prodRentHeader__sub">
+                    Lectura operativa para entender qué formato vende mejor: unitario, cantidad o bundle.
+                  </p>
+                </div>
+
+                <div class="prodRentHeader__badge">Modo análisis · UI inicial</div>
+              </div>
+
+              <div class="prodRentFilters">
+                <div class="prodRentFilter">
+                  <label for="prodRentDateRange">Rango</label>
+                  <select id="prodRentDateRange">
+                    <option value="all">Todos los existentes</option>
+                    <option value="today">Hoy</option>
+                    <option value="7d">Últimos 7 días</option>
+                    <option value="30d">Últimos 30 días</option>
+                    <option value="custom">Personalizado</option>
+                  </select>
+                </div>
+
+                <div class="prodRentFilter">
+                  <label for="prodRentTypeFilter">Tipo de venta</label>
+                  <select id="prodRentTypeFilter">
+                    <option value="all">Todos</option>
+                    <option value="unitario">Unitario</option>
+                    <option value="cantidad">Cantidad</option>
+                    <option value="bundle">Bundle</option>
+                  </select>
+                </div>
+
+                <div class="prodRentFilter">
+                  <label for="prodRentChannelFilter">Canal / UTM</label>
+                  <select id="prodRentChannelFilter">
+                    <option value="all">Todos</option>
+                    <option value="meta">Meta Ads</option>
+                    <option value="organic">Orgánico</option>
+                    <option value="none">Sin datos</option>
+                  </select>
+                </div>
+              </div>
+
+              <section class="prodRentKpiGrid" aria-label="KPIs de performance comercial">
+                <article class="prodRentKpiCard">
+                  <div class="prodRentKpiCard__label">Pedidos analizados</div>
+                  <div class="prodRentKpiCard__value">124</div>
+                  <div class="prodRentKpiCard__hint">Ventas clasificadas por tipo</div>
+                </article>
+
+                <article class="prodRentKpiCard prodRentKpiCard--unit">
+                  <div class="prodRentKpiCard__label">Unitarios</div>
+                  <div class="prodRentKpiCard__value">58</div>
+                  <div class="prodRentKpiCard__hint">$ 1.240.000 · 46,7%</div>
+                </article>
+
+                <article class="prodRentKpiCard prodRentKpiCard--qty">
+                  <div class="prodRentKpiCard__label">Cantidad</div>
+                  <div class="prodRentKpiCard__value">31</div>
+                  <div class="prodRentKpiCard__hint">$ 890.000 · 25,0%</div>
+                </article>
+
+                <article class="prodRentKpiCard prodRentKpiCard--bundle">
+                  <div class="prodRentKpiCard__label">Bundles</div>
+                  <div class="prodRentKpiCard__value">35</div>
+                  <div class="prodRentKpiCard__hint">$ 1.730.000 · 28,3%</div>
+                </article>
+              </section>
+
+              <section class="prodRentGrid">
+                <article class="prodRentCard prodRentCard--chart">
+                  <div class="prodRentCard__top">
+                    <div>
+                      <h3>Facturación por tipo de venta</h3>
+                      <p>Comparación rápida entre venta unitaria, cantidad y bundle.</p>
+                    </div>
+
+                    <div class="prodRentMiniSwitch">
+                      <button type="button" class="is-active">Facturación</button>
+                      <button type="button">Pedidos</button>
+                    </div>
+                  </div>
+
+                  <div class="prodRentBars">
+                    <div class="prodRentBar">
+                      <div class="prodRentBar__head">
+                        <span>Bundle</span>
+                        <strong>$ 1.730.000</strong>
+                      </div>
+                      <div class="prodRentBar__track"><span style="width: 100%"></span></div>
+                    </div>
+
+                    <div class="prodRentBar">
+                      <div class="prodRentBar__head">
+                        <span>Unitario</span>
+                        <strong>$ 1.240.000</strong>
+                      </div>
+                      <div class="prodRentBar__track"><span style="width: 72%"></span></div>
+                    </div>
+
+                    <div class="prodRentBar">
+                      <div class="prodRentBar__head">
+                        <span>Cantidad</span>
+                        <strong>$ 890.000</strong>
+                      </div>
+                      <div class="prodRentBar__track"><span style="width: 51%"></span></div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="prodRentCard">
+                  <div class="prodRentCard__top">
+                    <div>
+                      <h3>Ticket promedio por tipo</h3>
+                      <p>Qué estructura empuja mejor el valor por pedido.</p>
+                    </div>
+                  </div>
+
+                  <div class="prodRentTicketList">
+                    <div><span>Bundle</span><strong>$ 49.428</strong></div>
+                    <div><span>Cantidad</span><strong>$ 28.709</strong></div>
+                    <div><span>Unitario</span><strong>$ 21.379</strong></div>
+                  </div>
+                </article>
+              </section>
+
+              <section class="prodRentTwoCols">
+                <article class="prodRentCard">
+                  <div class="prodRentCard__top">
+                    <div>
+                      <h3>Top ofertas por facturación</h3>
+                      <p>Ranking operativo de ofertas más efectivas.</p>
+                    </div>
+                  </div>
+
+                  <div class="prodRentOfferRank">
+                    <div class="prodRentRankItem">
+                      <div>
+                        <strong>OFR-000005 · Mundialista Pack x3</strong>
+                        <span>Bundle · 18 pedidos</span>
+                      </div>
+                      <b>$ 920.000</b>
+                    </div>
+
+                    <div class="prodRentRankItem">
+                      <div>
+                        <strong>OFR-000003 · Gatos Rascador + Pelota</strong>
+                        <span>Bundle · 12 pedidos</span>
+                      </div>
+                      <b>$ 610.000</b>
+                    </div>
+
+                    <div class="prodRentRankItem">
+                      <div>
+                        <strong>Venta unitaria · PEL-001</strong>
+                        <span>Unitario · 21 pedidos</span>
+                      </div>
+                      <b>$ 420.000</b>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="prodRentCard">
+                  <div class="prodRentCard__top">
+                    <div>
+                      <h3>Fuente / UTM por facturación</h3>
+                      <p>Lectura prevista para cruzar performance con campañas.</p>
+                    </div>
+                  </div>
+
+                  <div class="prodRentSourceList">
+                    <div><span>Meta Ads</span><strong>$ 1.800.000</strong></div>
+                    <div><span>Orgánico</span><strong>$ 700.000</strong></div>
+                    <div><span>Sin UTM</span><strong>$ 400.000</strong></div>
+                  </div>
+                </article>
+              </section>
+
+              <article class="prodRentCard prodRentSalesCard">
+                <div class="prodRentCard__top">
+                  <div>
+                    <h3>Últimas ventas analizadas</h3>
+                    <p>5 filas visibles. Click para abrir composición comercial de la venta.</p>
+                  </div>
+                </div>
+
+                <div class="prodRentTableWrap">
+                  <table class="prodRentTable">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Pedido</th>
+                        <th>Tipo</th>
+                        <th>Oferta / SKU</th>
+                        <th>Monto neto</th>
+                        <th>Canal</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr data-prod-rent-sale="1024">
+                        <td>08/07/2026</td>
+                        <td>#1024</td>
+                        <td><span class="prodRentBadge prodRentBadge--bundle">Bundle</span></td>
+                        <td>OFR-000005 · Mundialista Pack x3</td>
+                        <td>$ 68.990</td>
+                        <td>Meta / FB</td>
+                        <td><button type="button" class="prodRentViewBtn">Ver</button></td>
+                      </tr>
+
+                      <tr data-prod-rent-sale="1023">
+                        <td>08/07/2026</td>
+                        <td>#1023</td>
+                        <td><span class="prodRentBadge prodRentBadge--unit">Unitario</span></td>
+                        <td>PEL-001 · Pelota interactiva</td>
+                        <td>$ 19.990</td>
+                        <td>Orgánico</td>
+                        <td><button type="button" class="prodRentViewBtn">Ver</button></td>
+                      </tr>
+
+                      <tr data-prod-rent-sale="1022">
+                        <td>07/07/2026</td>
+                        <td>#1022</td>
+                        <td><span class="prodRentBadge prodRentBadge--qty">Cantidad</span></td>
+                        <td>OFR-000004 · 3x2 Pelota interactiva</td>
+                        <td>$ 44.990</td>
+                        <td>Meta / IG</td>
+                        <td><button type="button" class="prodRentViewBtn">Ver</button></td>
+                      </tr>
+
+                      <tr data-prod-rent-sale="1021">
+                        <td>07/07/2026</td>
+                        <td>#1021</td>
+                        <td><span class="prodRentBadge prodRentBadge--bundle">Bundle</span></td>
+                        <td>OFR-000003 · Gatos Rascador + Pelota</td>
+                        <td>$ 52.490</td>
+                        <td>Sin UTM</td>
+                        <td><button type="button" class="prodRentViewBtn">Ver</button></td>
+                      </tr>
+
+                      <tr data-prod-rent-sale="1020">
+                        <td>06/07/2026</td>
+                        <td>#1020</td>
+                        <td><span class="prodRentBadge prodRentBadge--unit">Unitario</span></td>
+                        <td>RASCADOR-40X100-001</td>
+                        <td>$ 29.990</td>
+                        <td>Orgánico</td>
+                        <td><button type="button" class="prodRentViewBtn">Ver</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
             </div>
+
+            <div class="prodRentDrawerOverlay" id="prodRentDrawerOverlay"></div>
+
+            <aside class="prodRentDrawer" id="prodRentDrawer" aria-hidden="true">
+              <div class="prodRentDrawer__head">
+                <div>
+                  <div class="prodRentDrawer__eyebrow">Detalle de venta</div>
+                  <h3 id="prodRentDrawerTitle">Pedido #1024</h3>
+                </div>
+
+                <button type="button" class="prodRentDrawer__close" id="prodRentDrawerCloseBtn" aria-label="Cerrar">×</button>
+              </div>
+
+              <div class="prodRentDrawer__body">
+                <div class="prodRentDrawer__summary">
+                  <span class="prodRentBadge prodRentBadge--bundle">Bundle</span>
+                  <span class="prodRentBadge">Meta Ads</span>
+                  <span class="prodRentBadge">UTM detectado</span>
+                  <span class="prodRentBadge">Snapshot histórico</span>
+                </div>
+
+                <section class="prodRentDrawerBlock">
+                  <h4>Identidad de la venta</h4>
+                  <div class="prodRentInfoGrid">
+                    <div><span>Pedido Shopify</span><strong>#1024</strong></div>
+                    <div><span>Monto neto</span><strong>$ 68.990</strong></div>
+                    <div><span>Estado</span><strong>Pagado</strong></div>
+                    <div><span>Fecha</span><strong>08/07/2026</strong></div>
+                  </div>
+                </section>
+
+                <section class="prodRentDrawerBlock">
+                  <h4>Oferta asociada</h4>
+                  <div class="prodRentCodeList">
+                    <div><span>commercial_offer_id</span><code>d3e2d5b5-...</code></div>
+                    <div><span>codigo_oferta</span><code>OFR-000005</code></div>
+                    <div><span>offer_set_id</span><code>OFERTA-MUNDIALISTA-2026</code></div>
+                    <div><span>id_variante_shopify</span><code>48590367850728</code></div>
+                  </div>
+                </section>
+
+                <section class="prodRentDrawerBlock">
+                  <h4>Composición</h4>
+                  <table class="prodRentMiniTable">
+                    <thead>
+                      <tr>
+                        <th>SKU</th>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Costo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>PEL-001</td>
+                        <td>Pelota interactiva</td>
+                        <td>1</td>
+                        <td>$ 4.500</td>
+                      </tr>
+                      <tr>
+                        <td>RASC-001</td>
+                        <td>Rascador gato</td>
+                        <td>1</td>
+                        <td>$ 8.000</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+                <section class="prodRentDrawerBlock">
+                  <h4>Parámetros URL / UTM</h4>
+                  <div class="prodRentCodeList">
+                    <div><span>utm_source</span><code>meta</code></div>
+                    <div><span>utm_medium</span><code>paid_social</code></div>
+                    <div><span>utm_campaign</span><code>mundialista_pack_x3</code></div>
+                    <div><span>utm_content</span><code>creative_01</code></div>
+                  </div>
+                </section>
+
+                <section class="prodRentDrawerBlock prodRentDrawerBlock--diagnostic">
+                  <h4>Diagnóstico de resolución</h4>
+                  <p>
+                    Esta venta resolvió por ID Variante Shopify → Oferta comercial → Conjunto operativo → Componentes SKU.
+                  </p>
+                </section>
+              </div>
+            </aside>
           </section>
       
 

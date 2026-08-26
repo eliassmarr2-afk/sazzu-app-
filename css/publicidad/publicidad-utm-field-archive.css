@@ -1,0 +1,488 @@
+/* =========================================================
+   INICIO · PUB_UTM_FIELD_ARCHIVE_MENU_V1_20260725
+   Menú contextual y modal de archivado de campos UTM
+   ========================================================= */
+
+.pubUtmParamCard,
+.pubUtmParamCard__actions {
+  overflow: visible;
+}
+
+.pubUtmFieldArchiveMore {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+}
+
+.pubUtmFieldArchiveMore.is-open {
+  z-index: 4;
+}
+
+.pubUtmFieldArchiveMore__trigger {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #667085;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.pubUtmFieldArchiveMore__trigger:hover,
+.pubUtmFieldArchiveMore.is-open
+.pubUtmFieldArchiveMore__trigger {
+  border-color: rgba(36, 121, 255, 0.3);
+  background: #f5f9ff;
+  color: #2479ff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+}
+
+.pubUtmFieldArchiveMore__trigger svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+
+.pubUtmFieldArchiveMore__menu[hidden] {
+  display: none !important;
+}
+
+.pubUtmFieldArchiveMore__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: 180px;
+  padding: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow:
+    0 18px 46px rgba(15, 23, 42, 0.16),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+  z-index: 50;
+}
+
+.pubUtmFieldArchiveMore__delete {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 780;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+.pubUtmFieldArchiveMore__delete:hover {
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
+.pubUtmFieldArchiveMore__delete svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.pubUtmFieldArchiveOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+}
+
+.pubUtmFieldArchiveOverlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.pubUtmFieldArchiveDialog {
+  width: min(620px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  background: #242424;
+  color: #ffffff;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.52),
+    0 8px 28px rgba(0, 0, 0, 0.3);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.pubUtmFieldArchiveDialog__top {
+  min-height: 42px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pubUtmFieldArchiveDialog__close {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pubUtmFieldArchiveDialog__close:hover {
+  color: #ffffff;
+}
+
+.pubUtmFieldArchiveDialog__body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 24px 20px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.pubUtmFieldArchiveDialog__icon {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(255, 255, 255, 0.72);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pubUtmFieldArchiveDialog__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pubUtmFieldArchiveDialog__content {
+  min-width: 0;
+}
+
+.pubUtmFieldArchiveDialog__content h3 {
+  margin: 1px 0 5px;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 780;
+}
+
+.pubUtmFieldArchiveDialog__content > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pubUtmFieldArchiveDialog__details {
+  margin-top: 16px;
+}
+
+.pubUtmFieldArchiveDialog__actions {
+  min-height: 62px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.pubUtmFieldArchiveDialog__btn {
+  min-height: 38px;
+  padding: 9px 15px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.pubUtmFieldArchiveDialog__btn--secondary {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.pubUtmFieldArchiveDialog__btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+.pubUtmFieldArchiveDialog__btn--danger {
+  border-color: #ef4444;
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.pubUtmFieldArchiveDialog__btn--danger:hover {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+.pubUtmFieldArchiveDialog__btn[disabled] {
+  opacity: 0.58;
+  cursor: wait;
+}
+
+.pubUtmFieldArchiveLoading,
+.pubUtmFieldArchiveError {
+  padding: 13px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.pubUtmFieldArchiveLoading {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pubUtmFieldArchiveError {
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca;
+}
+
+.pubUtmFieldArchiveSummary {
+  display: grid;
+  gap: 13px;
+}
+
+.pubUtmFieldArchiveSummary__field {
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 3px;
+}
+
+.pubUtmFieldArchiveSummary__field span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+}
+
+.pubUtmFieldArchiveSummary__field strong {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.pubUtmFieldArchiveSummary__field code {
+  color: #93b9ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  word-break: break-word;
+}
+
+.pubUtmFieldArchiveSummary__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pubUtmFieldArchiveSummary__grid > div {
+  min-width: 0;
+  min-height: 58px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.032);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.pubUtmFieldArchiveSummary__grid span {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.pubUtmFieldArchiveSummary__grid strong {
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 820;
+}
+
+.pubUtmFieldArchiveSummary__notice {
+  padding: 12px 13px;
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 7px;
+  background: rgba(245, 158, 11, 0.075);
+}
+
+.pubUtmFieldArchiveSummary__notice strong {
+  display: block;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.pubUtmFieldArchiveSummary__notice p {
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, 0.67);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@media (max-width: 620px) {
+  .pubUtmFieldArchiveOverlay {
+    padding: 12px;
+  }
+
+  .pubUtmFieldArchiveDialog {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+  }
+
+  .pubUtmFieldArchiveDialog__body {
+    padding: 18px;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .pubUtmFieldArchiveDialog__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pubUtmFieldArchiveSummary__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pubUtmFieldArchiveDialog__actions {
+    padding: 12px;
+  }
+
+  .pubUtmFieldArchiveDialog__btn {
+    flex: 1;
+  }
+}
+
+/* =========================================================
+   FIN · PUB_UTM_FIELD_ARCHIVE_MENU_V1_20260725
+   ========================================================= */
+
+/* =========================================================
+   PUB_UTM_VALUE_ARCHIVE_ACTIONS_V1
+   Acciones de valores · Editar + archivar.
+   No agrega columnas ni modifica la tabla.
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmValueActionCell {
+  white-space: nowrap !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueActions {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+
+  white-space: nowrap !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn {
+  width: 30px !important;
+  height: 30px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex: 0 0 30px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+
+  background: transparent !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background-color 0.14s ease,
+    transform 0.14s ease !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn:hover {
+  background: rgba(234, 51, 35, 0.09) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn:active {
+  transform: scale(0.95) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn:focus-visible {
+  outline: 2px solid rgba(234, 51, 35, 0.35) !important;
+  outline-offset: 2px !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn svg {
+  width: 18px !important;
+  height: 18px !important;
+
+  display: block !important;
+  flex: 0 0 18px !important;
+}
+

@@ -68,7 +68,11 @@
               <!-- Head -->
               <div class="u-row u-row--between u-row--center" style="gap:12px;">
                 <div>
-                  <div class="u-sectionLabel">CASHFLOW</div>
+                  <div class="u-sectionLabel">MOVIMIENTOS DE COBRO</div>
+                  <div class="finChartTitle">Cobros operativos por canal</div>
+                  <div class="u-muted finChartSub" style="margin-top:4px;">
+                    Separación entre cobros financieros, contra-entrega e intervenidos.
+                  </div>
                   <div class="u-muted" style="margin-top:4px;" id="finRangeLabel">Rango: —</div>
                 </div>
 
@@ -102,25 +106,35 @@
               </div>
 
               <!-- KPIs arriba -->
-              <div class="grid grid--4" style="margin-top:14px;">
+              <div class="grid grid--5 finMovementsKpiGrid" style="margin-top:14px;">
                 <div class="u-miniStat">
-                  <div class="u-muted">Cashflow general</div>
+                  <div class="u-muted">Bruto Operativo</div>
                   <div class="u-bigNum" id="kpiFinBrutoN">$ 0</div>
+                  <div class="finMiniHint">Cobros vigentes sin intervenidos.</div>
                 </div>
 
                 <div class="u-miniStat">
-                  <div class="u-muted">Neto esperado a ingresar</div>
-                  <div class="u-bigNum" id="kpiFinNetoV">$ 0</div>
+                  <div class="u-muted">Bruto COD</div>
+                  <div class="u-bigNum" id="kpiFinBrutoCOD">$ 0</div>
+                  <div class="finMiniHint">Contra-entrega antes de logística.</div>
+                </div>
+
+                <div class="u-miniStat">
+                  <div class="u-muted">Bruto Financieros</div>
+                  <div class="u-bigNum" id="kpiFinBrutoElectronic">$ 0</div>
+                  <div class="finMiniHint">Mercado Pago / banco / tarjeta.</div>
                 </div>
 
                 <div class="u-miniStat">
                   <div class="u-muted">Costo financiero promedio</div>
                   <div class="u-bigNum" id="kpiFinRetU">0%</div>
+                  <div class="finMiniHint">Cuotas / financiación.</div>
                 </div>
 
                 <div class="u-miniStat">
-                  <div class="u-muted">Comisión / retención promedio</div>
+                  <div class="u-muted">Costo por cobro promedio</div>
                   <div class="u-bigNum" id="kpiFinRetW">0%</div>
+                  <div class="finMiniHint">Comisión de cobro.</div>
                 </div>
               </div>
 
@@ -130,13 +144,12 @@
           
           <!-- Leyenda -->
           <div class="u-row u-row--center" style="gap:16px; margin-top:10px; flex-wrap:wrap;">
-            <div class="u-legend"><span class="u-dot u-dot--proc"></span> Cashflow diario (Procesado)</div>
-            <div class="u-legend"><span class="u-dot u-dot--ma"></span> Media móvil 7d</div>
-            <div class="u-legend"><span class="u-dot u-dot--pend"></span> A cobrar (Pendiente)</div>
-            <div class="u-legend"><span class="u-dot u-dot--int"></span> Intervenida</div>
-          </div>
+             <div class="u-legend"><span class="u-dot u-dot--fin"></span> Financieros</div>
+             <div class="u-legend"><span class="u-dot u-dot--cod"></span> COD / Contra-entrega</div>
+             <div class="u-legend"><span class="u-dot u-dot--int"></span> Intervenidos</div>
+           </div>
 
-          <div class="u-muted" style="margin-top:8px;">Fuente: Supabase Finanzas · Shopify / Mercado Pago / COD.</div>
+          <div class="u-muted" id="finFootnote" style="margin-top:8px;">Fuente: Supabase Finanzas · Shopify / Mercado Pago / COD.</div>
         </div>
 
       </div>
@@ -536,5 +549,7 @@ aria-label="Abrir slide de costos de stock"
 
 <!-- Módulo específico del panel Finanzas -->
 <script src="../js/finanzas.js"></script>
+<script src="../js/finanzas-movimientos-v2-final.js?v=20260709_01"></script>
+<script src="../js/finanzas-v3.js?v=20260811_01"></script>
       </body>
       </html>

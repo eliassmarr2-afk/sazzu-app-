@@ -1,0 +1,378 @@
+/* ==========================================================
+   Protocol Data · Confirmación de entrega
+   Réplica visual de los modales operativos existentes
+   ========================================================== */
+
+html.logDeliveryConfirmLock,
+body.logDeliveryConfirmLock {
+  overflow: hidden !important;
+}
+
+.logDeliveryConfirm {
+  position: fixed;
+  inset: 0;
+  z-index: 99992;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(3px);
+  font-family: inherit;
+}
+
+.logDeliveryConfirm.is-open {
+  display: flex;
+}
+
+.logDeliveryConfirm__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.logDeliveryConfirm__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(500px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 5px;
+  background: #242424;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  color: #fff;
+}
+
+.logDeliveryConfirm__top {
+  height: 38px;
+  padding: 0 12px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1f1f1f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logDeliveryConfirm__caption {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.logDeliveryConfirm__close {
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.logDeliveryConfirm__close:hover,
+.logDeliveryConfirm__close:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  outline: none;
+}
+
+.logDeliveryConfirm__content {
+  max-height: calc(100vh - 150px);
+  padding: 22px 22px 18px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  column-gap: 16px;
+  overflow-y: auto;
+}
+
+.logDeliveryConfirm__icon {
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.78);
+  box-shadow: none;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.logDeliveryConfirm__dialog[data-mode="success"]
+.logDeliveryConfirm__icon {
+  border-color: rgba(61, 220, 132, 0.24);
+  background: rgba(61, 220, 132, 0.11);
+  color: #7ee2a8;
+}
+
+.logDeliveryConfirm__eyebrow {
+  display: none;
+}
+
+.logDeliveryConfirm__title {
+  grid-column: 2;
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: normal;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.logDeliveryConfirm__description {
+  grid-column: 2;
+  max-width: none;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.70);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.logDeliveryConfirm__card {
+  grid-column: 2;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.logDeliveryConfirm__cardTitle {
+  padding: 10px 11px 8px;
+  border-bottom: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.logDeliveryConfirm__rows {
+  display: grid;
+  gap: 7px;
+  padding: 0 10px 10px;
+}
+
+.logDeliveryConfirm__row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.75fr) minmax(0, 1.25fr);
+  gap: 12px;
+  align-items: center;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.logDeliveryConfirm__row span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.logDeliveryConfirm__row strong {
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.logDeliveryConfirm__notice {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  margin-top: 9px;
+  padding: 10px 11px;
+  border: 1px solid rgba(36, 121, 255, 0.42);
+  border-radius: 5px;
+  background: rgba(36, 121, 255, 0.10);
+}
+
+.logDeliveryConfirm__noticeIcon {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: rgba(36, 121, 255, 0.15);
+  color: #73a0ff;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.logDeliveryConfirm__notice strong {
+  display: block;
+  margin: 0 0 3px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.logDeliveryConfirm__notice p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.50);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.logDeliveryConfirm__notice--warning {
+  border-color: rgba(236, 157, 48, 0.32);
+  background: rgba(236, 157, 48, 0.08);
+}
+
+.logDeliveryConfirm__notice--warning
+.logDeliveryConfirm__noticeIcon {
+  background: rgba(236, 157, 48, 0.13);
+  color: #eab15d;
+}
+
+.logDeliveryConfirm__notice--success {
+  border-color: rgba(61, 220, 132, 0.24);
+  background: rgba(61, 220, 132, 0.08);
+}
+
+.logDeliveryConfirm__notice--success
+.logDeliveryConfirm__noticeIcon {
+  background: rgba(61, 220, 132, 0.11);
+  color: #7ee2a8;
+}
+
+.logDeliveryConfirm__error {
+  grid-column: 2;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ff9a9a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.logDeliveryConfirm__actions {
+  grid-column: 1 / -1;
+  margin: 18px -22px -18px;
+  padding: 12px 16px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.logDeliveryConfirm__actions--single {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logDeliveryConfirm__button {
+  appearance: none;
+  width: auto;
+  min-width: 0;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.logDeliveryConfirm__button:hover:not(:disabled),
+.logDeliveryConfirm__button:focus-visible:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.20);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: none;
+  transform: none;
+}
+
+.logDeliveryConfirm__button--primary {
+  border-color: #2479ff;
+  background: #2479ff;
+  box-shadow: none;
+  color: #fff;
+}
+
+.logDeliveryConfirm__button--primary:hover:not(:disabled),
+.logDeliveryConfirm__button--primary:focus-visible:not(:disabled) {
+  border-color: #2479ff;
+  background: #2479ff;
+  color: #fff;
+}
+
+.logDeliveryConfirm__button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+@media (max-width: 620px) {
+  .logDeliveryConfirm {
+    padding: 16px;
+  }
+
+  .logDeliveryConfirm__dialog {
+    width: min(500px, calc(100vw - 24px));
+    border-radius: 5px;
+  }
+
+  .logDeliveryConfirm__content {
+    grid-template-columns: 1fr;
+    padding: 18px 18px 16px;
+  }
+
+  .logDeliveryConfirm__icon {
+    display: none;
+  }
+
+  .logDeliveryConfirm__title,
+  .logDeliveryConfirm__description,
+  .logDeliveryConfirm__card,
+  .logDeliveryConfirm__notice,
+  .logDeliveryConfirm__error {
+    grid-column: 1;
+  }
+
+  .logDeliveryConfirm__row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .logDeliveryConfirm__row strong {
+    text-align: left;
+  }
+
+  .logDeliveryConfirm__actions {
+    margin:
+      18px -18px -16px;
+    padding:
+      12px 16px 16px;
+  }
+}

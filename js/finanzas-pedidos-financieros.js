@@ -217,17 +217,28 @@ console.log("[finanzas-pedidos-financieros.js] cargado OK");
   }
 
   function markMovementSections() {
-    const main = getMain();
-    const tableSection = ensureSection();
-    if (!main || !tableSection) return;
+  const main = getMain();
+  const tableSection = ensureSection();
+  if (!main || !tableSection) return;
 
-    Array.from(main.querySelectorAll(":scope > section")).forEach(section => {
-      if (section === tableSection) return;
-      section.dataset.finView = "movimientos";
-    });
-  }
+  Array.from(main.querySelectorAll(":scope > section")).forEach(section => {
+    if (section === tableSection) return;
 
-  function setHeaderDateControlsVisible(isVisible) {
+    // Finanzas V3 administra sus propias vistas.
+    if (
+      section.id === "finanzasV3Root" ||
+      section.classList.contains("finV3")
+    ) {
+      section.removeAttribute("data-fin-view");
+      section.style.removeProperty("display");
+      return;
+    }
+
+    section.dataset.finView = "movimientos";
+  });
+}
+
+function setHeaderDateControlsVisible(isVisible) {
     const headerRight = document.querySelector(".appHeader__right");
     if (!headerRight) return;
     headerRight.style.display = isVisible ? "" : "none";

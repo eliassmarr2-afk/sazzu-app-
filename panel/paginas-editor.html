@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../css/panel.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/sidebar.css">
-  <link rel="stylesheet" href="../css/rendimiento-web.css?v=20260723_03">
+  <link rel="stylesheet" href="../css/rendimiento-web.css?v=20260724_12">
 </head>
 
 <body data-page="rendimiento-web">
@@ -159,6 +159,28 @@
                   No hay parámetros adicionales aplicados.
                 </span>
               </div>
+            </div>
+
+            <div class="rwDeleteDataBar">
+              <div class="rwDeleteDataBar__copy">
+                <span class="rwSectionLabel">
+                  MANTENIMIENTO DE ANALYTICS
+                </span>
+
+                <p>
+                  Eliminá datos de prueba o toda la navegación de una
+                  landing específica dentro del rango seleccionado.
+                </p>
+              </div>
+
+              <button
+                class="rwDeleteDataButton"
+                id="rwOpenDeleteDataButton"
+                type="button"
+                disabled
+              >
+                Borrar datos de navegación
+              </button>
             </div>
 
             <div class="rwStatus" id="rwStatus" role="status">Preparando conexión con Analytics…</div>
@@ -645,6 +667,168 @@
           </section>
         </div>
 
+
+        <div
+          class="rwDeleteDataOverlay"
+          id="rwDeleteDataOverlay"
+          aria-hidden="true"
+        >
+          <div
+            class="rwDeleteDataDialog"
+            id="rwDeleteDataDialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rwDeleteDataTitle"
+            data-mode="idle"
+          >
+            <div class="rwDeleteDataDialog__top">
+              <span class="rwDeleteDataDialog__caption">
+                Confirmación operativa
+              </span>
+
+              <button
+                class="rwDeleteDataDialog__close"
+                id="rwDeleteDataCloseButton"
+                type="button"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div class="rwDeleteDataDialog__body">
+              <div class="rwDeleteDataDialog__icon" aria-hidden="true">
+                🗑
+              </div>
+
+              <div class="rwDeleteDataDialog__content">
+                <h3
+                  class="rwDeleteDataDialog__title"
+                  id="rwDeleteDataTitle"
+                >
+                  Borrar datos de navegación
+                </h3>
+
+                <p class="rwDeleteDataDialog__intro">
+                  Esta acción solamente afectará la landing específica
+                  seleccionada en el panel.
+                </p>
+
+                <fieldset class="rwDeleteDataModes">
+                  <legend>Alcance del borrado</legend>
+
+                  <label class="rwDeleteDataMode">
+                    <input
+                      id="rwDeleteFilteredMode"
+                      name="rwDeleteMode"
+                      type="radio"
+                      value="filtered"
+                      checked
+                    >
+
+                    <span>
+                      <strong>
+                        Datos que coinciden con los filtros actuales
+                      </strong>
+
+                      <small>
+                        Respeta fuente, campaña, dispositivo, versión
+                        y parámetros URL activos.
+                      </small>
+                    </span>
+                  </label>
+
+                  <label class="rwDeleteDataMode">
+                    <input
+                      id="rwDeleteEntireLandingMode"
+                      name="rwDeleteMode"
+                      type="radio"
+                      value="entire_landing"
+                    >
+
+                    <span>
+                      <strong>
+                        Toda la navegación de esta landing
+                      </strong>
+
+                      <small>
+                        Ignora fuente, campaña y parámetros URL.
+                        Conserva el rango, la versión y el dispositivo.
+                      </small>
+                    </span>
+                  </label>
+                </fieldset>
+
+                <div
+                  class="rwDeleteDataDialog__meta"
+                  id="rwDeleteDataSelectionSummary"
+                >
+                  Seleccioná una landing específica para revisar el impacto.
+                </div>
+
+                <div
+                  class="rwDeletePreview"
+                  id="rwDeletePreview"
+                  aria-live="polite"
+                >
+                  <span class="rwDeletePreview__status" id="rwDeletePreviewStatus">
+                    La vista previa todavía no fue consultada.
+                  </span>
+
+                  <div class="rwDeletePreview__grid">
+                    <div>
+                      <small>Visitas</small>
+                      <strong id="rwDeletePreviewViews">—</strong>
+                    </div>
+
+                    <div>
+                      <small>Sesiones</small>
+                      <strong id="rwDeletePreviewSessions">—</strong>
+                    </div>
+
+                    <div>
+                      <small>Eventos</small>
+                      <strong id="rwDeletePreviewEvents">—</strong>
+                    </div>
+                  </div>
+
+                  <div class="rwDeletePreview__levels">
+                    <span>L1: <strong id="rwDeletePreviewL1">—</strong></span>
+                    <span>L2: <strong id="rwDeletePreviewL2">—</strong></span>
+                    <span>L3: <strong id="rwDeletePreviewL3">—</strong></span>
+                  </div>
+                </div>
+
+                <p
+                  class="rwDeleteDataError"
+                  id="rwDeleteDataError"
+                  role="alert"
+                  hidden
+                ></p>
+              </div>
+            </div>
+
+            <div class="rwDeleteDataDialog__actions">
+              <button
+                class="rwDeleteDataDialog__btn rwDeleteDataDialog__btn--secondary"
+                id="rwDeleteCancelButton"
+                type="button"
+              >
+                Cancelar
+              </button>
+
+              <button
+                class="rwDeleteDataDialog__btn rwDeleteDataDialog__btn--primary"
+                id="rwDeleteConfirmButton"
+                type="button"
+                disabled
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
   </div>
@@ -654,6 +838,6 @@
   <script src="../js/config/supabase-config.js"></script>
   <script src="../js/auth/auth-client.js"></script>
   <script src="../js/app.js"></script>
-  <script src="../js/rendimiento-web.js?v=20260723_03"></script>
+  <script src="../js/rendimiento-web.js?v=20260724_12"></script>
 </body>
 </html>

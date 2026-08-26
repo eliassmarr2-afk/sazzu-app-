@@ -67,5 +67,56 @@
     return {ok:false,session:null,loginUrl:loginUrl(opts.next)};
   }
 
-  window.ProtocolAuth={DEFAULT_NEXT:DEFAULT_NEXT,getClient:getClient,getSession:getSession,signIn:signIn,signOut:signOut,requireAuthForWrite:requireAuthForWrite,loginUrl:loginUrl,safeNext:safeNext};
+  async function invokeMetaRead(payload){
+const config=config_();
+const supabaseUrl=url_(config && config.url);
+const publicKey=key_(config);
+
+if(!supabaseUrl || !publicKey) throw new Error('Supabase no configurado');
+
+const session=await getSession();
+
+if(!session || !session.access_token){
+const error=new Error('Se requiere una sesión autenticada de Protocol Data.');
+error.code='authentication_required';
+throw error;
+}
+
+const response=await fetch(
+supabaseUrl + '/functions/v1/protocol-meta-read',
+{
+method:'POST',
+headers:{
+'apikey':publicKey,
+'Authorization':'Bearer ' + session.access_token,
+'Content-Type':'application/json'
+},
+body:JSON.stringify(payload || {})
+}
+);
+
+const raw=await response.text();
+let data=null;
+
+try{
+data=raw ? JSON.parse(raw) : null;
+}catch(_){
+data=raw;
+}
+
+if(!response.ok){
+const message=data && data.message
+? data.message
+: 'Error consultando datos Meta.';
+
+const error=new Error(message);
+error.status=response.status;
+error.data=data;
+throw error;
+}
+
+return data;
+}
+
+window.ProtocolAuth={DEFAULT_NEXT:DEFAULT_NEXT,getClient:getClient,getSession:getSession,signIn:signIn,signOut:signOut,requireAuthForWrite:requireAuthForWrite,loginUrl:loginUrl,safeNext:safeNext,invokeMetaRead:invokeMetaRead};
 })();

@@ -254,89 +254,301 @@ const FIN_SKELETON_HTML = `
 // ================================
 // Data -> series
 // ================================
+function fin_escapeHtml_(value){
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function fin_todayYmd_(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function fin_addDaysYmdFromIso_(iso, days){
+  const ymd = fin_isoToYmd_(iso);
+  if (!ymd) return "";
+  const d = new Date(`${ymd}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return ymd;
+  d.setDate(d.getDate() + Number(days || 0));
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function fin_isCodRow_(r){
+  if (!r) return false;
+  if (r.is_cod === true) return true;
+
+  const haystack = [
+    r.provider,
+    r.payment_gateway,
+    r.payment_method,
+    r.source,
+    r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+    r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+  ].join(" ").toLowerCase();
+
+  return (
+    haystack.includes("cod") ||
+    haystack.includes("cash_on_delivery") ||
+    haystack.includes("contra") ||
+    haystack.includes("reembolso")
+  );
+}
+
+function fin_statusKind_(r){
+  const haystack = [
+    r && r.estado_ingreso,
+    r && r.payment_status
+  ].join(" ").toLowerCase();
+
+  if (haystack.includes("interven")) return "intervened";
+  if (haystack.includes("proces") || haystack.includes("processed")) return "processed";
+  if (haystack.includes("venc") || haystack.includes("overdue")) return "overdue";
+  return "pending";
+}
+
+function fin_amountGross_(r){
+  const candidates = [
+    r && r.gross_amount,
+    r && r.monto_bruto_n,
+    r && r.net_expected_amount,
+    r && r.neto_ingreso_v
+  ];
+
+  for (const value of candidates) {
+    const n = Number(value || 0);
+    if (Number.isFinite(n) && n !== 0) return n;
+  }
+
+  return 0;
+}
+
+function fin_bucketTemplate_(){
+  return {
+    financial: {
+      processed: 0,
+      pending: 0,
+      overdue: 0,
+      countProcessed: 0,
+      countPending: 0,
+      countOverdue: 0
+    },
+    cod: {
+      processed: 0,
+      pending: 0,
+      overdue: 0,
+      countProcessed: 0,
+      countPending: 0,
+      countOverdue: 0
+    },
+    intervened: {
+      financial: 0,
+      cod: 0,
+      countFinancial: 0,
+      countCod: 0
+    }
+  };
+}
+
+function fin_addBucket_(bucket, channel, status, amount){
+  const safeAmount = Number(amount || 0);
+
+  if (status === "intervened") {
+    if (channel === "cod") {
+      bucket.intervened.cod += safeAmount;
+      bucket.intervened.countCod += 1;
+    } else {
+      bucket.intervened.financial += safeAmount;
+      bucket.intervened.countFinancial += 1;
+    }
+    return;
+  }
+
+  const target = channel === "cod" ? bucket.cod : bucket.financial;
+
+  if (status === "processed") {
+    target.processed += safeAmount;
+    target.countProcessed += 1;
+  } else if (status === "overdue") {
+    target.overdue += safeAmount;
+    target.countOverdue += 1;
+  } else {
+    target.pending += safeAmount;
+    target.countPending += 1;
+  }
+}
+
+function fin_rowMovementYmd_(r){
+  return fin_isoToYmd_(r.fecha_ingreso_iso || r.movement_date_iso || r.fecha_compra_iso);
+}
+
+function fin_dueYmd_(r, channel, status){
+  if (channel === "cod" && status === "pending") {
+    return fin_addDaysYmdFromIso_(r.fecha_compra_iso || r.movement_date_iso || r.fecha_ingreso_iso, 20);
+  }
+
+  return fin_isoToYmd_(r.fecha_ingreso_iso || r.movement_date_iso || r.fecha_compra_iso);
+}
+
 function fin_buildSeries_(rows){
-  // Agrupa por fecha_ingreso (Y) y suma neto_ingreso_v por estado
-  const byDate = {}; // ymd -> { proc, pend, intv }
+  const byDate = {};
   const dates = [];
+  const todayYmd = fin_todayYmd_();
 
   for (const r of rows || []) {
-    const ymd = fin_isoToYmd_(r.fecha_ingreso_iso);
+    const channel = fin_isCodRow_(r) ? "cod" : "financial";
+    let status = fin_statusKind_(r);
+    const ymd = fin_rowMovementYmd_(r);
+    const dueYmd = fin_dueYmd_(r, channel, status);
+
     if (!ymd) continue;
 
+    // COD pendiente vence visualmente a los 20 días.
+    // Financiero pendiente vence según fecha_ingreso_iso.
+    // No escribe Supabase; solo clasifica el gráfico.
+    if (status === "pending" && dueYmd && dueYmd < todayYmd) {
+      status = "overdue";
+    }
+
     if (!byDate[ymd]) {
-      byDate[ymd] = { proc:0, pend:0, intv:0 };
+      byDate[ymd] = fin_bucketTemplate_();
       dates.push(ymd);
     }
 
-    const st = String(r.estado_ingreso || "").toLowerCase();
-    const val = Number(r.neto_ingreso_v || 0);
-
-    if (st.includes("proces")) byDate[ymd].proc += val;
-    else if (st.includes("inter")) byDate[ymd].intv += val;
-    else byDate[ymd].pend += val;
+    fin_addBucket_(byDate[ymd], channel, status, fin_amountGross_(r));
   }
 
-  dates.sort(); // YYYY-MM-DD ordena bien lexicográfico
+  dates.sort();
 
-  const proc = dates.map(d => byDate[d].proc);
-  const pend = dates.map(d => byDate[d].pend);
-  const intv = dates.map(d => byDate[d].intv);
-
-  // media móvil 7d sobre procesado
-  const ma7 = proc.map((_, i) => {
-    const a = Math.max(0, i-6);
-    let s = 0, c = 0;
-    for (let k=a; k<=i; k++){ s += proc[k]; c++; }
-    return c ? (s/c) : 0;
+  const financial = dates.map(d => {
+    const b = byDate[d].financial;
+    return b.processed + b.pending + b.overdue;
   });
 
-  return { dates, proc, pend, intv, ma7 };
+  const cod = dates.map(d => {
+    const b = byDate[d].cod;
+    return b.processed + b.pending + b.overdue;
+  });
+
+  const intervened = dates.map(d => {
+    const b = byDate[d].intervened;
+    return b.financial + b.cod;
+  });
+
+  return {
+    dates,
+    financial,
+    cod,
+    intervened,
+    details: dates.map(d => byDate[d])
+  };
 }
 
 // ================================
 // Render SVG chart (simple, estable)
 // ================================
+
+function fin_fmtTooltipDate_(ymd){
+  const s = String(ymd || "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s || "—";
+
+  const year = Number(s.slice(0,4));
+  const month = Number(s.slice(5,7));
+  const day = Number(s.slice(8,10));
+
+  const monthNames = [
+    "Ene.", "Feb.", "Mar.", "Abr.", "May.", "Jun.",
+    "Jul.", "Ago.", "Sep.", "Oct.", "Nov.", "Dic."
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const base = `${day} de ${monthNames[Math.max(0, Math.min(11, month - 1))]}`;
+
+  return year === currentYear ? base : `${base} ${year}`;
+}
+
+
+function fin_fmtTooltipDateEs_(value){
+  const raw = String(value || "").trim();
+
+  let ymd = raw;
+
+  // Soporta "2026-07-08"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    ymd = raw;
+  }
+  // Soporta ISO largo
+  else if (/^\d{4}-\d{2}-\d{2}T/.test(raw)) {
+    ymd = raw.slice(0, 10);
+  }
+  // Si viene algo tipo "Mon, Jun 29", lo dejamos como fallback.
+  else {
+    return raw || "—";
+  }
+
+  const year = Number(ymd.slice(0, 4));
+  const month = Number(ymd.slice(5, 7));
+  const day = Number(ymd.slice(8, 10));
+
+  const months = [
+    "Ene.", "Feb.", "Mar.", "Abr.", "May.", "Jun.",
+    "Jul.", "Ago.", "Sep.", "Oct.", "Nov.", "Dic."
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const label = `${day} de ${months[Math.max(0, Math.min(11, month - 1))]}`;
+
+  return year === currentYear ? label : `${label} ${year}`;
+}
+
 function fin_renderChart_(series){
   const host = fin_$id("finCashflowChart");
   if (!host) return;
 
   const W = host.clientWidth || 900;
-  // Alto ajustado al CSS (220px) para que entre en la card con leyenda + nota
-  const H = 220;
+  const H = 230;
 
-  // Un poco más de padding derecho para que no se corte la última etiqueta
-  const padL = 52, padR = 32, padT = 12, padB = 34;
+  const padL = 52, padR = 32, padT = 14, padB = 34;
   const innerW = Math.max(10, W - padL - padR);
   const innerH = Math.max(10, H - padT - padB);
 
-  const n = series.dates.length;
+  const n = series && Array.isArray(series.dates) ? series.dates.length : 0;
   if (!n) {
-    host.innerHTML = `<div class="u-muted">Sin datos en el rango seleccionado.</div>`;
+    host.innerHTML = `<div class="u-muted">Sin movimientos de cobro en el rango seleccionado.</div>`;
     return;
   }
 
-  // max para escala (procesado, pendiente, intervenida, media móvil)
   const maxVal = Math.max(
-    ...series.proc, ...series.pend, ...series.intv, ...series.ma7, 0
+    ...(series.financial || []),
+    ...(series.cod || []),
+    ...(series.intervened || []),
+    0
   );
+
   const yMax = maxVal <= 0 ? 1 : maxVal;
 
-  const x = (i) => padL + (n === 1 ? innerW/2 : (i * (innerW/(n-1))));
-  const y = (v) => padT + (innerH - (v / yMax) * innerH);
+  const x = (i) => padL + (n === 1 ? innerW / 2 : (i * (innerW / (n - 1))));
+  const y = (v) => padT + (innerH - (Number(v || 0) / yMax) * innerH);
 
   function pathFrom(arr){
     let d = "";
-    for (let i=0;i<arr.length;i++){
+    for (let i = 0; i < arr.length; i++){
       const xi = x(i);
       const yi = y(arr[i]);
-      d += (i===0 ? `M ${xi} ${yi}` : ` L ${xi} ${yi}`);
+      d += (i === 0 ? `M ${xi} ${yi}` : ` L ${xi} ${yi}`);
     }
     return d;
   }
 
-  // -----------------------------
-  // Grid + etiquetas eje Y
-  // -----------------------------
   const gridN = 4;
   let grid = "";
   let ylabels = "";
@@ -346,259 +558,452 @@ function fin_renderChart_(series){
     const vv = step * i;
     const yy = y(vv);
 
-    // Línea horizontal
-    grid += `<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" class="finGrid"/>`;
+    grid += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" class="finGrid"/>`;
 
-    // Etiqueta numérica (anclada a la izquierda, alineada con la grilla)
-    const label = fin_fmtAxisMoney_(vv);
     ylabels += `
       <text
         x="${padL - 6}"
         y="${yy + 4}"
         text-anchor="end"
         class="finAxisTxt finAxisTxt--y"
-      >${label}</text>
+      >${fin_fmtAxisMoney_(vv)}</text>
     `;
   }
 
-  // -----------------------------
-  // Etiquetas eje X (fechas)
-  // -----------------------------
-  const labelEvery = Math.max(1, Math.floor(n/6));
+  const labelEvery = Math.max(1, Math.floor(n / 6));
   let xlabels = "";
-  for (let i=0;i<n;i+=labelEvery){
-    const xi = x(i);
-    const lab = series.dates[i].slice(5); // MM-DD
-    xlabels += `<text x="${xi}" y="${H-12}" text-anchor="middle" class="finAxisTxt">${lab}</text>`;
+  for (let i = 0; i < n; i += labelEvery){
+    xlabels += `<text x="${x(i)}" y="${H - 12}" text-anchor="middle" class="finAxisTxt">${series.dates[i].slice(5)}</text>`;
   }
 
-  // Puntos interactivos sobre la serie principal (Procesado)
   let dots = "";
-  for (let i = 0; i < n; i++) {
-    const xi = x(i);
-    const yi = y(series.proc[i] || 0);
-    // hit grande transparente + punto visible pequeño
+  for (let i = 0; i < n; i++){
     dots += `
-      <circle class="finDotHit" cx="${xi}" cy="${yi}" r="10" data-idx="${i}" fill="transparent"></circle>
-      <circle class="finDotVis" cx="${xi}" cy="${yi}" r="3" fill="#2479FF"></circle>
+      <circle class="finDotVis finDotVis--financial" cx="${x(i)}" cy="${y(series.financial[i] || 0)}" r="3"></circle>
+      <circle class="finDotVis finDotVis--cod" cx="${x(i)}" cy="${y(series.cod[i] || 0)}" r="3"></circle>
+      <circle class="finDotVis finDotVis--intervened" cx="${x(i)}" cy="${y(series.intervened[i] || 0)}" r="3"></circle>
     `;
   }
 
   host.innerHTML = `
-  <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cashflow por día">
-    <g>
-      ${grid}
-      ${ylabels}
-    </g>
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Movimientos de cobro por canal">
+      <g>
+        ${grid}
+        ${ylabels}
+      </g>
 
-    <path d="${pathFrom(series.proc)}" class="finLine finLine--proc" fill="none"/>
-    <path d="${pathFrom(series.ma7)}"  class="finLine finLine--ma" fill="none"/>
-    <path d="${pathFrom(series.pend)}" class="finLine finLine--pend" fill="none"/>
-    <path d="${pathFrom(series.intv)}" class="finLine finLine--int" fill="none"/>
+      <path d="${pathFrom(series.financial)}" class="finLine finLine--financial" fill="none"/>
+      <path d="${pathFrom(series.cod)}" class="finLine finLine--cod" fill="none"/>
+      <path d="${pathFrom(series.intervened)}" class="finLine finLine--intervened" fill="none"/>
 
-    <g class="finDots">
-      ${dots}
-    </g>
+      <g class="finDots">
+        ${dots}
+      </g>
 
-    <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" class="finAxis"/>
-    <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" class="finAxis"/>
+      <line id="finHoverGuide" x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" class="finHoverGuide" hidden/>
 
-    <g>${xlabels}</g>
-  </svg>
+      <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" class="finAxis"/>
+      <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" class="finAxis"/>
+
+      <g>${xlabels}</g>
+
+      <rect
+        class="finHitPlane"
+        x="${padL}"
+        y="${padT}"
+        width="${innerW}"
+        height="${innerH}"
+        fill="transparent"
+      ></rect>
+    </svg>
   `;
 
-  // ============================
-  // Tooltips (overlay HTML)
-  // ============================
   const tipId = "finTooltip";
   let tip = document.getElementById(tipId);
   if (!tip) {
     tip = document.createElement("div");
     tip.id = tipId;
-    tip.className = "finTip";
-    tip.innerHTML = `
-      <div class="finTip__date" id="finTipDate"></div>
-      <div class="finTip__rows">
-        <div class="finTip__row">
-          <span class="finTip__dot finTip__dot--proc"></span>
-          <span class="finTip__label">Procesado</span>
-          <span class="finTip__value" id="finTipProc"></span>
-        </div>
-        <div class="finTip__row">
-          <span class="finTip__dot finTip__dot--pend"></span>
-          <span class="finTip__label">Pendiente</span>
-          <span class="finTip__value" id="finTipPend"></span>
-        </div>
-        <div class="finTip__row">
-          <span class="finTip__dot finTip__dot--int"></span>
-          <span class="finTip__label">Intervenida</span>
-          <span class="finTip__value" id="finTipIntv"></span>
-        </div>
-        <div class="finTip__row">
-          <span class="finTip__dot finTip__dot--ma"></span>
-          <span class="finTip__label">Media móvil 7d</span>
-          <span class="finTip__value" id="finTipMa7"></span>
-        </div>
-      </div>
-      <div class="finTip__total">
-        Total día: <span id="finTipTotal"></span>
-      </div>
-    `;
+    tip.className = "finTip finTip--wide";
     tip.hidden = true;
     host.appendChild(tip);
   }
 
   const svg = host.querySelector("svg");
+  const guide = host.querySelector("#finHoverGuide");
   if (!svg) return;
 
-  const hits = svg.querySelectorAll(".finDotHit");
-  const dateEl = document.getElementById("finTipDate");
-  const procEl = document.getElementById("finTipProc");
-  const pendEl = document.getElementById("finTipPend");
-  const intEl  = document.getElementById("finTipIntv");
-  const maEl   = document.getElementById("finTipMa7");
-  const totEl  = document.getElementById("finTipTotal");
+  function countWord_(n){
+    const c = Number(n || 0);
+    return `${c} pedido${c === 1 ? "" : "s"}`;
+  }
 
-  function hideTip(){
-    if (tip) tip.hidden = true;
+  function rowHtml_(dotClass, label, amount, count){
+    return `
+      <div class="finTip__row">
+        <span class="finTip__dot ${dotClass}"></span>
+        <span class="finTip__label">${fin_escapeHtml_(label)}</span>
+        <span class="finTip__value">${fin_fmtMoney(amount)} · ${countWord_(count)}</span>
+      </div>
+    `;
   }
 
   function showTip(idx, evt){
-    if (!tip) return;
-
     const d = series.dates[idx] || "";
-    const vProc = Number(series.proc[idx] || 0);
-    const vPend = Number(series.pend[idx] || 0);
-    const vInt  = Number(series.intv[idx] || 0);
-    const vMa   = Number(series.ma7[idx]  || 0);
-    const total = vProc + vPend + vInt;
+    const dLabel = fin_fmtTooltipDateEs_(d);
+    const detail = series.details[idx] || fin_bucketTemplate_();
 
-    if (dateEl) dateEl.textContent = d;
-    if (procEl) procEl.textContent = fin_fmtMoney(vProc);
-    if (pendEl) pendEl.textContent = fin_fmtMoney(vPend);
-    if (intEl)  intEl.textContent  = fin_fmtMoney(vInt);
-    if (maEl)   maEl.textContent   = fin_fmtMoney(vMa);
-    if (totEl)  totEl.textContent  = fin_fmtMoney(total);
+    const financialTotal =
+      detail.financial.processed +
+      detail.financial.pending +
+      detail.financial.overdue;
+
+    const financialCount =
+      detail.financial.countProcessed +
+      detail.financial.countPending +
+      detail.financial.countOverdue;
+
+    const codTotal =
+      detail.cod.processed +
+      detail.cod.pending +
+      detail.cod.overdue;
+
+    const codCount =
+      detail.cod.countProcessed +
+      detail.cod.countPending +
+      detail.cod.countOverdue;
+
+    const intervenedTotal = detail.intervened.financial + detail.intervened.cod;
+    const intervenedCount = detail.intervened.countFinancial + detail.intervened.countCod;
+
+    tip.innerHTML = `
+      <div class="finTip__date">${fin_escapeHtml_(fin_fmtTooltipDateEs_(d))}</div>
+
+      <div class="finTip__group">
+        <div class="finTip__groupTitle">Financieros</div>
+        ${rowHtml_("finTip__dot--financial", "Procesado", detail.financial.processed, detail.financial.countProcessed)}
+        ${rowHtml_("finTip__dot--financial", "Pendiente", detail.financial.pending, detail.financial.countPending)}
+        ${rowHtml_("finTip__dot--financial", "Vencido", detail.financial.overdue, detail.financial.countOverdue)}
+        <div class="finTip__subtotal">Total financieros: ${fin_fmtMoney(financialTotal)} · ${countWord_(financialCount)}</div>
+      </div>
+
+      <div class="finTip__group">
+        <div class="finTip__groupTitle">COD / Contra-entrega</div>
+        ${rowHtml_("finTip__dot--cod", "Procesado", detail.cod.processed, detail.cod.countProcessed)}
+        ${rowHtml_("finTip__dot--cod", "Pendiente", detail.cod.pending, detail.cod.countPending)}
+        ${rowHtml_("finTip__dot--cod", "Vencido", detail.cod.overdue, detail.cod.countOverdue)}
+        <div class="finTip__subtotal">Total COD: ${fin_fmtMoney(codTotal)} · ${countWord_(codCount)}</div>
+      </div>
+
+      <div class="finTip__group">
+        <div class="finTip__groupTitle">Intervenidos</div>
+        ${rowHtml_("finTip__dot--intervened", "Financieros", detail.intervened.financial, detail.intervened.countFinancial)}
+        ${rowHtml_("finTip__dot--intervened", "COD", detail.intervened.cod, detail.intervened.countCod)}
+        <div class="finTip__subtotal">Total intervenido: ${fin_fmtMoney(intervenedTotal)} · ${countWord_(intervenedCount)}</div>
+      </div>
+
+      <div class="finTip__total">
+        Bruto operativo día: ${fin_fmtMoney(financialTotal + codTotal)} · ${countWord_(financialCount + codCount)}
+      </div>
+    `;
+
+    if (guide) {
+      const xi = x(idx);
+      guide.setAttribute("x1", String(xi));
+      guide.setAttribute("x2", String(xi));
+      guide.hidden = false;
+    }
 
     const hostRect = host.getBoundingClientRect();
-    const xClient = evt.clientX;
-    const yClient = evt.clientY;
 
-    // Forzamos layout para obtener tamaño real del tooltip
     tip.style.display = "block";
-    const tw = tip.offsetWidth || 160;
-    const th = tip.offsetHeight || 90;
+    const tw = tip.offsetWidth || 300;
+    const th = tip.offsetHeight || 180;
     tip.style.display = "";
 
-    let xPos = xClient - hostRect.left + 12;
-    let yPos = yClient - hostRect.top - 12;
+    let xPos = evt.clientX - hostRect.left + 14;
+    let yPos = evt.clientY - hostRect.top - 18;
 
-    xPos = Math.max(8, Math.min(xPos, hostRect.width  - tw - 8));
+    xPos = Math.max(8, Math.min(xPos, hostRect.width - tw - 8));
     yPos = Math.max(8, Math.min(yPos, hostRect.height - th - 8));
 
     tip.style.left = xPos + "px";
-    tip.style.top  = yPos + "px";
+    tip.style.top = yPos + "px";
     tip.hidden = false;
   }
 
-  hits.forEach(el => {
-    const idx = Number(el.getAttribute("data-idx") || "0");
-    el.addEventListener("mouseenter", (e) => showTip(idx, e));
-    el.addEventListener("mousemove",  (e) => showTip(idx, e));
-    el.addEventListener("mouseleave", () => hideTip());
+  function hideTip(){
+    if (tip) tip.hidden = true;
+    if (guide) guide.hidden = true;
+  }
+
+  function idxFromEvent(evt){
+    if (n === 1) return 0;
+    const rect = svg.getBoundingClientRect();
+    const localX = evt.clientX - rect.left;
+    const raw = ((localX - padL) / innerW) * (n - 1);
+    return Math.max(0, Math.min(n - 1, Math.round(raw)));
+  }
+
+  svg.addEventListener("mousemove", (evt) => {
+    showTip(idxFromEvent(evt), evt);
   });
+
+  svg.addEventListener("mouseleave", hideTip);
 }
 
 // ================================
 // KPIs
 // ================================
 function fin_renderKpis_(rows){
-  let sumN = 0, sumV = 0, sumU = 0, sumW = 0, cU = 0, cW = 0;
+  let brutoOperativo = 0;
+  let brutoCod = 0;
+  let brutoFinancial = 0;
+
+  let sumFinancialCostPct = 0;
+  let countFinancialCostPct = 0;
+
+  let sumCollectionPct = 0;
+  let countCollectionPct = 0;
 
   for (const r of rows || []) {
-    sumN += Number(r.monto_bruto_n || 0);
-    sumV += Number(r.neto_ingreso_v || 0);
+    const status = fin_statusKind_(r);
+    const isIntervened = status === "intervened";
+    const isCod = fin_isCodRow_(r);
+    const gross = fin_amountGross_(r);
 
-    const u = Number(r.retencion_cuotas_u);
-    if (isFinite(u) && u !== 0) { sumU += u; cU++; }
+    if (!isIntervened) {
+      brutoOperativo += gross;
 
-    const w = Number(r.retencion_real_w);
-    if (isFinite(w) && w !== 0) { sumW += w; cW++; }
+      if (isCod) {
+        brutoCod += gross;
+      } else {
+        brutoFinancial += gross;
+      }
+    }
+
+    // COD no tiene costo financiero.
+    // Estos promedios se calculan solo sobre pagos electrónicos.
+    if (!isCod) {
+      const financialPct = Number(r.retencion_cuotas_u);
+      if (Number.isFinite(financialPct) && financialPct !== 0) {
+        sumFinancialCostPct += financialPct;
+        countFinancialCostPct += 1;
+      }
+
+      const collectionUnit = Number(r.retencion_real_w);
+      if (Number.isFinite(collectionUnit) && collectionUnit !== 0) {
+        sumCollectionPct += collectionUnit;
+        countCollectionPct += 1;
+      }
+    }
   }
 
-  const avgU = cU ? (sumU / cU) : 0;
-  const avgW = cW ? (sumW / cW) : 0;
+  const avgFinancialCostPct = countFinancialCostPct
+    ? (sumFinancialCostPct / countFinancialCostPct)
+    : 0;
 
-  const elN = fin_$id("kpiFinBrutoN");
-  const elV = fin_$id("kpiFinNetoV");
+  const avgCollectionUnit = countCollectionPct
+    ? (sumCollectionPct / countCollectionPct)
+    : 0;
+
+  const elOperativo = fin_$id("kpiFinBrutoN");
+  const elCod = fin_$id("kpiFinBrutoCOD");
+  const elFinancial = fin_$id("kpiFinBrutoElectronic");
   const elU = fin_$id("kpiFinRetU");
   const elW = fin_$id("kpiFinRetW");
 
-  if (elN) elN.textContent = fin_fmtMoney(sumN);
-  if (elV) elV.textContent = fin_fmtMoney(sumV);
+  const brutoOperativoFinal = brutoCod + brutoFinancial;
+  if (elOperativo) elOperativo.textContent = fin_fmtMoney(brutoOperativoFinal);
+  if (elCod) elCod.textContent = fin_fmtMoney(brutoCod);
+  if (elFinancial) elFinancial.textContent = fin_fmtMoney(brutoFinancial);
 
-  // U: promedio de retención por cuotas, SIN símbolo "%"
-  if (elU) elU.textContent = fin_fmtRatioPlain(avgU);
+  if (elU) {
+    elU.textContent = avgFinancialCostPct.toLocaleString("es-AR", {
+      maximumFractionDigits: 2
+    }) + "%";
+  }
 
-  // W: promedio de retención real, multiplicado por 100 y con "%"
-  if (elW) elW.textContent = fin_fmtPctFromUnit(avgW);
+  if (elW) {
+    elW.textContent = fin_fmtPctFromUnit(avgCollectionUnit);
+  }
+
+  console.log("[finanzas] KPIs V2", {
+    brutoOperativo,
+    brutoCod,
+    brutoFinancial,
+    avgFinancialCostPct,
+    avgCollectionUnit,
+    rows: Array.isArray(rows) ? rows.length : 0
+  });
 }
+
 // ================================
 // Alerts (Confirmaciones) desde rows de cashflow
 // ================================
+
 function fin_buildAlertsFromRows_(rows){
   const alerts = [];
   if (!Array.isArray(rows) || !rows.length) return alerts;
 
-  // Hoy en YYYY-MM-DD (zona horaria del navegador)
   const today = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const todayYmd = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
-  for (const r of rows){
-    const iso = String(r.fecha_ingreso_iso || "").trim();
-    if (!iso) continue;
+  function addDaysYmd_(ymd, days){
+    if (!ymd) return "";
+    const d = new Date(`${ymd}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return ymd;
+    d.setDate(d.getDate() + Number(days || 0));
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
 
-    const ymd = iso.slice(0,10);
-    const estado = String(r.estado_ingreso || "").toLowerCase();
+  function isCod_(r){
+    if (!r) return false;
+    if (r.is_cod === true) return true;
 
-    // Por ahora: solo alertamos pedidos con ingreso PENDIENTE
-    const isPendiente = estado.includes("pend");
+    const haystack = [
+      r.provider,
+      r.payment_gateway,
+      r.payment_method,
+      r.source,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+    ].join(" ").toLowerCase();
 
-    // Y cuya fecha de ingreso <= hoy (ya debería haberse acreditado)
-    const isVencidoOHOY = (ymd <= todayYmd);
+    return (
+      haystack.includes("cod") ||
+      haystack.includes("cash_on_delivery") ||
+      haystack.includes("contra") ||
+      haystack.includes("reembolso")
+    );
+  }
 
-    if (!isPendiente || !isVencidoOHOY) continue;
+  function statusKind_(r){
+    const haystack = [
+      r && r.estado_ingreso,
+      r && r.payment_status
+    ].join(" ").toLowerCase();
 
-    const neto = Number(r.neto_ingreso_v || 0);
-    const bruto = Number(r.monto_bruto_n || 0);
+    if (haystack.includes("interven")) return "intervened";
+    if (haystack.includes("proces") || haystack.includes("processed")) return "processed";
+    if (haystack.includes("venc") || haystack.includes("overdue")) return "overdue";
+    return "pending";
+  }
 
-    let status;
-    if (ymd < todayYmd) {
-      status = "vencido";
-    } else {
-      status = "hoy";
+  function gross_(r){
+    const candidates = [
+      r && r.gross_amount,
+      r && r.monto_bruto_n,
+      r && r.net_expected_amount,
+      r && r.neto_ingreso_v
+    ];
+
+    for (const value of candidates) {
+      const n = Number(value || 0);
+      if (Number.isFinite(n) && n !== 0) return n;
     }
+
+    return 0;
+  }
+
+  function ruleCode_(r){
+    const snap = r && r.applied_rule_snapshot;
+    return String(
+      (snap && (snap.rule_code || snap.ruleCode || snap.code)) ||
+      r.rule_code ||
+      ""
+    ).trim();
+  }
+
+  function providerLabel_(r, isCod){
+    if (isCod) return "COD · Contra-entrega";
+
+    const provider = String(r.provider || r.payment_gateway || "financiero").toLowerCase();
+    if (provider.includes("mercadopago")) return "Financiero · Mercado Pago";
+    if (provider.includes("bank") || provider.includes("banco")) return "Financiero · Banco";
+    if (provider.includes("card") || provider.includes("tarjeta")) return "Financiero · Tarjeta";
+
+    return "Financiero · Pasarela";
+  }
+
+  for (const r of rows){
+    const estado = statusKind_(r);
+
+    // Confirmaciones: solo pendientes por operar.
+    if (estado !== "pending") continue;
+
+    const isCod = isCod_(r);
+    const fechaCompraYmd = fin_isoToYmd_(r.fecha_compra_iso || r.movement_date_iso || r.fecha_ingreso_iso);
+    const fechaIngresoYmd = fin_isoToYmd_(r.fecha_ingreso_iso || r.movement_date_iso || r.fecha_compra_iso);
+
+    const dueYmd = isCod
+      ? addDaysYmd_(fechaCompraYmd, 20)
+      : fechaIngresoYmd;
+
+    if (!dueYmd) continue;
+
+    const tomorrowYmd = addDaysYmd_(todayYmd, 1);
+
+    // Bloque 2A: mostramos vencidos, entra hoy y entra mañana.
+    // Los tabs del Bloque 2B van a ordenar esto en secciones.
+    const isRelevant =
+      dueYmd < todayYmd ||
+      dueYmd === todayYmd ||
+      dueYmd === tomorrowYmd;
+
+    if (!isRelevant) continue;
+
+    let status = "por_entrar";
+    if (dueYmd < todayYmd) status = "vencido";
+    else if (dueYmd === todayYmd) status = "hoy";
 
     alerts.push({
       id: String(r.id || ""),
-      fecha_ingreso_iso: iso,
-      estado_ingreso: String(r.estado_ingreso || ""),
-      neto_ingreso_v: neto,
-      monto_bruto_n: bruto,
+      shopify_order_name: String(r.shopify_order_name || r.id || ""),
+      finance_order_id: String(r.finance_order_id || ""),
+      customer_name: String(r.customer_name || ""),
+      customer_email: String(r.customer_email || ""),
+      channel: isCod ? "cod" : "financial",
+      channel_label: providerLabel_(r, isCod),
+      fecha_compra_ymd: fechaCompraYmd,
+      fecha_ingreso_ymd: fechaIngresoYmd,
+      due_ymd: dueYmd,
+      fecha_ingreso_iso: String(r.fecha_ingreso_iso || ""),
+      estado_ingreso: String(r.estado_ingreso || "Pendiente"),
+      payment_status: String(r.payment_status || ""),
+      provider: String(r.provider || r.payment_gateway || ""),
+      payment_method: String(r.payment_method || ""),
+      gross_amount: gross_(r),
+      net_expected_amount: Number(r.net_expected_amount ?? r.neto_ingreso_v ?? 0),
+      collection_fee_amount: Number(r.collection_fee_amount || 0),
+      installment_fee_amount: Number(r.installment_fee_amount || 0),
+      total_financial_cost_amount: Number(r.total_financial_cost_amount || 0),
+      total_financial_cost_rate: Number(r.total_financial_cost_rate || r.retencion_cuotas_u || 0),
+      collection_fee_rate_unit: Number(r.retencion_real_w || 0),
+      installments_count: Number(r.installments_count || 1),
+      payout_delay_days: Number(r.payout_delay_days || 0),
+      rule_code: ruleCode_(r),
+      applied_rule_snapshot: r.applied_rule_snapshot || null,
       status
     });
   }
 
-  // Orden: primero los más urgentes (vencidos), luego los de hoy, dentro de cada grupo por fecha asc
   alerts.sort((a, b) => {
-    const rank = (st) => (st === "vencido" ? 0 : 1);
+    const rank = (st) => {
+      if (st === "vencido") return 0;
+      if (st === "hoy") return 1;
+      return 2;
+    };
+
     const rA = rank(a.status);
     const rB = rank(b.status);
     if (rA !== rB) return rA - rB;
-    const fa = a.fecha_ingreso_iso || "";
-    const fb = b.fecha_ingreso_iso || "";
-    return fa.localeCompare(fb);
+
+    if (a.channel !== b.channel) {
+      return a.channel === "financial" ? -1 : 1;
+    }
+
+    return String(a.due_ymd || "").localeCompare(String(b.due_ymd || ""));
   });
 
   return alerts;
@@ -611,13 +1016,12 @@ function fin_renderAlertsList_(){
 
   const alerts = Array.isArray(FinanzasState.alerts) ? FinanzasState.alerts : [];
 
-  // Reset
   listEl.innerHTML = "";
 
   if (!alerts.length){
     if (emptyEl) {
       emptyEl.style.display = "";
-      // mantenemos el texto por defecto que ya viene del HTML
+      emptyEl.textContent = "No hay cobros para revisar en este momento.";
     }
     return;
   }
@@ -626,117 +1030,222 @@ function fin_renderAlertsList_(){
 
   const frag = document.createDocumentFragment();
 
-  // Helper local para formatear fecha y días de diferencia
   const today = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const todayYmd = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
-  function diffDias_(ymd){
+  function esc_(value){
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function dateLabel_(ymd){
+    if (typeof fin_fmtTooltipDateEs_ === "function") return fin_fmtTooltipDateEs_(ymd);
+    if (typeof fin_fmtTooltipDate_ === "function") return fin_fmtTooltipDate_(ymd);
+    return ymd || "—";
+  }
+
+  function diffDays_(ymd){
     if (!ymd) return 0;
-    const d = new Date(`${ymd}T00:00:00`);
-    const t1 = new Date(`${todayYmd}T00:00:00`).getTime();
-    const t2 = d.getTime();
-    const diffMs = t1 - t2;
-    return Math.round(diffMs / 86400000); // ms → días
+    const d1 = new Date(`${todayYmd}T00:00:00`).getTime();
+    const d2 = new Date(`${ymd}T00:00:00`).getTime();
+    if (!Number.isFinite(d1) || !Number.isFinite(d2)) return 0;
+    return Math.round((d1 - d2) / 86400000);
+  }
+
+  function pctLabel_(unitOrPct){
+    const n = Number(unitOrPct || 0);
+    if (!Number.isFinite(n) || n === 0) return "0%";
+    const pct = Math.abs(n) <= 1 ? n * 100 : n;
+    return pct.toLocaleString("es-AR", { maximumFractionDigits: 2 }) + "%";
+  }
+
+  function feeLabel_(pctValue, amount){
+    const amt = Number(amount || 0);
+    const pct = pctLabel_(pctValue);
+    return `${pct} · ${fin_fmtMoney(amt)}`;
+  }
+
+  function statusText_(a){
+    const diff = diffDays_(a.due_ymd);
+
+    if (a.status === "por_entrar") return "Entra mañana";
+    if (a.status === "hoy") return "Entra hoy · confirmar ingreso";
+
+    if (a.status === "vencido") {
+      if (diff === 1) return "Venció ayer";
+      if (diff > 1) return `Vencido hace ${diff} días`;
+      return "Vencido";
+    }
+
+    return "Pendiente";
+  }
+
+  function chipText_(a){
+    if (a.status === "por_entrar") return "Por entrar";
+    if (a.status === "hoy") return "Hoy";
+    if (a.status === "vencido") return "Vencido";
+    return "Pendiente";
+  }
+
+  function selectMarkup_(a, estadoLabel){
+    const stLower = String(estadoLabel || "").toLowerCase();
+    const selPend = stLower.includes("pend") ? "selected" : "";
+    const selProc = stLower.includes("proces") ? "selected" : "";
+    const selInt  = stLower.includes("inter") ? "selected" : "";
+
+    return `
+      <select
+        class="finEstadoIngresoSelect"
+        data-id="${esc_(a.id)}"
+        data-current="${esc_(estadoLabel)}"
+      >
+        <option value="Pendiente" ${selPend}>Pendiente</option>
+        <option value="Procesado" ${selProc}>Procesado</option>
+        <option value="Intervenido" ${selInt}>Intervenido</option>
+      </select>
+    `;
+  }
+
+  function lockedMarkup_(a){
+    if (a.channel === "financial") {
+      if (a.status === "hoy" || a.status === "vencido") {
+        return selectMarkup_(a, a.estado_ingreso || "Pendiente");
+      }
+
+      return `
+        <span class="finAlertLocked">
+          <span>Automático por pasarela</span>
+          <small>Se habilita desde el día de ingreso.</small>
+        </span>
+      `;
+    }
+
+    return `
+      <span class="finAlertLocked finAlertLocked--cod">
+        <span>Control operativo COD</span>
+        <small>Revisar con logística.</small>
+      </span>
+    `;
   }
 
   alerts.forEach((a) => {
     const card = document.createElement("article");
-
-    const iso = a.fecha_ingreso_iso ? String(a.fecha_ingreso_iso) : "";
-    const ymd = iso ? iso.slice(0,10) : "";
-    const dmy = ymd ? `${ymd.slice(8,10)}/${ymd.slice(5,7)}/${ymd.slice(0,4)}` : "-";
 
     const idClean = String(a.id || "");
     const idLabel = idClean
       ? (idClean.startsWith("#") ? idClean : `#${idClean}`)
       : "(sin ID)";
 
-    const estadoIngresoRaw = (a.estado_ingreso || "").trim();
-    const stLower = estadoIngresoRaw.toLowerCase();
-    const isPend = stLower.includes("pend");
-    const isProc = stLower.includes("proces");
-    const isInt  = stLower.includes("inter");
+    const estadoLabel = String(a.estado_ingreso || "Pendiente");
+    const canChange =
+      a.channel === "cod" ||
+      a.status === "hoy" ||
+      a.status === "vencido";
 
-    // Mapeo visual del estado de urgencia (status calculado en fin_buildAlertsFromRows_)
-    let statusClass = "pendiente";
-    let chipText    = "Pendiente";
-    let metaMain    = `Ingreso previsto: ${dmy}`;
+    const isFinancial = a.channel === "financial";
+    const statusClass = a.status || "pendiente";
 
-    if (a.status === "hoy") {
-      statusClass = "hoy";
-      chipText    = "Ingresa hoy";
-      metaMain    = `Cobro a confirmar hoy (${dmy})`;
-    } else if (a.status === "vencido") {
-      statusClass = "vencido";
-      chipText    = "Vencido";
-      const diff = diffDias_(ymd);
-      if (diff > 0) {
-        metaMain = `Vencido hace ${diff} día${diff === 1 ? "" : "s"} (previsto ${dmy})`;
-      } else {
-        metaMain = `Vencido (previsto ${dmy})`;
-      }
-    }
+    card.className = [
+      "finAlertCard",
+      `finAlertCard--${statusClass}`,
+      isFinancial ? "finAlertCard--financial" : "finAlertCard--cod"
+    ].join(" ");
 
-    // Estado actual de ingreso (Z)
-    const estadoLabel = estadoIngresoRaw || "Pendiente";
+    const primaryAmountLabel = isFinancial ? "Neto esperado" : "A cobrar por repartidor";
+    const primaryAmount = isFinancial ? a.net_expected_amount : a.gross_amount;
 
-    // Clase raíz de la card según urgencia
-    card.className = `finAlertCard finAlertCard--${statusClass}`;
+    const ruleLabel = a.rule_code
+      ? `${a.rule_code}${a.payout_delay_days ? " · " + a.payout_delay_days + " días" : ""}`
+      : (a.payout_delay_days ? `${a.payout_delay_days} días` : "Sin regla visible");
 
-    // Opciones del select (Z)
-    const selPend = isPend ? "selected" : "";
-    const selProc = isProc ? "selected" : "";
-    const selInt  = isInt  ? "selected" : "";
+    const financialDetails = isFinancial ? `
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Cuotas</span>
+        <span class="finAlertCard__value">${Number(a.installments_count || 1)} cuota${Number(a.installments_count || 1) === 1 ? "" : "s"}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo por cobro</span>
+        <span class="finAlertCard__value">${feeLabel_(a.collection_fee_rate_unit, a.collection_fee_amount)}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo cuotas / financiación</span>
+        <span class="finAlertCard__value">${feeLabel_(a.total_financial_cost_rate, a.total_financial_cost_amount)}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Regla aplicada</span>
+        <span class="finAlertCard__value">${esc_(ruleLabel)}</span>
+      </div>
+    ` : `
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Fecha de compra</span>
+        <span class="finAlertCard__value">${esc_(dateLabel_(a.fecha_compra_ymd))}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Vencimiento operativo</span>
+        <span class="finAlertCard__value">${esc_(dateLabel_(a.due_ymd))} · 20 días</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo financiero</span>
+        <span class="finAlertCard__value">No aplica</span>
+      </div>
+    `;
 
     card.innerHTML = `
       <div class="finAlertCard__head">
-        <div class="finAlertCard__title">Pedido ${idLabel}</div>
+        <div class="finAlertCard__titleWrap">
+          <div class="finAlertCard__title">Pedido ${esc_(idLabel)}</div>
+          <div class="finAlertCard__channel">${esc_(a.channel_label)}</div>
+        </div>
+
         <span class="finAlertCard__status finAlertCard__status--${statusClass}">
-          ${chipText}
+          ${esc_(chipText_(a))}
         </span>
       </div>
 
       <div class="finAlertCard__body">
         <div class="finAlertCard__row">
           <span class="finAlertCard__label">Ingreso previsto</span>
-          <span class="finAlertCard__value">${dmy}</span>
+          <span class="finAlertCard__value">${esc_(dateLabel_(a.due_ymd))}</span>
         </div>
 
         <div class="finAlertCard__row">
-          <span class="finAlertCard__label">Neto estimado a ingresar</span>
-          <span class="finAlertCard__value">${fin_fmtMoney(a.neto_ingreso_v)}</span>
+          <span class="finAlertCard__label">Estado operativo</span>
+          <span class="finAlertCard__value">${esc_(statusText_(a))}</span>
         </div>
 
         <div class="finAlertCard__row">
-          <span class="finAlertCard__label">Bruto N</span>
-          <span class="finAlertCard__value">${fin_fmtMoney(a.monto_bruto_n)}</span>
+          <span class="finAlertCard__label">Bruto vendido</span>
+          <span class="finAlertCard__value">${fin_fmtMoney(a.gross_amount)}</span>
         </div>
 
-        <div class="finAlertCard__row">
-          <span class="finAlertCard__label">Estado actual (Z)</span>
-          <span class="finAlertCard__value">${estadoLabel}</span>
+        <div class="finAlertCard__row finAlertCard__row--strong">
+          <span class="finAlertCard__label">${esc_(primaryAmountLabel)}</span>
+          <span class="finAlertCard__value">${fin_fmtMoney(primaryAmount)}</span>
         </div>
 
-        <div class="finAlertCard__row">
-        <span class="finAlertCard__label">Cambiar estado</span>
-        <span class="finAlertCard__value">
-          <select
-            class="finEstadoIngresoSelect"
-            data-id="${idClean}"
-            data-current="${estadoLabel}"
-          >
-            <option value="Pendiente" ${selPend}>Pendiente</option>
-            <option value="Procesado" ${selProc}>Procesado</option>
-            <option value="Intervenido" ${selInt}>Intervenido</option>
-          </select>
-        </span>
-      </div>
+        ${financialDetails}
+
+        <div class="finAlertCard__row finAlertCard__row--action">
+          <span class="finAlertCard__label">Acción</span>
+          <span class="finAlertCard__value">
+            ${canChange ? selectMarkup_(a, estadoLabel) : lockedMarkup_(a)}
+          </span>
+        </div>
       </div>
 
       <div class="finAlertCard__meta">
-        <span class="finAlertMetaPill">${metaMain}</span>
-        <span>Estado actual: ${estadoLabel}</span>
+        <span class="finAlertMetaPill">${esc_(statusText_(a))} · previsto ${esc_(dateLabel_(a.due_ymd))}</span>
+        <span>${esc_(a.channel_label)}</span>
       </div>
     `;
 
@@ -745,6 +1254,7 @@ function fin_renderAlertsList_(){
 
   listEl.appendChild(frag);
 }
+
 // ================================
 // Render Historial (pestaña Historial)
 // ================================
@@ -806,13 +1316,56 @@ function fin_renderHistorial_(){
 // ================================
 // Load + Render
 // ================================
+
+function fin_addDaysToIsoEnd_(iso, days){
+  const raw = String(iso || "").trim();
+  if (!raw || raw.length < 10) return raw;
+
+  const ymd = raw.slice(0, 10);
+  const d = new Date(`${ymd}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return raw;
+
+  d.setDate(d.getDate() + Number(days || 0));
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  // Conservamos cierre de día y timezone operativo Argentina.
+  return `${y}-${m}-${day}T23:59:59-03:00`;
+}
+
+function fin_filterRowsToPanelRange_(rows, toIso){
+  const maxYmd = String(toIso || "").slice(0, 10);
+  if (!maxYmd) return Array.isArray(rows) ? rows : [];
+
+  return (Array.isArray(rows) ? rows : []).filter((r) => {
+    const ymd = fin_isoToYmd_(
+      r.fecha_ingreso_iso ||
+      r.movement_date_iso ||
+      r.fecha_compra_iso
+    );
+
+    return !ymd || ymd <= maxYmd;
+  });
+}
+
 async function loadFinanzas_(fromIso, toIso){
   // skeleton en el MISMO contenedor del chart
   const host = fin_$id("finCashflowChart");
   if (host) host.innerHTML = FIN_SKELETON_HTML;
 
   try {
-    const res = await fin_callSupabaseCashflow_(fromIso, toIso);
+    const alertsToIso = fin_addDaysToIsoEnd_(toIso, 1);
+    const res = await fin_callSupabaseCashflow_(fromIso, alertsToIso);
+
+    const allRows = Array.isArray(res.rows) ? res.rows : [];
+    FinanzasState.alertRows = allRows.slice();
+
+    // El panel mantiene el rango visual original.
+    // El slide puede mirar 1 día extra para mostrar "Entra mañana".
+    res.rows = fin_filterRowsToPanelRange_(allRows, toIso);
+
     const count = Array.isArray(res.rows) ? res.rows.length : 0;
 
     console.log("[finanzas] Supabase cashflow:", fromIso, "→", toIso, "| filas:", count);
@@ -868,15 +1421,269 @@ async function fin_loadStockCostsSummary_(fromIso, toIso){
   return res;
 }
 
+
+function fin_renderMovementKpisV2_(rows){
+  function isCod_(r){
+    if (!r) return false;
+    if (r.is_cod === true) return true;
+
+    const haystack = [
+      r.provider,
+      r.payment_gateway,
+      r.payment_method,
+      r.source,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+    ].join(" ").toLowerCase();
+
+    return (
+      haystack.includes("cod") ||
+      haystack.includes("cash_on_delivery") ||
+      haystack.includes("contra") ||
+      haystack.includes("reembolso")
+    );
+  }
+
+  function statusKind_(r){
+    const haystack = [
+      r && r.estado_ingreso,
+      r && r.payment_status
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes("interven")) return "intervened";
+    if (haystack.includes("proces") || haystack.includes("processed")) return "processed";
+    if (haystack.includes("venc") || haystack.includes("overdue")) return "overdue";
+    return "pending";
+  }
+
+  function gross_(r){
+    const candidates = [
+      r && r.gross_amount,
+      r && r.monto_bruto_n,
+      r && r.net_expected_amount,
+      r && r.neto_ingreso_v
+    ];
+
+    for (const value of candidates) {
+      const n = Number(value || 0);
+      if (Number.isFinite(n) && n !== 0) return n;
+    }
+
+    return 0;
+  }
+
+  let brutoOperativo = 0;
+  let brutoCod = 0;
+  let brutoFinancial = 0;
+
+  let sumFinancialCostPct = 0;
+  let countFinancialCostPct = 0;
+
+  let sumCollectionPct = 0;
+  let countCollectionPct = 0;
+
+  const debug = {
+    totalRows: Array.isArray(rows) ? rows.length : 0,
+    codRows: 0,
+    financialRows: 0,
+    intervenedRows: 0,
+    operationalRows: 0
+  };
+
+  for (const r of rows || []) {
+    const isCod = isCod_(r);
+    const status = statusKind_(r);
+    const isIntervened = status === "intervened";
+    const gross = gross_(r);
+
+    if (isCod) debug.codRows += 1;
+    else debug.financialRows += 1;
+
+    if (isIntervened) {
+      debug.intervenedRows += 1;
+    } else {
+      debug.operationalRows += 1;
+      brutoOperativo += gross;
+
+      if (isCod) brutoCod += gross;
+      else brutoFinancial += gross;
+    }
+
+    // COD no tiene costo financiero. Promedios solo sobre pagos electrónicos.
+    if (!isCod) {
+      const financialPct = Number(r.retencion_cuotas_u);
+      if (Number.isFinite(financialPct) && financialPct !== 0) {
+        sumFinancialCostPct += financialPct;
+        countFinancialCostPct += 1;
+      }
+
+      const collectionUnit = Number(r.retencion_real_w);
+      if (Number.isFinite(collectionUnit) && collectionUnit !== 0) {
+        sumCollectionPct += collectionUnit;
+        countCollectionPct += 1;
+      }
+    }
+  }
+
+  const avgFinancialCostPct = countFinancialCostPct
+    ? (sumFinancialCostPct / countFinancialCostPct)
+    : 0;
+
+  const avgCollectionUnit = countCollectionPct
+    ? (sumCollectionPct / countCollectionPct)
+    : 0;
+
+  const elOperativo = fin_$id("kpiFinBrutoN");
+  const elCod = fin_$id("kpiFinBrutoCOD");
+  const elFinancial = fin_$id("kpiFinBrutoElectronic");
+  const elU = fin_$id("kpiFinRetU");
+  const elW = fin_$id("kpiFinRetW");
+
+  const brutoOperativoFinal = brutoCod + brutoFinancial;
+  if (elOperativo) elOperativo.textContent = fin_fmtMoney(brutoOperativoFinal);
+  if (elCod) elCod.textContent = fin_fmtMoney(brutoCod);
+  if (elFinancial) elFinancial.textContent = fin_fmtMoney(brutoFinancial);
+
+  if (elU) {
+    elU.textContent = avgFinancialCostPct.toLocaleString("es-AR", {
+      maximumFractionDigits: 2
+    }) + "%";
+  }
+
+  if (elW) {
+    elW.textContent = fin_fmtPctFromUnit(avgCollectionUnit);
+  }
+
+  console.log("[finanzas] Movement KPIs V2 directo", {
+    brutoOperativo,
+    brutoCod,
+    brutoFinancial,
+    avgFinancialCostPct,
+    avgCollectionUnit,
+    debug
+  });
+}
+
+
+function fin_syncMovementKpisV2_(reason){
+  if (typeof fin_renderMovementKpisV2_ !== "function") return;
+
+  const rows = FinanzasState && Array.isArray(FinanzasState.rows)
+    ? FinanzasState.rows
+    : [];
+
+  const apply = () => {
+    fin_renderMovementKpisV2_(rows);
+  };
+
+  apply();
+
+  if (typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(apply);
+  }
+
+  window.clearTimeout(window.__finMovementKpisV2TimerA);
+  window.clearTimeout(window.__finMovementKpisV2TimerB);
+
+  window.__finMovementKpisV2TimerA = window.setTimeout(apply, 80);
+  window.__finMovementKpisV2TimerB = window.setTimeout(apply, 350);
+
+  console.log("[finanzas] sync Movement KPIs V2", {
+    reason: reason || "manual",
+    rows: rows.length
+  });
+}
+
+
+function fin_forceMovementKpisV2Final_(){
+  const rows = FinanzasState && Array.isArray(FinanzasState.rows)
+    ? FinanzasState.rows
+    : [];
+
+  function isCod_(r){
+    if (!r) return false;
+    if (r.is_cod === true) return true;
+
+    const haystack = [
+      r.provider,
+      r.payment_gateway,
+      r.payment_method,
+      r.source,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+    ].join(" ").toLowerCase();
+
+    return (
+      haystack.includes("cod") ||
+      haystack.includes("cash_on_delivery") ||
+      haystack.includes("contra") ||
+      haystack.includes("reembolso")
+    );
+  }
+
+  function isIntervened_(r){
+    const haystack = [
+      r && r.estado_ingreso,
+      r && r.payment_status
+    ].join(" ").toLowerCase();
+
+    return haystack.includes("interven");
+  }
+
+  function gross_(r){
+    const candidates = [
+      r && r.gross_amount,
+      r && r.monto_bruto_n,
+      r && r.net_expected_amount,
+      r && r.neto_ingreso_v
+    ];
+
+    for (const value of candidates) {
+      const n = Number(value || 0);
+      if (Number.isFinite(n) && n !== 0) return n;
+    }
+
+    return 0;
+  }
+
+  let brutoCod = 0;
+  let brutoFinancial = 0;
+
+  for (const r of rows) {
+    if (isIntervened_(r)) continue;
+
+    if (isCod_(r)) brutoCod += gross_(r);
+    else brutoFinancial += gross_(r);
+  }
+
+  const elOperativo = fin_$id("kpiFinBrutoN");
+  const elCod = fin_$id("kpiFinBrutoCOD");
+  const elFinancial = fin_$id("kpiFinBrutoElectronic");
+
+  if (elCod) elCod.textContent = fin_fmtMoney(brutoCod);
+  if (elFinancial) elFinancial.textContent = fin_fmtMoney(brutoFinancial);
+  if (elOperativo) elOperativo.textContent = fin_fmtMoney(brutoCod + brutoFinancial);
+}
+
 function renderFinanzas_(){
   // KPIs superiores
   fin_renderKpis_(FinanzasState.rows);
 
+  // KPIs operativos V2: pisa la lógica vieja con separación COD / financieros.
+  if (typeof fin_renderMovementKpisV2_ === "function") {
+    fin_renderMovementKpisV2_(FinanzasState.rows);
+  }
+
   // Series para el gráfico
   FinanzasState.series = fin_buildSeries_(FinanzasState.rows);
 
-  // Construimos alerts a partir de las filas de cashflow
-  FinanzasState.alerts = fin_buildAlertsFromRows_(FinanzasState.rows);
+  // Construimos alerts desde alertRows cuando existan.
+  // alertRows puede incluir +1 día para mostrar "Entra mañana".
+  FinanzasState.alerts = fin_buildAlertsFromRows_(
+    Array.isArray(FinanzasState.alertRows) && FinanzasState.alertRows.length
+      ? FinanzasState.alertRows
+      : FinanzasState.rows
+  );
 
   // Gráfico principal
   fin_renderChart_(FinanzasState.series);
@@ -890,7 +1697,7 @@ function renderFinanzas_(){
   // Nota de pie
   const foot = fin_$id("finFootnote");
   if (foot) {
-    foot.textContent = "Basado en columna Y (Fecha de ingreso) como fuente de verdad. Series por estado Z.";
+    foot.textContent = "Bruto operativo: financieros + COD sin costos y sin intervenidos. COD pendiente vence operativamente a 20 días.";
   }
 
      // Renderizamos la lista de notificaciones y actualizamos badge
@@ -907,6 +1714,16 @@ function renderFinanzas_(){
 
   // Si el slide de stock está abierto o ya fue montado, rehidratamos su contenido
   fin_renderStockSlide_();
+
+  // Defensa final KPIs V2: evita que lógica legacy pise Bruto Operativo.
+  if (typeof fin_forceMovementKpisV2Final_ === "function") {
+    fin_forceMovementKpisV2Final_();
+    window.setTimeout(fin_forceMovementKpisV2Final_, 120);
+  }
+
+  // KPIs Movimientos V2 al final del render:
+  // evita que lógica legacy vuelva a pisar Bruto Operativo.
+  fin_syncMovementKpisV2_("render-final");
  }
 
 // ================================
@@ -4122,3 +4939,538 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+/* =========================================================
+   FINANZAS · KPIs Movimientos V2 Override
+   Fuente: rows de rpc_finance_cashflow_legacy_bridge.
+   No toca slides ni notificaciones.
+   ========================================================= */
+
+function fin_renderKpis_(rows){
+  function isCod_(r){
+    if (!r) return false;
+    if (r.is_cod === true) return true;
+
+    const haystack = [
+      r.provider,
+      r.payment_gateway,
+      r.payment_method,
+      r.source,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+    ].join(" ").toLowerCase();
+
+    return (
+      haystack.includes("cod") ||
+      haystack.includes("cash_on_delivery") ||
+      haystack.includes("contra") ||
+      haystack.includes("reembolso")
+    );
+  }
+
+  function statusKind_(r){
+    const haystack = [
+      r && r.estado_ingreso,
+      r && r.payment_status
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes("interven")) return "intervened";
+    if (haystack.includes("proces") || haystack.includes("processed")) return "processed";
+    if (haystack.includes("venc") || haystack.includes("overdue")) return "overdue";
+    return "pending";
+  }
+
+  function gross_(r){
+    const candidates = [
+      r && r.gross_amount,
+      r && r.monto_bruto_n,
+      r && r.net_expected_amount,
+      r && r.neto_ingreso_v
+    ];
+
+    for (const value of candidates) {
+      const n = Number(value || 0);
+      if (Number.isFinite(n) && n !== 0) return n;
+    }
+
+    return 0;
+  }
+
+  let brutoOperativo = 0;
+  let brutoCod = 0;
+  let brutoFinancial = 0;
+
+  let sumFinancialCostPct = 0;
+  let countFinancialCostPct = 0;
+
+  let sumCollectionPct = 0;
+  let countCollectionPct = 0;
+
+  for (const r of rows || []) {
+    const status = statusKind_(r);
+    const isIntervened = status === "intervened";
+    const isCod = isCod_(r);
+    const gross = gross_(r);
+
+    if (!isIntervened) {
+      brutoOperativo += gross;
+
+      if (isCod) {
+        brutoCod += gross;
+      } else {
+        brutoFinancial += gross;
+      }
+    }
+
+    if (!isCod) {
+      const financialPct = Number(r.retencion_cuotas_u);
+      if (Number.isFinite(financialPct) && financialPct !== 0) {
+        sumFinancialCostPct += financialPct;
+        countFinancialCostPct += 1;
+      }
+
+      const collectionUnit = Number(r.retencion_real_w);
+      if (Number.isFinite(collectionUnit) && collectionUnit !== 0) {
+        sumCollectionPct += collectionUnit;
+        countCollectionPct += 1;
+      }
+    }
+  }
+
+  const avgFinancialCostPct = countFinancialCostPct
+    ? (sumFinancialCostPct / countFinancialCostPct)
+    : 0;
+
+  const avgCollectionUnit = countCollectionPct
+    ? (sumCollectionPct / countCollectionPct)
+    : 0;
+
+  const elOperativo = fin_$id("kpiFinBrutoN");
+  const elCod = fin_$id("kpiFinBrutoCOD");
+  const elFinancial = fin_$id("kpiFinBrutoElectronic");
+  const elU = fin_$id("kpiFinRetU");
+  const elW = fin_$id("kpiFinRetW");
+
+  const brutoOperativoFinal = brutoCod + brutoFinancial;
+  if (elOperativo) elOperativo.textContent = fin_fmtMoney(brutoOperativoFinal);
+  if (elCod) elCod.textContent = fin_fmtMoney(brutoCod);
+  if (elFinancial) elFinancial.textContent = fin_fmtMoney(brutoFinancial);
+
+  if (elU) {
+    elU.textContent = avgFinancialCostPct.toLocaleString("es-AR", {
+      maximumFractionDigits: 2
+    }) + "%";
+  }
+
+  if (elW) {
+    elW.textContent = fin_fmtPctFromUnit(avgCollectionUnit);
+  }
+
+  console.log("[finanzas] KPIs Movimientos V2 override", {
+    brutoOperativo,
+    brutoCod,
+    brutoFinancial,
+    avgFinancialCostPct,
+    avgCollectionUnit,
+    rows: Array.isArray(rows) ? rows.length : 0
+  });
+}
+
+
+
+
+/* =========================================================
+   FINANZAS · Notificaciones V2A Final Override
+   Reglas:
+   - Día -1  → Entra mañana → Automático por pasarela
+   - Día 0   → Entra hoy → selector disponible
+   - Día +1  → Venció ayer → selector disponible
+   - Día +2+ → Vencido → selector disponible
+   ========================================================= */
+
+function fin_buildAlertsFromRows_(rows){
+  const alerts = [];
+  if (!Array.isArray(rows) || !rows.length) return alerts;
+
+  const today = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const todayYmd = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+
+  function addDaysYmd_(ymd, days){
+    if (!ymd) return "";
+    const d = new Date(`${ymd}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return ymd;
+    d.setDate(d.getDate() + Number(days || 0));
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  const tomorrowYmd = addDaysYmd_(todayYmd, 1);
+
+  function isCod_(r){
+    if (!r) return false;
+    if (r.is_cod === true) return true;
+
+    const haystack = [
+      r.provider,
+      r.payment_gateway,
+      r.payment_method,
+      r.source,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.provider,
+      r.applied_rule_snapshot && r.applied_rule_snapshot.rule_code
+    ].join(" ").toLowerCase();
+
+    return (
+      haystack.includes("cod") ||
+      haystack.includes("cash_on_delivery") ||
+      haystack.includes("contra") ||
+      haystack.includes("reembolso")
+    );
+  }
+
+  function statusKind_(r){
+    const haystack = [
+      r && r.estado_ingreso,
+      r && r.payment_status
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes("interven")) return "intervened";
+    if (haystack.includes("proces") || haystack.includes("processed")) return "processed";
+    return "pending";
+  }
+
+  function gross_(r){
+    const candidates = [
+      r && r.gross_amount,
+      r && r.monto_bruto_n,
+      r && r.net_expected_amount,
+      r && r.neto_ingreso_v
+    ];
+
+    for (const value of candidates) {
+      const n = Number(value || 0);
+      if (Number.isFinite(n) && n !== 0) return n;
+    }
+
+    return 0;
+  }
+
+  function ruleCode_(r){
+    const snap = r && r.applied_rule_snapshot;
+    return String(
+      (snap && (snap.rule_code || snap.ruleCode || snap.code)) ||
+      r.rule_code ||
+      ""
+    ).trim();
+  }
+
+  function providerLabel_(r, isCod){
+    if (isCod) return "COD · Contra-entrega";
+
+    const provider = String(r.provider || r.payment_gateway || "financiero").toLowerCase();
+    if (provider.includes("mercadopago")) return "Financiero · Mercado Pago";
+    if (provider.includes("bank") || provider.includes("banco")) return "Financiero · Banco";
+    if (provider.includes("card") || provider.includes("tarjeta")) return "Financiero · Tarjeta";
+
+    return "Financiero · Pasarela";
+  }
+
+  for (const r of rows){
+    if (statusKind_(r) !== "pending") continue;
+
+    const isCod = isCod_(r);
+    const fechaCompraYmd = fin_isoToYmd_(r.fecha_compra_iso || r.movement_date_iso || r.fecha_ingreso_iso);
+    const fechaIngresoYmd = fin_isoToYmd_(r.fecha_ingreso_iso || r.movement_date_iso || r.fecha_compra_iso);
+
+    const dueYmd = isCod
+      ? addDaysYmd_(fechaCompraYmd, 20)
+      : fechaIngresoYmd;
+
+    if (!dueYmd) continue;
+
+    // Solo alertamos lo operativo cercano: vencido, hoy o mañana.
+    if (dueYmd > tomorrowYmd) continue;
+
+    let status = "por_entrar";
+    const diffMs = new Date(`${todayYmd}T00:00:00`).getTime() - new Date(`${dueYmd}T00:00:00`).getTime();
+    const diffDays = Math.round(diffMs / 86400000);
+
+    if (dueYmd === tomorrowYmd) status = "por_entrar";
+    else if (dueYmd === todayYmd) status = "hoy";
+    else if (diffDays === 1) status = "vencio_ayer";
+    else if (diffDays >= 2) status = "vencido";
+
+    alerts.push({
+      id: String(r.id || ""),
+      shopify_order_name: String(r.shopify_order_name || r.id || ""),
+      finance_order_id: String(r.finance_order_id || ""),
+      customer_name: String(r.customer_name || ""),
+      customer_email: String(r.customer_email || ""),
+      channel: isCod ? "cod" : "financial",
+      channel_label: providerLabel_(r, isCod),
+      fecha_compra_ymd: fechaCompraYmd,
+      fecha_ingreso_ymd: fechaIngresoYmd,
+      due_ymd: dueYmd,
+      fecha_ingreso_iso: String(r.fecha_ingreso_iso || ""),
+      estado_ingreso: String(r.estado_ingreso || "Pendiente"),
+      payment_status: String(r.payment_status || ""),
+      provider: String(r.provider || r.payment_gateway || ""),
+      payment_method: String(r.payment_method || ""),
+      gross_amount: gross_(r),
+      net_expected_amount: Number(r.net_expected_amount ?? r.neto_ingreso_v ?? 0),
+      collection_fee_amount: Number(r.collection_fee_amount || 0),
+      installment_fee_amount: Number(r.installment_fee_amount || 0),
+      total_financial_cost_amount: Number(r.total_financial_cost_amount || 0),
+      total_financial_cost_rate: Number(r.total_financial_cost_rate || r.retencion_cuotas_u || 0),
+      collection_fee_rate_unit: Number(r.retencion_real_w || 0),
+      installments_count: Number(r.installments_count || 1),
+      payout_delay_days: Number(r.payout_delay_days || 0),
+      rule_code: ruleCode_(r),
+      applied_rule_snapshot: r.applied_rule_snapshot || null,
+      status
+    });
+  }
+
+  alerts.sort((a, b) => {
+    const rank = (st) => {
+      if (st === "vencido") return 0;
+      if (st === "vencio_ayer") return 1;
+      if (st === "hoy") return 2;
+      return 3;
+    };
+
+    const rA = rank(a.status);
+    const rB = rank(b.status);
+    if (rA !== rB) return rA - rB;
+
+    if (a.channel !== b.channel) {
+      return a.channel === "financial" ? -1 : 1;
+    }
+
+    return String(a.due_ymd || "").localeCompare(String(b.due_ymd || ""));
+  });
+
+  return alerts;
+}
+
+function fin_renderAlertsList_(){
+  const listEl = fin_$id("finAlertsList");
+  const emptyEl = fin_$id("finAlertsEmpty");
+  if (!listEl) return;
+
+  const alerts = Array.isArray(FinanzasState.alerts) ? FinanzasState.alerts : [];
+  listEl.innerHTML = "";
+
+  if (!alerts.length){
+    if (emptyEl) {
+      emptyEl.style.display = "";
+      emptyEl.textContent = "No hay cobros para revisar en este momento.";
+    }
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = "none";
+
+  const frag = document.createDocumentFragment();
+
+  function esc_(value){
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function dateLabel_(ymd){
+    if (typeof fin_fmtTooltipDateEs_ === "function") return fin_fmtTooltipDateEs_(ymd);
+    if (typeof fin_fmtTooltipDate_ === "function") return fin_fmtTooltipDate_(ymd);
+    return ymd || "—";
+  }
+
+  function pctLabel_(unitOrPct){
+    const n = Number(unitOrPct || 0);
+    if (!Number.isFinite(n) || n === 0) return "0%";
+    const pct = Math.abs(n) <= 1 ? n * 100 : n;
+    return pct.toLocaleString("es-AR", { maximumFractionDigits: 2 }) + "%";
+  }
+
+  function feeLabel_(pctValue, amount){
+    return `${pctLabel_(pctValue)} · ${fin_fmtMoney(Number(amount || 0))}`;
+  }
+
+  function chipText_(a){
+    if (a.status === "por_entrar") return "Entra mañana";
+    if (a.status === "hoy") return "Entra hoy";
+    if (a.status === "vencio_ayer") return "Venció ayer";
+    if (a.status === "vencido") return "Vencido";
+    return "Pendiente";
+  }
+
+  function statusText_(a){
+    if (a.status === "por_entrar") return "Entra mañana";
+    if (a.status === "hoy") return "Entra hoy · confirmar ingreso";
+    if (a.status === "vencio_ayer") return "Venció ayer";
+    if (a.status === "vencido") return "Vencido";
+    return "Pendiente";
+  }
+
+  function visualStatusClass_(a){
+    if (a.status === "vencio_ayer") return "vencido";
+    return a.status || "pendiente";
+  }
+
+  function selectMarkup_(a, estadoLabel){
+    const stLower = String(estadoLabel || "").toLowerCase();
+    const selPend = stLower.includes("pend") ? "selected" : "";
+    const selProc = stLower.includes("proces") ? "selected" : "";
+    const selInt  = stLower.includes("inter") ? "selected" : "";
+
+    return `
+      <select
+        class="finEstadoIngresoSelect"
+        data-id="${esc_(a.id)}"
+        data-current="${esc_(estadoLabel)}"
+      >
+        <option value="Pendiente" ${selPend}>Pendiente</option>
+        <option value="Procesado" ${selProc}>Procesado</option>
+        <option value="Intervenido" ${selInt}>Intervenido</option>
+      </select>
+    `;
+  }
+
+  function lockedMarkup_(){
+    return `
+      <span class="finAlertLocked">
+        <span>Automático por pasarela</span>
+        <small>Se habilita desde el día de ingreso.</small>
+      </span>
+    `;
+  }
+
+  alerts.forEach((a) => {
+    const card = document.createElement("article");
+
+    const idClean = String(a.id || "");
+    const idLabel = idClean
+      ? (idClean.startsWith("#") ? idClean : `#${idClean}`)
+      : "(sin ID)";
+
+    const estadoLabel = String(a.estado_ingreso || "Pendiente");
+    const isFinancial = a.channel === "financial";
+    const statusClass = visualStatusClass_(a);
+
+    // Regla definitiva:
+    // Entra mañana => bloqueado.
+    // Entra hoy / Venció ayer / Vencido => selector.
+    const canChange =
+      a.channel === "cod" ||
+      a.status === "hoy" ||
+      a.status === "vencio_ayer" ||
+      a.status === "vencido";
+
+    card.className = [
+      "finAlertCard",
+      `finAlertCard--${statusClass}`,
+      isFinancial ? "finAlertCard--financial" : "finAlertCard--cod"
+    ].join(" ");
+
+    const primaryAmountLabel = isFinancial ? "Neto esperado" : "A cobrar por repartidor";
+    const primaryAmount = isFinancial ? a.net_expected_amount : a.gross_amount;
+
+    const ruleLabel = a.rule_code
+      ? `${a.rule_code}${a.payout_delay_days ? " · " + a.payout_delay_days + " días" : ""}`
+      : (a.payout_delay_days ? `${a.payout_delay_days} días` : "Sin regla visible");
+
+    const financialDetails = isFinancial ? `
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Cuotas</span>
+        <span class="finAlertCard__value">${Number(a.installments_count || 1)} cuota${Number(a.installments_count || 1) === 1 ? "" : "s"}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo por cobro</span>
+        <span class="finAlertCard__value">${feeLabel_(a.collection_fee_rate_unit, a.collection_fee_amount)}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo cuotas / financiación</span>
+        <span class="finAlertCard__value">${feeLabel_(a.total_financial_cost_rate, a.total_financial_cost_amount)}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Regla aplicada</span>
+        <span class="finAlertCard__value">${esc_(ruleLabel)}</span>
+      </div>
+    ` : `
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Fecha de compra</span>
+        <span class="finAlertCard__value">${esc_(dateLabel_(a.fecha_compra_ymd))}</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Vencimiento operativo</span>
+        <span class="finAlertCard__value">${esc_(dateLabel_(a.due_ymd))} · 20 días</span>
+      </div>
+
+      <div class="finAlertCard__row">
+        <span class="finAlertCard__label">Costo financiero</span>
+        <span class="finAlertCard__value">No aplica</span>
+      </div>
+    `;
+
+    card.innerHTML = `
+      <div class="finAlertCard__head">
+        <div class="finAlertCard__titleWrap">
+          <div class="finAlertCard__title">Pedido ${esc_(idLabel)}</div>
+          <div class="finAlertCard__channel">${esc_(a.channel_label)}</div>
+        </div>
+
+        <span class="finAlertCard__status finAlertCard__status--${statusClass}">
+          ${esc_(chipText_(a))}
+        </span>
+      </div>
+
+      <div class="finAlertCard__body">
+        <div class="finAlertCard__row">
+          <span class="finAlertCard__label">Ingreso previsto</span>
+          <span class="finAlertCard__value">${esc_(dateLabel_(a.due_ymd))}</span>
+        </div>
+
+        <div class="finAlertCard__row">
+          <span class="finAlertCard__label">Estado operativo</span>
+          <span class="finAlertCard__value">${esc_(statusText_(a))}</span>
+        </div>
+
+        <div class="finAlertCard__row">
+          <span class="finAlertCard__label">Bruto vendido</span>
+          <span class="finAlertCard__value">${fin_fmtMoney(a.gross_amount)}</span>
+        </div>
+
+        <div class="finAlertCard__row finAlertCard__row--strong">
+          <span class="finAlertCard__label">${esc_(primaryAmountLabel)}</span>
+          <span class="finAlertCard__value">${fin_fmtMoney(primaryAmount)}</span>
+        </div>
+
+        ${financialDetails}
+
+        <div class="finAlertCard__row finAlertCard__row--action">
+          <span class="finAlertCard__label">Acción</span>
+          <span class="finAlertCard__value">
+            ${canChange ? selectMarkup_(a, estadoLabel) : lockedMarkup_()}
+          </span>
+        </div>
+      </div>
+
+      <div class="finAlertCard__meta">
+        <span class="finAlertMetaPill">${esc_(statusText_(a))} · previsto ${esc_(dateLabel_(a.due_ymd))}</span>
+        <span>${esc_(a.channel_label)}</span>
+      </div>
+    `;
+
+    frag.appendChild(card);
+  });
+
+  listEl.appendChild(frag);
+}
+

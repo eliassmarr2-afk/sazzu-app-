@@ -9,7 +9,13 @@
     versionsLoaded: false,
     activationVersionNumber: null,
     activationConfirmationResolver: null,
-    createVersionSubmitting: false
+    createVersionSubmitting: false,
+    deletePreview: null,
+    deletePreviewParams: null,
+    deleteRequiredConfirmation: '',
+    deleteMode: 'filtered',
+    deletePreviewRequestId: 0,
+    deleteSubmitting: false
   };
 
   const DYNAMIC_PARAMETER_EXCLUSIONS = new Set([
@@ -383,12 +389,240 @@
       : `${formatNumber(views)} visitas`;
   }
 
+  function richSelectNormalizeText(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function richSelectFamilyMeta(value) {
+    const key = richSelectNormalizeText(value)
+      .replace(/\s+/g, '_');
+
+    const families = {
+      comercial: {
+        label: 'Comercial',
+        tone: 'orange',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M4.8 6.7v5.5c0 .8.3 1.5.9 2.1l4.1 4.1a2.5 2.5 0 0 0 3.5 0l5.1-5.1a2.5 2.5 0 0 0 0-3.5l-4.1-4.1a3 3 0 0 0-2.1-.9H6.7a1.9 1.9 0 0 0-1.9 1.9Z" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="9" r="1.25" fill="currentColor"/></svg>'
+      },
+      comunicacion: {
+        label: 'Comunicación',
+        tone: 'blue',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M5.2 5.8h13.6v9.1H10l-4.8 3.3V5.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8.2 9.2h7.6M8.2 12h5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'
+      },
+      contexto: {
+        label: 'Contexto',
+        tone: 'teal',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"/><path d="m14.9 9.1-1.8 4-4 1.8 1.8-4 4-1.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>'
+      },
+      creativo: {
+        label: 'Creativo',
+        tone: 'violet',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="m12 3 1.15 4.05L17 8.2l-3.85 1.15L12 13.4l-1.15-4.05L7 8.2l3.85-1.15L12 3Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/><path d="m18.1 13.7.65 2.25 2.25.65-2.25.65-.65 2.25-.65-2.25-2.25-.65 2.25-.65.65-2.25Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg>'
+      },
+      segmentacion: {
+        label: 'Segmentación',
+        tone: 'cyan',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.7" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><path d="M12 2.8v2M21.2 12h-2M12 21.2v-2M2.8 12h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'
+      },
+      tecnico: {
+        label: 'Técnico',
+        tone: 'slate',
+        icon: '<svg viewBox="0 0 24 24" fill="none"><path d="m8.8 7-4.2 5 4.2 5M15.2 7l4.2 5-4.2 5M13.7 4.8l-3.4 14.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      }
+    };
+
+    return families[key] || families.tecnico;
+  }
+
+  function renderRichSelectSelectedValue(descriptor) {
+    const selectedSubtitle =
+      descriptor.selectedSubtitle ||
+      descriptor.subtitle ||
+      '';
+
+    return (
+      (descriptor.icon
+        ? `<span class="rwRichSelect__selectedIcon rwRichSelect__familyTone--${escapeHtml(descriptor.tone)}">${descriptor.icon}</span>`
+        : '') +
+      `<span class="rwRichSelect__selectedCopy">` +
+        `<span class="rwRichSelect__title">${escapeHtml(descriptor.title)}</span>` +
+        (selectedSubtitle
+          ? `<span class="rwRichSelect__subtitle">${escapeHtml(selectedSubtitle)}</span>`
+          : '') +
+      `</span>`
+    );
+  }
+
+  function renderRichSelectMenu(selectId, options, selectedIndex) {
+    const isLandingSelector =
+      selectId === 'rwLandingSelect';
+
+    const isFieldSelector =
+      selectId === 'rwParameterFieldSelect';
+
+    const isValueSelector =
+      selectId === 'rwParameterValueSelect';
+
+    const isSearchableSelector =
+      isLandingSelector ||
+      isFieldSelector ||
+      isValueSelector;
+
+    const optionMarkup = options.map((option, index) => {
+      const descriptor = richSelectDescriptor(
+        selectId,
+        option.value,
+        option
+      );
+
+      if (isSearchableSelector && descriptor.placeholder) {
+        return '';
+      }
+
+      const selected = index === selectedIndex;
+      const optionId = `rwRichSelect_${selectId}_${index}`;
+      const searchText = richSelectNormalizeText([
+        descriptor.title,
+        descriptor.subtitle,
+        descriptor.description
+      ].filter(Boolean).join(' '));
+
+      return (
+        `<button type="button" ` +
+        `class="rwRichSelect__option${selected ? ' is-selected' : ''}${descriptor.placeholder ? ' is-placeholder' : ''}" ` +
+        `id="${escapeHtml(optionId)}" role="option" ` +
+        `aria-selected="${selected ? 'true' : 'false'}" ` +
+        `data-option-index="${index}" ` +
+        `data-search="${escapeHtml(searchText)}"` +
+        `${option.disabled ? ' disabled' : ''}>` +
+          (descriptor.icon
+            ? `<span class="rwRichSelect__optionIcon rwRichSelect__familyTone--${escapeHtml(descriptor.tone)}">${descriptor.icon}</span>`
+            : '') +
+          `<span class="rwRichSelect__optionContent">` +
+            `<span class="rwRichSelect__optionTitle">${escapeHtml(descriptor.title)}</span>` +
+            (descriptor.subtitle
+              ? `<span class="rwRichSelect__optionSubtitle">${escapeHtml(descriptor.subtitle)}</span>`
+              : '') +
+            (descriptor.description
+              ? `<span class="rwRichSelect__optionDescription">${escapeHtml(descriptor.description)}</span>`
+              : '') +
+          `</span>` +
+          (isSearchableSelector
+            ? `<span class="rwRichSelect__optionStatus" aria-hidden="true"></span>`
+            : '') +
+        `</button>`
+      );
+    }).join('');
+
+    if (!isSearchableSelector) return optionMarkup;
+
+    const menuTitle = isLandingSelector
+      ? 'Seleccionar landing'
+      : (
+          isFieldSelector
+            ? 'Seleccionar campo'
+            : 'Seleccionar valor'
+        );
+
+    const searchPlaceholder = isLandingSelector
+      ? 'Buscar por título, handle o clave técnica'
+      : (
+          isFieldSelector
+            ? 'Buscar por nombre, clave, familia o descripción'
+            : 'Buscar por valor, familia o descripción'
+        );
+
+    const emptyTitle = isLandingSelector
+      ? 'No encontramos landings'
+      : (
+          isFieldSelector
+            ? 'No encontramos campos'
+            : 'No encontramos valores'
+        );
+
+    const emptyCopy = isLandingSelector
+      ? 'Probá buscando por nombre del producto, handle o identificador técnico.'
+      : (
+          isFieldSelector
+            ? 'Probá buscando por nombre visible, nombre técnico o familia.'
+            : 'Probá buscando por valor, familia o descripción funcional.'
+        );
+
+    return (
+      `<div class="rwRichSelect__menuHead">` +
+        `<strong>${escapeHtml(menuTitle)}</strong>` +
+        `<button type="button" class="rwRichSelect__menuClose" data-rich-select-close aria-label="Cerrar selector">×</button>` +
+      `</div>` +
+      `<label class="rwRichSelect__search">` +
+        `<span class="rwRichSelect__searchIcon" aria-hidden="true">` +
+          `<svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.2" stroke="currentColor" stroke-width="1.8"></circle><path d="m15.4 15.4 4.1 4.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>` +
+        `</span>` +
+        `<input type="search" autocomplete="off" data-rich-select-search placeholder="${escapeHtml(searchPlaceholder)}">` +
+      `</label>` +
+      `<div class="rwRichSelect__options">${optionMarkup}</div>` +
+      `<div class="rwRichSelect__empty" data-rich-select-empty hidden>` +
+        `<strong>${escapeHtml(emptyTitle)}</strong>` +
+        `<span>${escapeHtml(emptyCopy)}</span>` +
+      `</div>`
+    );
+  }
+
+  function filterRichSelectOptions(entry, query) {
+    const normalizedQuery = richSelectNormalizeText(query);
+    const buttons = Array.from(
+      entry.menu.querySelectorAll('.rwRichSelect__option')
+    );
+    let visibleCount = 0;
+
+    buttons.forEach((button) => {
+      const searchable = richSelectNormalizeText(
+        button.getAttribute('data-search') || ''
+      );
+      const visible =
+        !normalizedQuery || searchable.includes(normalizedQuery);
+
+      button.hidden = !visible;
+      if (visible && !button.disabled) visibleCount += 1;
+    });
+
+    const empty = entry.menu.querySelector(
+      '[data-rich-select-empty]'
+    );
+    if (empty) empty.hidden = visibleCount > 0;
+
+    entry.highlightedIndex = -1;
+    entry.trigger.removeAttribute('aria-activedescendant');
+  }
+
   function richSelectDescriptor(selectId, value, option) {
     const fallbackText = option
       ? String(option.textContent || '')
           .trim()
           .replace(/\s+/g, ' ')
       : String(value || '');
+
+    if (
+      !value &&
+      selectId === 'rwLandingSelect'
+    ) {
+      return {
+        title: 'Todas las landings',
+        subtitle: 'Vista consolidada',
+        description:
+          'Incluye todas las páginas de producto disponibles dentro del rango seleccionado.',
+        placeholder: false,
+        icon:
+          '<svg viewBox="0 0 24 24" fill="none">' +
+            '<path d="M5.2 4.8h13.6v14.4H5.2V4.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>' +
+            '<path d="M8.2 8.2h7.6M8.2 11.6h7.6M8.2 15h4.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>' +
+          '</svg>',
+        tone: 'blue'
+      };
+    }
 
     if (!value) {
       return {
@@ -400,7 +634,8 @@
 
     if (selectId === 'rwLandingSelect') {
       const item = state.options.find(
-        (candidate) => candidate.landing_key === value
+        (candidate) =>
+          candidate.landing_key === value
       ) || {};
 
       const title =
@@ -409,40 +644,76 @@
         fallbackText ||
         value;
 
-      const subtitle = [
-        item.product_handle,
-        item.landing_key || value
-      ].filter(Boolean).join(' · ');
+      const productHandle =
+        item.product_handle || '';
+
+      const technicalKey =
+        item.landing_key || value;
 
       return {
         title,
-        subtitle,
-        placeholder: false
+        subtitle:
+          productHandle ||
+          'Landing de producto',
+
+        description:
+          technicalKey,
+
+        selectedSubtitle:
+          technicalKey,
+
+        placeholder: false,
+
+        icon:
+          '<svg viewBox="0 0 24 24" fill="none">' +
+            '<path d="M5.2 4.8h13.6v14.4H5.2V4.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>' +
+            '<path d="M8.2 8.2h7.6M8.2 11.6h7.6M8.2 15h4.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>' +
+          '</svg>',
+
+        tone: 'blue'
       };
     }
 
     if (selectId === 'rwParameterFieldSelect') {
       const item = parameterItemByKey(value) || {};
+      const family = richSelectFamilyMeta(
+        item.field_family || 'tecnico'
+      );
+      const title =
+        item.display_name || fallbackText || value;
+      const technicalName =
+        item.parameter_key || value;
+      const subtitle = [
+        technicalName,
+        family.label,
+        richSelectVisitLabel(item.observed_views)
+      ].filter(Boolean).join(' · ');
 
       return {
-        title:
-          `${item.display_name || fallbackText || value}` +
-          ` · ${richSelectVisitLabel(item.observed_views)}`,
-
-        subtitle: item.parameter_key || value,
-        placeholder: false
+        title,
+        subtitle,
+        description:
+          item.field_description ||
+          'Campo registrado en la Biblioteca UTM.',
+        placeholder: false,
+        icon: family.icon,
+        tone: family.tone
       };
     }
 
     if (selectId === 'rwParameterValueSelect') {
       const fieldSelect = $('rwParameterFieldSelect');
+
       const parameterKey = fieldSelect
         ? fieldSelect.value
         : '';
 
-      const parameterItem = parameterItemByKey(parameterKey);
-      const values = parameterItem &&
-        Array.isArray(parameterItem.values)
+      const parameterItem =
+        parameterItemByKey(parameterKey) || {};
+
+      const values = Array.isArray(
+        parameterItem.values
+      )
         ? parameterItem.values
         : [];
 
@@ -451,21 +722,29 @@
           String(candidate.value) === String(value)
       ) || {};
 
-      let subtitle = valueItem.description || '';
+      const family = richSelectFamilyMeta(
+        parameterItem.field_family || 'tecnico'
+      );
 
-      if (!subtitle) {
-        subtitle = valueItem.observed
-          ? 'Valor observado automáticamente en una URL'
-          : 'Valor aprobado en la Biblioteca UTM';
+      let description =
+        valueItem.description || '';
+
+      if (!description) {
+        description = valueItem.observed
+          ? 'Valor observado automáticamente en una URL.'
+          : 'Valor aprobado en la Biblioteca UTM.';
       }
 
       return {
-        title:
-          `${value}` +
-          ` · ${richSelectVisitLabel(valueItem.views)}`,
-
-        subtitle,
-        placeholder: false
+        title: String(value || ''),
+        subtitle: [
+          family.label,
+          richSelectVisitLabel(valueItem.views)
+        ].filter(Boolean).join(' · '),
+        description,
+        placeholder: false,
+        icon: family.icon,
+        tone: family.tone
       };
     }
 
@@ -484,6 +763,16 @@
     entry.trigger.setAttribute('aria-expanded', 'false');
     entry.trigger.removeAttribute('aria-activedescendant');
     entry.highlightedIndex = -1;
+    entry.searchQuery = '';
+
+    const searchInput = entry.menu.querySelector(
+      '[data-rich-select-search]'
+    );
+
+    if (searchInput) {
+      searchInput.value = '';
+      filterRichSelectOptions(entry, '');
+    }
 
     if (restoreFocus) {
       entry.trigger.focus();
@@ -501,7 +790,7 @@
   function richSelectOptionButtons(entry) {
     return Array.from(
       entry.menu.querySelectorAll(
-        '.rwRichSelect__option:not(:disabled)'
+        '.rwRichSelect__option:not(:disabled):not([hidden])'
       )
     );
   }
@@ -567,15 +856,8 @@
     );
 
     entry.value.innerHTML =
-      `<span class="rwRichSelect__title">` +
-      `${escapeHtml(selectedDescriptor.title)}` +
-      `</span>` +
-      (
-        selectedDescriptor.subtitle
-          ? `<span class="rwRichSelect__subtitle">` +
-            `${escapeHtml(selectedDescriptor.subtitle)}` +
-            `</span>`
-          : ''
+      renderRichSelectSelectedValue(
+        selectedDescriptor
       );
 
     entry.value.classList.toggle(
@@ -594,46 +876,23 @@
       closeRichSelect(selectId, false);
     }
 
-    entry.menu.innerHTML = options.map((option, index) => {
-      const descriptor = richSelectDescriptor(
-        selectId,
-        option.value,
-        option
+    entry.menu.innerHTML = renderRichSelectMenu(
+      selectId,
+      options,
+      select.selectedIndex
+    );
+
+    const searchInput = entry.menu.querySelector(
+      '[data-rich-select-search]'
+    );
+
+    if (searchInput) {
+      searchInput.value = entry.searchQuery || '';
+      filterRichSelectOptions(
+        entry,
+        entry.searchQuery || ''
       );
-
-      const selected =
-        index === select.selectedIndex;
-
-      const optionId =
-        `rwRichSelect_${selectId}_${index}`;
-
-      return (
-        `<button` +
-        ` type="button"` +
-        ` class="rwRichSelect__option` +
-        `${selected ? ' is-selected' : ''}` +
-        `${descriptor.placeholder ? ' is-placeholder' : ''}"` +
-        ` id="${escapeHtml(optionId)}"` +
-        ` role="option"` +
-        ` aria-selected="${selected ? 'true' : 'false'}"` +
-        ` data-option-index="${index}"` +
-        `${option.disabled ? ' disabled' : ''}` +
-        `>` +
-          `<span class="rwRichSelect__optionContent">` +
-            `<span class="rwRichSelect__optionTitle">` +
-              `${escapeHtml(descriptor.title)}` +
-            `</span>` +
-            (
-              descriptor.subtitle
-                ? `<span class="rwRichSelect__optionSubtitle">` +
-                    `${escapeHtml(descriptor.subtitle)}` +
-                  `</span>`
-                : ''
-            ) +
-          `</span>` +
-        `</button>`
-      );
-    }).join('');
+    }
 
     if (entry.wrapper.classList.contains('is-open')) {
       setRichSelectHighlight(
@@ -673,6 +932,18 @@
 
     entry.wrapper.classList.add('is-open');
     entry.trigger.setAttribute('aria-expanded', 'true');
+
+    const searchInput = entry.menu.querySelector(
+      '[data-rich-select-search]'
+    );
+
+    if (searchInput && !direction) {
+      requestAnimationFrame(() => {
+        searchInput.focus();
+        searchInput.select();
+      });
+      return;
+    }
 
     const buttons = richSelectOptionButtons(entry);
 
@@ -873,7 +1144,8 @@
       ),
       menu,
       observer: null,
-      highlightedIndex: -1
+      highlightedIndex: -1,
+      searchQuery: ''
     };
 
     richSelectRegistry.set(selectId, entry);
@@ -913,8 +1185,17 @@
     });
 
     menu.addEventListener('click', (event) => {
-      event.preventDefault();
       event.stopPropagation();
+
+      const closeButton = event.target.closest(
+        '[data-rich-select-close]'
+      );
+
+      if (closeButton) {
+        event.preventDefault();
+        closeRichSelect(selectId, true);
+        return;
+      }
 
       const button = event.target.closest(
         '[data-option-index]'
@@ -922,11 +1203,27 @@
 
       if (!button) return;
 
+      event.preventDefault();
+
       selectRichSelectOption(
         selectId,
         number(
           button.getAttribute('data-option-index')
         )
+      );
+    });
+
+    menu.addEventListener('input', (event) => {
+      const input = event.target.closest(
+        '[data-rich-select-search]'
+      );
+
+      if (!input) return;
+
+      entry.searchQuery = input.value || '';
+      filterRichSelectOptions(
+        entry,
+        entry.searchQuery
       );
     });
 
@@ -1275,6 +1572,842 @@
     });
   }
 
+
+  function deleteDataSelectedLandingItem() {
+    const landingKey = selectedLandingKey();
+
+    if (!landingKey) return null;
+
+    return state.options.find(
+      (item) => item.landing_key === landingKey
+    ) || null;
+  }
+
+  function deleteDataSelectedLandingLabel() {
+    const landingKey = selectedLandingKey();
+    const item = deleteDataSelectedLandingItem();
+
+    if (!landingKey) return 'Todas las landings';
+
+    return (
+      item?.product_title ||
+      item?.product_handle ||
+      landingKey
+    );
+  }
+
+  function deleteDataHasFilteredCriteria() {
+    const source =
+      $('rwSourceInput')?.value.trim() || '';
+
+    const campaign =
+      $('rwCampaignInput')?.value.trim() || '';
+
+    return Boolean(
+      source ||
+      campaign ||
+      Object.keys(
+        state.activeUrlParameters || {}
+      ).length
+    );
+  }
+
+  function deleteDataCurrentMode() {
+    const selected = document.querySelector(
+      'input[name="rwDeleteMode"]:checked'
+    );
+
+    return selected?.value || 'filtered';
+  }
+
+  function updateDeleteDataButtonState() {
+    const button = $('rwOpenDeleteDataButton');
+
+    if (!button) return;
+
+    const landingKey = selectedLandingKey();
+
+    button.disabled = !landingKey;
+
+    button.title = landingKey
+      ? 'Borrar navegación de la landing seleccionada'
+      : 'Seleccioná una landing específica';
+  }
+
+  function deleteDataPreviewParams(mode) {
+    const common = {
+      input_landing_key:
+        selectedLandingKey(),
+
+      input_start_date:
+        $('rwStartDate').value || null,
+
+      input_end_date:
+        $('rwEndDate').value || null,
+
+      input_landing_version:
+        $('rwVersionSelect').value || null,
+
+      input_device:
+        $('rwDeviceSelect').value || null
+    };
+
+    if (mode === 'entire_landing') {
+      return common;
+    }
+
+    return {
+      ...common,
+
+      input_utm_source:
+        $('rwSourceInput').value.trim() || null,
+
+      input_utm_campaign:
+        $('rwCampaignInput').value.trim() || null,
+
+      input_url_parameters: {
+        ...state.activeUrlParameters
+      }
+    };
+  }
+
+  function deleteDataRequiredConfirmation(mode) {
+    const landingKey = selectedLandingKey();
+
+    if (mode === 'entire_landing') {
+      return `BORRAR ${landingKey}`;
+    }
+
+    return 'BORRAR DATOS DE PRUEBA';
+  }
+
+  function deleteDataSyncModeAvailability(busy) {
+    const filtered = $('rwDeleteFilteredMode');
+    const entire = $('rwDeleteEntireLandingMode');
+
+    if (!filtered || !entire) return;
+
+    const filteredAvailable =
+      deleteDataHasFilteredCriteria();
+
+    filtered.disabled = Boolean(
+      busy || !filteredAvailable
+    );
+
+    entire.disabled = Boolean(busy);
+
+    const filteredLabel = filtered.closest(
+      '.rwDeleteDataMode'
+    );
+
+    if (filteredLabel) {
+      filteredLabel.classList.toggle(
+        'is-disabled',
+        !filteredAvailable
+      );
+    }
+
+    if (
+      !filteredAvailable &&
+      filtered.checked
+    ) {
+      filtered.checked = false;
+      entire.checked = true;
+      state.deleteMode = 'entire_landing';
+    }
+  }
+
+  function deleteDataSetError(message) {
+    const error = $('rwDeleteDataError');
+
+    if (!error) return;
+
+    const cleanMessage =
+      String(message || '').trim();
+
+    error.textContent = cleanMessage;
+    error.hidden = !cleanMessage;
+  }
+
+  function deleteDataResetPreview(message) {
+    state.deletePreview = null;
+    state.deletePreviewParams = null;
+    state.deleteRequiredConfirmation = '';
+
+    $('rwDeletePreviewStatus').textContent =
+      message ||
+      'La vista previa todavía no fue consultada.';
+
+    $('rwDeletePreviewViews').textContent = '—';
+    $('rwDeletePreviewSessions').textContent = '—';
+    $('rwDeletePreviewEvents').textContent = '—';
+    $('rwDeletePreviewL1').textContent = '—';
+    $('rwDeletePreviewL2').textContent = '—';
+    $('rwDeletePreviewL3').textContent = '—';
+
+    const confirmButton =
+      $('rwDeleteConfirmButton');
+
+    const cancelButton =
+      $('rwDeleteCancelButton');
+
+    const closeButton =
+      $('rwDeleteDataCloseButton');
+
+    confirmButton.disabled = true;
+    confirmButton.textContent = 'Confirmar';
+
+    cancelButton.disabled = false;
+    closeButton.disabled = false;
+
+    $('rwDeleteDataDialog').setAttribute(
+      'data-mode',
+      'idle'
+    );
+
+    deleteDataSetError('');
+  }
+
+  function deleteDataRenderSelectionSummary(mode) {
+    const landingKey =
+      selectedLandingKey();
+
+    const landingLabel =
+      deleteDataSelectedLandingLabel();
+
+    const version =
+      $('rwVersionSelect').value || 'Todas';
+
+    const device =
+      $('rwDeviceSelect').value || 'Todos';
+
+    const startDate =
+      $('rwStartDate').value || '—';
+
+    const endDate =
+      $('rwEndDate').value || '—';
+
+    const scope =
+      mode === 'entire_landing'
+        ? 'Toda la navegación de la landing'
+        : 'Solo datos que coinciden con los filtros';
+
+    const parameterCount = Object.keys(
+      state.activeUrlParameters || {}
+    ).length;
+
+    $('rwDeleteDataSelectionSummary').innerHTML = `
+      <strong>
+        ${escapeHtml(landingLabel)}
+      </strong>
+
+      <br>
+
+      ${escapeHtml(scope)}
+
+      <br>
+
+      <span>
+        ${escapeHtml(landingKey)} ·
+        ${escapeHtml(startDate)}
+        →
+        ${escapeHtml(endDate)}
+      </span>
+
+      <br>
+
+      <span>
+        Versión:
+        ${escapeHtml(version)}
+        · Dispositivo:
+        ${escapeHtml(device)}
+        · Parámetros activos:
+        ${formatNumber(parameterCount)}
+      </span>
+    `;
+  }
+
+  function deleteDataRenderPreview(preview) {
+    const views =
+      number(preview?.matched_page_views);
+
+    const sessions =
+      number(preview?.matched_sessions);
+
+    const events =
+      number(preview?.matched_events);
+
+    $('rwDeletePreviewViews').textContent =
+      formatNumber(views);
+
+    $('rwDeletePreviewSessions').textContent =
+      formatNumber(sessions);
+
+    $('rwDeletePreviewEvents').textContent =
+      formatNumber(events);
+
+    $('rwDeletePreviewL1').textContent =
+      formatNumber(preview?.l1_page_views);
+
+    $('rwDeletePreviewL2').textContent =
+      formatNumber(preview?.l2_page_views);
+
+    $('rwDeletePreviewL3').textContent =
+      formatNumber(preview?.l3_page_views);
+
+    if (!views || !events) {
+      $('rwDeletePreviewStatus').textContent =
+        'No hay datos coincidentes para este alcance.';
+
+      return false;
+    }
+
+    $('rwDeletePreviewStatus').textContent =
+      'Vista previa lista. Revisá el impacto antes de confirmar.';
+
+    return true;
+  }
+
+  function updateDeleteDataConfirmationState() {
+    const button =
+      $('rwDeleteConfirmButton');
+
+    if (!button) return;
+
+    const hasPreview = Boolean(
+      state.deletePreview &&
+      number(
+        state.deletePreview.matched_page_views
+      ) > 0 &&
+      number(
+        state.deletePreview.matched_events
+      ) > 0
+    );
+
+    button.disabled = Boolean(
+      state.deleteSubmitting ||
+      !hasPreview
+    );
+  }
+
+  async function loadDeleteDataPreview() {
+    const landingKey =
+      selectedLandingKey();
+
+    if (!landingKey) {
+      deleteDataSetError(
+        'Debe seleccionarse una landing específica.'
+      );
+
+      return;
+    }
+
+    const mode =
+      deleteDataCurrentMode();
+
+    state.deleteMode = mode;
+
+    const requestId =
+      ++state.deletePreviewRequestId;
+
+    deleteDataResetPreview(
+      'Consultando el impacto en Analytics…'
+    );
+
+    deleteDataRenderSelectionSummary(mode);
+    deleteDataSyncModeAvailability(true);
+
+    $('rwDeleteDataDialog').setAttribute(
+      'data-mode',
+      'loading'
+    );
+
+    try {
+      const client = await getClient();
+
+      if (!client) {
+        throw new Error(
+          'No se pudo obtener el cliente autenticado.'
+        );
+      }
+
+      const params =
+        deleteDataPreviewParams(mode);
+
+      const rpcName =
+        mode === 'entire_landing'
+          ? 'rpc_analytics_landing_navigation_preview'
+          : 'rpc_analytics_test_data_preview';
+
+      const response = await client.rpc(
+        rpcName,
+        params
+      );
+
+      if (
+        requestId !==
+        state.deletePreviewRequestId
+      ) {
+        return;
+      }
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      const preview =
+        response.data?.[0] || null;
+
+      state.deletePreview = preview;
+      state.deletePreviewParams = params;
+
+      const hasData =
+        deleteDataRenderPreview(preview);
+
+      if (!hasData) {
+        $('rwDeleteDataDialog').setAttribute(
+          'data-mode',
+          'idle'
+        );
+
+        return;
+      }
+
+      state.deleteRequiredConfirmation =
+        deleteDataRequiredConfirmation(mode);
+
+      $('rwDeleteDataDialog').setAttribute(
+        'data-mode',
+        'confirm'
+      );
+
+      updateDeleteDataConfirmationState();
+    } catch (error) {
+      if (
+        requestId !==
+        state.deletePreviewRequestId
+      ) {
+        return;
+      }
+
+      console.error(
+        '[rendimiento-web:delete-preview]',
+        error
+      );
+
+      $('rwDeleteDataDialog').setAttribute(
+        'data-mode',
+        'error'
+      );
+
+      $('rwDeletePreviewStatus').textContent =
+        'No se pudo obtener la vista previa.';
+
+      deleteDataSetError(
+        error?.message ||
+        'No se pudo revisar el impacto del borrado.'
+      );
+    } finally {
+      if (
+        requestId ===
+        state.deletePreviewRequestId
+      ) {
+        deleteDataSyncModeAvailability(false);
+      }
+    }
+  }
+
+  function openDeleteDataDialog() {
+    resetDeleteDataSuccessPresentation();
+
+    if (!selectedLandingKey()) {
+      updateDeleteDataButtonState();
+      return;
+    }
+
+    const filteredAvailable =
+      deleteDataHasFilteredCriteria();
+
+    const filtered =
+      $('rwDeleteFilteredMode');
+
+    const entire =
+      $('rwDeleteEntireLandingMode');
+
+    if (
+      state.deleteMode === 'filtered' &&
+      filteredAvailable
+    ) {
+      filtered.checked = true;
+      entire.checked = false;
+    } else {
+      filtered.checked = false;
+      entire.checked = true;
+      state.deleteMode = 'entire_landing';
+    }
+
+    deleteDataSyncModeAvailability(false);
+    deleteDataResetPreview();
+
+    deleteDataRenderSelectionSummary(
+      deleteDataCurrentMode()
+    );
+
+    const overlay =
+      $('rwDeleteDataOverlay');
+
+    overlay.classList.add('is-open');
+    overlay.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
+    loadDeleteDataPreview();
+  }
+
+  function closeDeleteDataDialog() {
+    if (state.deleteSubmitting) return;
+
+    state.deletePreviewRequestId += 1;
+
+    const overlay =
+      $('rwDeleteDataOverlay');
+
+    overlay.classList.remove('is-open');
+    overlay.setAttribute(
+      'aria-hidden',
+      'true'
+    );
+
+    deleteDataResetPreview();
+    resetDeleteDataSuccessPresentation();
+    deleteDataSyncModeAvailability(false);
+  }
+
+  function resetDeleteDataSuccessPresentation() {
+    const dialog =
+      $('rwDeleteDataDialog');
+
+    const title =
+      $('rwDeleteDataTitle');
+
+    const intro =
+      document.querySelector(
+        '.rwDeleteDataDialog__intro'
+      );
+
+    const modes =
+      document.querySelector(
+        '.rwDeleteDataModes'
+      );
+
+    const selectionSummary =
+      $('rwDeleteDataSelectionSummary');
+
+    const preview =
+      $('rwDeletePreview');
+
+    const cancelButton =
+      $('rwDeleteCancelButton');
+
+    const confirmButton =
+      $('rwDeleteConfirmButton');
+
+    const closeButton =
+      $('rwDeleteDataCloseButton');
+
+    if (dialog) {
+      dialog.setAttribute(
+        'data-mode',
+        'idle'
+      );
+    }
+
+    if (title) {
+      title.textContent =
+        'Borrar datos de navegación';
+    }
+
+    if (intro) {
+      intro.textContent =
+        'Esta acción solamente afectará la landing específica seleccionada en el panel.';
+    }
+
+    if (modes) {
+      modes.hidden = false;
+    }
+
+    if (selectionSummary) {
+      selectionSummary.hidden = false;
+    }
+
+    if (preview) {
+      preview.hidden = false;
+    }
+
+    if (cancelButton) {
+      cancelButton.hidden = false;
+      cancelButton.disabled = false;
+    }
+
+    if (confirmButton) {
+      confirmButton.hidden = false;
+      confirmButton.textContent = 'Confirmar';
+    }
+
+    if (closeButton) {
+      closeButton.disabled = false;
+    }
+  }
+
+  function showDeleteDataSuccess(
+    result,
+    landingLabel
+  ) {
+    const dialog =
+      $('rwDeleteDataDialog');
+
+    const title =
+      $('rwDeleteDataTitle');
+
+    const intro =
+      document.querySelector(
+        '.rwDeleteDataDialog__intro'
+      );
+
+    const modes =
+      document.querySelector(
+        '.rwDeleteDataModes'
+      );
+
+    const selectionSummary =
+      $('rwDeleteDataSelectionSummary');
+
+    const preview =
+      $('rwDeletePreview');
+
+    const cancelButton =
+      $('rwDeleteCancelButton');
+
+    const confirmButton =
+      $('rwDeleteConfirmButton');
+
+    const closeButton =
+      $('rwDeleteDataCloseButton');
+
+    dialog.setAttribute(
+      'data-mode',
+      'success'
+    );
+
+    title.textContent =
+      'Datos eliminados';
+
+    intro.textContent =
+      'La navegación seleccionada se eliminó correctamente.';
+
+    modes.hidden = true;
+
+    selectionSummary.hidden = false;
+    selectionSummary.innerHTML = `
+      <strong>
+        ${escapeHtml(landingLabel)}
+      </strong>
+
+      <br>
+
+      La operación fue completada y registrada
+      en la auditoría administrativa.
+    `;
+
+    preview.hidden = false;
+
+    $('rwDeletePreviewStatus').textContent =
+      'Borrado completado correctamente.';
+
+    $('rwDeletePreviewViews').textContent =
+      formatNumber(
+        result?.deleted_page_views
+      );
+
+    $('rwDeletePreviewSessions').textContent =
+      formatNumber(
+        result?.deleted_sessions
+      );
+
+    $('rwDeletePreviewEvents').textContent =
+      formatNumber(
+        result?.deleted_events
+      );
+
+    $('rwDeletePreviewL1').textContent =
+      formatNumber(
+        result?.l1_page_views
+      );
+
+    $('rwDeletePreviewL2').textContent =
+      formatNumber(
+        result?.l2_page_views
+      );
+
+    $('rwDeletePreviewL3').textContent =
+      formatNumber(
+        result?.l3_page_views
+      );
+
+    cancelButton.hidden = true;
+    cancelButton.disabled = false;
+
+    closeButton.disabled = false;
+
+    confirmButton.hidden = false;
+    confirmButton.disabled = false;
+    confirmButton.textContent = 'Listo';
+
+    deleteDataSetError('');
+  }
+
+  async function confirmDeleteData() {
+    if (
+      $('rwDeleteDataDialog')
+        .getAttribute('data-mode') === 'success'
+    ) {
+      closeDeleteDataDialog();
+      return;
+    }
+
+    if (
+      state.deleteSubmitting ||
+      !state.deletePreview ||
+      !state.deletePreviewParams
+    ) {
+      return;
+    }
+
+    const mode =
+      state.deleteMode;
+
+    const confirmation =
+      deleteDataRequiredConfirmation(mode);
+
+    const rpcName =
+      mode === 'entire_landing'
+        ? 'rpc_analytics_landing_navigation_delete'
+        : 'rpc_analytics_test_data_delete';
+
+    const params = {
+      ...state.deletePreviewParams,
+
+      input_expected_page_views:
+        number(
+          state.deletePreview.matched_page_views
+        ),
+
+      input_expected_events:
+        number(
+          state.deletePreview.matched_events
+        ),
+
+      input_confirmation:
+        confirmation
+    };
+
+    state.deleteSubmitting = true;
+
+    const confirmButton =
+      $('rwDeleteConfirmButton');
+
+    const cancelButton =
+      $('rwDeleteCancelButton');
+
+    const closeButton =
+      $('rwDeleteDataCloseButton');
+
+    confirmButton.disabled = true;
+    confirmButton.textContent = 'Procesando…';
+
+    cancelButton.disabled = true;
+    closeButton.disabled = true;
+
+    deleteDataSyncModeAvailability(true);
+    deleteDataSetError('');
+
+    try {
+      const client = await getClient();
+
+      if (!client) {
+        throw new Error(
+          'No se pudo obtener el cliente autenticado.'
+        );
+      }
+
+      const response = await client.rpc(
+        rpcName,
+        params
+      );
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      const result =
+        response.data?.[0] || null;
+
+      if (!result) {
+        throw new Error(
+          'Supabase no devolvió el resultado del borrado.'
+        );
+      }
+
+      const deletedViews =
+        number(result.deleted_page_views);
+
+      const deletedEvents =
+        number(result.deleted_events);
+
+      const landingLabel =
+        deleteDataSelectedLandingLabel();
+
+      state.deleteSubmitting = false;
+
+      await refreshAll();
+
+      setStatus(
+        `Borrado completado: ${formatNumber(deletedViews)} visitas y ${formatNumber(deletedEvents)} eventos eliminados.`,
+        'success'
+      );
+
+      showDeleteDataSuccess(
+        result,
+        landingLabel
+      );
+    } catch (error) {
+      console.error(
+        '[rendimiento-web:delete]',
+        error
+      );
+
+      $('rwDeleteDataDialog').setAttribute(
+        'data-mode',
+        'error'
+      );
+
+      deleteDataSetError(
+        error?.message ||
+        'No se pudieron borrar los datos seleccionados.'
+      );
+
+      state.deleteSubmitting = false;
+
+      confirmButton.textContent = 'Confirmar';
+      cancelButton.disabled = false;
+      closeButton.disabled = false;
+
+      deleteDataSyncModeAvailability(false);
+      updateDeleteDataConfirmationState();
+    }
+  }
+
   async function refreshAll() {
     setLoading(true);
     setStatus('Consultando Analytics…');
@@ -1283,6 +2416,7 @@
       const client = await getClient();
       if (!client) return;
       await loadOptions(client);
+      updateDeleteDataButtonState();
       await loadParameterOptions(client);
       await loadFunnel(client);
     } catch (error) {
@@ -2213,6 +3347,7 @@
     $('rwRefreshButton').addEventListener('click', refreshAll);
     $('rwLandingSelect').addEventListener('change', () => {
       updateVersionOptions();
+      updateDeleteDataButtonState();
       refreshAll();
     });
     $('rwVersionSelect').addEventListener('change', refreshAll);
@@ -2249,6 +3384,68 @@
         );
       }
     );
+
+    $('rwOpenDeleteDataButton').addEventListener(
+      'click',
+      openDeleteDataDialog
+    );
+
+    $('rwDeleteDataCloseButton').addEventListener(
+      'click',
+      closeDeleteDataDialog
+    );
+
+    $('rwDeleteCancelButton').addEventListener(
+      'click',
+      closeDeleteDataDialog
+    );
+
+    $('rwDeleteConfirmButton').addEventListener(
+      'click',
+      confirmDeleteData
+    );
+
+    document
+      .querySelectorAll('input[name="rwDeleteMode"]')
+      .forEach((input) => {
+        input.addEventListener(
+          'change',
+          () => {
+            state.deleteMode =
+              deleteDataCurrentMode();
+
+            loadDeleteDataPreview();
+          }
+        );
+      });
+
+    $('rwDeleteDataOverlay').addEventListener(
+      'click',
+      (event) => {
+        if (
+          event.target ===
+          $('rwDeleteDataOverlay')
+        ) {
+          closeDeleteDataDialog();
+        }
+      }
+    );
+
+    main.addEventListener(
+      'keydown',
+      (event) => {
+        if (
+          event.key === 'Escape' &&
+          $('rwDeleteDataOverlay')
+            .classList
+            .contains('is-open')
+        ) {
+          closeDeleteDataDialog();
+        }
+      }
+    );
+
+    updateDeleteDataButtonState();
 
     $('rwVersionsRefreshButton').addEventListener('click', refreshVersions);
     $('rwCreateVersionButton').addEventListener('click', openCreateVersionModal);

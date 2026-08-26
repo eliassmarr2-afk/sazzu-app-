@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="view-transition" content="same-origin" />
+
+  <title>Creative Insights · Protocol Data</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Roboto:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/panel.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/creative-insights/creative-insights.css?v=20260822-2.1H.1A" />
+</head>
+
+<body data-page="creative-insights">
+  <div class="appShell">
+    <div class="bodyGrid">
+      <aside
+        class="sidebar"
+        data-include="sidebar"
+        aria-label="Navegación principal"
+      ></aside>
+
+      <main class="main ciMain" aria-label="Creative Insights">
+        <div class="ciShell" data-ci-shell>
+          <nav class="ciModuleRail" aria-label="Secciones de Creative Insights">
+            <div class="ciRailItems">
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="inicio"
+                data-tooltip="Inicio"
+                aria-label="Inicio"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">home</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="consignaciones"
+                data-tooltip="Consignaciones"
+                aria-label="Consignaciones"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">assignment</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="entregas"
+                data-tooltip="Entregas"
+                aria-label="Entregas"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">upload_file</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="revision"
+                data-tooltip="Revisión"
+                aria-label="Revisión"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">fact_check</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="negociaciones"
+                data-tooltip="Negociaciones"
+                aria-label="Negociaciones"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">forum</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="compras"
+                data-tooltip="Compras y pagos"
+                aria-label="Compras y pagos"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">payments</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="biblioteca"
+                data-tooltip="Biblioteca"
+                aria-label="Biblioteca"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">video_library</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="creadores"
+                data-tooltip="Creadores"
+                aria-label="Creadores"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">group</span>
+              </button>
+
+              <button
+                type="button"
+                class="ciRailButton"
+                data-ci-section="incidencias"
+                data-tooltip="Incidencias"
+                aria-label="Incidencias"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">report</span>
+              </button>
+            </div>
+          </nav>
+
+          <section class="ciWorkspace">
+            <header class="ciTopbar">
+              <div class="ciTopbarBrand">
+                <span class="material-symbols-rounded ciTopbarBrand__icon" aria-hidden="true">
+                  auto_awesome
+                </span>
+                <span>Creative Insights</span>
+              </div>
+
+              <div class="ciTopbarContext">
+                Protocol Data
+              </div>
+            </header>
+
+            <div class="ciView">
+              <header class="ciViewHeader">
+                <div class="ciEyebrow">Operator console</div>
+
+                <h1 class="ciViewTitle" data-ci-current-title>
+                  Inicio
+                </h1>
+
+                <p class="ciViewSubtitle" data-ci-current-subtitle>
+                  Control operativo
+                </p>
+              </header>
+
+              <section class="ciStage" aria-label="Área de trabajo de Creative Insights">
+                <div class="ciStageEmpty">
+                  <span
+                    class="material-symbols-rounded ciStageEmpty__icon"
+                    aria-hidden="true"
+                  >
+                    space_dashboard
+                  </span>
+
+                  <div class="ciStageEmpty__copy">
+                    <strong>Shell de Creative Insights</strong>
+                    <span>
+                      Navegación contextual y base visual listas para conectar las vistas operativas.
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/creative-insights/creative-insights-runtime-config.js"></script>
+  <script src="/js/creative-insights/creative-insights-runtime.js"></script>
+  <script src="/js/creative-insights/creative-insights-shell.js"></script>
+  <script src="/js/creative-insights/creative-insights-home.js"></script>
+  <script src="/js/creative-insights/creative-insights-consignments.js?v=20260823-2.1I.2A"></script>
+  <script src="/js/creative-insights/creative-insights-deliveries.js"></script>
+  <script src="/js/creative-insights/creative-insights-review.js"></script>
+<script src="/js/creative-insights/creative-insights-negotiations.js?v=20260822-2.1E.4I2"></script>
+<script src="/js/creative-insights/creative-insights-purchases.js?v=20260822-2.1F.4B"></script>
+<script src="/js/creative-insights/creative-insights-library.js?v=20260822-2.1G.1A"></script>
+<script src="/js/creative-insights/creative-insights-creators.js?v=20260822-2.1H.1A"></script>
+</body>
+</html>

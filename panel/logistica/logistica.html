@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="../../css/logistica/logistica-dark-overrides.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-dark-final-polish.css">
   <link rel="stylesheet" href="../../css/logistica/logistica-dark-critical-fix.css">
+  <link rel="stylesheet" href="../../css/logistica/logistica-lookup-activity.css?v=20260815_01">
 </head>
 
 <body data-page="logistica">
@@ -583,6 +584,21 @@
                 </div>
               </section>
 
+
+              <!-- Protocol Data · Logística · Email Activity UI -->
+              <section class="logPedidosForm__card logPedidosEmailActivityCard">
+                <div class="logPedidosForm__cardHead">
+                  <strong>Actividad de emails</strong>
+                  <span>Comunicación automática asociada a los cambios de estado.</span>
+                </div>
+
+                <div
+                  class="logPedidosEmailActivity"
+                  id="logPedidoEmailActivity"
+                  aria-live="polite"
+                ></div>
+              </section>
+
               <section class="logPedidosForm__card">
                 <div class="logPedidosForm__cardHead">
                   <strong>Domicilio y detalle de entrega</strong>
@@ -825,6 +841,7 @@
   <script src="../../js/logistica/logistica.js"></script>
   <script src="../../js/logistica/logistica-supabase.js"></script>
   <script src="../../js/logistica/logistica-public-shipping.js"></script>
+  <script src="../../js/logistica/logistica-entrega-confirmacion.js?v=20260809_01"></script>
   <script src="../../js/logistica/logistica-pedidos.js"></script>
   <script src="../../js/logistica/logistica-pedidos-offer-matches.js?v=20260703_01"></script>
 <script src="../../js/logistica/logistica-conversaciones-slide.js"></script>
@@ -838,5 +855,6 @@
 <script src="../../js/logistica/logistica-calendar.js"></script>
 <script src="../../js/logistica/logistica-dark-toggle.js"></script>
 <script src="../../js/logistica/logistica-dark-reference.js"></script>
+  <script src="../../js/logistica/logistica-lookup-activity.js?v=20260815_01"></script>
 </body>
 </html>

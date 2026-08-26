@@ -1120,3 +1120,1237 @@ body[data-page="rendimiento-web"] { background:var(--rw-bg); color:var(--rw-text
 }
 
 /* END: rich select Rendimiento Web */
+
+/* BEGIN: borrado administrativo Analytics */
+.rwDeleteDataBar {
+  margin-top: 14px;
+  padding: 14px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.rwDeleteDataBar__copy p {
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, .55);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.rwDeleteDataButton {
+  appearance: none;
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .055);
+  color: rgba(255, 255, 255, .84);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rwDeleteDataButton:hover:not(:disabled),
+.rwDeleteDataButton:focus-visible:not(:disabled) {
+  border-color: rgba(36, 121, 255, .48);
+  background: rgba(36, 121, 255, .13);
+  color: #fff;
+  outline: none;
+}
+
+.rwDeleteDataButton:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.rwDeleteDataOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99992;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, .58);
+  backdrop-filter: blur(3px);
+}
+
+.rwDeleteDataOverlay.is-open {
+  display: flex;
+}
+
+.rwDeleteDataDialog {
+  width: min(500px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 5px;
+  overflow: hidden;
+  background: #242424;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+  color: #fff;
+}
+
+.rwDeleteDataDialog__top {
+  height: 38px;
+  padding: 0 12px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1f1f1f;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.rwDeleteDataDialog__caption {
+  color: rgba(255, 255, 255, .58);
+  font-size: 11px;
+}
+
+.rwDeleteDataDialog__close {
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: rgba(255, 255, 255, .68);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.rwDeleteDataDialog__close:hover,
+.rwDeleteDataDialog__close:focus-visible {
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  outline: none;
+}
+
+.rwDeleteDataDialog__body {
+  max-height: calc(100vh - 150px);
+  padding: 22px 22px 18px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.rwDeleteDataDialog__icon {
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .055);
+  font-size: 20px;
+}
+
+.rwDeleteDataDialog[data-mode="error"]
+.rwDeleteDataDialog__icon {
+  border-color: rgba(255, 80, 80, .22);
+  background: rgba(255, 80, 80, .11);
+  color: #ff8a8a;
+}
+
+.rwDeleteDataDialog[data-mode="success"]
+.rwDeleteDataDialog__icon {
+  border-color: rgba(61, 220, 132, .24);
+  background: rgba(61, 220, 132, .11);
+  color: #7ee2a8;
+}
+
+.rwDeleteDataDialog__title {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.rwDeleteDataDialog__intro {
+  margin: 0;
+  color: rgba(255, 255, 255, .70);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.rwDeleteDataModes {
+  margin: 15px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.rwDeleteDataModes legend {
+  margin-bottom: 7px;
+  color: rgba(255, 255, 255, .55);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rwDeleteDataMode {
+  padding: 10px 11px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 9px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .035);
+  cursor: pointer;
+}
+
+.rwDeleteDataMode + .rwDeleteDataMode {
+  margin-top: 7px;
+}
+
+.rwDeleteDataMode:has(input:checked) {
+  border-color: rgba(36, 121, 255, .42);
+  background: rgba(36, 121, 255, .10);
+}
+
+.rwDeleteDataMode input {
+  margin: 2px 0 0;
+  accent-color: #2479FF;
+}
+
+.rwDeleteDataMode strong,
+.rwDeleteDataMode small {
+  display: block;
+}
+
+.rwDeleteDataMode strong {
+  color: rgba(255, 255, 255, .88);
+  font-size: 12px;
+}
+
+.rwDeleteDataMode small {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, .50);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.rwDeleteDataMode.is-disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.rwDeleteDataDialog__meta {
+  margin-top: 12px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .045);
+  color: rgba(255, 255, 255, .70);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.rwDeletePreview {
+  margin-top: 9px;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, .12);
+}
+
+.rwDeletePreview__status {
+  display: block;
+  margin-bottom: 9px;
+  color: rgba(255, 255, 255, .55);
+  font-size: 11px;
+}
+
+.rwDeletePreview__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.rwDeletePreview__grid div {
+  padding: 8px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.rwDeletePreview__grid small,
+.rwDeletePreview__grid strong {
+  display: block;
+}
+
+.rwDeletePreview__grid small {
+  color: rgba(255, 255, 255, .48);
+  font-size: 10px;
+}
+
+.rwDeletePreview__grid strong {
+  margin-top: 3px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.rwDeletePreview__levels {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: rgba(255, 255, 255, .58);
+  font-size: 11px;
+}
+
+.rwDeletePreview__levels strong {
+  color: rgba(255, 255, 255, .88);
+}
+
+.rwDeleteConfirmation {
+  margin-top: 12px;
+  display: block;
+}
+
+.rwDeleteConfirmation > span {
+  display: block;
+  margin-bottom: 7px;
+  color: rgba(255, 255, 255, .58);
+  font-size: 11px;
+}
+
+.rwDeleteConfirmation code {
+  color: #8fb8ff;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.rwDeleteConfirmation input {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 5px;
+  outline: none;
+  background: #1c1c1c;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+}
+
+.rwDeleteConfirmation input:focus {
+  border-color: rgba(36, 121, 255, .65);
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .11);
+}
+
+.rwDeleteConfirmation input:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.rwDeleteDataError {
+  margin: 10px 0 0;
+  color: #ff9a9a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.rwDeleteDataDialog__actions {
+  padding: 12px 16px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.rwDeleteDataDialog__btn {
+  appearance: none;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rwDeleteDataDialog__btn--secondary {
+  background: rgba(255, 255, 255, .055);
+  color: rgba(255, 255, 255, .82);
+}
+
+.rwDeleteDataDialog__btn--primary {
+  border-color: #2479FF;
+  background: #2479FF;
+  color: #fff;
+}
+
+.rwDeleteDataDialog__btn:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+@media (max-width: 620px) {
+  .rwDeleteDataBar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rwDeleteDataButton {
+    width: 100%;
+  }
+
+  .rwDeleteDataDialog__body {
+    grid-template-columns: 1fr;
+  }
+
+  .rwDeleteDataDialog__icon {
+    display: none;
+  }
+}
+/* END: borrado administrativo Analytics */
+
+/* =========================================================
+   INICIO · Rendimiento Web · Selector visual de campos UTM
+   ========================================================= */
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__trigger {
+  min-height: 68px;
+  padding: 10px 44px 10px 12px;
+  border-radius: 15px;
+  background: #171717;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__value {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__value.is-placeholder {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__selectedCopy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__title {
+  color: #f6f7f9;
+  font-size: 13px;
+  font-weight: 820;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__subtitle {
+  color: #8f98a5;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.rwRichSelect__selectedIcon,
+.rwRichSelect__optionIcon {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.rwRichSelect__selectedIcon {
+  width: 38px;
+  height: 38px;
+}
+
+.rwRichSelect__optionIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.rwRichSelect__selectedIcon svg,
+.rwRichSelect__optionIcon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.rwRichSelect__familyTone--orange {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, .48);
+  background: rgba(245, 158, 11, .12);
+}
+
+.rwRichSelect__familyTone--blue {
+  color: #4d96ff;
+  border-color: rgba(77, 150, 255, .48);
+  background: rgba(77, 150, 255, .12);
+}
+
+.rwRichSelect__familyTone--teal {
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, .46);
+  background: rgba(45, 212, 191, .11);
+}
+
+.rwRichSelect__familyTone--violet {
+  color: #a970ff;
+  border-color: rgba(169, 112, 255, .48);
+  background: rgba(169, 112, 255, .12);
+}
+
+.rwRichSelect__familyTone--cyan {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, .48);
+  background: rgba(56, 189, 248, .12);
+}
+
+.rwRichSelect__familyTone--slate {
+  color: #9aa7b8;
+  border-color: rgba(154, 167, 184, .42);
+  background: rgba(154, 167, 184, .10);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__menu {
+  left: 0;
+  right: auto;
+  width: min(620px, calc(100vw - 34px));
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 18px;
+  background: #171717;
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, .58),
+    0 5px 18px rgba(0, 0, 0, .34);
+}
+
+.rwRichSelect__menuHead {
+  min-height: 56px;
+  padding: 0 13px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+}
+
+.rwRichSelect__menuHead strong {
+  color: #f5f7fa;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.rwRichSelect__menuClose {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #292a2f;
+  color: #b4bac4;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.rwRichSelect__menuClose:hover,
+.rwRichSelect__menuClose:focus-visible {
+  background: #34363c;
+  color: #fff;
+  outline: none;
+}
+
+.rwRichSelect__search {
+  position: relative;
+  display: block;
+  margin: 11px 12px 8px;
+}
+
+.rwRichSelect__search input {
+  appearance: none;
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 40px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  background: #202124;
+  color: #f4f6f8;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.rwRichSelect__search input::placeholder {
+  color: #858e9a;
+}
+
+.rwRichSelect__search input:focus {
+  border-color: rgba(36, 121, 255, .72);
+  box-shadow: 0 0 0 3px rgba(36, 121, 255, .13);
+}
+
+.rwRichSelect__searchIcon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 13px;
+  width: 17px;
+  height: 17px;
+  color: #858e9a;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.rwRichSelect__searchIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__options {
+  max-height: 410px;
+  padding: 0 8px 8px;
+  overflow-y: auto;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__options::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__option {
+  min-height: 74px;
+  margin: 2px 0;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 11px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__option:hover,
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__option.is-highlighted {
+  background: rgba(255, 255, 255, .055);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__option.is-selected {
+  border-color: rgba(36, 121, 255, .42);
+  box-shadow: inset 4px 0 0 #2479ff;
+  background: #213a5d;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__optionContent {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__optionTitle {
+  color: #f3f5f8;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.18;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__optionSubtitle {
+  display: block;
+  color: #9aa3af;
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__optionDescription {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #b2b8c1;
+  font-size: 11px;
+  font-weight: 520;
+  line-height: 1.32;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.rwRichSelect__optionStatus {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  margin-top: 1px;
+  background: rgba(36, 121, 255, .18);
+}
+
+.rwRichSelect__optionStatus::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #2479ff;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__option.is-selected .rwRichSelect__optionStatus {
+  background: rgba(36, 121, 255, .30);
+}
+
+.rwRichSelect__option[hidden],
+.rwRichSelect__empty[hidden] {
+  display: none !important;
+}
+
+.rwRichSelect__empty {
+  margin: 3px 12px 13px;
+  padding: 20px 16px;
+  border: 1px dashed rgba(255, 255, 255, .13);
+  border-radius: 13px;
+  text-align: center;
+}
+
+.rwRichSelect__empty strong,
+.rwRichSelect__empty span {
+  display: block;
+}
+
+.rwRichSelect__empty strong {
+  color: #eef1f5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rwRichSelect__empty span {
+  margin-top: 4px;
+  color: #858e9a;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 700px) {
+  .rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__menu {
+    width: min(560px, calc(100vw - 24px));
+  }
+
+  .rwRichSelect[data-rich-select-for="rwParameterFieldSelect"] .rwRichSelect__options {
+    max-height: 330px;
+  }
+}
+
+/* =========================================================
+   FIN · Rendimiento Web · Selector visual de campos UTM
+   ========================================================= */
+
+/* =========================================================
+   INICIO · Rendimiento Web · Alineación icono texto campos UTM
+   ========================================================= */
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"]
+.rwRichSelect__optionContent {
+  width: 100%;
+  min-width: 0;
+
+  justify-content: stretch;
+  justify-items: start;
+  align-content: center;
+  align-items: start;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"]
+.rwRichSelect__optionTitle,
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"]
+.rwRichSelect__optionSubtitle,
+.rwRichSelect[data-rich-select-for="rwParameterFieldSelect"]
+.rwRichSelect__optionDescription {
+  width: 100%;
+  justify-self: stretch;
+  text-align: left;
+}
+
+/* =========================================================
+   FIN · Rendimiento Web · Alineación icono texto campos UTM
+   ========================================================= */
+
+/* =========================================================
+   INICIO · Rendimiento Web · Selector visual de valores UTM
+   ========================================================= */
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__trigger {
+  min-height: 68px;
+  padding: 10px 44px 10px 12px;
+  border-radius: 15px;
+  background: #171717;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__value {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__value.is-placeholder {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__selectedCopy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__title {
+  color: #f6f7f9;
+  font-size: 13px;
+  font-weight: 820;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__subtitle {
+  color: #8f98a5;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+/*
+ * Conserva exactamente el ancho actual:
+ * left: 0 y right: 0 siguen tomando el ancho
+ * completo de la columna de Valores.
+ */
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__menu {
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #171717;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__options {
+  max-height: 410px;
+  padding: 0 8px 8px;
+  overflow-y: auto;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__options::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__option {
+  min-height: 74px;
+  margin: 2px 0;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 14px;
+
+  display: grid;
+  grid-template-columns:
+    40px minmax(0, 1fr) 20px;
+
+  align-items: center;
+  gap: 11px;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__option:hover,
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__option.is-highlighted {
+  background: rgba(255, 255, 255, .055);
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__option.is-selected {
+  border-color: rgba(36, 121, 255, .42);
+  box-shadow: inset 4px 0 0 #2479ff;
+  background: #213a5d;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionContent {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  gap: 2px;
+
+  justify-content: stretch;
+  justify-items: start;
+  align-content: center;
+  align-items: start;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionTitle,
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionSubtitle,
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionDescription {
+  width: 100%;
+  justify-self: stretch;
+  text-align: left;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionTitle {
+  color: #f3f5f8;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.18;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionSubtitle {
+  display: block;
+  color: #9aa3af;
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+.rwRichSelect__optionDescription {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #b2b8c1;
+  font-size: 11px;
+  font-weight: 520;
+  line-height: 1.32;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (max-width: 700px) {
+  .rwRichSelect[data-rich-select-for="rwParameterValueSelect"]
+  .rwRichSelect__options {
+    max-height: 330px;
+  }
+}
+
+/* =========================================================
+   FIN · Rendimiento Web · Selector visual de valores UTM
+   ========================================================= */
+
+/* =========================================================
+   INICIO · Rendimiento Web · Selector visual de landings
+   ========================================================= */
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__trigger {
+  min-height: 62px;
+  padding: 9px 42px 9px 11px;
+  border-radius: 13px;
+  background: #171717;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__value {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__selectedCopy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__title {
+  overflow: visible;
+  color: #f5f7fa;
+  font-size: 12.5px;
+  font-weight: 820;
+  line-height: 1.22;
+  text-overflow: unset;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__subtitle {
+  overflow: visible;
+  color: #8f98a5;
+  font-size: 9.8px;
+  font-weight: 620;
+  line-height: 1.25;
+  text-overflow: unset;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__selectedIcon {
+  width: 36px;
+  height: 36px;
+}
+
+/*
+ * El control cerrado conserva el ancho de la columna.
+ * Solamente el menú abierto se expande y se superpone.
+ */
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__menu {
+  left: 0;
+  right: auto;
+
+  width: min(
+    720px,
+    calc(100vw - 150px)
+  );
+
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 18px;
+
+  background: #171717;
+
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, .58),
+    0 5px 18px rgba(0, 0, 0, .34);
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__options {
+  max-height: 410px;
+  padding: 0 8px 8px;
+  overflow-y: auto;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__options::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__option {
+  min-height: 78px;
+  margin: 2px 0;
+  padding: 11px 12px;
+
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 14px;
+
+  display: grid;
+
+  grid-template-columns:
+    40px minmax(0, 1fr) 20px;
+
+  align-items: center;
+  gap: 11px;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__option:hover,
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__option.is-highlighted {
+  background: rgba(255, 255, 255, .055);
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__option.is-selected {
+  border-color: rgba(36, 121, 255, .42);
+  box-shadow: inset 4px 0 0 #2479ff;
+  background: #213a5d;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionContent {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  gap: 3px;
+
+  justify-content: stretch;
+  justify-items: start;
+  align-content: center;
+  align-items: start;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionTitle,
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionSubtitle,
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionDescription {
+  width: 100%;
+  justify-self: stretch;
+  text-align: left;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionTitle {
+  overflow: visible;
+
+  color: #f4f6f9;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.22;
+
+  text-overflow: unset;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionSubtitle {
+  display: block;
+  overflow: visible;
+
+  color: #9ca5b1;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.3;
+
+  text-overflow: unset;
+  white-space: normal;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__optionDescription {
+  display: block;
+  overflow-wrap: anywhere;
+
+  color: #b7bdc6;
+  font-size: 10.5px;
+  font-weight: 540;
+  line-height: 1.35;
+
+  white-space: normal;
+}
+
+@media (max-width: 760px) {
+  .rwRichSelect[data-rich-select-for="rwLandingSelect"]
+  .rwRichSelect__menu {
+    width: min(
+      560px,
+      calc(100vw - 24px)
+    );
+  }
+
+  .rwRichSelect[data-rich-select-for="rwLandingSelect"]
+  .rwRichSelect__options {
+    max-height: 330px;
+  }
+}
+
+/* =========================================================
+   FIN · Rendimiento Web · Selector visual de landings
+   ========================================================= */
+
+/* =========================================================
+   INICIO · Rendimiento Web · Landing seleccionada compacta
+   ========================================================= */
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__trigger {
+  height: 82px;
+  min-height: 82px;
+  max-height: 82px;
+  overflow: hidden;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__value {
+  height: 100%;
+  min-height: 0;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__selectedCopy {
+  min-height: 0;
+  align-content: center;
+  overflow: hidden;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__title {
+  display: -webkit-box;
+  overflow: hidden;
+
+  max-height: calc(1.22em * 2);
+
+  text-overflow: ellipsis;
+  white-space: normal;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.rwRichSelect[data-rich-select-for="rwLandingSelect"]
+.rwRichSelect__subtitle {
+  display: block;
+  overflow: hidden;
+
+  width: 100%;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   FIN · Rendimiento Web · Landing seleccionada compacta
+   ========================================================= */

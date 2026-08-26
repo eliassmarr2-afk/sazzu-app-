@@ -5535,3 +5535,582 @@ body {
 .finStockTabPanel[data-fin-stock-panel="stock"] .finStockTrendCard{
   margin-top: 18px;
 }
+
+/* =========================================================
+   FINANZAS · Movimientos V2
+   - Solo gráfico y KPIs superiores.
+   - No toca slides ni tarjetas de costos.
+   ========================================================= */
+
+[data-page="finanzas"] .grid--5{
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px){
+  [data-page="finanzas"] .grid--5{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px){
+  [data-page="finanzas"] .grid--5{
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-page="finanzas"] .finChartTitle{
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 900;
+  color: inherit;
+  letter-spacing: -0.02em;
+}
+
+[data-page="finanzas"] .finChartSub{
+  max-width: 680px;
+  font-size: 13px;
+}
+
+[data-page="finanzas"] .finMiniHint{
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: rgba(255,255,255,.54);
+}
+
+[data-page="finanzas"] #finCashflowCard{
+  max-height: 520px;
+}
+
+[data-page="finanzas"] #finCashflowChart{
+  height: 230px;
+  min-height: 230px;
+  max-height: 230px;
+}
+
+[data-page="finanzas"] .finLine--financial{
+  stroke: #2479FF;
+}
+
+[data-page="finanzas"] .finLine--cod{
+  stroke: rgba(34,197,94,.95);
+}
+
+[data-page="finanzas"] .finLine--intervened{
+  stroke: rgba(239,68,68,.95);
+}
+
+[data-page="finanzas"] .finDotVis{
+  opacity: .95;
+}
+
+[data-page="finanzas"] .finDotVis--financial{
+  fill: #2479FF;
+}
+
+[data-page="finanzas"] .finDotVis--cod{
+  fill: rgba(34,197,94,.95);
+}
+
+[data-page="finanzas"] .finDotVis--intervened{
+  fill: rgba(239,68,68,.95);
+}
+
+[data-page="finanzas"] .finHoverGuide{
+  stroke: rgba(255,255,255,.22);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+[data-page="finanzas"] .u-dot--fin{
+  background: #2479FF;
+}
+
+[data-page="finanzas"] .u-dot--cod{
+  background: rgba(34,197,94,.95);
+}
+
+[data-page="finanzas"] .finTip--wide{
+  width: 330px;
+  max-width: 330px;
+  padding: 10px 12px;
+}
+
+[data-page="finanzas"] .finTip__group{
+  margin-top: 8px;
+}
+
+[data-page="finanzas"] .finTip__groupTitle{
+  margin-bottom: 3px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(15,23,42,.62);
+}
+
+[data-page="finanzas"] .finTip__subtotal{
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px dashed rgba(15,23,42,.10);
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(15,23,42,.78);
+}
+
+[data-page="finanzas"] .finTip__dot--financial{
+  background: #2479FF;
+}
+
+[data-page="finanzas"] .finTip__dot--cod{
+  background: rgba(34,197,94,.95);
+}
+
+[data-page="finanzas"] .finTip__dot--intervened{
+  background: rgba(239,68,68,.95);
+}
+
+
+
+/* =========================================================
+   FINANZAS · Movimientos V2 · Ajuste tooltip + KPIs
+   ========================================================= */
+
+[data-page="finanzas"] #finCashflowCard{
+  overflow: visible !important;
+}
+
+[data-page="finanzas"] #finCashflowChart{
+  overflow: visible !important;
+  position: relative;
+  z-index: 3;
+}
+
+[data-page="finanzas"] .finTip{
+  z-index: 30;
+}
+
+[data-page="finanzas"] .finTip--wide{
+  width: 340px;
+  max-width: 340px;
+}
+
+
+
+/* =========================================================
+   FINANZAS · Notificaciones V2A
+   Tarjetas por canal: financiero azul / COD verde.
+   ========================================================= */
+
+[data-page="finanzas"] .finAlertsPanel{
+  background: #1b1b1b;
+  color: rgba(255,255,255,.88);
+}
+
+[data-page="finanzas"] .finAlertsPanel__head,
+[data-page="finanzas"] .finAlertsTabs{
+  border-color: rgba(255,255,255,.12);
+}
+
+[data-page="finanzas"] .finAlertsTab{
+  color: rgba(255,255,255,.66);
+}
+
+[data-page="finanzas"] .finAlertsTab.is-active{
+  color: #ffffff;
+}
+
+[data-page="finanzas"] .finAlertsClose{
+  color: rgba(255,255,255,.86);
+}
+
+[data-page="finanzas"] .finAlertCard{
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.10);
+  border-left-width: 4px;
+  box-shadow: none;
+  color: rgba(255,255,255,.88);
+}
+
+[data-page="finanzas"] .finAlertCard:hover{
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(0,0,0,.22);
+}
+
+[data-page="finanzas"] .finAlertCard--financial{
+  border-left-color: #2479FF;
+}
+
+[data-page="finanzas"] .finAlertCard--cod{
+  border-left-color: rgba(34,197,94,.95);
+}
+
+[data-page="finanzas"] .finAlertCard--vencido.finAlertCard--financial{
+  background: linear-gradient(90deg, rgba(36,121,255,.18), rgba(255,255,255,.045) 42%);
+}
+
+[data-page="finanzas"] .finAlertCard--vencido.finAlertCard--cod{
+  background: linear-gradient(90deg, rgba(34,197,94,.16), rgba(255,255,255,.045) 42%);
+}
+
+[data-page="finanzas"] .finAlertCard__head{
+  align-items:flex-start;
+}
+
+[data-page="finanzas"] .finAlertCard__titleWrap{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+
+[data-page="finanzas"] .finAlertCard__title{
+  color:#ffffff;
+  font-weight:850;
+}
+
+[data-page="finanzas"] .finAlertCard__channel{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.58);
+}
+
+[data-page="finanzas"] .finAlertCard__body{
+  color:rgba(255,255,255,.78);
+  gap:5px;
+}
+
+[data-page="finanzas"] .finAlertCard__row{
+  align-items:flex-start;
+}
+
+[data-page="finanzas"] .finAlertCard__row--strong{
+  padding-top:6px;
+  margin-top:2px;
+  border-top:1px dashed rgba(255,255,255,.12);
+}
+
+[data-page="finanzas"] .finAlertCard__row--action{
+  padding-top:6px;
+  margin-top:4px;
+  border-top:1px dashed rgba(255,255,255,.12);
+}
+
+[data-page="finanzas"] .finAlertCard__label{
+  color:rgba(255,255,255,.54);
+}
+
+[data-page="finanzas"] .finAlertCard__value{
+  color:rgba(255,255,255,.92);
+  font-weight:750;
+  text-align:right;
+}
+
+[data-page="finanzas"] .finAlertCard__meta{
+  border-top-color: rgba(255,255,255,.12);
+  color:rgba(255,255,255,.58);
+}
+
+[data-page="finanzas"] .finAlertMetaPill{
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.68);
+}
+
+[data-page="finanzas"] .finAlertCard--financial .finAlertMetaPill{
+  background: rgba(36,121,255,.16);
+  color: rgba(220,235,255,.94);
+}
+
+[data-page="finanzas"] .finAlertCard--cod .finAlertMetaPill{
+  background: rgba(34,197,94,.15);
+  color: rgba(220,255,235,.94);
+}
+
+[data-page="finanzas"] .finAlertCard__status{
+  font-weight:850;
+}
+
+[data-page="finanzas"] .finAlertCard__status--por_entrar,
+[data-page="finanzas"] .finAlertCard__status--hoy{
+  background: rgba(36,121,255,.16);
+  color: #dbeafe;
+  border-color: rgba(36,121,255,.36);
+}
+
+[data-page="finanzas"] .finAlertCard__status--vencido{
+  background: rgba(239,68,68,.16);
+  color: #fecaca;
+  border-color: rgba(239,68,68,.36);
+}
+
+[data-page="finanzas"] .finEstadoIngresoSelect{
+  min-width: 132px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+[data-page="finanzas"] .finAlertLocked{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  color:rgba(255,255,255,.72);
+}
+
+[data-page="finanzas"] .finAlertLocked span{
+  font-weight:850;
+}
+
+[data-page="finanzas"] .finAlertLocked small{
+  color:rgba(255,255,255,.42);
+  font-size:10px;
+}
+
+[data-page="finanzas"] .finAlertLocked--cod span{
+  color:rgba(187,247,208,.96);
+}
+
+
+
+
+/* =========================================================
+   FINANZAS · Ajuste visual V2B CLEAN
+   Solo visual. NO toca lógica.
+   ========================================================= */
+
+/* Contención segura del gráfico */
+[data-page="finanzas"] #finCashflowCard{
+  overflow: hidden !important;
+}
+
+[data-page="finanzas"] #finCashflowChart{
+  position: relative !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+/* IMPORTANTE:
+   no forzamos width/height del svg/canvas
+   para no romper el sizing que ya trae el gráfico */
+[data-page="finanzas"] #finCashflowChart svg,
+[data-page="finanzas"] #finCashflowChart canvas{
+  display: block !important;
+}
+
+/* Textos informativos del bloque del gráfico */
+[data-page="finanzas"] #finFootnote,
+[data-page="finanzas"] #finCashflowCard .u-muted{
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+/* Forecast verde legible */
+[data-page="finanzas"] .finForecastLine{
+  margin-top: 8px !important;
+  color: #4ade80 !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.01em !important;
+}
+
+[data-page="finanzas"] .finForecastLine span{
+  color: #4ade80 !important;
+}
+
+[data-page="finanzas"] .finForecastLine small{
+  margin-top: 2px !important;
+  color: rgba(134,239,172,.78) !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+/* Tabs lineales */
+[data-page="finanzas"] .finAlertsSubtabs{
+  gap: 0 !important;
+  padding: 0 0 2px !important;
+  margin: 0 0 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs::-webkit-scrollbar{
+  display: none !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button{
+  position: relative !important;
+  flex: 0 0 auto !important;
+  border: 0 !important;
+  border-right: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgba(255,255,255,.62) !important;
+  padding: 9px 13px 10px !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button:first-child{
+  padding-left: 0 !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button:last-child{
+  border-right: 0 !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button.is-active{
+  background: transparent !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button.is-active::after{
+  content: "" !important;
+  position: absolute !important;
+  left: 10px !important;
+  right: 10px !important;
+  bottom: -2px !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: #2479FF !important;
+}
+
+[data-page="finanzas"] .finAlertsSubtabs button:first-child.is-active::after{
+  left: 0 !important;
+}
+
+
+/* =========================================================
+   FINANZAS · Tooltip completo del gráfico
+   Solo visual. No toca lógica.
+   ========================================================= */
+
+[data-page="finanzas"] #finCashflowChart{
+  overflow: visible !important;
+  z-index: 4 !important;
+}
+
+[data-page="finanzas"] #finCashflowCard{
+  overflow: visible !important;
+  z-index: 5 !important;
+}
+
+[data-page="finanzas"] .finTip,
+[data-page="finanzas"] #finTooltip{
+  z-index: 80 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+[data-page="finanzas"] .finTip--wide{
+  width: 340px !important;
+  max-width: 340px !important;
+}
+
+
+
+/* =========================================================
+   FINANZAS · Info compacta del gráfico arriba derecha
+   Solo visual. No toca lógica ni proporción.
+   ========================================================= */
+
+[data-page="finanzas"] #finCashflowCard{
+  position: relative !important;
+}
+
+[data-page="finanzas"] #finChartTopInfo{
+  position: absolute !important;
+  top: 16px !important;
+  right: 58px !important;
+  z-index: 20 !important;
+  max-width: min(620px, calc(100% - 360px)) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  pointer-events: none !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__legend{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 9px !important;
+  flex-wrap: wrap !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__item{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  font-size: 10.5px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  color: rgba(255,255,255,.84) !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__dot{
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  flex: 0 0 auto !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__dot--fin{
+  background: #2479FF !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__dot--cod{
+  background: rgba(34,197,94,.95) !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__dot--int{
+  background: rgba(239,68,68,.95) !important;
+}
+
+[data-page="finanzas"] .finChartTopInfo__note{
+  width: 100% !important;
+  text-align: right !important;
+  font-size: 9.5px !important;
+  line-height: 1.15 !important;
+  font-weight: 650 !important;
+  color: rgba(255,255,255,.46) !important;
+  white-space: normal !important;
+}
+
+[data-page="finanzas"] .finChartBottomInfoMoved{
+  display: none !important;
+}
+
+@media (max-width: 1180px){
+  [data-page="finanzas"] #finChartTopInfo{
+    max-width: min(460px, calc(100% - 300px)) !important;
+    gap: 7px !important;
+  }
+
+  [data-page="finanzas"] .finChartTopInfo__item{
+    font-size: 10px !important;
+  }
+
+  [data-page="finanzas"] .finChartTopInfo__note{
+    display: none !important;
+  }
+}
+

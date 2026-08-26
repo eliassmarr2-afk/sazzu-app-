@@ -1,0 +1,599 @@
+/* =========================================================
+   PUBLICIDAD UTM · DARK · TAB AUDIENCIAS
+   Capa exclusivamente visual.
+   No modifica lógica, estructura, dimensiones ni eventos.
+   ========================================================= */
+
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+) {
+  color-scheme: dark;
+  background: #151515 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+) .appShell,
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+) .bodyGrid,
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+) .main {
+  background: #151515 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"] {
+  --pubutm-dark-bg: #151515;
+  --pubutm-dark-bg-deep: #111111;
+  --pubutm-dark-surface: #202020;
+  --pubutm-dark-surface-raised: #262626;
+  --pubutm-dark-surface-soft: #2d2d2d;
+  --pubutm-dark-border: #454545;
+  --pubutm-dark-border-soft: rgba(255, 255, 255, .10);
+  --pubutm-dark-text: #f5f5f5;
+  --pubutm-dark-text-soft: #b8b8b8;
+  --pubutm-dark-text-muted: #8f8f8f;
+  --pubutm-dark-blue: #4f7fff;
+  --pubutm-dark-blue-deep: #2479ff;
+  --pubutm-dark-green: #62deb0;
+  --pubutm-dark-green-bg: rgba(38, 181, 122, .17);
+
+  background: transparent !important;
+  color: var(--pubutm-dark-text) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeader--premium,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__copy,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__actions {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeader--premium .pubUtmHeader__title {
+  color: var(--pubutm-dark-text) !important;
+  text-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeader__eyebrow,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__micro,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__micro span {
+  color: var(--pubutm-dark-text-soft) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__micro span:not(:last-child)::after {
+  background: #606060 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__status {
+  background: var(--pubutm-dark-green-bg) !important;
+  color: var(--pubutm-dark-green) !important;
+  border: 1px solid rgba(98, 222, 176, .55) !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__statusDot {
+  background: var(--pubutm-dark-green) !important;
+  box-shadow: 0 0 0 4px rgba(98, 222, 176, .10) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__mark,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHeaderPremium__logo,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+[data-pubutm-header-mark] {
+  background: #242424 !important;
+  color: var(--pubutm-dark-blue) !important;
+  border: 1px solid #333333 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .34) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   TABS SUPERIORES
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmTabs--premium {
+  background: #222222 !important;
+  border-color: #484848 !important;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, .30),
+    inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmTabs--premium .pubUtmTab {
+  background: transparent !important;
+  color: #b7b7b7 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmTabs--premium .pubUtmTab:hover {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmTabs--premium .pubUtmTab.is-active {
+  background: var(--pubutm-dark-blue) !important;
+  color: #ffffff !important;
+  box-shadow: 0 7px 18px rgba(79, 127, 255, .28) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BOTONES GENERALES DEL TAB
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmBtn {
+  background: #232323 !important;
+  color: #f2f2f2 !important;
+  border-color: #4b4b4b !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmBtn:hover {
+  background: #2b2b2b !important;
+  border-color: #626262 !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmBtn--primary {
+  background: var(--pubutm-dark-blue) !important;
+  color: #ffffff !important;
+  border-color: var(--pubutm-dark-blue) !important;
+  box-shadow: 0 9px 20px rgba(79, 127, 255, .24) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   KPIs SUPERIORES
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHero--premium .pubUtmKpi {
+  background: var(--pubutm-dark-surface) !important;
+  color: var(--pubutm-dark-text) !important;
+  border: 1px solid #303030 !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .22) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHero--premium .pubUtmKpi:hover {
+  background: #242424 !important;
+  border-color: #424242 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .26) !important;
+  transform: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi__label {
+  color: #a6a6a6 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi__value {
+  color: #ffffff !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi__meta,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi__hint,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi p {
+  color: var(--pubutm-dark-text-soft) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi strong {
+  color: #ffffff !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi a,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi [class*="link"] {
+  color: var(--pubutm-dark-blue) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi [class*="badge"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi [class*="pill"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi [class*="counter"] {
+  background: #303030 !important;
+  color: #c7c7c7 !important;
+  border-color: #424242 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi [class*="percent"] {
+  background: rgba(79, 127, 255, .14) !important;
+  color: var(--pubutm-dark-blue) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi button {
+  background: #303030 !important;
+  color: #bdbdbd !important;
+  border-color: #3e3e3e !important;
+}
+
+/* Filtro UTM */
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi:first-child [class*="bar"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmKpi:first-child [class*="count"] {
+  background: rgba(58, 190, 128, .16) !important;
+  color: #71dba9 !important;
+  border-color: rgba(58, 190, 128, .18) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BIBLIOTECA DE CONJUNTOS
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard {
+  background: #1c1c1c !important;
+  color: var(--pubutm-dark-text) !important;
+  border: 1px solid #2d2d2d !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnified__head,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnified__toolbar,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnified__filters,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnified__tabs,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnified__body {
+  background: transparent !important;
+  border-color: #353535 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard h2,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard h3,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard strong {
+  color: #f7f7f7 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard p {
+  color: #c2c2c2 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard [class*="eyebrow"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard [class*="label"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard [class*="meta"] {
+  color: #9d9d9d !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmFilter {
+  background: #202020 !important;
+  color: #d2d2d2 !important;
+  border-color: #4a4a4a !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmFilter.is-active {
+  background: rgba(79, 127, 255, .15) !important;
+  color: #79a0ff !important;
+  border-color: #5b7ff1 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmConjuntoCard,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmConjuntoCard.is-new {
+  background: var(--pubutm-dark-surface-raised) !important;
+  color: var(--pubutm-dark-text) !important;
+  border: 1px solid #4b4b4b !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmConjuntoCard:hover,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard .pubUtmConjuntoCard.is-new:hover {
+  background: #292929 !important;
+  color: #ffffff !important;
+  border-color: #626262 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .20) !important;
+  transform: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard__metrics > *,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard__stats > *,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard [class*="__metricBox"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard [class*="__statBox"] {
+  background: #2d2d2d !important;
+  color: #f1f1f1 !important;
+  border-color: #4c4c4c !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard__badges > *,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard__tags > *,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard__chips > * {
+  background: #242424 !important;
+  color: #ededed !important;
+  border-color: #555555 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard a,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard [class*="open"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard [class*="link"] {
+  color: #7298ff !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BIBLIOTECA DE AUDIENCIAS
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceLibrary,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceLibraryCard,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselShell,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudiencesCarouselShell {
+  background: #1c1c1c !important;
+  color: var(--pubutm-dark-text) !important;
+  border-color: #2f2f2f !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard {
+  background: var(--pubutm-dark-surface-raised) !important;
+  color: #ffffff !important;
+  border: 1px solid #4b4b4b !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard:hover {
+  background: #292929 !important;
+  border-color: #626262 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22) !important;
+  transform: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__autoBadge {
+  background: #303030 !important;
+  color: #f2f2f2 !important;
+  border-color: #4d4d4d !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselBadge {
+  background: #202020 !important;
+  color: #efefef !important;
+  border-color: #4b4b4b !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselBadge--success,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselBadge--green {
+  background: rgba(69, 206, 157, .88) !important;
+  color: #10251d !important;
+  border-color: transparent !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__eyebrow {
+  color: #a5a5a5 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__title {
+  color: #ffffff !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__stats > div,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard [class*="__condition"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard [class*="__finance"],
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard [class*="__billing"] {
+  background: #2d2d2d !important;
+  color: #f4f4f4 !important;
+  border-color: #4c4c4c !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__stats span,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard [class*="__condition"] span,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard [class*="__finance"] span {
+  color: #a8a8a8 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard__actions {
+  border-color: #3d3d3d !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselAction {
+  background: #252525 !important;
+  color: #ededed !important;
+  border-color: #4c4c4c !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselAction:hover {
+  background: #303030 !important;
+  color: #ffffff !important;
+  border-color: #646464 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudiencesCarouselTrack {
+  scrollbar-color: #4a4a4a #202020 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudiencesCarouselTrack::-webkit-scrollbar-track {
+  background: #202020 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudiencesCarouselTrack::-webkit-scrollbar-thumb {
+  background: #4a4a4a !important;
+  border-color: #202020 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BUSCADOR GLOBAL
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearch__input {
+  background: #222222 !important;
+  color: #f5f5f5 !important;
+  border-color: #4a4a4a !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .28) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearch__input::placeholder {
+  color: #929292 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearch__results {
+  background: #1d1d1d !important;
+  color: #f5f5f5 !important;
+  border-color: #464646 !important;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, .48) !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearch__head {
+  border-color: #363636 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearch__head strong,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchUser__identity strong,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchEntity__copy strong,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchEmpty strong {
+  color: #f5f5f5 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchUser,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchEntity {
+  background: #252525 !important;
+  color: #f5f5f5 !important;
+  border-color: #414141 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchRelation {
+  background: #2d2d2d !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchUser__identity span,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchEntity__copy span,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchRelation__copy span,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalSearchEmpty p {
+  color: #aaaaaa !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────────────────── */
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalFooter {
+  border-color: #343434 !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalFooter__link,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalFooter__meta {
+  color: #9e9e9e !important;
+}
+
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmGlobalFooter__link:hover {
+  background: #242424 !important;
+  color: #f1f1f1 !important;
+}
+
+/* Defensa visual: sin gradientes claros dentro del TAB Audiencias */
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmHero--premium .pubUtmKpi,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntosUnifiedCard,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmConjuntoCard,
+#pubUtmPage.pubUtmPage--premium[data-pubutm-active-tab="audiencias"]
+.pubUtmAudienceCarouselCard {
+  background-image: none !important;
+}
+
+/* =========================================================
+   FIN · PUBLICIDAD UTM · DARK · TAB AUDIENCIAS
+   ========================================================= */

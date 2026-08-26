@@ -1,0 +1,3830 @@
+/* =========================================================
+   PUBLICIDAD UTM · DARK · PARÁMETROS UTM
+   Tab interno: conjuntos
+   Capa exclusivamente visual.
+   No modifica lógica, eventos, RPC ni slides.
+   ========================================================= */
+
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage[data-pubutm-active-tab="conjuntos"]
+) {
+  color-scheme: dark;
+  background: #151515 !important;
+}
+
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage[data-pubutm-active-tab="conjuntos"]
+) .appShell,
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage[data-pubutm-active-tab="conjuntos"]
+) .bodyGrid,
+body[data-page="publicidad-utm"]:has(
+  #pubUtmPage[data-pubutm-active-tab="conjuntos"]
+) .main {
+  background: #151515 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"] {
+  --pubutm-param-bg: #151515;
+  --pubutm-param-surface: #1c1c1c;
+  --pubutm-param-card: #242424;
+  --pubutm-param-card-soft: #2d2d2d;
+  --pubutm-param-border: #484848;
+  --pubutm-param-border-soft: #343434;
+  --pubutm-param-text: #f5f5f5;
+  --pubutm-param-text-soft: #b8b8b8;
+  --pubutm-param-text-muted: #919191;
+  --pubutm-param-blue: #4f7fff;
+  --pubutm-param-blue-main: #2479ff;
+  --pubutm-param-green: #62deb0;
+
+  background: transparent !important;
+  color: var(--pubutm-param-text) !important;
+}
+
+/* =========================================================
+   HEADER GENERAL DEL MÓDULO
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeader--premium,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__copy,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__actions {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeader__title {
+  color: var(--pubutm-param-text) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeader__eyebrow,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__micro,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__micro span {
+  color: var(--pubutm-param-text-soft) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__status {
+  background: rgba(38, 181, 122, .17) !important;
+  color: var(--pubutm-param-green) !important;
+  border-color: rgba(98, 222, 176, .45) !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__statusDot {
+  background: var(--pubutm-param-green) !important;
+  box-shadow: 0 0 0 4px rgba(98, 222, 176, .10) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmAevaInline__trigger {
+  background: #252525 !important;
+  color: var(--pubutm-param-blue) !important;
+  border-color: #363636 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .30) !important;
+}
+
+/* =========================================================
+   TABS SUPERIORES
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmTabs--premium {
+  background: #222222 !important;
+  border-color: #484848 !important;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, .30),
+    inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmTabs--premium .pubUtmTab {
+  background: transparent !important;
+  color: #b7b7b7 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmTabs--premium .pubUtmTab:hover {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmTabs--premium .pubUtmTab.is-active {
+  background: #292929 !important;
+  color: #ffffff !important;
+  box-shadow:
+    inset 0 0 0 1px #555555,
+    0 7px 18px rgba(0, 0, 0, .22) !important;
+}
+
+/* =========================================================
+   BOTONES DEL HEADER Y MENÚ
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__actions > .pubUtmBtn {
+  background: #232323 !important;
+  color: #f3f3f3 !important;
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmHeaderPremium__actions > .pubUtmBtn--primary {
+  background: var(--pubutm-param-blue-main) !important;
+  color: #ffffff !important;
+  border-color: var(--pubutm-param-blue-main) !important;
+  box-shadow: 0 9px 20px rgba(36, 121, 255, .23) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__trigger {
+  background: #232323 !important;
+  border-color: #505050 !important;
+  color: #eeeeee !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__trigger span {
+  background: #eeeeee !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__panel {
+  background: #202020 !important;
+  border-color: #454545 !important;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .48) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__item {
+  background: transparent !important;
+  color: #eeeeee !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__item:hover {
+  background: #2c2c2c !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__item small,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmOpsMenu__meta {
+  color: #a0a0a0 !important;
+}
+
+/* =========================================================
+   BUSCADOR GLOBAL
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearch__input {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+  border-color: #505050 !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .28) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearch__input::placeholder {
+  color: #909090 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearch__clear {
+  color: #a4a4a4 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearch__submit {
+  background: var(--pubutm-param-blue-main) !important;
+  border-color: var(--pubutm-param-blue-main) !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearch__results {
+  background: #1d1d1d !important;
+  color: #f5f5f5 !important;
+  border-color: #464646 !important;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, .48) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearchUser,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearchEntity {
+  background: #252525 !important;
+  color: #f5f5f5 !important;
+  border-color: #414141 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalSearchRelation {
+  background: #2d2d2d !important;
+}
+
+/* =========================================================
+   PANEL PARÁMETROS UTM
+   No alcanza slides montados fuera del tab.
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"] {
+  color: var(--pubutm-param-text) !important;
+}
+
+/* Centro de gobierno */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter {
+  background: var(--pubutm-param-surface) !important;
+  color: var(--pubutm-param-text) !important;
+  border: 1px solid var(--pubutm-param-border) !important;
+  border-left: 4px solid var(--pubutm-param-blue) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+  background-image: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter__head {
+  background: transparent !important;
+  border-color: var(--pubutm-param-border-soft) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter h2,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter h3,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter strong {
+  color: #f7f7f7 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter p {
+  color: #c2c2c2 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter .pubUtmCard__eyebrow {
+  color: #a2a2a2 !important;
+}
+
+/* Botones del centro de gobierno */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter__actions .pubUtmBtn {
+  background: #222222 !important;
+  color: #ededed !important;
+  border-color: #555555 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter__actions .pubUtmBtn:hover {
+  background: #2b2b2b !important;
+  border-color: #6a6a6a !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter__actions .pubUtmBtn--primary {
+  background: var(--pubutm-param-blue-main) !important;
+  color: #ffffff !important;
+  border-color: var(--pubutm-param-blue-main) !important;
+  box-shadow: 0 8px 20px rgba(36, 121, 255, .22) !important;
+}
+
+/* Paneles Diccionario / Reglas */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel {
+  background: var(--pubutm-param-card) !important;
+  color: var(--pubutm-param-text) !important;
+  border: 1px solid #505050 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel:hover {
+  background: #272727 !important;
+  border-color: #5c5c5c !important;
+  transform: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel__head strong {
+  color: #f7f7f7 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel__head p {
+  color: #b8b8b8 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel__icon {
+  box-shadow: none !important;
+}
+
+/* Estadísticas internas */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandStats > div {
+  background: var(--pubutm-param-card-soft) !important;
+  color: #f4f4f4 !important;
+  border-color: #515151 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandStats span {
+  color: #aaaaaa !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandStats strong {
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   BIBLIOTECA DE CAMPOS
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary {
+  background: var(--pubutm-param-surface) !important;
+  color: var(--pubutm-param-text) !important;
+  border: 1px solid var(--pubutm-param-border) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+  background-image: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary__head {
+  background: transparent !important;
+  border-color: var(--pubutm-param-border-soft) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary h3 {
+  color: #f7f7f7 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary p {
+  color: #c2c2c2 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary .pubUtmCard__eyebrow {
+  color: #a5a5a5 !important;
+}
+
+/* Buscador de campos */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsSearch {
+  background: #181818 !important;
+  color: #eeeeee !important;
+  border-color: #565656 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsSearch input {
+  background: transparent !important;
+  color: #eeeeee !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsSearch input::placeholder {
+  color: #969696 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsSearch span {
+  color: #789bff !important;
+}
+
+/* Filtros por tipo y familia */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFilterGroup button,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFamilyFilters button {
+  background: #222222 !important;
+  color: #d3d3d3 !important;
+  border-color: #505050 !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFilterGroup button:hover,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFamilyFilters button:hover {
+  background: #2b2b2b !important;
+  color: #ffffff !important;
+  border-color: #676767 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFilterGroup button.is-active,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsFamilyFilters button.is-active {
+  background: rgba(79, 127, 255, .14) !important;
+  color: #78a0ff !important;
+  border-color: #5878d7 !important;
+}
+
+/* =========================================================
+   TARJETAS DE CAMPOS
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard {
+  background: var(--pubutm-param-card) !important;
+  color: var(--pubutm-param-text) !important;
+  border: 1px solid #505050 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard:hover {
+  background: #282828 !important;
+  border-color: #626262 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22) !important;
+  transform: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__key {
+  color: #a9a9a9 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard h3 {
+  color: #ffffff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__description {
+  color: #d0d0d0 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__icon {
+  box-shadow: none !important;
+}
+
+/* Colores de iconos por tipo */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__icon--id {
+  background: #7650df !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__icon--categoria {
+  background: #2479ff !important;
+  color: #ffffff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__icon--texto {
+  background: #43ad72 !important;
+  color: #ffffff !important;
+}
+
+/* Estados */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamStatus--ok {
+  background: rgba(47, 174, 119, .18) !important;
+  color: #68d6a3 !important;
+  border-color: rgba(47, 174, 119, .22) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamStatus--warning {
+  background: rgba(226, 154, 45, .18) !important;
+  color: #f2bd65 !important;
+  border-color: rgba(226, 154, 45, .24) !important;
+}
+
+/* Chips principales */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamChip {
+  background: #303030 !important;
+  color: #ededed !important;
+  border-color: #444444 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamChip--family {
+  background: rgba(47, 174, 119, .14) !important;
+  color: #62ce99 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamChip--id {
+  background: rgba(122, 82, 224, .18) !important;
+  color: #ad8dff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamChip--categoria {
+  background: rgba(36, 121, 255, .16) !important;
+  color: #77a0ff !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamChip--texto {
+  background: rgba(47, 174, 119, .16) !important;
+  color: #6ad5a2 !important;
+}
+
+/* Grupos internos */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamGroup > span {
+  color: #a5a5a5 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamTinyPill {
+  background: #303030 !important;
+  color: #dddddd !important;
+  border-color: #414141 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamTinyPill.is-on {
+  background: #343434 !important;
+  color: #f2f2f2 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamTinyPill.is-off {
+  background: #292929 !important;
+  color: #999999 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamTinyPill.is-locked {
+  background: rgba(226, 154, 45, .14) !important;
+  color: #dfb363 !important;
+}
+
+/* Advertencias */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard__warnings {
+  background: rgba(226, 154, 45, .10) !important;
+  color: #e8bd73 !important;
+  border-color: rgba(226, 154, 45, .22) !important;
+}
+
+/* Acciones */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamAction {
+  background: #232323 !important;
+  color: #7197ff !important;
+  border-color: #3f5f9c !important;
+  box-shadow: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamAction:hover {
+  background: #2b2b2b !important;
+  color: #91aeff !important;
+  border-color: #557bd0 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamAction--primary {
+  background: var(--pubutm-param-blue-main) !important;
+  color: #ffffff !important;
+  border-color: var(--pubutm-param-blue-main) !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamAction:disabled {
+  background: #292929 !important;
+  color: #777777 !important;
+  border-color: #393939 !important;
+  opacity: .62 !important;
+}
+
+/* Vacíos y pie de preview */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsEmpty {
+  background: #242424 !important;
+  color: #f1f1f1 !important;
+  border-color: #484848 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsEmpty span {
+  color: #aaaaaa !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsPreviewFoot,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary__foot {
+  background: #222222 !important;
+  color: #b8b8b8 !important;
+  border-color: #4a4a4a !important;
+}
+
+/* =========================================================
+   CATÁLOGOS
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog {
+  background: var(--pubutm-param-surface) !important;
+  color: var(--pubutm-param-text) !important;
+  border: 1px solid var(--pubutm-param-border) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+  background-image: none !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog h3,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog strong {
+  color: #f5f5f5 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog__grid > div {
+  background: var(--pubutm-param-card-soft) !important;
+  color: #eeeeee !important;
+  border-color: #505050 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog__grid span {
+  color: #b3b3b3 !important;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalFooter {
+  border-color: #343434 !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalFooter__link,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalFooter__meta {
+  color: #9e9e9e !important;
+}
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+.pubUtmGlobalFooter__link:hover {
+  background: #242424 !important;
+  color: #f1f1f1 !important;
+}
+
+/* Defensa final: sin fondos blancos ni gradientes claros
+   dentro del contenido normal del tab. */
+
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandCenter,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCommandPanel,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsLibrary,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamCard,
+#pubUtmPage[data-pubutm-active-tab="conjuntos"]
+[data-tab-panel="conjuntos"]
+.pubUtmParamsCatalog {
+  background-image: none !important;
+}
+
+/* =========================================================
+   FIN · PUBLICIDAD UTM · DARK · PARÁMETROS UTM
+   ========================================================= */
+
+/* PUB_UTM_VALUES_SELECTOR_DARK_V1 · INICIO
+   Slide: Seleccionar campo para valores permitidos.
+   Alcance aislado. No modifica Gestionar valores.
+   ========================================================= */
+
+/* =========================================================
+   CONTENEDOR GENERAL
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide {
+  color-scheme: dark !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__backdrop {
+  background:
+    rgba(0, 0, 0, 0.68) !important;
+
+  -webkit-backdrop-filter:
+    blur(6px) !important;
+
+  backdrop-filter:
+    blur(6px) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__panel {
+  background:
+    linear-gradient(
+      180deg,
+      #141416 0%,
+      #101113 100%
+    ) !important;
+
+  color: #f4f4f5 !important;
+
+  border-left:
+    1px solid #34353a !important;
+
+  box-shadow:
+    -24px 0 64px
+    rgba(0, 0, 0, 0.54) !important;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__head {
+  background:
+    linear-gradient(
+      180deg,
+      #1d1d20 0%,
+      #18181b 100%
+    ) !important;
+
+  border-bottom:
+    1px solid #3a3b40 !important;
+
+  box-shadow:
+    0 1px 0
+    rgba(255, 255, 255, 0.025) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__head
+.pubUtmCard__eyebrow {
+  color: #a9a9b1 !important;
+
+  font-weight: 850 !important;
+  letter-spacing: 0.1em !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__head
+.pubUtmCard__title {
+  color: #f3f3f5 !important;
+
+  text-shadow:
+    0 1px 0
+    rgba(0, 0, 0, 0.35) !important;
+}
+
+
+/* =========================================================
+   BOTONES SECUNDARIOS
+   Cerrar / Cancelar
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--ghost {
+  background:
+    linear-gradient(
+      180deg,
+      #202023 0%,
+      #19191c 100%
+    ) !important;
+
+  color: #d7d7dc !important;
+
+  border:
+    1px solid #4a4b52 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.035),
+    0 4px 10px
+    rgba(0, 0, 0, 0.12) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--ghost:hover {
+  background:
+    #28282c !important;
+
+  color: #ffffff !important;
+
+  border-color:
+    #66676f !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--ghost:focus-visible {
+  outline:
+    2px solid
+    rgba(134, 146, 255, 0.55) !important;
+
+  outline-offset:
+    2px !important;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body {
+  position: relative !important;
+
+  background:
+    radial-gradient(
+      circle at 88% 92%,
+      rgba(95, 102, 140, 0.07) 0%,
+      transparent 23%
+    ),
+    linear-gradient(
+      180deg,
+      #111214 0%,
+      #0f1012 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   TARJETA INFORMATIVA SUPERIOR
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      #202231 0%,
+      #1b1d27 52%,
+      #191b23 100%
+    ) !important;
+
+  border:
+    1px solid #2f3240 !important;
+
+  border-left:
+    4px solid #a27aff !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.025),
+    0 12px 30px
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard::after {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  pointer-events: none !important;
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(116, 96, 255, 0.055),
+      transparent 48%
+    ) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__icon {
+  position: relative !important;
+  z-index: 1 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(78, 99, 205, 0.25),
+      rgba(69, 74, 133, 0.22)
+    ) !important;
+
+  color: #5b8eff !important;
+
+  border:
+    1px solid
+    rgba(111, 128, 255, 0.09) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.025) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__copy {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__copy strong {
+  color: #eeeeF1 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__copy span {
+  color: #b2b3bd !important;
+}
+
+
+/* =========================================================
+   SECCIÓN SELECCIÓN DE CAMPO
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldSection {
+  overflow: hidden !important;
+
+  background:
+    #171719 !important;
+
+  border:
+    1px solid #414249 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.022),
+    0 10px 26px
+    rgba(0, 0, 0, 0.13) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldSection__title {
+  background:
+    linear-gradient(
+      180deg,
+      #2a2a2e 0%,
+      #252529 100%
+    ) !important;
+
+  color: #b8b8c0 !important;
+
+  border-bottom:
+    1px solid #45464d !important;
+
+  letter-spacing:
+    0.08em !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow {
+  background:
+    linear-gradient(
+      180deg,
+      #18181b 0%,
+      #151517 100%
+    ) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow__copy strong {
+  color: #f0f0f2 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow__copy span {
+  color: #b1b2ba !important;
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl {
+  background:
+    linear-gradient(
+      180deg,
+      #303035 0%,
+      #2b2b30 100%
+    ) !important;
+
+  color: #f4f4f5 !important;
+
+  border:
+    1px solid #51525a !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.04),
+    0 4px 12px
+    rgba(0, 0, 0, 0.14) !important;
+
+  caret-color:
+    #ffffff !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl:hover {
+  border-color:
+    #666771 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl:focus {
+  border-color:
+    #738bff !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(92, 118, 255, 0.18),
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.04) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl option {
+  background:
+    #252529 !important;
+
+  color:
+    #ffffff !important;
+}
+
+
+/* =========================================================
+   RESUMEN DEL CAMPO
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard.pubUtmCard--full {
+  background:
+    linear-gradient(
+      180deg,
+      #19191b 0%,
+      #151517 100%
+    ) !important;
+
+  border:
+    1px solid #414249 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.022),
+    0 12px 30px
+    rgba(0, 0, 0, 0.15) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__head {
+  border-bottom-color:
+    rgba(255, 255, 255, 0.035) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__eyebrow {
+  color: #aaaab3 !important;
+
+  letter-spacing:
+    0.09em !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__title {
+  color: #efeff2 !important;
+}
+
+.pubUtmValuesSelectorSlide
+[data-values-field-summary-body] {
+  color: #b9bac2 !important;
+
+  display: grid !important;
+  gap: 8px !important;
+}
+
+.pubUtmValuesSelectorSlide
+[data-values-field-summary-body] > div {
+  color: #b9bac2 !important;
+}
+
+.pubUtmValuesSelectorSlide
+[data-values-field-summary-body] strong {
+  color: #dedee2 !important;
+}
+
+
+/* =========================================================
+   SKELETON / CARGA
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmSkeletonLine {
+  background:
+    linear-gradient(
+      90deg,
+      #28282d 0%,
+      #36363c 46%,
+      #28282d 100%
+    ) !important;
+
+  background-size:
+    220% 100% !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmLoadingChip {
+  background:
+    #29292e !important;
+
+  color:
+    #c8c8ce !important;
+
+  border:
+    1px solid #45464e !important;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__footer {
+  background:
+    linear-gradient(
+      180deg,
+      #1d1d20 0%,
+      #18181b 100%
+    ) !important;
+
+  border-top:
+    1px solid #37383e !important;
+
+  box-shadow:
+    0 -12px 32px
+    rgba(0, 0, 0, 0.22) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--primary {
+  background:
+    linear-gradient(
+      135deg,
+      #246dff 0%,
+      #1479ff 55%,
+      #1295ff 100%
+    ) !important;
+
+  color:
+    #ffffff !important;
+
+  border:
+    1px solid
+    rgba(95, 159, 255, 0.44) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.16),
+    0 10px 24px
+    rgba(20, 121, 255, 0.22) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #3479ff 0%,
+      #2185ff 55%,
+      #20a0ff 100%
+    ) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.18),
+    0 12px 28px
+    rgba(20, 121, 255, 0.3) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--primary:disabled {
+  background:
+    #293242 !important;
+
+  color:
+    #747b88 !important;
+
+  border-color:
+    #363d49 !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body {
+  scrollbar-color:
+    #4b4c53 #171719 !important;
+
+  scrollbar-width:
+    thin !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body::-webkit-scrollbar {
+  width: 9px !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body::-webkit-scrollbar-track {
+  background:
+    #171719 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb {
+  background:
+    #494a51 !important;
+
+  border:
+    2px solid #171719 !important;
+
+  border-radius:
+    999px !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb:hover {
+  background:
+    #62636c !important;
+}
+
+/* PUB_UTM_VALUES_SELECTOR_DARK_V1 · FIN */
+
+/* PUB_UTM_VALUES_MANAGER_DARK_V1 · INICIO
+   Slide ancho: Gestión de valores permitidos.
+   No modifica los tabs Activo / Archivados.
+   No modifica estructura, dimensiones ni lógica.
+   ========================================================= */
+
+
+/* =========================================================
+   CONTENEDOR GENERAL
+   ========================================================= */
+
+.pubUtmValuesManagerSlide {
+  color-scheme: dark !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__backdrop {
+  background:
+    rgba(0, 0, 0, 0.72) !important;
+
+  -webkit-backdrop-filter:
+    blur(6px) !important;
+
+  backdrop-filter:
+    blur(6px) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__panel {
+  background:
+    linear-gradient(
+      180deg,
+      #17181d 0%,
+      #121317 100%
+    ) !important;
+
+  color:
+    #f2f2f5 !important;
+
+  border-left:
+    1px solid #373840 !important;
+
+  box-shadow:
+    -28px 0 70px
+    rgba(0, 0, 0, 0.56) !important;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__head {
+  background:
+    linear-gradient(
+      180deg,
+      #28282f 0%,
+      #222229 100%
+    ) !important;
+
+  border-bottom:
+    1px solid #44454e !important;
+
+  box-shadow:
+    0 1px 0
+    rgba(255, 255, 255, 0.025) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__head
+.pubUtmCard__eyebrow {
+  color:
+    #aaaab4 !important;
+
+  letter-spacing:
+    0.09em !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__head
+.pubUtmCard__title {
+  color:
+    #f1f1f4 !important;
+
+  text-shadow:
+    0 1px 0
+    rgba(0, 0, 0, 0.3) !important;
+}
+
+
+/* =========================================================
+   BOTONES SECUNDARIOS
+   Cambiar campo / Cerrar / Copiar campo / Editar
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--ghost {
+  background:
+    linear-gradient(
+      180deg,
+      #27272d 0%,
+      #202126 100%
+    ) !important;
+
+  color:
+    #dddde3 !important;
+
+  border:
+    1px solid #4c4d57 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.035),
+    0 4px 11px
+    rgba(0, 0, 0, 0.13) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--ghost:hover {
+  background:
+    #303137 !important;
+
+  color:
+    #ffffff !important;
+
+  border-color:
+    #686974 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--ghost:focus-visible {
+  outline:
+    2px solid
+    rgba(102, 139, 255, 0.55) !important;
+
+  outline-offset:
+    2px !important;
+}
+
+
+/* =========================================================
+   BOTONES PRINCIPALES
+   Nuevo valor / Guardar valor
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--primary {
+  background:
+    linear-gradient(
+      135deg,
+      #2471ff 0%,
+      #2479ff 52%,
+      #158eff 100%
+    ) !important;
+
+  color:
+    #ffffff !important;
+
+  border:
+    1px solid
+    rgba(100, 163, 255, 0.44) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.17),
+    0 10px 24px
+    rgba(36, 121, 255, 0.22) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #367dff 0%,
+      #2c85ff 52%,
+      #249bff 100%
+    ) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.2),
+    0 12px 28px
+    rgba(36, 121, 255, 0.3) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmBtn--primary:disabled {
+  background:
+    #29313e !important;
+
+  color:
+    #737985 !important;
+
+  border-color:
+    #3b424e !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body {
+  background:
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(102, 111, 150, 0.07) 0%,
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      #15161a 0%,
+      #121317 100%
+    ) !important;
+}
+
+
+/* =========================================================
+   TARJETA INFORMATIVA SUPERIOR
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard {
+  position:
+    relative !important;
+
+  overflow:
+    hidden !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      #29263a 0%,
+      #252334 52%,
+      #211f2d 100%
+    ) !important;
+
+  border:
+    1px solid #3c394e !important;
+
+  border-left:
+    4px solid #a477ff !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.025),
+    0 12px 30px
+    rgba(0, 0, 0, 0.15) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard::after {
+  content:
+    "" !important;
+
+  position:
+    absolute !important;
+
+  inset:
+    0 !important;
+
+  pointer-events:
+    none !important;
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(125, 104, 255, 0.07),
+      transparent 48%
+    ) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__icon {
+  position:
+    relative !important;
+
+  z-index:
+    1 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(73, 98, 194, 0.28),
+      rgba(64, 74, 143, 0.24)
+    ) !important;
+
+  color:
+    #6297ff !important;
+
+  border:
+    1px solid
+    rgba(112, 137, 255, 0.11) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy {
+  position:
+    relative !important;
+
+  z-index:
+    1 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy strong {
+  color:
+    #f0f0f3 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy span {
+  color:
+    #b8b8c2 !important;
+}
+
+
+/* =========================================================
+   TARJETAS PRINCIPALES
+   Resumen operativo / Tabla
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmCard.pubUtmCard--full {
+  background:
+    linear-gradient(
+      180deg,
+      #23242a 0%,
+      #1d1e23 100%
+    ) !important;
+
+  border:
+    1px solid #484951 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.022),
+    0 13px 30px
+    rgba(0, 0, 0, 0.15) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__head {
+  border-bottom-color:
+    rgba(255, 255, 255, 0.04) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__eyebrow {
+  color:
+    #a8a9b3 !important;
+
+  letter-spacing:
+    0.085em !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCard.pubUtmCard--full
+.pubUtmCard__title {
+  color:
+    #f0f0f3 !important;
+}
+
+
+/* =========================================================
+   TARJETAS DE MÉTRICAS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat {
+  background:
+    linear-gradient(
+      180deg,
+      #191a1f 0%,
+      #15161a 100%
+    ) !important;
+
+  border:
+    1px solid #454650 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.02) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat__label {
+  color:
+    #a6a7b1 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat__value {
+  color:
+    #8fb5ff !important;
+
+  text-shadow:
+    0 0 18px
+    rgba(80, 134, 255, 0.08) !important;
+}
+
+
+/* =========================================================
+   TOOLBAR Y METADATOS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesToolbar {
+  color:
+    #e9e9ed !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesToolbar
+.pubUtmAudienceCard__meta {
+  color:
+    #bebfc7 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesToolbar
+.pubUtmAudienceCard__meta strong {
+  color:
+    #f0f0f3 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesToolbar
+.pubUtmAudienceCard__meta span {
+  color:
+    #bcbcc5 !important;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmTableWrap {
+  overflow:
+    hidden !important;
+
+  background:
+    #1a1b20 !important;
+
+  border:
+    1px solid #484953 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.018) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable {
+  background:
+    #1a1b20 !important;
+
+  color:
+    #e9e9ed !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable thead {
+  background:
+    linear-gradient(
+      180deg,
+      #30323a 0%,
+      #292b32 100%
+    ) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable thead tr {
+  background:
+    transparent !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable th {
+  background:
+    transparent !important;
+
+  color:
+    #b8bac3 !important;
+
+  border-bottom:
+    1px solid #4c4d57 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr {
+  background:
+    #23242a !important;
+
+  border-bottom-color:
+    #42434c !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:nth-child(even) {
+  background:
+    #1c1d22 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover {
+  background:
+    #2b2c33 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable td {
+  color:
+    #e4e4e9 !important;
+
+  border-bottom:
+    1px solid #41424b !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable td strong {
+  color:
+    #f3f3f6 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:last-child td {
+  border-bottom-color:
+    transparent !important;
+}
+
+
+/* =========================================================
+   COPIAR CAMPO Y COPIAR VALOR
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmCopyFieldBtn {
+  color:
+    #d6d7dd !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCopyIconBtn {
+  color:
+    #989aa5 !important;
+
+  background:
+    transparent !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCopyIconBtn:hover,
+.pubUtmValuesManagerSlide
+.pubUtmCopyIconBtn:focus-visible {
+  color:
+    #7fa7ff !important;
+
+  background:
+    rgba(81, 128, 255, 0.12) !important;
+}
+
+
+/* =========================================================
+   ACCIONES Y ARCHIVADOS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmArchivedValueBadge {
+  background:
+    #2c2d33 !important;
+
+  color:
+    #b8bac3 !important;
+
+  border:
+    1px solid #4b4c55 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValueArchiveBtn {
+  background:
+    transparent !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValueArchiveBtn:hover {
+  background:
+    rgba(234, 51, 35, 0.12) !important;
+}
+
+
+/* =========================================================
+   ESTADOS DE CARGA Y TABLA VACÍA
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmSkeletonLine {
+  background:
+    linear-gradient(
+      90deg,
+      #292a30 0%,
+      #3a3b43 46%,
+      #292a30 100%
+    ) !important;
+
+  background-size:
+    220% 100% !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmLoadingChip {
+  background:
+    #292a30 !important;
+
+  color:
+    #c8c9d0 !important;
+
+  border:
+    1px solid #484953 !important;
+}
+
+.pubUtmValuesManagerSlide
+[data-values-table-body] td[colspan] {
+  color:
+    #aeb0ba !important;
+
+  background:
+    #1c1d22 !important;
+}
+
+
+/* =========================================================
+   FOOTER PRINCIPAL
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__footer {
+  background:
+    linear-gradient(
+      180deg,
+      #25262c 0%,
+      #202126 100%
+    ) !important;
+
+  border-top:
+    1px solid #3f4049 !important;
+
+  box-shadow:
+    0 -14px 34px
+    rgba(0, 0, 0, 0.25) !important;
+}
+
+
+/* =========================================================
+   EDITOR INTERNO
+   Nuevo valor / Editar valor
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__backdrop {
+  background:
+    rgba(0, 0, 0, 0.7) !important;
+
+  -webkit-backdrop-filter:
+    blur(5px) !important;
+
+  backdrop-filter:
+    blur(5px) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__panel {
+  background:
+    linear-gradient(
+      180deg,
+      #1c1d22 0%,
+      #15161a 100%
+    ) !important;
+
+  color:
+    #f1f1f4 !important;
+
+  border:
+    1px solid #484953 !important;
+
+  box-shadow:
+    0 28px 70px
+    rgba(0, 0, 0, 0.58) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__head,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__footer {
+  background:
+    linear-gradient(
+      180deg,
+      #27282e 0%,
+      #222329 100%
+    ) !important;
+
+  border-color:
+    #41424b !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body {
+  background:
+    #15161a !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldSection {
+  background:
+    #1b1c21 !important;
+
+  border:
+    1px solid #454650 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControlRow {
+  background:
+    #1b1c21 !important;
+
+  border-bottom-color:
+    #3f4048 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControlRow__copy strong {
+  color:
+    #ededf1 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControlRow__copy span {
+  color:
+    #afb0b9 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControl {
+  background:
+    linear-gradient(
+      180deg,
+      #303137 0%,
+      #292a30 100%
+    ) !important;
+
+  color:
+    #f4f4f6 !important;
+
+  border:
+    1px solid #51525c !important;
+
+  caret-color:
+    #ffffff !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControl::placeholder {
+  color:
+    #7f818c !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldControl:focus {
+  border-color:
+    #718cff !important;
+
+  outline:
+    none !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(91, 119, 255, 0.18) !important;
+}
+
+
+/* =========================================================
+   SCROLLBARS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body {
+  scrollbar-color:
+    #4c4d56 #17181c !important;
+
+  scrollbar-width:
+    thin !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body::-webkit-scrollbar,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body::-webkit-scrollbar {
+  width:
+    9px !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body::-webkit-scrollbar-track,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body::-webkit-scrollbar-track {
+  background:
+    #17181c !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb {
+  background:
+    #4b4c55 !important;
+
+  border:
+    2px solid #17181c !important;
+
+  border-radius:
+    999px !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb:hover,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb:hover {
+  background:
+    #656772 !important;
+}
+
+/* PUB_UTM_VALUES_MANAGER_DARK_V1 · FIN */
+
+/* PUB_UTM_VALUES_MANAGER_DARK_FINAL_POLISH · INICIO
+   1. Recupera la altura completa de la tarjeta informativa.
+   2. Mantiene oscuro el hover de todas las celdas.
+   ========================================================= */
+
+
+/* =========================================================
+   TARJETA INFORMATIVA SUPERIOR COMPLETA
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body
+> .pubUtmFieldIntroCard {
+  width: 100% !important;
+
+  height: auto !important;
+  min-height: 92px !important;
+  max-height: none !important;
+
+  flex: 0 0 auto !important;
+  align-self: stretch !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  padding: 17px 20px !important;
+
+  overflow: visible !important;
+
+  box-sizing: border-box !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body
+> .pubUtmFieldIntroCard::after {
+  border-radius: inherit !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__icon {
+  flex: 0 0 auto !important;
+
+  overflow: visible !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy {
+  min-width: 0 !important;
+  width: auto !important;
+
+  display: grid !important;
+  gap: 5px !important;
+
+  overflow: visible !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy strong,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy span {
+  display: block !important;
+
+  height: auto !important;
+  max-height: none !important;
+
+  overflow: visible !important;
+
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy strong {
+  line-height: 1.25 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy span {
+  line-height: 1.45 !important;
+}
+
+
+/* =========================================================
+   HOVER DARK REAL EN TABLA
+   Se aplica también directamente sobre los td.
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover {
+  background:
+    #2b2c33 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover > td {
+  background:
+    #2b2c33 !important;
+
+  color:
+    #f0f0f3 !important;
+
+  border-bottom-color:
+    #4b4c56 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover > td:first-child,
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover > td:last-child {
+  background:
+    #2b2c33 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover > td strong {
+  color:
+    #ffffff !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover
+.pubUtmBtn--ghost {
+  background:
+    #303137 !important;
+
+  color:
+    #ffffff !important;
+
+  border-color:
+    #5c5d67 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover
+.pubUtmCopyIconBtn {
+  background:
+    transparent !important;
+
+  color:
+    #a8aab4 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover
+.pubUtmCopyIconBtn:hover {
+  background:
+    rgba(81, 128, 255, 0.14) !important;
+
+  color:
+    #8db0ff !important;
+}
+
+
+/* Defensa ante reglas globales de filas seleccionadas o enfocadas */
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:is(
+  :hover,
+  :focus-within
+) > td {
+  background:
+    #2b2c33 !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:is(
+  :hover,
+  :focus-within
+) > td * {
+  opacity:
+    1 !important;
+
+  filter:
+    none !important;
+}
+
+/* PUB_UTM_VALUES_MANAGER_DARK_FINAL_POLISH · FIN */
+
+/* PUB_UTM_SLIDES_HARMONIZE_WITH_PLATFORM_DARK_V1 · INICIO
+   Alinea ambos slides con el dark real de la plataforma.
+   No modifica estructura, lógica ni tabs Activo / Archivados.
+   ========================================================= */
+
+:root {
+  --pdDarkBg: #0f1014;
+  --pdDarkPanel: #16181d;
+  --pdDarkCard: #1a1d23;
+  --pdDarkCard2: #20242c;
+  --pdDarkBorder: #313743;
+  --pdDarkBorderSoft: #2a303a;
+  --pdDarkText: #f2f5f8;
+  --pdDarkMuted: #a8b0bd;
+  --pdDarkMuted2: #8e97a6;
+  --pdDarkBlue: #2f6bff;
+  --pdDarkBlueHover: #3f79ff;
+  --pdDarkBlueSoft: rgba(47, 107, 255, 0.16);
+  --pdDarkHover: #232833;
+  --pdDarkRow: #181c22;
+  --pdDarkRowAlt: #151920;
+  --pdDarkHeader: #14171d;
+  --pdDarkShadow: 0 14px 34px rgba(0,0,0,.24);
+}
+
+/* =========================================================
+   BACKDROP / PANEL GENERAL · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide,
+.pubUtmValuesManagerSlide {
+  color-scheme: dark !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__backdrop,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__backdrop {
+  background: rgba(0,0,0,.58) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__panel,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__panel {
+  background: var(--pdDarkBg) !important;
+  color: var(--pdDarkText) !important;
+  border-left: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: -18px 0 42px rgba(0,0,0,.34) !important;
+}
+
+/* =========================================================
+   HEADERS · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__head,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__head {
+  background: var(--pdDarkHeader) !important;
+  border-bottom: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmCard__eyebrow,
+.pubUtmValuesManagerSlide .pubUtmCard__eyebrow {
+  color: var(--pdDarkMuted2) !important;
+  letter-spacing: .08em !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmCard__title,
+.pubUtmValuesManagerSlide .pubUtmCard__title {
+  color: var(--pdDarkText) !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   BODY / FOOTER · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body {
+  background: var(--pdDarkBg) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__footer,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__footer {
+  background: var(--pdDarkHeader) !important;
+  border-top: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: 0 -10px 24px rgba(0,0,0,.18) !important;
+}
+
+/* =========================================================
+   BOTONES · ecosistema real
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--ghost,
+.pubUtmValuesManagerSlide .pubUtmBtn--ghost {
+  background: #1a1d23 !important;
+  color: #eef2f7 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--ghost:hover,
+.pubUtmValuesManagerSlide .pubUtmBtn--ghost:hover {
+  background: #20242c !important;
+  border-color: #3c4350 !important;
+  color: #ffffff !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary {
+  background: var(--pdDarkBlue) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--pdDarkBlue) !important;
+  box-shadow: 0 8px 18px rgba(47,107,255,.22) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary:hover,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary:hover {
+  background: var(--pdDarkBlueHover) !important;
+  border-color: var(--pdDarkBlueHover) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary:disabled,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary:disabled {
+  background: #232936 !important;
+  color: #788190 !important;
+  border-color: #2d3440 !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   TARJETA INFO SUPERIOR · ambos slides
+   Más alineada con el panel real
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard {
+  background: #1a1d23 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  border-left: 3px solid #8b5cf6 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard::after,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard::after {
+  display: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__icon,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__icon {
+  background: rgba(47,107,255,.12) !important;
+  border: 1px solid rgba(47,107,255,.18) !important;
+  color: #6ea1ff !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__copy strong,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__copy span,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   BLOQUES / CARDS · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection,
+.pubUtmValuesSelectorSlide .pubUtmCard.pubUtmCard--full,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full {
+  background: var(--pdDarkCard) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection__title,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__head,
+.pubUtmValuesSelectorSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__head {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255,255,255,.04) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection__title,
+.pubUtmValuesSelectorSlide .pubUtmCard__eyebrow,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__eyebrow {
+  color: var(--pdDarkMuted2) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow {
+  background: transparent !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow__copy strong,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow__copy span,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   INPUT / SELECT / TEXTAREA
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl,
+.pubUtmValuesManagerSlide .pubUtmFieldControl {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+  caret-color: #fff !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl:hover,
+.pubUtmValuesManagerSlide .pubUtmFieldControl:hover {
+  border-color: #414958 !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl:focus,
+.pubUtmValuesManagerSlide .pubUtmFieldControl:focus {
+  border-color: var(--pdDarkBlue) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(47,107,255,.16) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl::placeholder,
+.pubUtmValuesManagerSlide .pubUtmFieldControl::placeholder {
+  color: #7f8897 !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl option,
+.pubUtmValuesManagerSlide .pubUtmFieldControl option {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+}
+
+/* =========================================================
+   MINI STATS / RESUMEN
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat {
+  background: #171b21 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat__label {
+  color: var(--pdDarkMuted2) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat__value {
+  color: #8fb2ff !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   TEXTOS DE RESUMEN / META
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide [data-values-field-summary-body],
+.pubUtmValuesManagerSlide .pubUtmValuesToolbar,
+.pubUtmValuesManagerSlide .pubUtmAudienceCard__meta {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesSelectorSlide [data-values-field-summary-body] strong,
+.pubUtmValuesManagerSlide .pubUtmAudienceCard__meta strong {
+  color: var(--pdDarkText) !important;
+}
+
+/* =========================================================
+   TABLA DEL MANAGER
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmTableWrap {
+  background: #171b21 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable {
+  background: transparent !important;
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable thead,
+.pubUtmValuesManagerSlide .pubUtmTable thead tr {
+  background: #1d222a !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable th {
+  color: var(--pdDarkMuted2) !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr {
+  background: var(--pdDarkRow) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:nth-child(even) {
+  background: var(--pdDarkRowAlt) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable td {
+  color: #e8ecf2 !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--pdDarkBorderSoft) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable td strong {
+  color: #ffffff !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:hover,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:hover > td,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:focus-within,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:focus-within > td {
+  background: var(--pdDarkHover) !important;
+  color: #f5f8fb !important;
+}
+
+/* =========================================================
+   PILLS / BADGES / CHIPS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmArchivedValueBadge {
+  background: #232833 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmLoadingChip,
+.pubUtmValuesManagerSlide .pubUtmLoadingChip {
+  background: #20242c !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   ICONOS DE COPIAR / TACHO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmCopyFieldBtn,
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn:hover,
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn:focus-visible {
+  color: #80a8ff !important;
+  background: rgba(47,107,255,.12) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn {
+  background: transparent !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn:hover {
+  background: rgba(234,51,35,.10) !important;
+}
+
+/* =========================================================
+   SKELETONS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmSkeletonLine,
+.pubUtmValuesManagerSlide .pubUtmSkeletonLine {
+  background: linear-gradient(
+    90deg,
+    #222730 0%,
+    #2c323d 45%,
+    #222730 100%
+  ) !important;
+  background-size: 220% 100% !important;
+}
+
+/* =========================================================
+   EDITOR INTERNO DEL MANAGER
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__backdrop {
+  background: rgba(0,0,0,.56) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__panel {
+  background: var(--pdDarkBg) !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: 0 20px 44px rgba(0,0,0,.34) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__head,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__footer {
+  background: var(--pdDarkHeader) !important;
+  border-color: var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body {
+  background: var(--pdDarkBg) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldSection {
+  background: var(--pdDarkCard) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow {
+  background: transparent !important;
+  border-bottom-color: rgba(255,255,255,.04) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControl {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+}
+
+/* =========================================================
+   SCROLLBARS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body {
+  scrollbar-color: #3f4654 #11151b !important;
+  scrollbar-width: thin !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar {
+  width: 9px !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-track,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-track,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-track {
+  background: #11151b !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb {
+  background: #3f4654 !important;
+  border: 2px solid #11151b !important;
+  border-radius: 999px !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb:hover,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb:hover,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb:hover {
+  background: #556073 !important;
+}
+
+/* PUB_UTM_SLIDES_HARMONIZE_WITH_PLATFORM_DARK_V1 · FIN */
+
+/* PUB_UTM_SLIDES_HARMONIZE_WITH_PLATFORM_DARK_V1 · INICIO
+   Alinea ambos slides con el dark real de la plataforma.
+   No modifica estructura, lógica ni tabs Activo / Archivados.
+   ========================================================= */
+
+:root {
+  --pdDarkBg: #0f1014;
+  --pdDarkPanel: #16181d;
+  --pdDarkCard: #1a1d23;
+  --pdDarkCard2: #20242c;
+  --pdDarkBorder: #313743;
+  --pdDarkBorderSoft: #2a303a;
+  --pdDarkText: #f2f5f8;
+  --pdDarkMuted: #a8b0bd;
+  --pdDarkMuted2: #8e97a6;
+  --pdDarkBlue: #2f6bff;
+  --pdDarkBlueHover: #3f79ff;
+  --pdDarkBlueSoft: rgba(47, 107, 255, 0.16);
+  --pdDarkHover: #232833;
+  --pdDarkRow: #181c22;
+  --pdDarkRowAlt: #151920;
+  --pdDarkHeader: #14171d;
+  --pdDarkShadow: 0 14px 34px rgba(0,0,0,.24);
+}
+
+/* =========================================================
+   BACKDROP / PANEL GENERAL · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide,
+.pubUtmValuesManagerSlide {
+  color-scheme: dark !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__backdrop,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__backdrop {
+  background: rgba(0,0,0,.58) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__panel,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__panel {
+  background: var(--pdDarkBg) !important;
+  color: var(--pdDarkText) !important;
+  border-left: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: -18px 0 42px rgba(0,0,0,.34) !important;
+}
+
+/* =========================================================
+   HEADERS · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__head,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__head {
+  background: var(--pdDarkHeader) !important;
+  border-bottom: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmCard__eyebrow,
+.pubUtmValuesManagerSlide .pubUtmCard__eyebrow {
+  color: var(--pdDarkMuted2) !important;
+  letter-spacing: .08em !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmCard__title,
+.pubUtmValuesManagerSlide .pubUtmCard__title {
+  color: var(--pdDarkText) !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   BODY / FOOTER · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body {
+  background: var(--pdDarkBg) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__footer,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__footer {
+  background: var(--pdDarkHeader) !important;
+  border-top: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: 0 -10px 24px rgba(0,0,0,.18) !important;
+}
+
+/* =========================================================
+   BOTONES · ecosistema real
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--ghost,
+.pubUtmValuesManagerSlide .pubUtmBtn--ghost {
+  background: #1a1d23 !important;
+  color: #eef2f7 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--ghost:hover,
+.pubUtmValuesManagerSlide .pubUtmBtn--ghost:hover {
+  background: #20242c !important;
+  border-color: #3c4350 !important;
+  color: #ffffff !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary {
+  background: var(--pdDarkBlue) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--pdDarkBlue) !important;
+  box-shadow: 0 8px 18px rgba(47,107,255,.22) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary:hover,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary:hover {
+  background: var(--pdDarkBlueHover) !important;
+  border-color: var(--pdDarkBlueHover) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmBtn--primary:disabled,
+.pubUtmValuesManagerSlide .pubUtmBtn--primary:disabled {
+  background: #232936 !important;
+  color: #788190 !important;
+  border-color: #2d3440 !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   TARJETA INFO SUPERIOR · ambos slides
+   Más alineada con el panel real
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard {
+  background: #1a1d23 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  border-left: 3px solid #8b5cf6 !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard::after,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard::after {
+  display: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__icon,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__icon {
+  background: rgba(47,107,255,.12) !important;
+  border: 1px solid rgba(47,107,255,.18) !important;
+  color: #6ea1ff !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__copy strong,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldIntroCard__copy span,
+.pubUtmValuesManagerSlide .pubUtmFieldIntroCard__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   BLOQUES / CARDS · ambos slides
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection,
+.pubUtmValuesSelectorSlide .pubUtmCard.pubUtmCard--full,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full {
+  background: var(--pdDarkCard) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection__title,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__head,
+.pubUtmValuesSelectorSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__head {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255,255,255,.04) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldSection__title,
+.pubUtmValuesSelectorSlide .pubUtmCard__eyebrow,
+.pubUtmValuesManagerSlide .pubUtmCard.pubUtmCard--full .pubUtmCard__eyebrow {
+  color: var(--pdDarkMuted2) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow {
+  background: transparent !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow__copy strong,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControlRow__copy span,
+.pubUtmValuesManagerSlide .pubUtmFieldControlRow__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   INPUT / SELECT / TEXTAREA
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl,
+.pubUtmValuesManagerSlide .pubUtmFieldControl {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+  caret-color: #fff !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl:hover,
+.pubUtmValuesManagerSlide .pubUtmFieldControl:hover {
+  border-color: #414958 !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl:focus,
+.pubUtmValuesManagerSlide .pubUtmFieldControl:focus {
+  border-color: var(--pdDarkBlue) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(47,107,255,.16) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl::placeholder,
+.pubUtmValuesManagerSlide .pubUtmFieldControl::placeholder {
+  color: #7f8897 !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmFieldControl option,
+.pubUtmValuesManagerSlide .pubUtmFieldControl option {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+}
+
+/* =========================================================
+   MINI STATS / RESUMEN
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat {
+  background: #171b21 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat__label {
+  color: var(--pdDarkMuted2) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmMiniStat__value {
+  color: #8fb2ff !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   TEXTOS DE RESUMEN / META
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide [data-values-field-summary-body],
+.pubUtmValuesManagerSlide .pubUtmValuesToolbar,
+.pubUtmValuesManagerSlide .pubUtmAudienceCard__meta {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesSelectorSlide [data-values-field-summary-body] strong,
+.pubUtmValuesManagerSlide .pubUtmAudienceCard__meta strong {
+  color: var(--pdDarkText) !important;
+}
+
+/* =========================================================
+   TABLA DEL MANAGER
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmTableWrap {
+  background: #171b21 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable {
+  background: transparent !important;
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable thead,
+.pubUtmValuesManagerSlide .pubUtmTable thead tr {
+  background: #1d222a !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable th {
+  color: var(--pdDarkMuted2) !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr {
+  background: var(--pdDarkRow) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:nth-child(even) {
+  background: var(--pdDarkRowAlt) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable td {
+  color: #e8ecf2 !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--pdDarkBorderSoft) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable td strong {
+  color: #ffffff !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:hover,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:hover > td,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:focus-within,
+.pubUtmValuesManagerSlide .pubUtmTable tbody tr:focus-within > td {
+  background: var(--pdDarkHover) !important;
+  color: #f5f8fb !important;
+}
+
+/* =========================================================
+   PILLS / BADGES / CHIPS
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmArchivedValueBadge {
+  background: #232833 !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmLoadingChip,
+.pubUtmValuesManagerSlide .pubUtmLoadingChip {
+  background: #20242c !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  color: var(--pdDarkMuted) !important;
+}
+
+/* =========================================================
+   ICONOS DE COPIAR / TACHO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmCopyFieldBtn,
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn:hover,
+.pubUtmValuesManagerSlide .pubUtmCopyIconBtn:focus-visible {
+  color: #80a8ff !important;
+  background: rgba(47,107,255,.12) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn {
+  background: transparent !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValueArchiveBtn:hover {
+  background: rgba(234,51,35,.10) !important;
+}
+
+/* =========================================================
+   SKELETONS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmSkeletonLine,
+.pubUtmValuesManagerSlide .pubUtmSkeletonLine {
+  background: linear-gradient(
+    90deg,
+    #222730 0%,
+    #2c323d 45%,
+    #222730 100%
+  ) !important;
+  background-size: 220% 100% !important;
+}
+
+/* =========================================================
+   EDITOR INTERNO DEL MANAGER
+   ========================================================= */
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__backdrop {
+  background: rgba(0,0,0,.56) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__panel {
+  background: var(--pdDarkBg) !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+  box-shadow: 0 20px 44px rgba(0,0,0,.34) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__head,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__footer {
+  background: var(--pdDarkHeader) !important;
+  border-color: var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body {
+  background: var(--pdDarkBg) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldSection {
+  background: var(--pdDarkCard) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow {
+  background: transparent !important;
+  border-bottom-color: rgba(255,255,255,.04) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow__copy strong {
+  color: var(--pdDarkText) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControlRow__copy span {
+  color: var(--pdDarkMuted) !important;
+}
+
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay .pubUtmFieldControl {
+  background: #171b21 !important;
+  color: var(--pdDarkText) !important;
+  border: 1px solid var(--pdDarkBorder) !important;
+}
+
+/* =========================================================
+   SCROLLBARS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body {
+  scrollbar-color: #3f4654 #11151b !important;
+  scrollbar-width: thin !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar {
+  width: 9px !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-track,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-track,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-track {
+  background: #11151b !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb {
+  background: #3f4654 !important;
+  border: 2px solid #11151b !important;
+  border-radius: 999px !important;
+}
+
+.pubUtmValuesSelectorSlide .pubUtmValuesSelectorSlide__body::-webkit-scrollbar-thumb:hover,
+.pubUtmValuesManagerSlide .pubUtmValuesManagerSlide__body::-webkit-scrollbar-thumb:hover,
+.pubUtmValuesManagerSlide .pubUtmValuesEditorOverlay__body::-webkit-scrollbar-thumb:hover {
+  background: #556073 !important;
+}
+
+/* PUB_UTM_SLIDES_HARMONIZE_WITH_PLATFORM_DARK_V1 · FIN */
+
+/* PUB_UTM_VALUES_CHATGPT_DARK_V1 · INICIO
+   Paleta neutral inspirada en ChatGPT dark.
+   Solo afecta los dos slides de valores.
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide,
+.pubUtmValuesManagerSlide {
+  --values-dark-page: #212121;
+  --values-dark-header: #171717;
+  --values-dark-card: #2f2f2f;
+  --values-dark-card-soft: #292929;
+  --values-dark-input: #2f2f2f;
+  --values-dark-hover: #383838;
+  --values-dark-border: #424242;
+  --values-dark-border-soft: #353535;
+  --values-dark-text: #ececec;
+  --values-dark-secondary: #b4b4b4;
+  --values-dark-muted: #8e8e8e;
+
+  color-scheme: dark !important;
+}
+
+
+/* =========================================================
+   PANEL, BODY, HEADER Y FOOTER
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__panel,
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__panel {
+  background: var(--values-dark-page) !important;
+  color: var(--values-dark-text) !important;
+
+  border-left:
+    1px solid var(--values-dark-border) !important;
+
+  box-shadow:
+    -16px 0 38px rgba(0, 0, 0, 0.32) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__head,
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__footer,
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__head,
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__footer {
+  background: var(--values-dark-header) !important;
+
+  border-color:
+    var(--values-dark-border) !important;
+
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmValuesSelectorSlide__body,
+.pubUtmValuesManagerSlide
+.pubUtmValuesManagerSlide__body {
+  background: var(--values-dark-page) !important;
+}
+
+
+/* =========================================================
+   TEXTOS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard__title,
+.pubUtmValuesManagerSlide
+.pubUtmCard__title,
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow__copy strong,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControlRow__copy strong,
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__copy strong,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy strong {
+  color: var(--values-dark-text) !important;
+  text-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmCard__eyebrow,
+.pubUtmValuesManagerSlide
+.pubUtmCard__eyebrow,
+.pubUtmValuesSelectorSlide
+.pubUtmFieldSection__title,
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat__label {
+  color: var(--values-dark-muted) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow__copy span,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControlRow__copy span,
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__copy span,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__copy span,
+.pubUtmValuesSelectorSlide
+[data-values-field-summary-body],
+.pubUtmValuesManagerSlide
+.pubUtmAudienceCard__meta {
+  color: var(--values-dark-secondary) !important;
+}
+
+
+/* =========================================================
+   TARJETAS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard,
+.pubUtmValuesSelectorSlide
+.pubUtmFieldSection,
+.pubUtmValuesSelectorSlide
+.pubUtmCard.pubUtmCard--full,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard,
+.pubUtmValuesManagerSlide
+.pubUtmCard.pubUtmCard--full {
+  background: var(--values-dark-card) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.16) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard {
+  border-left:
+    3px solid var(--values-dark-border) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard::after,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard::after {
+  display: none !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldSection__title {
+  background: var(--values-dark-card-soft) !important;
+
+  border-bottom:
+    1px solid var(--values-dark-border) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControlRow,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControlRow {
+  background: transparent !important;
+}
+
+
+/* =========================================================
+   ÍCONO INFORMATIVO
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldIntroCard__icon,
+.pubUtmValuesManagerSlide
+.pubUtmFieldIntroCard__icon {
+  background: #383838 !important;
+  color: #d1d1d1 !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================================================
+   RESUMEN OPERATIVO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat {
+  background: var(--values-dark-card-soft) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmMiniStat__value {
+  color: var(--values-dark-text) !important;
+  text-shadow: none !important;
+}
+
+
+/* =========================================================
+   INPUTS Y SELECTS
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControl {
+  background: var(--values-dark-input) !important;
+  color: var(--values-dark-text) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl:hover,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControl:hover {
+  border-color: #565656 !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl:focus,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControl:focus {
+  border-color: #676767 !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.08) !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmFieldControl option,
+.pubUtmValuesManagerSlide
+.pubUtmFieldControl option {
+  background: var(--values-dark-card) !important;
+  color: var(--values-dark-text) !important;
+}
+
+
+/* =========================================================
+   BOTONES SECUNDARIOS
+   No afecta los tabs Activo / Archivados.
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--ghost,
+.pubUtmValuesManagerSlide
+.pubUtmBtn--ghost {
+  background: var(--values-dark-card) !important;
+  color: var(--values-dark-text) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow: none !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmBtn--ghost:hover,
+.pubUtmValuesManagerSlide
+.pubUtmBtn--ghost:hover {
+  background: var(--values-dark-hover) !important;
+  color: #ffffff !important;
+
+  border-color: #565656 !important;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmTableWrap {
+  background: var(--values-dark-card) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+
+  box-shadow: none !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable {
+  background: var(--values-dark-card) !important;
+  color: var(--values-dark-text) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable thead,
+.pubUtmValuesManagerSlide
+.pubUtmTable thead tr {
+  background: var(--values-dark-card-soft) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable th {
+  background: transparent !important;
+  color: var(--values-dark-muted) !important;
+
+  border-bottom:
+    1px solid var(--values-dark-border) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr,
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:nth-child(even) {
+  background: var(--values-dark-card) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:nth-child(even) {
+  background: #2b2b2b !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable td {
+  background: transparent !important;
+  color: var(--values-dark-secondary) !important;
+
+  border-bottom:
+    1px solid var(--values-dark-border-soft) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable td strong {
+  color: var(--values-dark-text) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover,
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:hover > td,
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:focus-within,
+.pubUtmValuesManagerSlide
+.pubUtmTable tbody tr:focus-within > td {
+  background: var(--values-dark-hover) !important;
+  color: var(--values-dark-text) !important;
+}
+
+
+/* =========================================================
+   COPIAR, ARCHIVAR Y BADGES
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmCopyIconBtn,
+.pubUtmValuesManagerSlide
+.pubUtmCopyFieldBtn {
+  color: var(--values-dark-secondary) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmCopyIconBtn:hover {
+  background: var(--values-dark-hover) !important;
+  color: var(--values-dark-text) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmArchivedValueBadge {
+  background: var(--values-dark-card-soft) !important;
+  color: var(--values-dark-secondary) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+}
+
+
+/* =========================================================
+   EDITOR INTERNO
+   ========================================================= */
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__panel {
+  background: var(--values-dark-page) !important;
+  color: var(--values-dark-text) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  box-shadow:
+    -14px 0 34px rgba(0, 0, 0, 0.3) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__head,
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__footer {
+  background: var(--values-dark-header) !important;
+  border-color: var(--values-dark-border) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay__body {
+  background: var(--values-dark-page) !important;
+}
+
+.pubUtmValuesManagerSlide
+.pubUtmValuesEditorOverlay
+.pubUtmFieldSection {
+  background: var(--values-dark-card) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+}
+
+
+/* =========================================================
+   CARGA
+   ========================================================= */
+
+.pubUtmValuesSelectorSlide
+.pubUtmSkeletonLine,
+.pubUtmValuesManagerSlide
+.pubUtmSkeletonLine {
+  background:
+    linear-gradient(
+      90deg,
+      #333333 0%,
+      #444444 50%,
+      #333333 100%
+    ) !important;
+
+  background-size: 200% 100% !important;
+}
+
+.pubUtmValuesSelectorSlide
+.pubUtmLoadingChip,
+.pubUtmValuesManagerSlide
+.pubUtmLoadingChip {
+  background: var(--values-dark-card) !important;
+  color: var(--values-dark-secondary) !important;
+
+  border:
+    1px solid var(--values-dark-border) !important;
+
+  border-radius: 5px !important;
+}
+
+/* PUB_UTM_VALUES_CHATGPT_DARK_V1 · FIN */

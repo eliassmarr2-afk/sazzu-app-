@@ -55,6 +55,15 @@ appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archi
 
     /* TAB Conjuntos · archivado seguro */
     appendScript_('productosConjuntosArchiveActionsJs', '../js/productos-conjuntos-archive-actions.js');
+
+    /* Productos · archivados toggle lite */
+    appendScript_('productosArchivedToggleLiteJs', '../js/productos-archived-toggle-lite.js');
+
+    /* Productos · botón crear conjunto en tab Conjuntos */
+    appendScript_('productosConjuntosCreateButtonLiteJs', '../js/productos-conjuntos-create-button-lite.js');
+
+    /* Productos · Rentabilidad UI inicial */
+    appendScript_('productosRentabilidadUiJs', '../js/productos-rentabilidad-ui.js');
   }
 
   function readStore_() {
@@ -81,8 +90,11 @@ appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archi
 
   function applyToRow_(row, sku) {
     if (!row) return;
+
     row.classList.add('is-linked');
     row.dataset.shopifyLinked = '1';
+    row.dataset.shopifyUiLinked = '1';
+
     const action = row.querySelector('.prodShopifyLink__action');
     if (action) {
       const label = clean_(sku) ? 'Vinculado · ' + clean_(sku) : 'Vinculado';
@@ -90,50 +102,152 @@ appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archi
     }
   }
 
+  function restoreUiLinkedRow_(row) {
+    if (!row || row.dataset.shopifyUiLinked !== '1') return;
+
+    row.classList.remove('is-linked');
+    row.dataset.shopifyLinked = '0';
+    delete row.dataset.shopifyUiLinked;
+
+    const action = row.querySelector('.prodShopifyLink__action');
+    if (action) {
+      action.innerHTML =
+        '<button class="prodShopifyLink__useBtn" type="button" data-shopify-use-variant="1">Usar variante</button>';
+    }
+  }
+
+  function resetUiLinkedRows_() {
+    document
+      .querySelectorAll('.prodShopifyLink__row[data-shopify-ui-linked="1"]')
+      .forEach(restoreUiLinkedRow_);
+  }
+
   function collectExistingSkuSet_() {
     const set = new Set();
-    document.querySelectorAll('#prodResumenTableBody tr').forEach(function (row) {
-      const byData = clean_(row.dataset && (row.dataset.sku || row.dataset.productSku));
-      if (byData) set.add(normSku_(byData));
+    const readState = window.__PRODUCTOS_PANEL_SUPABASE_READ_STATE__;
 
-      const skuCell = row.querySelector('td:nth-child(1)') || row.querySelector('td:nth-child(2)');
-      const byCell = clean_(skuCell && skuCell.textContent);
-      if (byCell && byCell !== '—' && !byCell.toLowerCase().includes('cargando')) {
-        set.add(normSku_(byCell));
-      }
-    });
-    document.querySelectorAll('[data-sku], [data-product-sku]').forEach(function (el) {
-      const sku = clean_(el.dataset && (el.dataset.sku || el.dataset.productSku));
-      if (sku) set.add(normSku_(sku));
-    });
+    /*
+     * La fuente autoritativa es Supabase.
+     * Solo los SKU activos pueden bloquear una variante Shopify.
+     */
+    if (readState && Array.isArray(readState.skus)) {
+      readState.skus.forEach(function (item) {
+        const status = clean_(item && (item.estado || item.status)).toLowerCase();
+
+        if (status && status !== 'active') return;
+
+        const sku = clean_(item && (item.sku || item.product_sku));
+        if (sku) set.add(normSku_(sku));
+      });
+
+      return set;
+    }
+
+    /*
+     * Fallback visual, restringido a la tabla Resumen.
+     * Nunca toma filas archivadas ni elementos de Ofertas/Conjuntos.
+     */
+    document
+      .querySelectorAll(
+        '#prodResumenTableBody tr[data-product-sku], ' +
+        '#prodResumenTableBody tr[data-sku]'
+      )
+      .forEach(function (row) {
+        const rowStatus = clean_(
+          row.getAttribute('data-estado') ||
+          row.getAttribute('data-status')
+        ).toLowerCase();
+
+        const archived =
+          row.classList.contains('is-sku-archived') ||
+          rowStatus === 'archived' ||
+          Boolean(row.querySelector('.prodSkuArchivedLiteBadge'));
+
+        if (archived) return;
+
+        const sku = clean_(
+          row.dataset &&
+          (row.dataset.productSku || row.dataset.sku)
+        );
+
+        if (sku) set.add(normSku_(sku));
+      });
+
     return set;
   }
 
-  function applyStoredVariantLinks_() {
+  function cleanStoredVariantLinks_(activeSkus) {
     const store = readStore_();
-    const ids = Object.keys(store);
+    let changed = false;
+
+    Object.keys(store).forEach(function (variantId) {
+      const entry = store[variantId] || {};
+      const sku = normSku_(entry.sku);
+
+      if (!sku || !activeSkus.has(sku)) {
+        delete store[variantId];
+        changed = true;
+      }
+    });
+
+    if (changed) writeStore_(store);
+    return store;
+  }
+
+  function applyStoredVariantLinks_(store, activeSkus) {
     document.querySelectorAll('.prodShopifyLink__row').forEach(function (row) {
-      const variantId = clean_(row.dataset && row.dataset.shopifyVariantId);
-      if (variantId && ids.includes(variantId)) {
-        applyToRow_(row, store[variantId] && store[variantId].sku);
+      const variantId = clean_(
+        row.dataset && row.dataset.shopifyVariantId
+      );
+
+      const entry = variantId ? store[variantId] : null;
+      const sku = normSku_(entry && entry.sku);
+
+      if (entry && sku && activeSkus.has(sku)) {
+        applyToRow_(row, entry.sku);
       }
     });
   }
 
-  function applyExistingSkuLinks_() {
-    const existingSkus = collectExistingSkuSet_();
+  function applyExistingSkuLinks_(existingSkus) {
     if (!existingSkus.size) return;
+
     document.querySelectorAll('.prodShopifyLink__row').forEach(function (row) {
-      if (row.dataset.shopifyLinked === '1') return;
-      const shopifySku = normSku_(row.dataset && row.dataset.shopifySku);
-      if (!shopifySku || shopifySku === 'SKU NO INFORMADO EN SHOPIFY') return;
-      if (existingSkus.has(shopifySku)) applyToRow_(row, shopifySku);
+      /*
+       * Un vínculo real devuelto por shopify-catalog-list se conserva.
+       */
+      if (
+        row.dataset.shopifyLinked === '1' &&
+        row.dataset.shopifyUiLinked !== '1'
+      ) {
+        return;
+      }
+
+      const shopifySku = normSku_(
+        row.dataset && row.dataset.shopifySku
+      );
+
+      if (
+        !shopifySku ||
+        shopifySku === 'SKU NO INFORMADO EN SHOPIFY'
+      ) {
+        return;
+      }
+
+      if (existingSkus.has(shopifySku)) {
+        applyToRow_(row, shopifySku);
+      }
     });
   }
 
   function applyAll_() {
-    applyStoredVariantLinks_();
-    applyExistingSkuLinks_();
+    resetUiLinkedRows_();
+
+    const activeSkus = collectExistingSkuSet_();
+    const store = cleanStoredVariantLinks_(activeSkus);
+
+    applyStoredVariantLinks_(store, activeSkus);
+    applyExistingSkuLinks_(activeSkus);
   }
 
   function bind_() {
@@ -144,11 +258,70 @@ appendScript_('productosOfertasArchiveActionsJs', '../js/productos-ofertas-archi
       remember_(detail.shopify_variant_id, detail.sku_operativo);
       applyAll_();
     });
-    const observer = new MutationObserver(function () {
-      applyAll_();
+    let syncTimer = null;
+
+    function scheduleApplyAll_() {
+      if (syncTimer) return;
+
+      syncTimer = window.setTimeout(function () {
+        syncTimer = null;
+
+        try {
+          applyAll_();
+        } catch (err) {
+          console.warn('[productos-shopify-link-ui-sync] applyAll falló', err);
+        }
+      }, 180);
+    }
+
+    function mutationTouchesRelevantArea_(mutation) {
+      if (!mutation) return false;
+
+      const target = mutation.target;
+      if (target && target.closest) {
+        if (
+          target.closest('#prodResumenTableBody') ||
+          target.closest('.prodShopifyLink__row') ||
+          target.closest('#prodShopifyLinkResults') ||
+          target.closest('#prodSubSlideContent')
+        ) {
+          return true;
+        }
+      }
+
+      const nodes = Array.from(mutation.addedNodes || []);
+      return nodes.some(function (node) {
+        if (!node || node.nodeType !== 1) return false;
+
+        if (
+          node.id === 'prodResumenTableBody' ||
+          node.id === 'prodShopifyLinkResults' ||
+          node.id === 'prodSubSlideContent' ||
+          (node.classList && node.classList.contains('prodShopifyLink__row'))
+        ) {
+          return true;
+        }
+
+        if (node.querySelector) {
+          return !!(
+            node.querySelector('#prodResumenTableBody') ||
+            node.querySelector('.prodShopifyLink__row') ||
+            node.querySelector('#prodShopifyLinkResults') ||
+            node.querySelector('#prodSubSlideContent')
+          );
+        }
+
+        return false;
+      });
+    }
+
+    const observer = new MutationObserver(function (mutations) {
+      const shouldSync = mutations.some(mutationTouchesRelevantArea_);
+      if (shouldSync) scheduleApplyAll_();
     });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-    applyAll_();
+
+    observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+    scheduleApplyAll_();
   }
 
   function init_() {

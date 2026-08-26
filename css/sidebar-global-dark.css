@@ -1,0 +1,1179 @@
+/* =========================================================
+   PROTOCOL DATA · SIDEBAR GLOBAL MINIMAL DARK
+   Solo presentación visual.
+   Conserva HTML, paneles, rutas y lógica existentes.
+========================================================= */
+
+:root {
+  --sidebarW: 64px;
+  --sidebarExpandedW: 244px;
+  --sidebarW_md: 64px;
+  --sidebarExpandedW_md: 232px;
+
+  --pd-sidebar-bg: #060606;
+  --pd-sidebar-surface: #151515;
+  --pd-sidebar-active: #252525;
+  --pd-sidebar-border: rgba(255, 255, 255, 0.08);
+  --pd-sidebar-text: #d4d4d8;
+  --pd-sidebar-muted: #737373;
+  --pd-sidebar-icon: #a1a1aa;
+}
+
+/* =========================================================
+   RAIL PRINCIPAL
+========================================================= */
+
+body .sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+
+  width: var(--sidebarW) !important;
+  min-width: var(--sidebarW) !important;
+  height: 100vh !important;
+
+  padding: 12px 8px 10px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+
+  background: var(--pd-sidebar-bg) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--pd-sidebar-border) !important;
+  border-radius: 0 10px 10px 0 !important;
+
+  box-shadow:
+    12px 0 32px rgba(0, 0, 0, 0.24),
+    inset -1px 0 0 rgba(255, 255, 255, 0.018) !important;
+
+  color: var(--pd-sidebar-text) !important;
+
+  transition:
+    width 0.22s cubic-bezier(.22, .8, .36, 1),
+    box-shadow 0.22s ease !important;
+}
+
+body .sidebar:hover,
+body .sidebar:focus-within {
+  width: var(--sidebarExpandedW) !important;
+
+  box-shadow:
+    16px 0 38px rgba(0, 0, 0, 0.3),
+    inset -1px 0 0 rgba(255, 255, 255, 0.025) !important;
+}
+
+body.sidebar-force-collapsed .sidebar,
+body.sidebar-force-collapsed .sidebar:hover,
+body.sidebar-force-collapsed .sidebar:focus-within {
+  width: var(--sidebarW) !important;
+}
+
+/* =========================================================
+   LOGO SUPERIOR
+   Usa la cabecera existente; no cambia el HTML.
+========================================================= */
+
+body .sidebar .sidebar__head {
+  order: 0 !important;
+
+  width: 100% !important;
+  min-height: 46px !important;
+  flex: 0 0 46px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  padding: 0 10px !important;
+  margin: 0 0 8px !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+body .sidebar .sidebar__head::before {
+  content: "" !important;
+
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  flex: 0 0 30px !important;
+
+  display: block !important;
+
+  background:
+    url("/assets/protocol-data-logo-sidebar.png")
+    center / contain no-repeat !important;
+}
+
+body .sidebar .sidebar__head::after {
+  content: "Protocol Data" !important;
+
+  min-width: 0 !important;
+  max-width: 0 !important;
+
+  display: block !important;
+
+  margin-left: 11px !important;
+
+  color: #f4f4f5 !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateX(-5px) !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.16s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.22s !important;
+}
+
+body .sidebar:hover .sidebar__head::after,
+body .sidebar:focus-within .sidebar__head::after {
+  max-width: 145px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(0) !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.17s ease 0.05s,
+    transform 0.2s ease 0.05s,
+    visibility 0s linear 0s !important;
+}
+
+body .sidebar .sidebar__head .u-sectionLabel {
+  display: none !important;
+}
+
+/* =========================================================
+   ORDEN VISUAL
+========================================================= */
+
+body .sidebar .navHero {
+  order: 1 !important;
+}
+
+body .sidebar .sidebarGroups {
+  order: 2 !important;
+}
+
+body .sidebar .sidebar__account {
+  order: 3 !important;
+}
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+body .sidebar .navHero {
+  width: 100% !important;
+  min-height: 40px !important;
+  flex: 0 0 40px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  padding: 0 12px !important;
+  margin: 0 0 8px !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+
+  background: transparent !important;
+  color: var(--pd-sidebar-icon) !important;
+
+  text-decoration: none !important;
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+  transform: none !important;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease !important;
+}
+
+body .sidebar .navHero:hover {
+  background: var(--pd-sidebar-surface) !important;
+  color: #e4e4e7 !important;
+  transform: none !important;
+}
+
+body .sidebar .navHero.is-active {
+  background: var(--pd-sidebar-active) !important;
+  color: #ffffff !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035) !important;
+}
+
+body .sidebar .navHero__left {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+body .sidebar .navHero__left::after {
+  content: "Inicio" !important;
+
+  min-width: 0 !important;
+  max-width: 0 !important;
+
+  display: block !important;
+
+  color: currentColor !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateX(-5px) !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.15s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.22s !important;
+}
+
+body .sidebar:hover .navHero__left::after,
+body .sidebar:focus-within .navHero__left::after {
+  max-width: 150px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(0) !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.17s ease 0.05s,
+    transform 0.2s ease 0.05s,
+    visibility 0s linear 0s !important;
+}
+
+body .sidebar .navHero__chev {
+  display: none !important;
+}
+
+/* =========================================================
+   CONTENEDOR DE MÓDULOS
+========================================================= */
+
+body .sidebar .sidebarGroups {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+
+  padding: 0 0 8px !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  overscroll-behavior: contain !important;
+}
+
+/* Neutraliza cards y superficies antiguas */
+body .sidebar .navGroup,
+body .sidebar .sidebarGroups .navGroup:nth-of-type(2),
+body .sidebar:not(:hover):not(:focus-within)
+.sidebarGroups .navGroup:nth-of-type(2) {
+  width: 100% !important;
+
+  padding: 0 !important;
+  margin: 0 0 8px !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  overflow: visible !important;
+}
+
+body .sidebar .navGroup + .navGroup {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+body .sidebar .navGroup + .navGroup::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* =========================================================
+   CABECERAS DE GRUPO
+========================================================= */
+
+body .sidebar .navGroup__head {
+  width: 100% !important;
+  max-height: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  padding: 0 10px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateX(-4px) !important;
+
+  overflow: hidden !important;
+  list-style: none !important;
+  cursor: pointer !important;
+
+  transition:
+    max-height 0.2s ease,
+    margin 0.2s ease,
+    opacity 0.15s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s !important;
+}
+
+body .sidebar .navGroup__head::-webkit-details-marker {
+  display: none !important;
+}
+
+body .sidebar:hover .navGroup__head,
+body .sidebar:focus-within .navGroup__head {
+  max-height: 24px !important;
+
+  margin: 5px 0 4px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+
+  transition:
+    max-height 0.2s ease,
+    margin 0.2s ease,
+    opacity 0.16s ease 0.04s,
+    transform 0.2s ease 0.04s,
+    visibility 0s linear 0s !important;
+}
+
+body .sidebar .navGroup__title {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+
+body .sidebar .navGroup__kicker {
+  display: none !important;
+}
+
+body .sidebar .navGroup__name {
+  min-width: 0 !important;
+
+  color: #686868 !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body .sidebar .navGroup__caret {
+  margin-left: auto !important;
+
+  color: #5f5f5f !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: rotate(-90deg) !important;
+
+  transition: transform 0.18s ease !important;
+}
+
+body .sidebar .navGroup[open] .navGroup__caret {
+  transform: rotate(0deg) !important;
+}
+
+/* =========================================================
+   CUERPOS DE GRUPO
+========================================================= */
+
+body .sidebar .navGroup__body {
+  width: 100% !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 2px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  background: transparent !important;
+
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* =========================================================
+   ITEMS
+========================================================= */
+
+body .sidebar .navSubItem {
+  width: 100% !important;
+  min-height: 40px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+
+  padding: 0 12px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+
+  background: transparent !important;
+  color: var(--pd-sidebar-icon) !important;
+
+  text-decoration: none !important;
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+  transform: none !important;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease !important;
+}
+
+body .sidebar .navSubItem:hover {
+  background: var(--pd-sidebar-surface) !important;
+  color: #e4e4e7 !important;
+  transform: none !important;
+}
+
+body .sidebar .navSubItem.is-active-sub,
+body .sidebar .navSubItem[aria-current="page"] {
+  background: var(--pd-sidebar-active) !important;
+  color: #ffffff !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035) !important;
+}
+
+/* Texto de cada panel */
+body .sidebar .navSubItem__txt {
+  min-width: 0 !important;
+  max-width: 0 !important;
+
+  display: block !important;
+
+  color: currentColor !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateX(-5px) !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.15s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.22s !important;
+}
+
+body .sidebar:hover .navSubItem__txt,
+body .sidebar:focus-within .navSubItem__txt {
+  max-width: 174px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.17s ease 0.05s,
+    transform 0.2s ease 0.05s,
+    visibility 0s linear 0s !important;
+}
+
+/* =========================================================
+   CONTENEDORES DE ÍCONOS
+========================================================= */
+
+body .sidebar .navHero__ico,
+body .sidebar .navSubItem__ico {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  flex: 0 0 20px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  color: currentColor !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+
+  overflow: visible !important;
+}
+
+/* Base común para todas las máscaras */
+body .sidebar .navHero__ico::before,
+body .sidebar .navSubItem__ico::before {
+  content: "" !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  display: block !important;
+
+  background: currentColor !important;
+
+  -webkit-mask-position: center !important;
+  mask-position: center !important;
+
+  -webkit-mask-size: contain !important;
+  mask-size: contain !important;
+
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+}
+
+/* Inicio */
+body .sidebar .navHero__ico--inicio::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg>") !important;
+}
+
+/* Pedidos */
+body .sidebar .navSubItem__ico--pedidos::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l2 5H4l2-5Z'/><path d='M5 8v12h14V8'/><path d='M9 12h6'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l2 5H4l2-5Z'/><path d='M5 8v12h14V8'/><path d='M9 12h6'/></svg>") !important;
+}
+
+/* Productos */
+body .sidebar .navSubItem__ico--productos::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'><path d='M4 5v14'/><path d='M8 5v14'/><path d='M12 5v14'/><path d='M16 5v14'/><path d='M20 5v14'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'><path d='M4 5v14'/><path d='M8 5v14'/><path d='M12 5v14'/><path d='M16 5v14'/><path d='M20 5v14'/></svg>") !important;
+}
+
+/* Finanzas */
+body .sidebar .navSubItem__ico--finanzas::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 20V10'/><path d='M10 20V4'/><path d='M16 20v-7'/><path d='M22 20H2'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 20V10'/><path d='M10 20V4'/><path d='M16 20v-7'/><path d='M22 20H2'/></svg>") !important;
+}
+
+/* Logística */
+body .sidebar .navSubItem__ico--logistica::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3 6h11v11H3z'/><path d='M14 10h4l3 3v4h-7z'/><circle cx='7' cy='19' r='2'/><circle cx='18' cy='19' r='2'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3 6h11v11H3z'/><path d='M14 10h4l3 3v4h-7z'/><circle cx='7' cy='19' r='2'/><circle cx='18' cy='19' r='2'/></svg>") !important;
+}
+
+/* Publicidad / UTM */
+body .sidebar .navSubItem__ico--utm::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='2'/><circle cx='18' cy='6' r='2'/><circle cx='18' cy='18' r='2'/><path d='m8 11 8-4'/><path d='m8 13 8 4'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='2'/><circle cx='18' cy='6' r='2'/><circle cx='18' cy='18' r='2'/><path d='m8 11 8-4'/><path d='m8 13 8 4'/></svg>") !important;
+}
+
+/* Publicidad externa */
+body .sidebar .navSubItem__ico--externa::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6 2h9l5 5v15H6z'/><path d='M14 2v6h6'/><path d='M9 13h2'/><path d='M14 13h2'/><path d='M9 17h2'/><path d='M14 17h2'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6 2h9l5 5v15H6z'/><path d='M14 2v6h6'/><path d='M9 13h2'/><path d='M14 13h2'/><path d='M9 17h2'/><path d='M14 17h2'/></svg>") !important;
+}
+
+/* Publicidad interna */
+body .sidebar .navSubItem__ico--interna::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='m3 11 16-6v14L3 13z'/><path d='M7 14v5'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='m3 11 16-6v14L3 13z'/><path d='M7 14v5'/></svg>") !important;
+}
+
+/* Rendimiento web */
+body .sidebar .navSubItem__ico--editor::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3v18h18'/><path d='m7 15 4-4 3 3 5-7'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3v18h18'/><path d='m7 15 4-4 3 3 5-7'/></svg>") !important;
+}
+
+/* Variantes / Packs */
+body .sidebar .navSubItem__ico--packs::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='m12 2 9 5-9 5-9-5z'/><path d='m3 12 9 5 9-5'/><path d='m3 17 9 5 9-5'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='m12 2 9 5-9 5-9-5z'/><path d='m3 12 9 5 9-5'/><path d='m3 17 9 5 9-5'/></svg>") !important;
+}
+
+/* Landing Builder */
+body .sidebar .navSubItem__ico--landing::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2'/><path d='M3 9h18'/><path d='M9 9v12'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2'/><path d='M3 9h18'/><path d='M9 9v12'/></svg>") !important;
+}
+
+/* Soporte */
+body .sidebar
+.sidebarGroups
+.navGroup:last-of-type
+.navSubItem:nth-child(1)
+.navSubItem__ico::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='3'/><path d='m5.6 5.6 4.3 4.3'/><path d='m14.1 14.1 4.3 4.3'/><path d='m18.4 5.6-4.3 4.3'/><path d='m9.9 14.1-4.3 4.3'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='3'/><path d='m5.6 5.6 4.3 4.3'/><path d='m14.1 14.1 4.3 4.3'/><path d='m18.4 5.6-4.3 4.3'/><path d='m9.9 14.1-4.3 4.3'/></svg>") !important;
+}
+
+/* Sistema */
+body .sidebar
+.sidebarGroups
+.navGroup:last-of-type
+.navSubItem:nth-child(2)
+.navSubItem__ico::before {
+  -webkit-mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1Z'/></svg>") !important;
+
+  mask-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1Z'/></svg>") !important;
+}
+
+/* =========================================================
+   CUENTA INFERIOR
+========================================================= */
+
+body .sidebar .sidebar__account {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+
+  width: 100% !important;
+  min-height: 44px !important;
+  flex: 0 0 44px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  padding: 6px 10px !important;
+  margin: 8px 0 0 !important;
+  box-sizing: border-box !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid var(--pd-sidebar-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 0.15s ease,
+    border-radius 0.15s ease !important;
+}
+
+body .sidebar .sidebar__account:hover {
+  background: var(--pd-sidebar-surface) !important;
+  border-radius: 7px !important;
+}
+
+body .sidebar .sidebar__avatar {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  flex: 0 0 28px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 7px !important;
+
+  background: #181818 !important;
+  border: 1px solid rgba(255, 255, 255, 0.075) !important;
+
+  box-shadow: none !important;
+}
+
+body .sidebar .sidebar__avatar::before {
+  content: "DD" !important;
+
+  color: #c8c8c8 !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+  font-weight: 650 !important;
+}
+
+body .sidebar .sidebar__accTxt {
+  min-width: 0 !important;
+  max-width: 0 !important;
+
+  display: grid !important;
+  gap: 2px !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateX(-5px) !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.15s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.22s !important;
+}
+
+body .sidebar:hover .sidebar__accTxt,
+body .sidebar:focus-within .sidebar__accTxt {
+  max-width: 150px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+
+  transition:
+    max-width 0.22s ease,
+    opacity 0.17s ease 0.05s,
+    transform 0.2s ease 0.05s,
+    visibility 0s linear 0s !important;
+}
+
+body .sidebar .sidebar__accName {
+  color: #d4d4d8 !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  font-weight: 600 !important;
+}
+
+body .sidebar .sidebar__accMeta {
+  color: #686868 !important;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+  font-weight: 500 !important;
+}
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+body .sidebar .sidebarGroups::-webkit-scrollbar {
+  width: 3px !important;
+}
+
+body .sidebar .sidebarGroups::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+body .sidebar .sidebarGroups::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-radius: 999px !important;
+}
+
+body .sidebar .sidebarGroups::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 980px) {
+  body .sidebar {
+    width: var(--sidebarW_md) !important;
+    min-width: var(--sidebarW_md) !important;
+
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  body .sidebar:hover,
+  body .sidebar:focus-within {
+    width: var(--sidebarExpandedW_md) !important;
+  }
+
+  body.sidebar-force-collapsed .sidebar,
+  body.sidebar-force-collapsed .sidebar:hover,
+  body.sidebar-force-collapsed .sidebar:focus-within {
+    width: var(--sidebarW_md) !important;
+  }
+}
+
+/* ===== SIDEBAR AJUSTES FINALES: SCROLL + ICONOS ===== */
+
+/* 1. Ocultar completamente la barra de scroll sin impedir el desplazamiento */
+body .sidebar .sidebarGroups {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+body .sidebar .sidebarGroups::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+body .sidebar .sidebarGroups::-webkit-scrollbar-track,
+body .sidebar .sidebarGroups::-webkit-scrollbar-thumb,
+body .sidebar .sidebarGroups::-webkit-scrollbar-thumb:hover {
+  display: none !important;
+  background: transparent !important;
+}
+
+/* 2. Íconos blancos y con mayor contraste */
+body .sidebar .navHero__ico,
+body .sidebar .navSubItem__ico {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+body .sidebar .navHero__ico::before,
+body .sidebar .navSubItem__ico::before {
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+body .sidebar .navHero__ico svg,
+body .sidebar .navSubItem__ico svg {
+  color: #ffffff !important;
+  fill: none !important;
+  stroke: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Mantener los íconos blancos en hover y panel activo */
+body .sidebar .navHero:hover .navHero__ico,
+body .sidebar .navHero.is-active .navHero__ico,
+body .sidebar .navSubItem:hover .navSubItem__ico,
+body .sidebar .navSubItem.is-active-sub .navSubItem__ico,
+body .sidebar .navSubItem[aria-current="page"] .navSubItem__ico {
+  color: #ffffff !important;
+}
+
+/* ===== FIN SIDEBAR AJUSTES FINALES ===== */
+
+/* ===== PD SIDEBAR TAB SHORTCUTS · INICIO ===== */
+
+/* Fila principal: conserva exactamente el ancho del item existente */
+body .sidebar .pdSidebarNavEntry {
+  position: relative !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: block !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Reserva únicamente el espacio interno de la flecha */
+body .sidebar .pdSidebarNavEntry > .navSubItem {
+  padding-right: 38px !important;
+}
+
+/* Botón independiente: no forma parte del enlace */
+body .sidebar .pdSidebarNavEntry__toggle {
+  position: absolute !important;
+  z-index: 3 !important;
+
+  top: 50% !important;
+  right: 8px !important;
+
+  width: 26px !important;
+  height: 26px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  transform: translateY(-50%) !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  background: transparent !important;
+  color: #858585 !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.18s ease !important;
+}
+
+body .sidebar:hover .pdSidebarNavEntry__toggle,
+body .sidebar:focus-within .pdSidebarNavEntry__toggle {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+body .sidebar .pdSidebarNavEntry__toggle:hover,
+body .sidebar .pdSidebarNavEntry__toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.075) !important;
+  color: #d0d0d0 !important;
+  outline: none !important;
+}
+
+body .sidebar .pdSidebarNavEntry__toggle svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+
+  transition: transform 0.18s ease !important;
+}
+
+body .sidebar
+.pdSidebarNavEntry__toggle[aria-expanded="true"]
+svg {
+  transform: rotate(180deg) !important;
+}
+
+/* Submenú: no aparece por hover; únicamente después del clic */
+body .sidebar .pdSidebarSubmenu {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 1px !important;
+
+  padding: 3px 0 5px 27px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  overflow: hidden !important;
+}
+
+body .sidebar .pdSidebarSubmenu[hidden] {
+  display: none !important;
+}
+
+/* Al contraerse el rail no altera ninguna proporción */
+body .sidebar:not(:hover):not(:focus-within)
+.pdSidebarSubmenu {
+  display: none !important;
+}
+
+/* Cada acceso permanece obligatoriamente en una sola fila */
+body .sidebar .pdSidebarSubItem {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 30px !important;
+
+  display: grid !important;
+  grid-template-columns: 14px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  padding: 0 8px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  background: transparent !important;
+  color: #929292 !important;
+
+  text-decoration: none !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+
+  transition:
+    background 0.14s ease,
+    color 0.14s ease !important;
+}
+
+body .sidebar .pdSidebarSubItem:hover {
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: #c7c7c7 !important;
+}
+
+body .sidebar .pdSidebarSubItem.is-active,
+body .sidebar .pdSidebarSubItem[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.075) !important;
+  color: #dddddd !important;
+}
+
+body .sidebar .pdSidebarSubItem__icon {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: #7f7f7f !important;
+}
+
+body .sidebar .pdSidebarSubItem:hover
+.pdSidebarSubItem__icon,
+body .sidebar .pdSidebarSubItem.is-active
+.pdSidebarSubItem__icon {
+  color: #a9a9a9 !important;
+}
+
+body .sidebar .pdSidebarSubItem__icon svg {
+  width: 13px !important;
+  height: 13px !important;
+
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.55 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+body .sidebar .pdSidebarSubItem__label {
+  min-width: 0 !important;
+
+  display: block !important;
+
+  color: currentColor !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  font-weight: 500 !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Evita que el submenú modifique el ancho del grupo */
+body .sidebar .navGroup__body,
+body .sidebar .pdSidebarNavEntry,
+body .sidebar .pdSidebarSubmenu,
+body .sidebar .pdSidebarSubItem {
+  max-width: 100% !important;
+}
+
+/* ===== PD SIDEBAR TAB SHORTCUTS · FIN ===== */
