@@ -1,0 +1,447 @@
+body[data-page="pedidos"] .main{background:var(--bg)}
+
+body[data-page="pedidos"] .pdTopbar__brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#f2f3f5;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+body[data-page="pedidos"] .pdTopbar__brand::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--blue);
+  box-shadow:0 0 0 4px rgba(36,121,255,.12);
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 30px 12px;
+  align-items:center;
+  gap:9px;
+  min-width:188px;
+  padding:6px 8px 6px 10px;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  background:#111317;
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch__copy{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  text-align:right;
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch__copy strong{
+  overflow:hidden;
+  color:#eceef1;
+  font-size:10.5px;
+  font-weight:650;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch__copy small{
+  margin-top:2px;
+  color:#747881;
+  font-size:8px;
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch__avatar{
+  display:grid;
+  width:30px;
+  height:30px;
+  place-items:center;
+  border-radius:50%;
+  background:#153347;
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+}
+body[data-page="pedidos"] .pdWorkspaceSwitch__chevron{color:#6f737c;font-size:11px}
+
+body[data-page="pedidos"] .ordersWorkspace{
+  width:min(100%,1280px);
+  margin:0 auto;
+  padding:32px 28px 60px;
+}
+body[data-page="pedidos"] .ordersPageHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:26px;
+}
+body[data-page="pedidos"] .ordersPageHeader h1{
+  color:var(--text);
+  font-size:30px;
+  font-weight:700;
+  letter-spacing:-.035em;
+}
+body[data-page="pedidos"] .ordersPageHeader p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+body[data-page="pedidos"] .ordersToolbar,
+body[data-page="pedidos"] .ordersPanel{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#1c1e22,#191a1d);
+}
+body[data-page="pedidos"] .ordersToolbar{padding:16px;margin-bottom:24px}
+body[data-page="pedidos"] .ordersPanel{overflow:hidden}
+
+body[data-page="pedidos"] .ordersBlockHeader,
+body[data-page="pedidos"] .ordersPanelHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+body[data-page="pedidos"] .ordersBlockHeader{margin-bottom:14px}
+body[data-page="pedidos"] .ordersPanelHeader{
+  min-height:58px;
+  padding:0 16px;
+  border-bottom:1px solid var(--border-soft);
+}
+body[data-page="pedidos"] .ordersBlockHeader__copy,
+body[data-page="pedidos"] .ordersPanelHeader__copy{display:flex;min-width:0;flex-direction:column}
+body[data-page="pedidos"] .ordersBlockHeader h2,
+body[data-page="pedidos"] .ordersPanelHeader h2{
+  color:#d6d8dd;
+  font-size:12px;
+  font-weight:650;
+  letter-spacing:.025em;
+}
+body[data-page="pedidos"] .ordersBlockHeader span,
+body[data-page="pedidos"] .ordersPanelHeader #ordersInfo{
+  margin-top:4px;
+  color:#777b84;
+  font-size:9.5px;
+  font-weight:500;
+  letter-spacing:0;
+  text-transform:none;
+}
+
+body[data-page="pedidos"] .ordersToolbar__main{
+  display:grid;
+  grid-template-columns:minmax(280px,1fr) auto auto;
+  align-items:center;
+  gap:10px;
+}
+body[data-page="pedidos"] .ordersSearchField{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  min-height:40px;
+  overflow:hidden;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  background:#131519;
+  transition:border-color .16s ease,background .16s ease;
+}
+body[data-page="pedidos"] .ordersSearchField:focus-within{
+  border-color:rgba(36,121,255,.52);
+  background:#15181d;
+}
+body[data-page="pedidos"] .ordersSearchField__icon{
+  display:grid;
+  height:100%;
+  place-items:center;
+  color:#777b84;
+  font-size:17px;
+}
+body[data-page="pedidos"] #ordersSearch{
+  width:100%;
+  height:38px;
+  padding:0 12px 0 0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#e7e9ed;
+  font-size:11px;
+}
+body[data-page="pedidos"] #ordersSearch::placeholder{color:#666a73}
+
+body[data-page="pedidos"] .dateFilter{position:relative;display:inline-flex;align-items:center}
+body[data-page="pedidos"] .dateFilter__btn,
+body[data-page="pedidos"] .ordersClear{
+  display:inline-flex;
+  height:40px;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:0 12px;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  background:#131519;
+  color:#cfd1d6;
+  font-size:10.5px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:none;
+}
+body[data-page="pedidos"] .dateFilter__btn:hover,
+body[data-page="pedidos"] .ordersClear:hover{border-color:#3b3e45;background:#181b20;color:#fff}
+body[data-page="pedidos"] .dateFilter__btn[aria-expanded="true"]{
+  border-color:rgba(36,121,255,.42);
+  background:var(--blue-soft);
+  color:#71abff;
+}
+body[data-page="pedidos"] .dateFilter__panel{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  z-index:80;
+  width:360px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:#17191d;
+  box-shadow:0 22px 52px rgba(0,0,0,.38);
+}
+body[data-page="pedidos"] .dateFilter__presets{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:12px;
+}
+body[data-page="pedidos"] .dateFilter__range{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+body[data-page="pedidos"] .filterField{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  color:#8c9098;
+  font-size:9px;
+}
+body[data-page="pedidos"] .filterField input{
+  width:100%;
+  height:36px;
+  padding:0 9px;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  background:#111317;
+  color:#d8dade;
+  font-size:10px;
+}
+body[data-page="pedidos"] .dateFilter__range .filterApply{
+  grid-column:1/-1;
+  height:36px;
+  border:1px solid rgba(36,121,255,.36);
+  border-radius:var(--radius);
+  background:var(--blue);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+body[data-page="pedidos"] .ordersQuickFilters{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--border-soft);
+}
+body[data-page="pedidos"] .ordersQuickFilters__label{
+  margin-right:3px;
+  color:#737780;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+body[data-page="pedidos"] .filterPill{
+  display:inline-flex;
+  min-height:28px;
+  align-items:center;
+  justify-content:center;
+  padding:0 9px;
+  border:1px solid var(--border-soft);
+  border-radius:4px;
+  background:#14161a;
+  color:#9da0a8;
+  font-size:9.5px;
+  font-weight:600;
+  cursor:pointer;
+}
+body[data-page="pedidos"] .filterPill:hover{border-color:#3b3e45;background:#191c21;color:#d9dbe0}
+body[data-page="pedidos"] .filterPill.is-active{
+  border-color:rgba(36,121,255,.25);
+  background:var(--blue-soft);
+  color:#6ba7ff;
+}
+
+body[data-page="pedidos"] .ordersPager{display:flex;align-items:center;gap:8px}
+body[data-page="pedidos"] .pagerBtn{
+  display:grid;
+  width:30px;
+  height:30px;
+  place-items:center;
+  padding:0;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  background:#14161a;
+  color:#aeb1b8;
+  font-size:17px;
+  line-height:1;
+  cursor:pointer;
+}
+body[data-page="pedidos"] .pagerBtn:hover:not(:disabled){border-color:#3c4048;background:#1b1e23;color:#fff}
+body[data-page="pedidos"] .pagerBtn--primary{border-color:rgba(36,121,255,.26);background:var(--blue-soft);color:#67a4ff}
+body[data-page="pedidos"] .pagerBtn:disabled{cursor:default;opacity:.32}
+body[data-page="pedidos"] .pagerMeta{min-width:76px;color:#7e828b;font-size:9.5px;text-align:center}
+
+body[data-page="pedidos"] .ordersList{
+  max-height:none;
+  overflow:visible;
+  padding:0;
+}
+body[data-page="pedidos"] .ordersList .listItem{
+  display:flex;
+  min-height:88px;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  padding:15px 16px;
+  border:0;
+  border-bottom:1px solid var(--border-soft);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+body[data-page="pedidos"] .ordersList .listItem:last-child{border-bottom:0}
+body[data-page="pedidos"] .orderItem{
+  cursor:pointer;
+  transition:background .15s ease;
+}
+body[data-page="pedidos"] .orderItem:hover{background:#1e2024}
+body[data-page="pedidos"] .orderItem__left{
+  display:flex;
+  min-width:0;
+  align-items:flex-start;
+  gap:13px;
+}
+body[data-page="pedidos"] .orderIconWrap{
+  display:grid;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  place-items:center;
+  border:1px solid rgba(36,121,255,.10);
+  border-radius:var(--radius);
+  background:var(--blue-soft);
+  box-shadow:none;
+}
+body[data-page="pedidos"] .orderIcon{
+  display:block;
+  width:17px;
+  height:17px;
+  fill:#5f9fff;
+  opacity:1;
+}
+body[data-page="pedidos"] .orderItem:hover .orderIconWrap{background:rgba(36,121,255,.22)}
+body[data-page="pedidos"] .orderItem:hover .orderIcon{fill:#76adff}
+body[data-page="pedidos"] .orderItem .u-muted{color:#82868f}
+
+body[data-page="pedidos"] .stateBadge{
+  display:inline-flex;
+  min-height:23px;
+  align-items:center;
+  justify-content:center;
+  padding:0 8px;
+  border:1px solid transparent;
+  border-radius:4px;
+  background:#22252a;
+  color:#adb0b7;
+  font-size:8.5px;
+  font-weight:700;
+  white-space:nowrap;
+}
+body[data-page="pedidos"] .state--sky,
+body[data-page="pedidos"] .state--navy{
+  border-color:rgba(36,121,255,.12);
+  background:var(--blue-soft);
+  color:#6ba7ff;
+}
+body[data-page="pedidos"] .state--green{
+  border-color:rgba(69,212,129,.12);
+  background:var(--green-soft);
+  color:#63de92;
+}
+body[data-page="pedidos"] .state--red{
+  border-color:rgba(255,95,103,.12);
+  background:var(--red-soft);
+  color:#ff777e;
+}
+
+body[data-page="pedidos"] .ordersListSkeleton{display:flex;flex-direction:column}
+body[data-page="pedidos"] .ordersListSkeleton__item{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:13px;
+  min-height:88px;
+  padding:15px 16px;
+  border-bottom:1px solid var(--border-soft);
+}
+body[data-page="pedidos"] .ordersListSkeleton__item:last-child{border-bottom:0}
+body[data-page="pedidos"] .ordersListSkeleton__icon,
+body[data-page="pedidos"] .ordersListSkeleton__line,
+body[data-page="pedidos"] .ordersListSkeleton__pill{
+  position:relative;
+  overflow:hidden;
+  background:#25282e;
+}
+body[data-page="pedidos"] .ordersListSkeleton__icon{width:38px;height:38px;border-radius:var(--radius)}
+body[data-page="pedidos"] .ordersListSkeleton__body{display:flex;flex-direction:column;gap:8px;padding-top:2px}
+body[data-page="pedidos"] .ordersListSkeleton__line{width:min(68%,420px);height:8px;border-radius:3px}
+body[data-page="pedidos"] .ordersListSkeleton__line--strong{width:min(34%,220px);height:10px}
+body[data-page="pedidos"] .ordersListSkeleton__meta{display:flex;gap:7px}
+body[data-page="pedidos"] .ordersListSkeleton__pill{width:72px;height:18px;border-radius:4px}
+body[data-page="pedidos"] .ordersListSkeleton__icon::after,
+body[data-page="pedidos"] .ordersListSkeleton__line::after,
+body[data-page="pedidos"] .ordersListSkeleton__pill::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.045),transparent);
+  animation:ordersSkeletonSweep 1.35s ease-in-out infinite;
+}
+@keyframes ordersSkeletonSweep{to{transform:translateX(100%)}}
+
+body[data-page="pedidos"] #backendBuildWarn{
+  border-color:rgba(255,95,103,.28)!important;
+  background:#271719!important;
+  color:#ff8b91!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.35)!important;
+}
+
+@media (max-width:900px){
+  body[data-page="pedidos"] .ordersWorkspace{padding:24px 18px 46px}
+  body[data-page="pedidos"] .ordersToolbar__main{grid-template-columns:1fr auto}
+  body[data-page="pedidos"] .ordersClear{grid-column:2}
+}
+
+@media (max-width:640px){
+  body[data-page="pedidos"] .pdWorkspaceSwitch{min-width:0;grid-template-columns:30px 10px;padding:6px}
+  body[data-page="pedidos"] .pdWorkspaceSwitch__copy{display:none}
+  body[data-page="pedidos"] .ordersWorkspace{padding:22px 14px 40px}
+  body[data-page="pedidos"] .ordersPageHeader h1{font-size:25px}
+  body[data-page="pedidos"] .ordersToolbar__main{grid-template-columns:1fr}
+  body[data-page="pedidos"] .ordersClear{grid-column:auto}
+  body[data-page="pedidos"] .dateFilter,.dateFilter__btn,body[data-page="pedidos"] .ordersClear{width:100%}
+  body[data-page="pedidos"] .dateFilter__panel{right:auto;left:0;width:min(360px,calc(100vw - 100px))}
+  body[data-page="pedidos"] .ordersQuickFilters{align-items:flex-start;flex-wrap:wrap}
+  body[data-page="pedidos"] .ordersQuickFilters__label{width:100%}
+  body[data-page="pedidos"] .ordersPanelHeader{align-items:flex-start;padding-block:13px;flex-direction:column}
+  body[data-page="pedidos"] .ordersPager{align-self:flex-end}
+  body[data-page="pedidos"] .ordersList .listItem{flex-direction:column}
+}
