@@ -43,6 +43,56 @@
 .appHeader__right{display:flex;align-items:center;min-width:0}
 .appHeader__right{justify-content:flex-end;gap:10px}
 
+.pdAccountControl{
+  display:grid;
+  min-height:44px;
+  grid-template-columns:minmax(0,auto) 34px 14px;
+  align-items:center;
+  gap:10px;
+  padding:5px 9px 5px 16px;
+  border:0;
+  border-radius:24px;
+  background:#292a2c;
+  color:#e8eaed;
+  white-space:nowrap;
+}
+.pdAccountControl__name{
+  overflow:hidden;
+  max-width:180px;
+  color:#e8eaed;
+  font-size:12px;
+  font-weight:500;
+  text-overflow:ellipsis;
+}
+.pdAccountControl__avatar{
+  display:grid;
+  width:34px;
+  height:34px;
+  place-items:center;
+  border-radius:50%;
+  background:#1a73e8;
+  color:#fff;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.01em;
+}
+.pdAccountControl__chevron{
+  display:grid;
+  width:14px;
+  height:14px;
+  place-items:center;
+  color:#9aa0a6;
+}
+.pdAccountControl__chevron svg{
+  width:13px;
+  height:13px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
 body.sidebar-force-collapsed .sidebar{width:var(--sidebarW)!important}
 
 @media (max-width:900px){
@@ -61,4 +111,7 @@ body.sidebar-force-collapsed .sidebar{width:var(--sidebarW)!important}
     --appHeaderH:68px;
   }
   .appHeader{padding-inline:18px}
+  .pdAccountControl{grid-template-columns:32px 12px;padding-left:7px;gap:7px}
+  .pdAccountControl__name{display:none}
+  .pdAccountControl__avatar{width:32px;height:32px}
 }
