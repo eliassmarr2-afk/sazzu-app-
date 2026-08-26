@@ -1,126 +1,125 @@
 :root{
-  --blue:#2479FF;
-  --bg:#EDEDED;
-  --card:#ffffff;
-  --text:#222222;
-  --muted:#6b7280;
+  --blue:#2479ff;
+  --blue-strong:#3d8aff;
+  --blue-soft:rgba(36,121,255,.16);
 
-  /* Bordes fuera: usamos sombras para “separar” */
-  --border: transparent;
+  --bg:#0f0f10;
+  --bg-deep:#090a0b;
+  --card:#1a1b1e;
+  --surface:#1a1b1e;
+  --surface-2:#202227;
+  --surface-3:#141518;
 
-  /* Sombra más “Shopify/ML”: firme pero discreta */
-  --shadow: 0 10px 26px rgba(0,0,0,.10);
-  --shadowSoft: 0 6px 16px rgba(0,0,0,.08);
+  --text:#f5f6f8;
+  --text-2:#c9cbd1;
+  --muted:#8d9099;
 
-  /* Nuevo estándar */
+  --border:#303238;
+  --border-soft:#26282d;
+
+  --green:#45d481;
+  --green-soft:rgba(69,212,129,.13);
+  --amber:#ffad32;
+  --amber-soft:rgba(255,173,50,.14);
+  --red:#ff5f67;
+  --red-soft:rgba(255,95,103,.13);
+  --purple:#c26bff;
+  --purple-soft:rgba(194,107,255,.14);
+
   --radius:5px;
   --radiusSm:5px;
-
   --gap:16px;
-  --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  --shadow:none;
+  --shadowSoft:none;
+
+  --font:'Montserrat','Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
 
-  *{ box-sizing:border-box; }
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    font-family:var(--font);
-    color:var(--text);
-    background:var(--bg);
-  }
-  
-  /* Tipografía */
-  h1,h2,h3{ margin:0; line-height:1.15; }
-  p{ margin:0; line-height:1.5; }
-  a{ color:inherit; text-decoration:none; }
-  small{ color:var(--muted); }
-  
-  /* Utilidades */
-  .u-muted{ color:var(--muted); }
-  .u-pill{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 10px; border-radius:999px;
-    background:rgba(36,121,255,.10);
-    color:var(--blue);
-    font-weight:600; font-size:12px;
-  }
-  .u-sectionLabel{
-    font-size:11px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:#9ca3af;
-  }
-  .u-card{
-    background:#FFFFFF;
-    border:0;
-    border-radius:var(--radius);
-    box-shadow:var(--shadowSoft);
-  }
-  
-  .u-cardInner{ padding:18px; }
-  html{ font-size:16px; }
+*{box-sizing:border-box}
+html{
+  min-height:100%;
+  background:var(--bg);
+  color-scheme:dark;
+  font-size:16px;
+  overflow-y:scroll;
+  scrollbar-gutter:stable;
+}
 body{
+  min-height:100vh;
+  margin:0;
+  overflow-y:scroll;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
   font-size:14px;
+  -webkit-font-smoothing:antialiased;
   -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
   text-size-adjust:100%;
 }
-/* =========================
-   FIX: evitar “layout shift” al cambiar de panel
-   (scrollbar estable en todas las páginas)
-   ========================= */
-html{
-  overflow-y: scroll;              /* siempre reserva espacio para scrollbar */
-  scrollbar-gutter: stable;        /* moderno: estabiliza el gutter cuando aplica */
+
+h1,h2,h3,h4,p{margin:0}
+h1,h2,h3,h4{line-height:1.15}
+p{line-height:1.5}
+a{color:inherit;text-decoration:none}
+small{color:var(--muted)}
+button,input,select,textarea{font:inherit}
+button{color:inherit}
+input,select,textarea{
+  border:1px solid var(--border-soft);
+  background:var(--surface-3);
+  color:var(--text);
 }
-/* FIX defensivo: base tipográfica consistente */
-body{
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-/* =========================
-   FIX: Evitar “salto” por scrollbar entre páginas
-   ========================= */
-   html{
-    scrollbar-gutter: stable; /* Chrome/Edge modernos */
-  }
-  
-  body{
-    overflow-y: scroll; /* fallback: siempre reserva scrollbar */
-  }
-  
-  /* =========================
-     FIX: Sidebar con tipografías ancladas (evita variaciones por página)
-     ========================= */
-  .sidebar{
-    font-size: 13px;
-    line-height: 1.2;
-  }
-  
-  .navHero__txt{ font-size: 13px; }
-  .navGroup__kicker{ font-size: 11px; }
-  .navGroup__name{ font-size: 13px; }
-  .navSubItem{ font-size: 13px; }
-  /* =========================
-   Transición entre páginas (View Transitions)
-   ========================= */
-::view-transition-old(root){
-  animation: vtFadeOut .18s ease both;
+input::placeholder,textarea::placeholder{color:#696d76}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--blue);
+  outline-offset:2px;
 }
 
-::view-transition-new(root){
-  animation: vtFadeIn .22s ease both;
+.u-muted{color:var(--muted)}
+.u-sectionLabel{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
+.u-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:26px;
+  padding:0 9px;
+  border-radius:4px;
+  background:var(--blue-soft);
+  color:#6ba7ff;
+  font-size:11px;
+  font-weight:700;
+}
+.u-card{
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#1c1e22,#191a1d);
+  box-shadow:none;
+}
+.u-cardInner{padding:18px}
+.u-cardInner--tight{padding:16px}
 
-@keyframes vtFadeOut{
-  from{ opacity: 1; transform: translateY(0px); }
-  to{ opacity: 0; transform: translateY(6px); }
-}
+::selection{background:rgba(36,121,255,.35);color:#fff}
 
-@keyframes vtFadeIn{
-  from{ opacity: 0; transform: translateY(-6px); }
-  to{ opacity: 1; transform: translateY(0px); }
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  border:3px solid transparent;
+  border-radius:999px;
+  background:#35383f;
+  background-clip:padding-box;
 }
-/* TIPOGRAFÍA GLOBAL */
-body {
-  font-family: 'Montserrat', sans-serif;
-}
+::-webkit-scrollbar-thumb:hover{background:#474b54;background-clip:padding-box}
+
+::view-transition-old(root){animation:pdFadeOut .12s ease both}
+::view-transition-new(root){animation:pdFadeIn .14s ease both}
+@keyframes pdFadeOut{from{opacity:1}to{opacity:0}}
+@keyframes pdFadeIn{from{opacity:0}to{opacity:1}}
