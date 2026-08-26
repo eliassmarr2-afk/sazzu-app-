@@ -1,11 +1,12 @@
 :root{
-  --sidebarW:224px;
-  --sidebarW_md:205px;
-  --appHeaderH:64px;
+  --pd-global-rail-w:62px;
+  --pd-module-rail-w:74px;
+  --sidebarW:136px;
+  --appHeaderH:80px;
 }
 
-.appShell{min-height:100vh;background:var(--bg)}
-.bodyGrid{min-height:100vh;width:100%}
+.appShell{min-height:100vh;background:#131314}
+.bodyGrid{min-height:100vh;width:100%;background:#131314}
 
 .sidebar{
   position:fixed;
@@ -22,7 +23,7 @@
   width:calc(100% - var(--sidebarW));
   margin-left:var(--sidebarW);
   padding:0;
-  background:var(--bg);
+  background:#131314;
 }
 
 .appHeader{
@@ -33,23 +34,34 @@
   width:100%;
   align-items:center;
   justify-content:space-between;
-  gap:18px;
-  padding:0 28px;
-  border-bottom:1px solid var(--border-soft);
-  background:rgba(15,15,16,.96);
+  gap:20px;
+  padding:0 32px;
+  border-bottom:1px solid #2a2b2d;
+  background:#131314;
 }
 
 .appHeader__left,
 .appHeader__right{display:flex;align-items:center;min-width:0}
 .appHeader__right{justify-content:flex-end;gap:10px}
 
-@media (max-width:1100px){
-  :root{--sidebarW:205px}
+body.sidebar-force-collapsed .sidebar{width:var(--sidebarW)!important}
+
+@media (max-width:900px){
+  :root{
+    --pd-global-rail-w:56px;
+    --pd-module-rail-w:66px;
+    --sidebarW:122px;
+    --appHeaderH:72px;
+  }
+  .appHeader{padding-inline:24px}
 }
 
-@media (max-width:760px){
-  :root{--sidebarW:72px}
-  .sidebar{display:flex;width:var(--sidebarW);min-width:var(--sidebarW)}
-  .main{width:calc(100% - var(--sidebarW));margin-left:var(--sidebarW)}
-  .appHeader{padding-inline:16px}
+@media (max-width:640px){
+  :root{
+    --pd-global-rail-w:52px;
+    --pd-module-rail-w:60px;
+    --sidebarW:112px;
+    --appHeaderH:68px;
+  }
+  .appHeader{padding-inline:18px}
 }
